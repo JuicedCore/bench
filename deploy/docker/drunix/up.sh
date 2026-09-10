@@ -87,10 +87,25 @@ PY
   NETWORK_SH_DB="leveldb"
 fi
 
-# --- prereq (installs binaries + pulls npcioss/drunix-* images) ----------
-if [ ! -x "${NET}/../bin/peer" ] && [ ! -x "${NET}/bin/peer" ]; then
-  log "running network.sh prereq (Fabric bins + Drunix images)"
-  ./network.sh prereq || warn "prereq returned non-zero; continuing"
+# --- prereq: Fabric CLI binaries + Drunix images ------------------------
+have_bins=false
+{ [ -x "${NET}/../bin/peer" ] || [ -x "${NET}/bin/peer" ]; } && have_bins=true
+have_imgs=true
+for img in npcioss/drunix-orderer:1.0.0 npcioss/drunix-peer:1.0.0 npcioss/drunix-vscc:1.0.0; do
+  docker image inspect "$img" >/dev/null 2>&1 || have_imgs=false
+done
+if [ "$have_bins" != true ] || [ "$have_imgs" != true ]; then
+  # Pull the Drunix images directly (docker per-layer resume beats prereq's curl).
+  for img in npcioss/drunix-orderer:1.0.0 npcioss/drunix-peer:1.0.0 npcioss/drunix-vscc:1.0.0; do
+    for n in 1 2 3 4; do docker pull "$img" && break; warn "retry pull $img ($n)"; sleep 5; done
+  done
+  # Reuse the shared fabric-samples CLI binaries if Drunix didn't fetch its own.
+  if [ "$have_bins" != true ] && [ -x "${REPO_ROOT}/deploy/docker/.cache/fabric-samples/bin/peer" ]; then
+    mkdir -p "${NET}/bin"
+    cp "${REPO_ROOT}/deploy/docker/.cache/fabric-samples/bin/"* "${NET}/bin/" 2>/dev/null || true
+  fi
+  { [ -x "${NET}/../bin/peer" ] || [ -x "${NET}/bin/peer" ]; } || \
+    ( log "running network.sh prereq for Fabric binaries"; ./network.sh prereq || warn "prereq non-zero; continuing" )
 fi
 
 # --- start network + channel + chaincode --------------------------------
