@@ -7,7 +7,7 @@ REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 PROFILE="${1:-${BENCH_PROFILE:-local}}"
 PROFILE_FILE="${REPO_ROOT}/deploy/profiles/${PROFILE}.yaml"
 
-log()  { printf '\033[1;34m[deploy]\033[0m %s\n' "$*"; }
+log()  { printf '\033[1;34m[deploy]\033[0m %s\n' "$*" >&2; }
 warn() { printf '\033[1;33m[deploy]\033[0m %s\n' "$*" >&2; }
 die()  { printf '\033[1;31m[deploy]\033[0m %s\n' "$*" >&2; exit 1; }
 
@@ -101,10 +101,11 @@ fabric_samples_bootstrap() {
     # Docker images (per-layer resume is robust); tolerate transient failure.
     log "pulling Fabric ${fver} docker images"
     ( cd "$samples" && curl -sSL https://raw.githubusercontent.com/hyperledger/fabric/main/scripts/install-fabric.sh \
-        | bash -s -- --fabric-version "$fver" --ca-version "$caver" docker ) || warn "image pull returned non-zero; continuing"
+        | bash -s -- --fabric-version "$fver" --ca-version "$caver" docker ) >&2 || warn "image pull returned non-zero; continuing"
     echo "$fver" > "${samples}/bin/.fabricver"
   fi
-  echo "$samples"
+  # stdout: ONLY the samples path (callers do SAMPLES="$(fabric_samples_bootstrap ...)")
+  printf '%s\n' "$samples"
 }
 
 # _resume_get <url> <dest> — download with resume + aggressive retry.
