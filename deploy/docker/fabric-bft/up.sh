@@ -9,23 +9,11 @@ HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 FABRIC_VERSION="${FABRIC_VERSION:-3.1.5}"
 FABRIC_CA_VERSION="${FABRIC_CA_VERSION:-1.5.22}"
 SAMPLES_REF="${SAMPLES_REF:-main}"
-CACHE="${HERE}/.cache"
-SAMPLES="${CACHE}/fabric-samples"
 CHANNEL="${CHANNEL:-mychannel}"
 CC_NAME="kvstore"
 CC_SRC="${REPO_ROOT}/chaincodes/kvstore"
 
-mkdir -p "$CACHE"
-if [ ! -d "$SAMPLES/.git" ]; then
-  log "cloning fabric-samples @ ${SAMPLES_REF}"
-  git clone --depth 1 --branch "$SAMPLES_REF" https://github.com/hyperledger/fabric-samples.git "$SAMPLES"
-fi
-if [ ! -x "${SAMPLES}/bin/peer" ] || [ ! -f "${SAMPLES}/config/core.yaml" ]; then
-  log "installing Fabric ${FABRIC_VERSION} binaries + config + docker images"
-  ( cd "$SAMPLES" && curl -sSL https://raw.githubusercontent.com/hyperledger/fabric/main/scripts/install-fabric.sh \
-      | bash -s -- --fabric-version "$FABRIC_VERSION" --ca-version "$FABRIC_CA_VERSION" binary docker )
-fi
-[ -f "${SAMPLES}/config/core.yaml" ] || die "install-fabric did not produce ${SAMPLES}/config/core.yaml"
+SAMPLES="$(fabric_samples_bootstrap "$FABRIC_VERSION" "$FABRIC_CA_VERSION" "$SAMPLES_REF")"
 export PATH="${SAMPLES}/bin:${PATH}"
 export FABRIC_CFG_PATH="${SAMPLES}/config"
 

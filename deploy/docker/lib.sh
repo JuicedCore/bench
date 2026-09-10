@@ -56,6 +56,44 @@ platform_field() {
   yaml_get "$PROFILE_FILE" ".platforms.${platform}.${path}"
 }
 
+# fabric_samples_bootstrap <fabric_version> <ca_version> [samples_ref]
+# Ensures a shared fabric-samples checkout at deploy/docker/.cache/fabric-samples
+# with the given Fabric binary/config version installed. Re-installs bin+config
+# when the requested version differs from what's cached (fabric-cft and
+# fabric-bft use different Fabric majors but share the version-agnostic
+# test-network scripts). Echoes the samples dir. Retries the clone on flaky
+# networks.
+fabric_samples_bootstrap() {
+  local fver="$1" caver="$2" ref="${3:-main}"
+  local samples="${REPO_ROOT}/deploy/docker/.cache/fabric-samples"
+  mkdir -p "${REPO_ROOT}/deploy/docker/.cache"
+
+  if [ ! -d "${samples}/.git" ]; then
+    local n
+    for n in 1 2 3; do
+      log "cloning fabric-samples @ ${ref} (attempt ${n})"
+      rm -rf "$samples"
+      if git clone --depth 1 --branch "$ref" https://github.com/hyperledger/fabric-samples.git "$samples"; then
+        break
+      fi
+      [ "$n" = 3 ] && die "fabric-samples clone failed after 3 attempts"
+      sleep 5
+    done
+  fi
+
+  local have=""
+  [ -f "${samples}/bin/.fabricver" ] && have="$(cat "${samples}/bin/.fabricver")"
+  if [ ! -x "${samples}/bin/peer" ] || [ ! -f "${samples}/config/core.yaml" ] || [ "$have" != "$fver" ]; then
+    log "installing Fabric ${fver} binaries + config + docker images (had: ${have:-none})"
+    rm -rf "${samples}/bin" "${samples}/config" "${samples}/builders"
+    ( cd "$samples" && curl -sSL https://raw.githubusercontent.com/hyperledger/fabric/main/scripts/install-fabric.sh \
+        | bash -s -- --fabric-version "$fver" --ca-version "$caver" binary docker )
+    [ -f "${samples}/config/core.yaml" ] || die "install-fabric did not produce ${samples}/config/core.yaml"
+    echo "$fver" > "${samples}/bin/.fabricver"
+  fi
+  echo "$samples"
+}
+
 # drop_caches — best effort page-cache drop for inter-run isolation.
 drop_caches() {
   if [ "$(id -u)" = "0" ]; then

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 source "$(dirname "${BASH_SOURCE[0]}")/../lib.sh"
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-SAMPLES="${HERE}/.cache/fabric-samples"
+SAMPLES="${REPO_ROOT}/deploy/docker/.cache/fabric-samples"
 if [ -d "${SAMPLES}/test-network" ]; then
   cd "${SAMPLES}/test-network"
   export PATH="${SAMPLES}/bin:${PATH}"

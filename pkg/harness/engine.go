@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"sync"
 	"time"
 
 	"github.com/juicedcore/bench/pkg/adapters"
@@ -47,6 +48,13 @@ type Options struct {
 	DryRun bool
 	// Caveats are appended to the manifest (e.g. resource-starvation notes).
 	Caveats []string
+	// Generators is the number of concurrent load-generator instances sharing
+	// the adapter + collector. Each gets its own workload (seed+i) and, in
+	// open-loop, an equal share of the target rate; in closed-loop, an equal
+	// share of the workers. Default 1. Use >1 for high-ceiling platforms
+	// (Fabric-X, NeuChain) where one Go generator + one gRPC conn is the
+	// bottleneck - size it to the profile's load_gen_cpus.
+	Generators int
 }
 
 // Engine executes runs.
@@ -156,7 +164,32 @@ func (Engine) Run(ctx context.Context, cfg *RunConfig, opt Options) (*RunResult,
 	}()
 
 	collector := metrics.NewCollector()
-	gen := &loadgen.Generator{Adapter: ad, Source: wl, Collector: collector}
+
+	ngen := opt.Generators
+	if ngen < 1 {
+		ngen = 1
+	}
+	// One generator + its own workload per instance. Generator 0 reuses wl (so
+	// single-generator runs are byte-identical to before).
+	gens := make([]*loadgen.Generator, ngen)
+	gens[0] = &loadgen.Generator{Adapter: ad, Source: wl, Collector: collector}
+	for i := 1; i < ngen; i++ {
+		wi, werr := workloads.New(cfg.Workload, workloads.Config{
+			KeySpace:        cfg.Load.KeySpace,
+			KeyDistribution: cfg.Load.KeyDistribution,
+			ZipfianConstant: cfg.Load.ZipfianConstant,
+			ReadWriteRatio:  cfg.Load.ReadWriteRatio,
+			ValueSizeBytes:  cfg.Load.ValueSizeBytes,
+			Seed:            cfg.Load.Seed + int64(i),
+		})
+		if werr != nil {
+			return nil, werr
+		}
+		gens[i] = &loadgen.Generator{Adapter: ad, Source: wi, Collector: collector}
+	}
+	if ngen > 1 {
+		man.Caveats = append(man.Caveats, fmt.Sprintf("load driven by %d concurrent generators", ngen))
+	}
 
 	// System sampling for the whole run.
 	var sampler *metrics.SystemSampler
@@ -176,7 +209,7 @@ func (Engine) Run(ctx context.Context, cfg *RunConfig, opt Options) (*RunResult,
 
 	for _, ph := range phases {
 		phaseStart := time.Now()
-		if err := gen.Run(ctx, ph.profile); err != nil && ctx.Err() != nil {
+		if err := runGenerators(ctx, gens, splitProfile(ph.profile, len(gens))); err != nil && ctx.Err() != nil {
 			break
 		}
 		phaseEnd := time.Now()
@@ -237,6 +270,63 @@ type phase struct {
 	name         string
 	profile      loadgen.LoadProfile
 	noWindowTrim bool
+}
+
+// splitProfile divides a phase's load across n generators: TargetTPS / RampFrom
+// (open-loop) and Workers (closed-loop) are split as evenly as possible;
+// generator 0 takes any remainder.
+func splitProfile(p loadgen.LoadProfile, n int) []loadgen.LoadProfile {
+	if n <= 1 {
+		return []loadgen.LoadProfile{p}
+	}
+	out := make([]loadgen.LoadProfile, n)
+	share := func(total, i int) int {
+		q := total / n
+		if i == 0 {
+			q += total % n
+		}
+		return q
+	}
+	for i := 0; i < n; i++ {
+		pi := p
+		pi.TargetTPS = share(p.TargetTPS, i)
+		if p.RampFrom > 0 {
+			pi.RampFrom = share(p.RampFrom, i)
+		}
+		if p.Workers > 0 {
+			pi.Workers = share(p.Workers, i)
+			if pi.Workers == 0 {
+				pi.Workers = 1
+			}
+		}
+		out[i] = pi
+	}
+	return out
+}
+
+// runGenerators runs every generator concurrently for one phase and waits for
+// all of them. The first non-nil error is returned.
+func runGenerators(ctx context.Context, gens []*loadgen.Generator, profiles []loadgen.LoadProfile) error {
+	if len(gens) == 1 {
+		return gens[0].Run(ctx, profiles[0])
+	}
+	errCh := make(chan error, len(gens))
+	var wg sync.WaitGroup
+	for i, g := range gens {
+		wg.Add(1)
+		go func(g *loadgen.Generator, p loadgen.LoadProfile) {
+			defer wg.Done()
+			errCh <- g.Run(ctx, p)
+		}(g, profiles[i])
+	}
+	wg.Wait()
+	close(errCh)
+	for err := range errCh {
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 func buildPhases(cfg *RunConfig) []phase {

@@ -87,6 +87,7 @@ func cmdRun(ctx context.Context, args []string) error {
 	profileDir := fs.String("profile-dir", "", "directory holding profile YAMLs (default deploy/profiles)")
 	dryRun := fs.Bool("dry-run", false, "print the phase plan without generating load")
 	caveat := fs.String("caveat", "", "append a caveat string to the manifest")
+	generators := fs.Int("generators", 0, "concurrent load-generator instances sharing the adapter (default 1; use >1 for high-ceiling platforms)")
 	_ = fs.Parse(args)
 	if *cfgPath == "" {
 		return fmt.Errorf("--config is required")
@@ -103,7 +104,7 @@ func cmdRun(ctx context.Context, args []string) error {
 		cfg.Profile = *profile
 	}
 
-	opt := harness.Options{ProfileDir: *profileDir, DryRun: *dryRun}
+	opt := harness.Options{ProfileDir: *profileDir, DryRun: *dryRun, Generators: *generators}
 	if *caveat != "" {
 		opt.Caveats = append(opt.Caveats, *caveat)
 	}

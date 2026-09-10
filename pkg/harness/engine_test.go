@@ -163,6 +163,56 @@ adapter:
 	}
 }
 
+func TestEngineMultiGenerator(t *testing.T) {
+	profDir := writeProfile(t)
+	outDir := t.TempDir()
+	cfgYAML := `
+name: unit-multigen
+platform: mock
+workload: kv-write
+profile: test
+normalized: true
+load:
+  mode: open-loop
+  target_tps: 400
+  hold_duration: 3s
+  key_distribution: uniform
+  key_space: 2000
+  finality_wait: 5s
+metrics: { warmup: 400ms, cooldown: 300ms, output_dir: ` + outDir + ` }
+adapter: { submit_ms: 1, commit_ms: 15, jitter_ms: 4 }
+`
+	cfgPath := filepath.Join(t.TempDir(), "run.yaml")
+	os.WriteFile(cfgPath, []byte(cfgYAML), 0o644)
+	cfg, err := harness.LoadRunConfig(cfgPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+	rr, err := harness.Engine{}.Run(ctx, cfg, harness.Options{ProfileDir: profDir, Generators: 4})
+	if err != nil {
+		t.Fatalf("run: %v", err)
+	}
+	if rr.Headline == nil || !rr.Headline.InvariantOK {
+		t.Fatalf("multi-gen run invariant broken: %+v", rr.Headline)
+	}
+	// 4 gens x ~100 TPS each ~= 400 offered; expect >250 confirmed in the window.
+	if rr.Headline.ConfirmedTPS < 250 {
+		t.Errorf("multi-gen confirmed TPS too low: %.1f", rr.Headline.ConfirmedTPS)
+	}
+	man := readManifest(t, outDir)
+	found := false
+	for _, c := range man.Caveats {
+		if c == "load driven by 4 concurrent generators" {
+			found = true
+		}
+	}
+	if !found {
+		t.Errorf("manifest missing multi-generator caveat: %v", man.Caveats)
+	}
+}
+
 func readManifest(t *testing.T, outDir string) harness.Manifest {
 	t.Helper()
 	var found string
