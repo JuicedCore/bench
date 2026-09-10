@@ -4,8 +4,8 @@ GO       ?= go
 BIN      := bin/benchrunner
 PKG      := ./...
 
-.PHONY: all build test vet fmt tidy smoke clean monitoring-up monitoring-down \
-        chaincode integration help
+.PHONY: all build test vet fmt tidy smoke clean clean-images monitoring-up monitoring-down \
+        chaincode integration up-all down-all help
 
 all: build test vet ## build + test + vet
 
@@ -43,10 +43,20 @@ monitoring-up: ## start Prometheus/Grafana/cAdvisor/node_exporter
 monitoring-down:
 	bash deploy/docker/monitoring/down.sh
 
-clean:
-	rm -rf bin results/*/ docs/reports/*.html docs/reports/*.png
-	find deploy/docker -maxdepth 2 -name connection.env -delete
-	find deploy/docker -name '*.bench.bak' -delete
+up-all: build ## monitoring + one Fabric-family net + fabricx/neuchain if their images exist
+	bash scripts/up-all.sh local $(FABRIC)
+
+down-all: ## stop + remove every platform + monitoring (keeps images/caches/results)
+	bash scripts/down-all.sh local
+
+clean: ## FULL local wipe (containers, volumes, caches, connection.env, results); prompts
+	bash scripts/clean.sh
+
+clean-images: ## clean + also remove pulled platform images (~4-6 GB)
+	bash scripts/clean.sh --images
+
+clean-build: ## just remove local build artifacts (bin/, generated reports)
+	rm -rf bin docs/reports/*.html docs/reports/*.png
 
 help: ## list targets
 	@grep -hE '^[a-zA-Z_-]+:.*?## ' $(MAKEFILE_LIST) | awk 'BEGIN{FS=":.*?## "}{printf "  \033[36m%-16s\033[0m %s\n",$$1,$$2}'

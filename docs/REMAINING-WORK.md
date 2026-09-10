@@ -261,6 +261,17 @@ adapter change.
 
 ---
 
+## Local lifecycle scripts
+
+| Command | Effect |
+| ------- | ------ |
+| `make up-all` / `scripts/up-all.sh local [fabric-variant]` | monitoring + one Fabric-family net (they share ports) + `fabricx`/`neuchain` if their images exist |
+| `make down-all` / `scripts/down-all.sh local` | stop + remove every platform + monitoring; keeps images, caches, results |
+| `make clean` / `scripts/clean.sh` | down-all + generated chaincode images, dangling volumes, `.cache/` clones, `connection.env`, `results/*`, `docs/reports/*` (prompts; `-y` to skip) |
+| `make clean-images` / `scripts/clean.sh --images` | clean + pulled platform images (Fabric, `npcioss/drunix-*`, yugabyte, keydb, `bench/neuchain*`, `bench/fabricx-rest`) |
+
+Never touches containers / images / volumes the harness did not create.
+
 ## Quick "is everything else good?" checklist
 
 ```

@@ -8,6 +8,21 @@ setup (deploy)  ->  source connection.env  ->  run  ->  inspect  ->  teardown
 
 `scripts/run-all.sh` does this for several platforms with isolation between each.
 
+## Bring-up / tear-down / clean (local)
+
+| Command | Effect |
+| ------- | ------ |
+| `make up-all` (or `bash scripts/up-all.sh local [fabric-cft\|fabric-bft\|drunix]`) | monitoring stack + **one** Fabric-family network (they share :7051/:7050 — mutually exclusive) + `fabricx` and `neuchain` if their images exist |
+| `make down-all` (or `bash scripts/down-all.sh local`) | stop + remove every platform's containers/volumes + monitoring. Keeps images, `.cache/` clones, and `results/`. |
+| `make clean` (or `bash scripts/clean.sh`) | `down-all` **plus** generated chaincode images, dangling bench volumes, `deploy/docker/**/.cache/`, `connection.env` files, `results/*`, `docs/reports/*.html\|png`. Prompts first (`-y` to skip). |
+| `make clean-images` (or `scripts/clean.sh --images`) | `clean` + removes the pulled platform images too (Fabric, `npcioss/drunix-*`, `yugabytedb/yugabyte`, `eqalpha/keydb`, `bench/neuchain*`, `bench/fabricx-rest` — ~4–6 GB) |
+
+None of these touch containers/images/volumes the harness did not create.
+
+For a **fair** cross-platform comparison, still run platforms **sequentially**
+with inter-run isolation via `scripts/run-all.sh` — `up-all` is for having
+things up to poke at, not for a measured campaign.
+
 ## Configs
 
 `configs/` holds reusable run definitions. Override `platform` / `profile` on the

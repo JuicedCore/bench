@@ -70,7 +70,17 @@ open docs/reports/comparison.html
 
 ## 7. Tear down
 
+One platform:
+
 ```
 ./bin/benchrunner teardown --platform fabric-cft
 bash deploy/docker/monitoring/down.sh
+```
+
+Everything at once:
+
+```
+make down-all        # stop + remove all platforms + monitoring (keeps images/caches/results)
+make clean           # + wipe caches, connection.env, results, generated reports (prompts)
+make clean-images    # + remove the pulled platform images (~4-6 GB)
 ```

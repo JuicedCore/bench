@@ -40,13 +40,22 @@ set -a; source deploy/docker/fabric-cft/connection.env; set +a
 ./bin/benchrunner teardown --platform fabric-cft
 ```
 
+Bring up / tear down / wipe **everything** at once:
+
+```
+make up-all          # monitoring + one Fabric-family net + fabricx/neuchain (if built)
+make down-all        # stop + remove all platforms + monitoring
+make clean           # + caches, connection.env, results, generated reports  (prompts)
+make clean-images    # + the pulled platform images (~4-6 GB)
+```
+
 Full walkthrough: [docs/guides/quickstart.md](docs/guides/quickstart.md).
 
 ## Layout
 
 ```
 cmd/benchrunner/     CLI: run | suite | report | setup | teardown | list
-pkg/adapters/        PlatformAdapter interface + registry; fabric, drunix, mock (fabricx, neuchain: Phase 3/4)
+pkg/adapters/        PlatformAdapter interface + registry; fabric, drunix, fabricx, neuchain, mock
 pkg/workloads/       normalized workloads: kv-write, kv-read, kv-mixed, transfer
 pkg/loadgen/         key distributions + open/closed-loop generator (coordinated-omission safe)
 pkg/metrics/         per-tx T1/T2/T3 collector, HDR histograms, native scrape, docker-stats sampler
@@ -54,8 +63,13 @@ pkg/harness/         run config, resource profile, engine, manifest, reporter
 chaincodes/kvstore/  Go chaincode for Fabric/Drunix normalized workloads
 deploy/docker/       per-platform Compose topologies + up.sh/down.sh, monitoring stack
 deploy/profiles/     resource budgets: local (16c/16GB host), gcp-small, gcp-full
+deploy/terraform/    GCP infra (main.tf) for the gcp-full campaign
 configs/             reusable run definitions
-docs/                architecture, per-platform notes, workloads, 15 ADRs, guides
+scripts/             setup.sh, up-all.sh, down-all.sh, clean.sh, run-all.sh,
+                     gcp-run.sh, neuchain-proto-spike.sh, plot.py
+                     (NeuChain image build: deploy/docker/neuchain/build.sh)
+docs/                architecture, per-platform notes, workloads, 15 ADRs, guides,
+                     REMAINING-WORK.md
 ```
 
 ## Core ideas
