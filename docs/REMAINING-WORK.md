@@ -150,33 +150,85 @@ Tighten `google_compute_firewall.ssh.source_ranges` in `main.tf` from
 
 ---
 
-## 3. Drunix live run — LAST MILE (not compute/GCP gated)
+## 3. Drunix write path — BLOCKED ON DRUNIX UPSTREAM (a client SDK / CP fix)
 
-The Drunix deploy (`github.com/npci/drunix`) was taken end to end during this
-work: 7 `npcioss/drunix-*` containers (Lite Peer / Committing Peer / stateless
-VSCC × 2 orgs + Raft orderer), 2 KeyDB containers (the `drunix-peer` image
-mandates a KeyDB KVStore even in LevelDB mode, and upstream only bundles it with
-the Yugabyte compose — `up.sh` now starts it separately), channel `mychannel`
-joined, blocks committing, `kvstore` chaincode packaged and **installed on both
-peers**.
+This is a **third category** — not compute, not GCP, but a genuine upstream
+gap in `github.com/npci/drunix`.
 
-The one remaining friction was `peer lifecycle chaincode approveformyorg`
-timing out with *"timed out waiting for txid on all peers"*. Root cause: the
-CLI's commit-wait uses `peer.client.connTimeout`, which Drunix's `core.yaml`
-sets to **3 s** — too short for the first lifecycle tx to traverse Drunix's
-LP → orderer → CP → stateless-VSCC path. Fixed in `deploy/docker/drunix/up.sh`:
-`export CORE_PEER_CLIENT_CONNTIMEOUT=120s` and `deployCC … -r 10 -d 10` before
-deploy. This is a config bump, not a code change, and needs no external
-resources — a re-run of `up.sh` completes the deploy.
+### What works
 
-### Verify
+The full Drunix deploy was brought up end to end (`deploy/docker/drunix/up.sh`,
+all fixes committed): 7 `npcioss/drunix-*` containers (Lite Peer / Committing
+Peer / stateless VSCC × 2 orgs + Raft orderer), 2 KeyDB containers (the
+`drunix-peer` image mandates a KeyDB KVStore; upstream only bundles it with the
+Yugabyte compose, so `up.sh` starts it separately), YugabyteDB × 2, channel
+`mychannel` joined, blocks committing, `kvstore` chaincode **packaged, installed,
+approved and committed on both Committing Peers** (VALID). The chaincode
+containers run. The Fabric-family lifecycle path (vanilla envelopes) is fully
+functional through Drunix.
+
+### What is blocked
+
+Application **write** transactions submitted through the stock
+`hyperledger/fabric-gateway` SDK (which the drunix adapter reuses from the fabric
+adapter) reach the orderer but the **Committing Peer panics on commit**:
 
 ```
-bash deploy/docker/drunix/up.sh local
+[orderer] WARN [common.sparseblock] aggregateOrgEnvelope -> txnEnv.LeanEnv is nil it could be vanilla-format txn   (x hundreds)
+[cp.org1] panic  github.com/npci/drunix/core/ledger/kvledger.(*kvLedger).commit
+                 github.com/npci/drunix/gossip/privdata.(*coordinator).StoreBlock
+                 github.com/npci/drunix/gossip/state.(*GossipStateProviderImpl).commitBlock
+```
+
+Every tx: `submitted 1101, errored 0, timed_out 1101` (Submit/endorse/broadcast
+succeed; the CP crashes before the block commits, so finality never arrives).
+
+### Root cause
+
+Drunix's "reduced network calls" + "sparse block" optimisations change the
+**transaction/block wire format**: the CP's `aggregateOrgEnvelope` expects a
+Drunix *lean envelope* (`txnEnv.LeanEnv`), and panics in `kvledger.commit` when
+handed a vanilla Fabric envelope. The stock Fabric Gateway SDK only produces
+vanilla envelopes. So Drunix is backwards-compatible with the Fabric SDK for
+**queries and the chaincode lifecycle**, but **not for the optimised
+application-write path**.
+
+Fixing this needs one of, from Drunix:
+
+1. **A Drunix client SDK** (or a Drunix-patched `fabric-gateway`) that emits the
+   lean-envelope format. The `npci/drunix` repo currently ships only chaincode
+   samples and the CLI-driven `network.sh` — no client SDK.
+2. **A CP fix** so `aggregateOrgEnvelope` / `kvledger.commit` fall back cleanly
+   to vanilla envelopes instead of panicking.
+3. Documentation of a supported non-Yugabyte + vanilla-SDK deployment mode.
+
+### What is in place for when that lands
+
+`pkg/adapters/fabric/commitpeer.go` already reads finality from the Committing
+Peer's `FilteredBlockEvents` stream (the drunix adapter sets
+`UseCommitPeerEvents=true`) — this was needed because the LP-hosted Gateway's
+`Commit.Status()` never fires (the LP does not commit). That path is correct and
+tested at build/vet level; it just cannot resolve txs the CP never commits. Once
+Drunix accepts vanilla writes (or a lean-envelope SDK exists), the drunix
+adapter runs with no further change.
+
+### Verify (once unblocked)
+
+```
+bash deploy/docker/drunix/up.sh local        # brings up on YugabyteDB (shipped default)
 set -a; source deploy/docker/drunix/connection.env; set +a
 ./bin/benchrunner run --config configs/quick-smoke.yaml --platform drunix
 go test -tags integration -run Integration ./pkg/adapters/drunix/
 ```
+
+### Also fixed along the way (committed, no external dependency)
+
+- `deploy/docker/drunix/up.sh`: default to YugabyteDB (Drunix's tested config);
+  the LevelDB compose patch also broke the CP's VSCC hostname wiring and is now
+  opt-in via `BENCH_DRUNIX_FORCE_LEVELDB=1`. Manifest caveat on normalized runs.
+- KeyDB started separately; `npcioss/drunix-{ccenv,baseos}` pulled;
+  `CORE_PEER_CLIENT_CONNTIMEOUT=120s` + `deployCC -r 10 -d 10` for the slower
+  LP→orderer→CP→VSCC lifecycle; cert-path globbing.
 
 ---
 

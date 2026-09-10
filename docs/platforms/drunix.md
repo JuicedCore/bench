@@ -63,10 +63,26 @@ Verified layout (`npci/drunix @ main`):
 | VSCC validation service org1 | `vs1.org1` | — | — |
 | Orderer (Raft, 1 node) | `orderer` | `localhost:7050` | `localhost:9443` |
 
-org2 mirrors on 9051 / 9061. The Lite Peer carries
-`CORE_PEER_COMMITTINGPEER_ENDPOINT=dns:///peer1.org1.example.com:7061`, so its
-gateway federates commit-status — the adapter connects to `:7051` only, no
-second connection needed.
+org2 mirrors on 9051 / 9061.
+
+### Finality: the adapter watches the Committing Peer
+
+The Gateway runs on the **Lite Peer**, which endorses and broadcasts but never
+commits, so the Gateway SDK's `Commit.Status()` never fires. The drunix adapter
+sets `UseCommitPeerEvents=true` (`pkg/adapters/fabric/commitpeer.go`): it opens a
+second Gateway to the **Committing Peer** (`:7061`, shared TLS CA, SNI
+`peer1.org1.example.com`) and reads tx validation from its
+`FilteredBlockEvents` stream.
+
+### KNOWN BLOCKER — vanilla writes panic the Committing Peer
+
+Application **write** transactions from the stock `fabric-gateway` SDK reach the
+orderer but the Committing Peer panics on commit:
+`aggregateOrgEnvelope -> txnEnv.LeanEnv is nil` → `panic kvledger.commit`.
+Drunix's "sparse block" optimisation expects a Drunix *lean envelope*; the
+vanilla Fabric SDK does not produce one. Queries and the chaincode lifecycle
+(also vanilla) work; the optimised write path needs a Drunix client SDK or a CP
+fix. See [../REMAINING-WORK.md §3](../REMAINING-WORK.md).
 
 `network.sh` interface (fabric-samples style): `prereq`,
 `up createChannel -c <ch> -s <db>`, `deployCC -c <ch> -ccn <n> -ccp <path> -ccl go`.

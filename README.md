@@ -23,7 +23,7 @@ Full breakdown + why the two remaining items need heavy compute or GCP creds:
 | -------- | ------- | ----------- | ----- |
 | `fabric-cft` (Raft) | ✅ | ✅ smoke + probe-sweep (Fabric 2.5.16) | e2e p50 165–565 ms across the sweep |
 | `fabric-bft` (SmartBFT) | ✅ | ✅ smoke (Fabric 3.1.5, 4 orderers) | ≈ cft at low load once batching is pinned |
-| `drunix` (npci/drunix) | ✅ (wraps fabric) | network verified end to end; runs on YugabyteDB (Drunix's shipped default) | LevelDB parity unavailable in the shipped test-network — disclosed as a manifest caveat |
+| `drunix` (npci/drunix) | ✅ (wraps fabric; CP block-event finality) | deploy + lifecycle verified live | **write path blocked upstream** — Drunix's sparse-block format panics the Committing Peer on vanilla-SDK writes; needs a Drunix client SDK or CP fix ([docs/REMAINING-WORK.md §3](docs/REMAINING-WORK.md)) |
 | `fabricx` (token REST) | ✅ matches the **verified** `fabric-x-samples` API, `httptest`-tested | token `transfer` runs today | normalized `kv-*` needs the custom `/kv` FSC view (stub + code-level spec) — **live-devnet gated** |
 | `neuchain` (pure-Go ZMQ+protobuf+RSA) | ✅ unit-tested (sign, result-frame, tx-build) | — | server binaries need a ~1 h C++ build — **compute gated**, `deploy/docker/neuchain/build.sh` |
 | GCP campaign | `scripts/gcp-run.sh` + Terraform ready | — | **credential gated** — provide `-var project=…` |
