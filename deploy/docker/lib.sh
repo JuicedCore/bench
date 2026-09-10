@@ -13,24 +13,41 @@ die()  { printf '\033[1;31m[deploy]\033[0m %s\n' "$*" >&2; exit 1; }
 
 need() { command -v "$1" >/dev/null 2>&1 || die "missing required tool: $1"; }
 
-# yaml_get <file> <yq-expression> — requires yq (mikefarah). Falls back to a
-# python one-liner if yq is absent.
+# _yq — resolve a usable yq: system yq, else a cached static mikefarah binary,
+# else python3+PyYAML. Echoes the command to run ("yq" or a path or "pyyaml").
+_yq() {
+  if command -v yq >/dev/null 2>&1; then echo yq; return; fi
+  local cache="${REPO_ROOT}/deploy/docker/.cache"
+  if [ -x "${cache}/yq" ]; then echo "${cache}/yq"; return; fi
+  if python3 -c 'import yaml' 2>/dev/null; then echo pyyaml; return; fi
+  mkdir -p "$cache"
+  local ver="v4.44.3" arch
+  case "$(uname -m)" in x86_64) arch=amd64 ;; aarch64|arm64) arch=arm64 ;; *) arch=amd64 ;; esac
+  if curl -sSfL "https://github.com/mikefarah/yq/releases/download/${ver}/yq_linux_${arch}" -o "${cache}/yq" 2>/dev/null; then
+    chmod +x "${cache}/yq"; echo "${cache}/yq"; return
+  fi
+  echo none
+}
+
+# yaml_get <file> <yq-expression> — YAML anchors are resolved (yq / PyYAML).
 yaml_get() {
-  local file="$1" expr="$2"
-  if command -v yq >/dev/null 2>&1; then
-    yq -r "$expr" "$file"
-  else
-    python3 - "$file" "$expr" <<'PY'
+  local file="$1" expr="$2" tool
+  tool="$(_yq)"
+  case "$tool" in
+    none)   return 1 ;;
+    pyyaml)
+      python3 - "$file" "$expr" <<'PY'
 import sys, yaml
 doc = yaml.safe_load(open(sys.argv[1]))
-# extremely small subset: ".a.b.c"
 cur = doc
 for part in sys.argv[2].lstrip('.').split('.'):
     if part == "": continue
     cur = cur[part]
 print(cur)
 PY
-  fi
+      ;;
+    *)      "$tool" -r "$expr" "$file" ;;
+  esac
 }
 
 # platform_field <platform> <field-path-under-platform> — e.g. per_container.cpus
