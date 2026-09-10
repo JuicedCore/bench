@@ -108,6 +108,10 @@ if [ "$have_bins" != true ] || [ "$have_imgs" != true ]; then
     ( log "running network.sh prereq for Fabric binaries"; ./network.sh prereq || warn "prereq non-zero; continuing" )
 fi
 
+# Drunix network.sh checkPrereqs runs `peer version` - put its binaries on PATH.
+export PATH="${NET}/../bin:${NET}/bin:${PATH}"
+peer version >/dev/null 2>&1 || die "drunix: 'peer' not runnable after prereq (PATH=${NET}/../bin)"
+
 # --- start network + channel + chaincode --------------------------------
 ./network.sh down || true
 drop_caches
