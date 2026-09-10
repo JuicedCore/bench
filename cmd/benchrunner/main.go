@@ -113,6 +113,13 @@ func cmdRun(ctx context.Context, args []string) error {
 		opt.Caveats = append(opt.Caveats,
 			cfg.Platform+" on the local profile is resource-constrained; absolute throughput is NOT comparable to its published scale-out ceiling")
 	}
+	// Drunix's shipped test-network runs on YugabyteDB; LevelDB parity is not
+	// available (see deploy/docker/drunix/up.sh, adr-012). Disclose it on
+	// normalized runs where the harness would otherwise imply LevelDB.
+	if cfg.Platform == "drunix" && cfg.Normalized {
+		opt.Caveats = append(opt.Caveats,
+			"drunix ran on YugabyteDB (its shipped test-network default); LevelDB parity is unavailable, so the state-DB variable is NOT held constant vs fabric-cft for this run")
+	}
 
 	_, err = harness.Engine{}.Run(ctx, cfg, opt)
 	return err

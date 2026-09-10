@@ -4,6 +4,10 @@ This harness benchmarks four permissioned blockchains with three different
 transaction models behind one measurement layer. Every design decision is
 recorded here so the results are defensible.
 
+**[REMAINING-WORK.md](REMAINING-WORK.md)** — what is finished vs. what is left,
+and exactly why each remaining item needs a long compute build or GCP
+credentials (with the pluggable entry point for each).
+
 ## Read in this order
 
 1. [architecture/overview.md](architecture/overview.md) — the harness, the adapter

@@ -63,29 +63,37 @@ open(path,'w').write(s)
 PY
 fi
 
-# --- LevelDB patch for normalized parity ---------------------------------
+# --- state DB -----------------------------------------------------------
+# Drunix's shipped test-network runs on YugabyteDB and its network.sh only
+# wires the full node set (KeyDB, VSCC hostnames, SQL config) for `-s yugabyte`.
+# A LevelDB run needs compose surgery that also breaks the Committing Peer's
+# VSCC path (the drunix-peer/vscc images expect more than the state-DB toggle).
+# So: default to Yugabyte (Drunix's tested config); a normalized run on Drunix
+# carries a "ran on YugabyteDB, LevelDB unavailable in the shipped test-network"
+# manifest caveat. Set BENCH_DRUNIX_FORCE_LEVELDB=1 to try the experimental
+# LevelDB patch anyway.
+NETWORK_SH_DB="yugabyte"
 COMPOSE_NET="${NET}/compose/compose-test-net.yaml"
-NETWORK_SH_DB="$STATE_DB"
-if [ "$STATE_DB" = "leveldb" ] && [ -f "$COMPOSE_NET" ]; then
-  if grep -q 'CORE_LEDGER_STATE_STATEDATABASE=sqldb' "$COMPOSE_NET"; then
-    log "patching compose-test-net.yaml: sqldb/Yugabyte env -> goleveldb"
+if [ "${BENCH_DRUNIX_FORCE_LEVELDB:-0}" = "1" ] && [ -f "$COMPOSE_NET" ]; then
+  warn "BENCH_DRUNIX_FORCE_LEVELDB=1: experimental LevelDB patch (known to break the VSCC path)"
+  grep -q 'CORE_LEDGER_STATE_STATEDATABASE=sqldb' "$COMPOSE_NET" && {
     cp "$COMPOSE_NET" "${COMPOSE_NET}.bench.bak"
     python3 - "$COMPOSE_NET" <<'PY'
-import re, sys
+import sys
 p = sys.argv[1]
 out = []
 for ln in open(p):
     if 'CORE_LEDGER_STATE_STATEDATABASE=sqldb' in ln:
         out.append(ln.replace('sqldb', 'goleveldb')); continue
     if 'CORE_LEDGER_STATE_SQLDBCONFIG_' in ln:
-        continue                      # drop SQL connection env
+        continue
     out.append(ln)
 open(p, 'w').write(''.join(out))
 PY
-  fi
-  # network.sh only special-cases "yugabyte"; anything else is a passthrough label.
+  }
   NETWORK_SH_DB="leveldb"
 fi
+log "drunix state DB: ${NETWORK_SH_DB}"
 
 # --- prereq: Fabric CLI binaries + Drunix images ------------------------
 have_bins=false
@@ -112,16 +120,13 @@ fi
 export PATH="${NET}/../bin:${NET}/bin:${PATH}"
 peer version >/dev/null 2>&1 || die "drunix: 'peer' not runnable after prereq (PATH=${NET}/../bin)"
 
-# --- KeyDB (mandatory for the drunix-peer KVStore, regardless of state DB) ---
-# The drunix-peer image always needs CORE_PEER_KVSTORE_ADDRESS=hlf_keydb_*:6379
-# (the "reduced private-data network calls" feature). KeyDB is only bundled in
-# scripts/yugabyte/compose.yaml, which network.sh starts only for -s yugabyte.
-# For a LevelDB run we bring up just the two KeyDB containers ourselves.
+# --- KeyDB: only needed for the experimental LevelDB path (Yugabyte's own
+# compose, which network.sh starts for -s yugabyte, already includes KeyDB). ---
 KEYDB_COMPOSE="${NET}/scripts/keydb-only.bench.yaml"
-cat > "$KEYDB_COMPOSE" <<'YAML'
+if [ "$NETWORK_SH_DB" = "leveldb" ]; then
+  cat > "$KEYDB_COMPOSE" <<'YAML'
 networks:
-  test:
-    name: drunix_test
+  test: {name: drunix_test}
 services:
   hlf_keydb_org1msp:
     image: eqalpha/keydb
@@ -138,19 +143,28 @@ services:
     ports: ["6389:6379"]
     networks: [test]
 YAML
+fi
 
 # --- start network + channel + chaincode --------------------------------
 ./network.sh down || true
-docker compose -f "$KEYDB_COMPOSE" down 2>/dev/null || true
+[ -f "$KEYDB_COMPOSE" ] && docker compose -f "$KEYDB_COMPOSE" down 2>/dev/null || true
 drop_caches
-for n in 1 2 3; do docker pull eqalpha/keydb && break; sleep 5; done
-# Pre-create the network + start KeyDB so the peers find it on first boot.
-docker network create drunix_test 2>/dev/null || true
-docker compose -f "$KEYDB_COMPOSE" up -d
-sleep 4
+if [ "$NETWORK_SH_DB" = "leveldb" ]; then
+  for n in 1 2 3; do docker pull eqalpha/keydb && break; sleep 5; done
+  docker network create drunix_test 2>/dev/null || true
+  docker compose -f "$KEYDB_COMPOSE" up -d
+  sleep 4
+fi
 ./network.sh up createChannel -c "$CHANNEL" -s "$NETWORK_SH_DB"
-log "deploying ${CC_NAME} from ${CC_SRC}"
-./network.sh deployCC -c "$CHANNEL" -ccn "$CC_NAME" -ccp "$CC_SRC" -ccl go
+
+# Drunix's LP -> orderer -> CP -> stateless-VSCC path makes the first lifecycle
+# tx slower than stock Fabric. The peer CLI's commit-wait uses
+# peer.client.connTimeout (3s in Drunix's core.yaml) - too short, hence
+# "timed out waiting for txid on all peers" on approveformyorg. Bump it and
+# give deployCC more retries / delay.
+export CORE_PEER_CLIENT_CONNTIMEOUT=120s
+log "deploying ${CC_NAME} from ${CC_SRC} (connTimeout=120s, retries=10)"
+./network.sh deployCC -c "$CHANNEL" -ccn "$CC_NAME" -ccp "$CC_SRC" -ccl go -r 10 -d 10
 
 # --- emit connection.env ----------------------------------------------
 ORG1="${NET}/organizations/peerOrganizations/org1.example.com"
