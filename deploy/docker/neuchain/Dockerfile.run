@@ -1,0 +1,21 @@
+# NeuChain runtime image - PHASE 4. Slim image carrying just the built binaries
+# and their shared-lib deps.
+#
+#   docker build -f Dockerfile.run -t bench/neuchain:ev deploy/docker/neuchain
+#
+# Requires bench/neuchain-build:ev to exist first (Dockerfile.build).
+FROM bench/neuchain-build:ev AS build
+
+FROM ubuntu:20.04
+ENV DEBIAN_FRONTEND=noninteractive
+RUN apt-get update && apt-get install -y --no-install-recommends \
+      libssl1.1 libgflags2.2 libgoogle-glog0v5 libboost-system1.71.0 \
+      libboost-thread1.71.0 ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY --from=build /usr/local/lib/ /usr/local/lib/
+COPY --from=build /out/block_server* /out/epoch_server* /out/user* /usr/local/bin/
+RUN ldconfig
+
+# Overridden per-service in docker-compose.yml.
+ENTRYPOINT ["/usr/local/bin/epoch_server"]

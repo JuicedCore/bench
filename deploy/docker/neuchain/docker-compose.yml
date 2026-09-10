@@ -1,0 +1,52 @@
+# NeuChain topology - PHASE 4. 4 block servers + 1 epoch server (the local
+# profile). Resource limits come from deploy/profiles/<profile>.yaml
+# (neuchain.per_container); up.sh substitutes them via BENCH_NC_* env.
+#
+# Ports, config-file layout and CLI flags below are PLACEHOLDERS - fill in from
+# the iDC-NEU/NeuChain@ev repo (its scripts/ or run guide) during Phase 4.
+name: bench-neuchain
+
+x-limits: &limits
+  deploy:
+    resources:
+      limits:
+        cpus: "${BENCH_NC_CPUS:-1.2}"
+        memory: "${BENCH_NC_MEM:-1g}"
+
+services:
+  epoch-server:
+    image: bench/neuchain:ev
+    <<: *limits
+    entrypoint: ["/usr/local/bin/epoch_server"]
+    command: ["--config", "/etc/neuchain/epoch.conf"]      # PLACEHOLDER
+    volumes: ["./conf:/etc/neuchain:ro"]
+    ports: ["18000:18000"]                                  # PLACEHOLDER
+    networks: [nc]
+
+  block-server-0: &bs
+    image: bench/neuchain:ev
+    <<: *limits
+    depends_on: [epoch-server]
+    entrypoint: ["/usr/local/bin/block_server_test_comm"]
+    command: ["--id", "0", "--config", "/etc/neuchain/block.conf"]   # PLACEHOLDER
+    volumes: ["./conf:/etc/neuchain:ro"]
+    ports: ["19000:19000"]                                  # PLACEHOLDER (gRPC submit)
+    networks: [nc]
+
+  block-server-1:
+    <<: *bs
+    command: ["--id", "1", "--config", "/etc/neuchain/block.conf"]
+    ports: ["19001:19000"]
+
+  block-server-2:
+    <<: *bs
+    command: ["--id", "2", "--config", "/etc/neuchain/block.conf"]
+    ports: ["19002:19000"]
+
+  block-server-3:
+    <<: *bs
+    command: ["--id", "3", "--config", "/etc/neuchain/block.conf"]
+    ports: ["19003:19000"]
+
+networks:
+  nc: {}

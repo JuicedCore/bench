@@ -21,7 +21,7 @@ ceilings. Every methodology decision is written down in [`docs/`](docs/README.md
 | 1 | Core harness + Fabric CFT + Drunix | **done** |
 | 2 | Fabric BFT (SmartBFT) | deploy script ready; needs a real run |
 | 3 | Fabric-X (Arma + FSC view + Token SDK) | adapter + deploy are stubs |
-| 4 | NeuChain (proto spike → adapter, Dockerised build) | adapter + deploy are stubs |
+| 4 | NeuChain (proto spike → adapter, Dockerised build) | build images + topology scaffolded; `scripts/neuchain-proto-spike.sh` ready; adapter is a stub |
 | 5 | Full suite + GCP | not started |
 
 ## Quick start
