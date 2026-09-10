@@ -43,6 +43,14 @@ type Config struct {
 	SubmitTimeout       time.Duration `yaml:"submit_timeout"`
 	CommitStatusTimeout time.Duration `yaml:"commit_status_timeout"`
 
+	// UseCommitPeerEvents makes WaitForFinality read tx validation from a
+	// Committing Peer's filtered-block event stream instead of the Gateway's
+	// Commit.Status(). Needed for Drunix: its Gateway runs on the (non-committing)
+	// Lite Peer, so Commit.Status() never fires. CommitEndpoint (+ optional
+	// CommitPeerGateway SNI) point at the CP; the TLS CA is shared with the LP.
+	UseCommitPeerEvents bool   `yaml:"use_commit_peer_events"`
+	CommitPeerGateway   string `yaml:"commit_peer_gateway"` // TLS server-name for the CP; defaults to GatewayPeer with peer0->peer1
+
 	// PlatformName is the adapter name reported to the harness
 	// ("fabric-cft", "fabric-bft", "drunix").
 	PlatformName string `yaml:"-"`

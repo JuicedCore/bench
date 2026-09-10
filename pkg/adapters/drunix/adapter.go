@@ -36,10 +36,16 @@ func (a *Adapter) Setup(ctx context.Context, ac adapters.AdapterConfig) error {
 		return err
 	}
 	// If only peer_endpoint was supplied, treat it as the Lite Peer for
-	// endorsement (the Gateway SDK opens one connection there; the Lite Peer's
-	// gateway federates commit-status from the Committing Peer).
+	// endorsement.
 	if cfg.EndorseEndpoint == "" {
 		cfg.EndorseEndpoint = cfg.PeerEndpoint
+	}
+	// Drunix's Gateway runs on the Lite Peer, which endorses + broadcasts but
+	// never commits - so the Gateway's Commit.Status() never fires. Read finality
+	// from the Committing Peer's block-event stream instead.
+	cfg.UseCommitPeerEvents = true
+	if cfg.CommitEndpoint == "" {
+		cfg.CommitEndpoint = cfg.EndorseEndpoint
 	}
 	a.inner = fabric.NewWithConfig(platformName, cfg)
 	return a.inner.Setup(ctx, ac)

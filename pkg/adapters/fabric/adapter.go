@@ -42,6 +42,8 @@ type Adapter struct {
 	gw       *client.Gateway
 	contract *client.Contract
 
+	cp *cpListener // non-nil when cfg.UseCommitPeerEvents (Drunix)
+
 	mu      sync.Mutex
 	pending map[string]*inflight
 }
@@ -129,6 +131,22 @@ func (a *Adapter) Setup(ctx context.Context, ac adapters.AdapterConfig) error {
 	a.gw = gw
 	a.contract = gw.GetNetwork(a.cfg.Channel).GetContract(a.cfg.Chaincode)
 
+	// Drunix: the Gateway is on the Lite Peer, which never commits. Watch the
+	// Committing Peer's block events for finality instead.
+	if a.cfg.UseCommitPeerEvents {
+		cpSNI := a.cfg.CommitPeerGateway
+		if cpSNI == "" {
+			cpSNI = defaultCommitPeerSNI(a.cfg.GatewayPeer)
+		}
+		cp, cerr := startCPListener(a.cfg.CommitEndpoint, a.cfg.TLSCACertPath, cpSNI, a.cfg.Channel, id, sign)
+		if cerr != nil {
+			gw.Close()
+			conn.Close()
+			return fmt.Errorf("fabric: commit-peer listener: %w", cerr)
+		}
+		a.cp = cp
+	}
+
 	// Fail fast if the chaincode is not reachable.
 	pctx, cancel := context.WithTimeout(ctx, 10*time.Second)
 	defer cancel()
@@ -142,6 +160,7 @@ func (a *Adapter) Setup(ctx context.Context, ac adapters.AdapterConfig) error {
 }
 
 func (a *Adapter) Teardown(context.Context) error {
+	a.cp.close()
 	if a.gw != nil {
 		a.gw.Close()
 	}
@@ -149,6 +168,18 @@ func (a *Adapter) Teardown(context.Context) error {
 		return a.conn.Close()
 	}
 	return nil
+}
+
+// defaultCommitPeerSNI derives the Committing Peer's TLS server-name from the
+// Lite Peer's (test-network layout: peer0 = LP, peer1 = CP).
+func defaultCommitPeerSNI(litePeerSNI string) string {
+	if litePeerSNI == "" {
+		return ""
+	}
+	if len(litePeerSNI) >= 5 && litePeerSNI[:5] == "peer0" {
+		return "peer1" + litePeerSNI[5:]
+	}
+	return litePeerSNI
 }
 
 // Submit endorses and broadcasts one transaction (writes) or evaluates it
@@ -197,6 +228,17 @@ func (a *Adapter) WaitForFinality(ctx context.Context, txID string, timeout time
 
 	if f.readTx {
 		return &adapters.FinalityResult{TxID: txID, FinalityTime: time.Now(), Valid: true}, nil
+	}
+
+	// Drunix: resolve from the Committing Peer's block events.
+	if a.cp != nil {
+		r, err := a.cp.wait(ctx, txID, timeout)
+		if err != nil {
+			return nil, err
+		}
+		return &adapters.FinalityResult{
+			TxID: txID, FinalityTime: r.at, BlockNum: r.blockNum, Valid: r.valid,
+		}, nil
 	}
 
 	cctx, cancel := context.WithTimeout(ctx, timeout)
