@@ -29,39 +29,65 @@ Both are **synchronous to finality** (the view runs ordering + finality before
 responding), matching the token routes — so the adapter's background-POST model
 and the T2-collapse hold uniformly for Fabric-X.
 
-## Implementation spec (Phase 3 build, needs a running Fabric-X network)
+## Implementation spec (Phase 3 build — needs a running Fabric-X devnet)
 
-Mirror `fabric-x-samples/tokens/owner`:
+Confirmed against `hyperledger-labs/fabric-smart-client@v0.20.0` +
+`fabric-x-samples/tokens`.
 
-1. **Deps** (add to `go.mod`):
-   - `github.com/hyperledger-labs/fabric-smart-client` — FSC node + view registry
-   - `github.com/LFDT-Panurus/panurus/token/...` — token/ttx services (the
-     fabric-x token SDK; used here only for the `ttx.NewOrderingAndFinalityView`
-     pattern, not for tokens)
-   - or, simpler: use the **fabric3 platform state API** directly for a plain
-     `PutState` / `GetState` inside a view — no token SDK needed for KV.
+### 1. Deps (`go.mod`)
 
-2. **`common.StartFSC(confDir, dataDir)`** to bring up the FSC node against the
-   Fabric-X network's `core.yaml` (mounted at `--conf`).
+```
+github.com/hyperledger-labs/fabric-smart-client   v0.20.0   // node, endorser, view registry
+github.com/hyperledger/fabric-samples/token-sdk           // the sample SDK wiring: common.NewSDK / StartFSC / WithAnyCORS (vendor or replace-directive to the cloned fabric-x-samples/tokens)
+```
 
-3. **Views** (`service/kvview.go`):
-   - `WriteView{Key string; Value []byte}` — `RunView`:
-     build a fabric3 transaction, `tx.PutState(ns, key, value)`, then
-     `ttx.NewCollectEndorsementsView(tx)` (or the fabric3 endorsement collector),
-     then `NewOrderingAndFinalityView(tx)`; return `tx.ID()`.
-   - `ReadView{Key string}` — `RunView`: `GetState(ns, key)` via a query view;
-     return `{value, found}`. (Decide: does a read produce a ledger tx? If it is
-     a local query, mark it finalized immediately in the adapter — the adapter
-     already does for `TxRead`.)
-   - Register both with `viewregistry.GetRegistry(fsc).RegisterFactory("kv-write", …)`
-     and `"kv-read"`.
+No Panurus/token-sdk needed — a plain KV write uses the **fabric endorser
+service**, not tokens.
 
-4. **HTTP handler** (`handleKV` in `main.go`): decode `kvRequest`, base64-decode
-   `value`, `viewManager.InitiateView(ctx, &WriteView{...})`, marshal `kvResponse`.
+### 2. Node bringup (`main.go`)
 
-5. **Namespace**: use a dedicated chaincode/namespace id (e.g. `benchkv`) that the
-   Fabric-X committer is configured to accept. Document it in the run manifest
-   via the adapter (`adapter.namespace`).
+```go
+fsc, err := common.StartFSC(confDir, filepath.Join(confDir, "data")) // confDir = --conf mount = devnet FSC config
+common.BindEndorsingIdentities(fsc, "default", map[string]string{ "endorser1-endorsing":"endorser1", "endorser2-endorsing":"endorser2" })
+reg := viewregistry.GetRegistry(fsc)
+reg.RegisterFactory("kv-write", &service.WriteViewFactory{})
+reg.RegisterFactory("kv-read",  &service.ReadViewFactory{})
+h := common.WithAnyCORS(mux)   // mux still serves /healthz + /kv
+```
+
+### 3. Views (`service/kvview.go`)
+
+```go
+// WriteView{Key string; Value []byte}
+func (v *WriteView) Call(ctx view.Context) (any, error) {
+    _, tx, err := endorser.NewTransaction(ctx, fabric.WithChannel("mychannel"))     // FNS default network
+    tx.SetProposal(v.Namespace, "", "put", v.Key)                                    // v.Namespace defaults to "benchkv"
+    rws, _ := tx.RWSet()
+    rws.SetState(v.Namespace, v.Key, v.Value)
+    if err := tx.Endorse(); err != nil { return nil, err }                           // self-endorse; or endorser.NewCollectEndorsementsView for multi-org
+    if _, err := ctx.RunView(endorser.NewOrderingAndFinalityView(tx)); err != nil { return nil, err }
+    return tx.ID(), nil
+}
+// ReadView{Key string} -> local query (fabric.GetDefaultFNS(ctx).Ledger()...GetState), returns {value, found}; NOT a ledger tx.
+```
+
+### 4. HTTP handler (`handleKV`)
+
+decode `kvRequest` → base64-decode `value` →
+`viewManager.InitiateView(ctx, &service.WriteView{Namespace: ns, Key: k, Value: v})`
+→ the returned string is the txID → marshal `kvResponse`. Read op → `ReadView`,
+mark it finalized immediately (the adapter already treats `TxRead` as immediate).
+
+### 5. Namespace registration (the one external step)
+
+`benchkv` must be a namespace the Fabric-X **validator/committer** accepts. In
+`fabric-x-samples/devnet` add it to the committer's namespace/policy config (same
+place the token namespace is declared) and to `fabric-x-samples/tokens/configtx.yaml`
+if it gates namespaces. Pass the name via the adapter (`adapter.namespace`) so it
+lands in the run manifest.
+
+Until this is done, `POST /kv` stays a 501 stub and only Fabric-X `transfer`
+(token) workloads run.
 
 ## Build (Phase 3)
 
