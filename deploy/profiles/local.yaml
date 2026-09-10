@@ -1,0 +1,68 @@
+# Local resource profile: 16-core / 16 GB host.
+#
+#   Host OS         2 cores / 2 GB
+#   Load generator  2 cores / 2 GB  (more for high-ceiling platforms, see load_gen_cpus)
+#   Monitoring      1 core  / 1 GB  (Prometheus + Grafana + cAdvisor + node_exporter)
+#   Platform under test         11 cores / 11 GB   <-- budget below
+#
+# For normalized runs the engine forces state_db=leveldb regardless of the value
+# here, and the orderer_batch block MUST be identical across fabric-cft,
+# fabric-bft, drunix and fabricx (it is - keep it that way).
+name: local
+budget:
+  total_cpus: 11
+  total_memory_gb: 11
+  load_gen_cpus: 2
+
+# Shared normalized block-cutting parameters for the Fabric family.
+# Referenced by anchors so they cannot drift between platforms.
+_orderer_batch_normalized: &orderer_batch_normalized
+  max_message_count: 100
+  absolute_max_bytes: "10 MB"
+  preferred_max_bytes: "2 MB"
+  batch_timeout: "1s"
+
+platforms:
+  fabric-cft:
+    nodes: {peer: 1, orderer: 1, ca: 1}
+    per_container: {cpus: 2.0, memory: "2g"}
+    state_db: leveldb
+    orderer_batch: *orderer_batch_normalized
+
+  fabric-bft:
+    # SmartBFT needs 3f+1 orderers, minimum 4.
+    nodes: {peer: 1, orderer: 4, ca: 1}
+    per_container: {cpus: 1.5, memory: "1200m"}
+    state_db: leveldb
+    orderer_batch: *orderer_batch_normalized
+
+  drunix:
+    nodes: {lite_peer: 1, committing_peer: 1, validation_service: 1, orderer: 1, keydb: 1, yugabyte: 1}
+    per_container: {cpus: 1.3, memory: "1200m"}
+    # YugabyteDB is permitted ONLY for platform-native runs; normalized runs are
+    # forced to leveldb by the engine.
+    state_db: leveldb
+    orderer_batch: *orderer_batch_normalized
+
+  fabricx:
+    # Arma: routers + batchers + consenters + assemblers, plus endorser /
+    # validator / committer microservices. Starved on a local host - see
+    # docs/architecture/fairness-guarantees.md.
+    nodes: {arma_router: 1, arma_batcher: 2, arma_consenter: 2, arma_assembler: 1, endorser: 1, validator: 1, committer: 1}
+    per_container: {cpus: 0.8, memory: "800m"}
+    load_gen_cpus: 3
+    state_db: leveldb
+    orderer_batch: *orderer_batch_normalized
+
+  neuchain:
+    nodes: {block_server: 4, epoch_server: 1}
+    per_container: {cpus: 1.2, memory: "1g"}
+    load_gen_cpus: 3
+    state_db: leveldb
+    orderer_batch: {}
+
+  mock:
+    nodes: {node: 1}
+    per_container: {cpus: 1.0, memory: "1g"}
+    state_db: leveldb
+    orderer_batch: *orderer_batch_normalized

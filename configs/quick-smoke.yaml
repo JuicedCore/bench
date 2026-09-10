@@ -1,0 +1,49 @@
+# 30s low-rate sanity run: proves the network, adapter, load generator and
+# metrics pipeline all work end to end before committing to a long run.
+#
+#   source deploy/docker/fabric-cft/connection.env   # sets BENCH_ADAPTER_*
+#   benchrunner run --config configs/quick-smoke.yaml --platform fabric-cft
+#
+# Works as-is for fabric-cft, fabric-bft and drunix (same BENCH_ADAPTER_* env,
+# emitted by each platform's up.sh).
+name: quick-smoke
+platform: fabric-cft        # override with --platform
+workload: kv-write
+profile: local
+normalized: true
+
+load:
+  mode: open-loop
+  target_tps: 50
+  hold_duration: 30s
+  key_distribution: uniform
+  key_space: 5000
+  value_size_bytes: 64
+  finality_wait: 20s
+  seed: 1
+
+metrics:
+  warmup: 5s
+  cooldown: 3s
+  output_dir: ./results
+  output_format: json
+
+system_metrics:
+  enabled: true
+  sample_interval: 1s
+  prometheus_url: http://localhost:9090
+  cadvisor_url: http://localhost:8080
+  container_names: ["peer", "orderer", "fabric"]
+
+adapter:
+  peer_endpoint: "${BENCH_ADAPTER_PEER_ENDPOINT}"
+  endorse_endpoint: "${BENCH_ADAPTER_ENDORSE_ENDPOINT}"
+  commit_endpoint: "${BENCH_ADAPTER_COMMIT_ENDPOINT}"
+  gateway_peer: "${BENCH_ADAPTER_GATEWAY_PEER}"
+  msp_id: "${BENCH_ADAPTER_MSP_ID}"
+  cert_path: "${BENCH_ADAPTER_CERT_PATH}"
+  key_path: "${BENCH_ADAPTER_KEY_PATH}"
+  tls_ca_cert_path: "${BENCH_ADAPTER_TLS_CA_CERT_PATH}"
+  channel: "${BENCH_ADAPTER_CHANNEL}"
+  chaincode: "${BENCH_ADAPTER_CHAINCODE}"
+  metrics_endpoint: "${BENCH_ADAPTER_METRICS_ENDPOINT}"

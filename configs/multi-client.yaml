@@ -1,0 +1,46 @@
+# Closed-loop with a large worker pool: approximates many concurrent clients
+# each doing submit -> wait-for-finality -> repeat. Measures capacity at a fixed
+# concurrency rather than a fixed offered rate.
+#
+# NOTE: true multi-process load generation (separate generator VMs) is Phase 5.
+# This config is the single-process stand-in.
+name: multi-client
+platform: fabric-cft
+workload: kv-mixed
+profile: local
+normalized: true
+
+load:
+  mode: closed-loop
+  workers: 256
+  hold_duration: 5m
+  key_distribution: uniform
+  key_space: 200000
+  read_write_ratio: 0.5      # 50% reads
+  value_size_bytes: 64
+  finality_wait: 30s
+  seed: 1
+
+metrics:
+  warmup: 30s
+  cooldown: 15s
+  output_dir: ./results
+  output_format: json
+
+system_metrics:
+  enabled: true
+  sample_interval: 1s
+  container_names: ["peer", "orderer", "fabric", "drunix"]
+
+adapter:
+  peer_endpoint: "${BENCH_ADAPTER_PEER_ENDPOINT}"
+  endorse_endpoint: "${BENCH_ADAPTER_ENDORSE_ENDPOINT}"
+  commit_endpoint: "${BENCH_ADAPTER_COMMIT_ENDPOINT}"
+  gateway_peer: "${BENCH_ADAPTER_GATEWAY_PEER}"
+  msp_id: "${BENCH_ADAPTER_MSP_ID}"
+  cert_path: "${BENCH_ADAPTER_CERT_PATH}"
+  key_path: "${BENCH_ADAPTER_KEY_PATH}"
+  tls_ca_cert_path: "${BENCH_ADAPTER_TLS_CA_CERT_PATH}"
+  channel: "${BENCH_ADAPTER_CHANNEL}"
+  chaincode: "${BENCH_ADAPTER_CHAINCODE}"
+  metrics_endpoint: "${BENCH_ADAPTER_METRICS_ENDPOINT}"

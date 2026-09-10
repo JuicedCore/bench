@@ -1,0 +1,10 @@
+/bin/
+/chaincodes/kvstore/kvstore
+/results/*
+!/results/.gitkeep
+/docs/reports/*
+!/docs/reports/.gitkeep
+deploy/docker/*/.cache/
+deploy/docker/*/connection.env
+*.test
+__pycache__/

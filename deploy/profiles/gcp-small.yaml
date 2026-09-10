@@ -1,0 +1,43 @@
+# Single-VM GCP profile: one n2-standard-16 (16 vCPU / 64 GB) per platform run,
+# load generator on a separate n2-standard-8, monitoring on an e2-standard-4.
+# Same topology as local but with real memory headroom.
+name: gcp-small
+budget:
+  total_cpus: 13
+  total_memory_gb: 52
+  load_gen_cpus: 8
+
+_orderer_batch_normalized: &orderer_batch_normalized
+  max_message_count: 100
+  absolute_max_bytes: "10 MB"
+  preferred_max_bytes: "2 MB"
+  batch_timeout: "1s"
+
+platforms:
+  fabric-cft:
+    nodes: {peer: 2, orderer: 1, ca: 1}
+    per_container: {cpus: 3.0, memory: "8g"}
+    state_db: leveldb
+    orderer_batch: *orderer_batch_normalized
+  fabric-bft:
+    nodes: {peer: 2, orderer: 4, ca: 1}
+    per_container: {cpus: 2.0, memory: "6g"}
+    state_db: leveldb
+    orderer_batch: *orderer_batch_normalized
+  drunix:
+    nodes: {lite_peer: 2, committing_peer: 1, validation_service: 2, orderer: 1, keydb: 1, yugabyte: 1}
+    per_container: {cpus: 2.0, memory: "6g"}
+    state_db: leveldb
+    orderer_batch: *orderer_batch_normalized
+  fabricx:
+    nodes: {arma_router: 1, arma_batcher: 2, arma_consenter: 2, arma_assembler: 1, endorser: 2, validator: 2, committer: 1}
+    per_container: {cpus: 1.5, memory: "4g"}
+    load_gen_cpus: 8
+    state_db: leveldb
+    orderer_batch: *orderer_batch_normalized
+  neuchain:
+    nodes: {block_server: 4, epoch_server: 1}
+    per_container: {cpus: 3.0, memory: "8g"}
+    load_gen_cpus: 8
+    state_db: leveldb
+    orderer_batch: {}

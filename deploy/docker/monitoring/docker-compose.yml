@@ -1,0 +1,79 @@
+# Unified monitoring stack. Brought up once and left running across platform
+# runs so host CPU/mem/disk are collected identically for every platform.
+#
+#   Prometheus     :9090   scrapes cAdvisor, node_exporter, and each platform's
+#                           own /metrics (targets in prometheus.yml)
+#   Grafana        :3000   dashboards in ../../../dashboards/grafana
+#   cAdvisor       :8080   per-container CPU/mem/net/fs
+#   node_exporter  :9100   host-level metrics
+#
+# Resource footprint is held to ~1 core / 1 GB total per deploy/profiles.
+name: bench-monitoring
+
+services:
+  prometheus:
+    image: prom/prometheus:v3.1.0
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.retention.time=7d
+      - --web.enable-lifecycle
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prom-data:/prometheus
+    ports: ["9090:9090"]
+    deploy:
+      resources:
+        limits: {cpus: "0.5", memory: 512M}
+    restart: unless-stopped
+
+  grafana:
+    image: grafana/grafana:11.4.0
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: bench
+      GF_AUTH_ANONYMOUS_ENABLED: "true"
+      GF_AUTH_ANONYMOUS_ORG_ROLE: Viewer
+      GF_USERS_DEFAULT_THEME: light
+    volumes:
+      - ./grafana-provisioning:/etc/grafana/provisioning:ro
+      - ../../../dashboards/grafana:/var/lib/grafana/dashboards:ro
+      - grafana-data:/var/lib/grafana
+    ports: ["3000:3000"]
+    deploy:
+      resources:
+        limits: {cpus: "0.25", memory: 256M}
+    restart: unless-stopped
+
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:v0.52.1
+    command: ["--housekeeping_interval=1s", "--docker_only=true"]
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+      - /dev/disk/:/dev/disk:ro
+    privileged: true
+    devices: ["/dev/kmsg"]
+    ports: ["8080:8080"]
+    deploy:
+      resources:
+        limits: {cpus: "0.25", memory: 256M}
+    restart: unless-stopped
+
+  node_exporter:
+    image: prom/node-exporter:v1.9.0
+    command:
+      - --path.rootfs=/host
+    volumes:
+      - /:/host:ro,rslave
+    ports: ["9100:9100"]
+    pid: host
+    deploy:
+      resources:
+        limits: {cpus: "0.1", memory: 128M}
+    restart: unless-stopped
+
+volumes:
+  prom-data:
+  grafana-data:

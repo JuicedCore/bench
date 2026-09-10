@@ -1,0 +1,51 @@
+{
+  "annotations": { "list": [ { "builtIn": 1, "datasource": "-- Grafana --", "enable": true, "hide": true, "name": "Annotations & Alerts", "type": "dashboard" } ] },
+  "editable": true,
+  "graphTooltip": 1,
+  "title": "Bench - per-platform deep dive",
+  "uid": "bench-per-platform",
+  "tags": ["bench"],
+  "timezone": "browser",
+  "time": { "from": "now-15m", "to": "now" },
+  "refresh": "5s",
+  "schemaVersion": 39,
+  "templating": {
+    "list": [
+      { "name": "platform", "type": "custom", "query": "fabric,drunix,fabricx,neuchain", "current": { "text": "fabric", "value": "fabric" } }
+    ]
+  },
+  "panels": [
+    {
+      "type": "timeseries",
+      "title": "Native /metrics up (informational only)",
+      "datasource": "Prometheus",
+      "gridPos": { "h": 6, "w": 24, "x": 0, "y": 0 },
+      "targets": [ { "expr": "up{platform=~\"$platform\"}", "legendFormat": "{{job}} {{instance}}" } ],
+      "fieldConfig": { "defaults": { "unit": "bool" } }
+    },
+    {
+      "type": "timeseries",
+      "title": "Fabric/Drunix: blocks committed rate",
+      "datasource": "Prometheus",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 6 },
+      "targets": [ { "expr": "rate(ledger_blockchain_height{platform=~\"$platform\"}[15s])", "legendFormat": "{{instance}}" } ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Fabric/Drunix: endorsement proposal duration p99",
+      "datasource": "Prometheus",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 6 },
+      "targets": [ { "expr": "histogram_quantile(0.99, sum by (le) (rate(endorser_proposal_duration_bucket{platform=~\"$platform\"}[30s])))", "legendFormat": "p99 s" } ],
+      "fieldConfig": { "defaults": { "unit": "s" } }
+    },
+    {
+      "type": "text",
+      "title": "Caveat",
+      "gridPos": { "h": 4, "w": 24, "x": 0, "y": 14 },
+      "options": {
+        "mode": "markdown",
+        "content": "These panels explain **why** a platform behaves as it does. They are **not** comparable across platforms - see docs/architecture/fairness-guarantees.md. Metric names differ per platform / version; adjust queries to what the deployed build actually exposes."
+      }
+    }
+  ]
+}

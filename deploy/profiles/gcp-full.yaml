@@ -1,0 +1,45 @@
+# Multi-VM GCP profile: 4x n2-standard-8 node VMs (8 vCPU / 32 GB each) per
+# platform, 1x n2-standard-4 load generator, 1x e2-standard-4 monitoring.
+# Run platforms strictly sequentially on identical hardware
+# (docs/decisions/adr-005-sequential-runs.md). This is the profile for numbers
+# that can be quoted against published ceilings.
+name: gcp-full
+budget:
+  total_cpus: 32
+  total_memory_gb: 128
+  load_gen_cpus: 4
+
+_orderer_batch_normalized: &orderer_batch_normalized
+  max_message_count: 500
+  absolute_max_bytes: "99 MB"
+  preferred_max_bytes: "2 MB"
+  batch_timeout: "500ms"
+
+platforms:
+  fabric-cft:
+    nodes: {peer: 4, orderer: 3, ca: 2}
+    per_container: {cpus: 6.0, memory: "24g"}
+    state_db: leveldb
+    orderer_batch: *orderer_batch_normalized
+  fabric-bft:
+    nodes: {peer: 4, orderer: 4, ca: 2}
+    per_container: {cpus: 6.0, memory: "24g"}
+    state_db: leveldb
+    orderer_batch: *orderer_batch_normalized
+  drunix:
+    nodes: {lite_peer: 4, committing_peer: 2, validation_service: 4, orderer: 3, keydb: 1, yugabyte: 3}
+    per_container: {cpus: 4.0, memory: "16g"}
+    state_db: leveldb
+    orderer_batch: *orderer_batch_normalized
+  fabricx:
+    nodes: {arma_router: 2, arma_batcher: 4, arma_consenter: 4, arma_assembler: 2, endorser: 4, validator: 4, committer: 2}
+    per_container: {cpus: 3.0, memory: "12g"}
+    load_gen_cpus: 16
+    state_db: leveldb
+    orderer_batch: *orderer_batch_normalized
+  neuchain:
+    nodes: {block_server: 8, epoch_server: 1}
+    per_container: {cpus: 6.0, memory: "24g"}
+    load_gen_cpus: 16
+    state_db: leveldb
+    orderer_batch: {}
