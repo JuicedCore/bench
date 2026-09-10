@@ -17,24 +17,33 @@ SAMPLES="$(fabric_samples_bootstrap "$FABRIC_VERSION" "$FABRIC_CA_VERSION" "$SAM
 export PATH="${SAMPLES}/bin:${PATH}"
 export FABRIC_CFG_PATH="${SAMPLES}/config"
 
-CONFIGTX="${SAMPLES}/test-network/configtx/configtx.yaml"
-if [ -f "$CONFIGTX" ]; then
-  BT="$(platform_field fabric-bft orderer_batch.batch_timeout       || echo 1s)"
-  MMC="$(platform_field fabric-bft orderer_batch.max_message_count   || echo 100)"
-  PMB="$(platform_field fabric-bft orderer_batch.preferred_max_bytes || echo '2 MB')"
-  AMB="$(platform_field fabric-bft orderer_batch.absolute_max_bytes  || echo '10 MB')"
-  log "pinning orderer batch: timeout=${BT} maxMsgCount=${MMC} preferred=${PMB} absolute=${AMB}"
+# BFT uses test-network/bft-config/configtx.yaml (SmartBFT profile). Patch it -
+# NOT the Raft configtx/configtx.yaml. SmartBFT ALSO has request-level batching
+# (RequestBatchMaxCount / RequestBatchMaxInterval) that CFT lacks; align those to
+# the same block-cut params so BFT does not batch far tighter than CFT. The
+# remaining SmartBFT-vs-Raft batching differences are inherent and disclosed
+# (docs/decisions/adr-011-orderer-batch-params.md).
+BT="$(platform_field fabric-bft orderer_batch.batch_timeout       || echo 1s)"
+MMC="$(platform_field fabric-bft orderer_batch.max_message_count   || echo 100)"
+PMB="$(platform_field fabric-bft orderer_batch.preferred_max_bytes || echo '2 MB')"
+AMB="$(platform_field fabric-bft orderer_batch.absolute_max_bytes  || echo '10 MB')"
+for CONFIGTX in "${SAMPLES}/test-network/bft-config/configtx.yaml" "${SAMPLES}/test-network/configtx/configtx.yaml"; do
+  [ -f "$CONFIGTX" ] || continue
+  log "pinning orderer batch in ${CONFIGTX##*/}: timeout=${BT} maxMsgCount=${MMC} preferred=${PMB} absolute=${AMB}"
   python3 - "$CONFIGTX" "$BT" "$MMC" "$PMB" "$AMB" <<'PY'
 import re, sys
 path, bt, mmc, pmb, amb = sys.argv[1:6]
 s = open(path).read()
-s = re.sub(r'BatchTimeout:\s*\S+',        f'BatchTimeout: {bt}', s, count=1)
-s = re.sub(r'MaxMessageCount:\s*\d+',     f'MaxMessageCount: {mmc}', s, count=1)
-s = re.sub(r'PreferredMaxBytes:\s*[^\n]+',f'PreferredMaxBytes: {pmb}', s, count=1)
-s = re.sub(r'AbsoluteMaxBytes:\s*[^\n]+', f'AbsoluteMaxBytes: {amb}', s, count=1)
+s = re.sub(r'BatchTimeout:\s*\S+',            f'BatchTimeout: {bt}', s, count=1)
+s = re.sub(r'MaxMessageCount:\s*\d+',         f'MaxMessageCount: {mmc}', s, count=1)
+s = re.sub(r'PreferredMaxBytes:\s*[^\n]+',    f'PreferredMaxBytes: {pmb}', s, count=1)
+s = re.sub(r'AbsoluteMaxBytes:\s*[^\n]+',     f'AbsoluteMaxBytes: {amb}', s, count=1)
+# SmartBFT request batching -> match the block-cut count so BFT doesn't cut tighter
+s = re.sub(r'RequestBatchMaxCount:\s*\d+',    f'RequestBatchMaxCount: {mmc}', s)
+s = re.sub(r'RequestBatchMaxInterval:\s*\S+', f'RequestBatchMaxInterval: {bt}', s)
 open(path,'w').write(s)
 PY
-fi
+done
 
 cd "${SAMPLES}/test-network"
 ./network.sh down || true
