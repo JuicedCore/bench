@@ -84,14 +84,42 @@ fabric_samples_bootstrap() {
   local have=""
   [ -f "${samples}/bin/.fabricver" ] && have="$(cat "${samples}/bin/.fabricver")"
   if [ ! -x "${samples}/bin/peer" ] || [ ! -f "${samples}/config/core.yaml" ] || [ "$have" != "$fver" ]; then
-    log "installing Fabric ${fver} binaries + config + docker images (had: ${have:-none})"
+    log "installing Fabric ${fver} binaries + config (had: ${have:-none})"
     rm -rf "${samples}/bin" "${samples}/config" "${samples}/builders"
+    mkdir -p "${samples}/bin" "${samples}/config"
+    # Resumable, retrying downloads - install-fabric.sh's plain curl chokes on a
+    # flaky link mid-tarball.
+    local dl="${REPO_ROOT}/deploy/docker/.cache/dl"
+    mkdir -p "$dl"
+    local fbtar="hyperledger-fabric-linux-amd64-${fver}.tar.gz"
+    local catar="hyperledger-fabric-ca-linux-amd64-${caver}.tar.gz"
+    _resume_get "https://github.com/hyperledger/fabric/releases/download/v${fver}/${fbtar}" "${dl}/${fbtar}"
+    _resume_get "https://github.com/hyperledger/fabric-ca/releases/download/v${caver}/${catar}" "${dl}/${catar}"
+    tar -xzf "${dl}/${fbtar}" -C "$samples"   # -> bin/ config/ builders/
+    tar -xzf "${dl}/${catar}" -C "$samples"   # -> bin/fabric-ca-client (+ server)
+    [ -f "${samples}/config/core.yaml" ] || die "fabric ${fver} tarball did not contain config/core.yaml"
+    # Docker images (per-layer resume is robust); tolerate transient failure.
+    log "pulling Fabric ${fver} docker images"
     ( cd "$samples" && curl -sSL https://raw.githubusercontent.com/hyperledger/fabric/main/scripts/install-fabric.sh \
-        | bash -s -- --fabric-version "$fver" --ca-version "$caver" binary docker )
-    [ -f "${samples}/config/core.yaml" ] || die "install-fabric did not produce ${samples}/config/core.yaml"
+        | bash -s -- --fabric-version "$fver" --ca-version "$caver" docker ) || warn "image pull returned non-zero; continuing"
     echo "$fver" > "${samples}/bin/.fabricver"
   fi
   echo "$samples"
+}
+
+# _resume_get <url> <dest> — download with resume + aggressive retry.
+_resume_get() {
+  local url="$1" dest="$2" n
+  for n in 1 2 3 4 5 6; do
+    if curl -fL -C - --retry 5 --retry-delay 5 --retry-all-errors \
+         --connect-timeout 20 --speed-time 30 --speed-limit 1024 \
+         -o "$dest" "$url"; then
+      return 0
+    fi
+    warn "download ${url##*/} attempt ${n} failed; retrying"
+    sleep 5
+  done
+  die "failed to download ${url}"
 }
 
 # drop_caches — best effort page-cache drop for inter-run isolation.

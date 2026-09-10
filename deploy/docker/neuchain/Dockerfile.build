@@ -1,63 +1,37 @@
-# NeuChain build environment - PHASE 4.
+# NeuChain compile stage. Builds block_server / epoch_server / user ON TOP of
+# NeuChain's own build-environment image (which runs the repo's install_deps.sh:
+# gperftools, leveldb, gflags, glog, zlib(-ng), protobuf 3.19.4, brpc, braft,
+# yaml-cpp, libzmq/cppzmq, libpqxx - ~15 libs from source, Ubuntu 20.04).
 #
-# NeuChain (github.com/iDC-NEU/NeuChain @ ev) builds only on Ubuntu 20.04 with
-# cmake 3.16.3 and gcc 9.4.0 per its build guide. This image isolates that
-# toolchain and produces block_server / epoch_server / user.
+# build.sh builds the deps image first (bench/neuchain-deps:<ref>) from the
+# cloned repo's Dockerfile, then this stage.
 #
 #   docker build -f Dockerfile.build \
-#     --build-arg NEUCHAIN_REF=ev \
-#     -t bench/neuchain-build:ev deploy/docker/neuchain
-#
-# The repo README notes CMakeLists.txt may need edits to build the binaries.
-# Supply a patch at deploy/docker/neuchain/cmakelists.patch and it is applied
-# before the build; otherwise the stock build is attempted.
-FROM ubuntu:20.04
+#     --build-arg DEPS_IMAGE=bench/neuchain-deps:ev \
+#     --build-arg NEUCHAIN_SRC=.cache/NeuChain \
+#     -t bench/neuchain-build:ev .
+ARG DEPS_IMAGE=bench/neuchain-deps:ev
+FROM ${DEPS_IMAGE}
 
-ARG NEUCHAIN_REPO=https://github.com/iDC-NEU/NeuChain.git
-ARG NEUCHAIN_REF=ev
 ARG BUILD_TARGETS="block_server_test_comm epoch_server user"
+ARG BUILD_JOBS=4
 
-ENV DEBIAN_FRONTEND=noninteractive TZ=UTC
+# The repo's own Dockerfile ADDs the source to /root/neuchain during the deps
+# image build, so it is already present. Rebuild targets here.
+WORKDIR /root/neuchain
 
-# Toolchain. Ubuntu 20.04 ships gcc 9.4 and cmake 3.16 in its repos, matching the
-# NeuChain build guide exactly.
-RUN apt-get update && apt-get install -y --no-install-recommends \
-      build-essential g++ gcc make cmake git ca-certificates pkg-config \
-      libssl-dev libgflags-dev libgoogle-glog-dev libboost-all-dev \
-      autoconf automake libtool curl unzip \
-    && rm -rf /var/lib/apt/lists/*
-
-# gRPC + protobuf (NeuChain uses grpc++). Pin a version compatible with the
-# gcc 9.4 / Ubuntu 20.04 target; adjust if the repo specifies otherwise.
-ARG GRPC_VERSION=v1.38.1
-RUN git clone --recurse-submodules -b ${GRPC_VERSION} --depth 1 --shallow-submodules \
-      https://github.com/grpc/grpc /tmp/grpc \
- && cmake -S /tmp/grpc -B /tmp/grpc/cmake/build \
-      -DgRPC_INSTALL=ON -DgRPC_BUILD_TESTS=OFF -DCMAKE_INSTALL_PREFIX=/usr/local \
- && cmake --build /tmp/grpc/cmake/build -j"$(nproc)" \
- && cmake --install /tmp/grpc/cmake/build \
- && rm -rf /tmp/grpc
-
-WORKDIR /src
-RUN git clone --branch ${NEUCHAIN_REF} --depth 1 ${NEUCHAIN_REPO} NeuChain
-WORKDIR /src/NeuChain
-
-# Optional CMakeLists fix-ups.
+# Optional CMakeLists fix-ups (the repo README notes edits may be needed).
 COPY cmakelists.patc[h] /tmp/cmakelists.patch
 RUN if [ -s /tmp/cmakelists.patch ]; then \
-      echo "applying cmakelists.patch"; git apply --verbose /tmp/cmakelists.patch || patch -p1 < /tmp/cmakelists.patch ; \
+      echo "applying cmakelists.patch"; \
+      (git apply --verbose /tmp/cmakelists.patch || patch -p1 < /tmp/cmakelists.patch); \
     fi
 
-RUN cmake -S . -B build -DCMAKE_BUILD_TYPE=Release \
- && cmake --build build -j"$(nproc)" --target ${BUILD_TARGETS} \
- && mkdir -p /out && find build -maxdepth 3 -type f -perm -u+x \
+RUN cmake -S . -B build -D CMAKE_BUILD_TYPE=Release \
+ && cmake --build build -j"${BUILD_JOBS}" --target ${BUILD_TARGETS} \
+ && mkdir -p /out && find build -maxdepth 4 -type f -perm -u+x \
       \( -name 'block_server*' -o -name 'epoch_server*' -o -name 'user*' \) -exec cp {} /out/ \; \
+ && mkdir -p /out/proto && find include -name '*.proto' -exec cp --parents {} /out/proto/ \; \
+ && cp -r doc /out/doc \
+ && (git rev-parse HEAD > /out/COMMIT || true) \
  && ls -l /out
-
-# Stage the proto files so scripts/neuchain-proto-spike.sh can pull them out of
-# this image without a full checkout.
-RUN mkdir -p /out/proto && find . -name '*.proto' -exec cp --parents {} /out/proto/ \; ; \
-    git rev-parse HEAD > /out/COMMIT
-
-FROM scratch AS artifacts
-COPY --from=0 /out /out

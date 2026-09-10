@@ -17,14 +17,8 @@ cd "$HERE"
 
 NEUCHAIN_REF="${NEUCHAIN_REF:-ev}"
 
-if ! docker image inspect bench/neuchain-build:ev >/dev/null 2>&1; then
-  log "building bench/neuchain-build:ev (this is slow - grpc + NeuChain from source)"
-  docker build -f Dockerfile.build --build-arg NEUCHAIN_REF="$NEUCHAIN_REF" \
-    -t bench/neuchain-build:ev .
-fi
-if ! docker image inspect bench/neuchain:ev >/dev/null 2>&1; then
-  log "building bench/neuchain:ev runtime image"
-  docker build -f Dockerfile.run -t bench/neuchain:ev .
+if ! docker image inspect "bench/neuchain:${NEUCHAIN_REF}" >/dev/null 2>&1; then
+  die "image bench/neuchain:${NEUCHAIN_REF} missing - run deploy/docker/neuchain/build.sh first (slow: ~1h, builds ~15 C++ deps from source)"
 fi
 
 # Resource limits from the profile.
