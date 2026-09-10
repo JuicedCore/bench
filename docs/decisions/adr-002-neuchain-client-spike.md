@@ -47,3 +47,26 @@ proto origin, deviations.
 - `neuchain-client-implementation.md` is a required deliverable regardless of
   outcome.
 - Any port simplification becomes a manifest caveat on NeuChain runs.
+
+## Outcome (spike complete)
+
+Studied `iDC-NEU/NeuChain@ev` commit `5180d5e8…`. **Decision: pure-Go adapter.**
+
+The client → block-server path is **ZeroMQ + protobuf + RSA-1024/SHA-256**, not
+gRPC and not brpc:
+
+- submit: ZMQ PUB → `<bs>:5001`, message = `comm.UserRequest{payload =
+  marshal(TransactionPayload), digest = RSA_sign_PKCS1v15_SHA256(payload)}`; the
+  signature doubles as the tx id.
+- finality: ZMQ REQ → `<bs>:7003`, `UserQueryRequest{type:"tip_query"|"block_query"}`;
+  block entries are a hand-rolled varint result frame
+  (`tid,epoch,digestLen,digest,result`).
+- `brpc` in NeuChain is inter-server only (`chain.proto` block↔epoch), so it is
+  not a barrier to a Go client.
+
+Every piece maps to the Go stdlib (`crypto/rsa`, `encoding/binary`,
+`google.golang.org/protobuf`) plus one pure-Go ZeroMQ package
+(`github.com/go-zeromq/zmq4`, no cgo). Full mapping, wire formats and the list of
+assumptions/caveats are in
+[../platforms/neuchain-client-implementation.md](../platforms/neuchain-client-implementation.md).
+The native-`user`-binary fallback is not needed.

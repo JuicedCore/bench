@@ -30,27 +30,26 @@ Per the repo build guide: **Ubuntu 20.04**, **cmake 3.16.3**, **gcc 9.4.0**;
 `CMakeLists.txt` may need edits. This is isolated in a Docker build container
 (Phase 4) producing `block_server*`, `epoch_server`, `user`.
 
-## Adapter (Phase 4)
+## Adapter (Phase 4) — spike complete, pure-Go
 
-`pkg/adapters/neuchain` — pure Go, gRPC. Client strategy is decided by a
-**time-boxed proto spike** first
-([adr-002](../decisions/adr-002-neuchain-client-spike.md)):
+The proto spike ([adr-002](../decisions/adr-002-neuchain-client-spike.md)) is
+done. Full findings + wire formats:
+[neuchain-client-implementation.md](neuchain-client-implementation.md).
 
-1. Copy `.proto` files (with an `ORIGIN` file naming the upstream commit) into
-   `pkg/adapters/neuchain/proto/`; generate Go stubs.
-2. Submit one transaction end to end.
-3. If transaction format + signing + epoch/batch semantics reimplement cleanly
-   in Go → **pure-Go adapter** (`txbuild.go`, `sign.go`).
-4. If not → **wrap the native `user` binary** (exec / thin control socket) which
-   emits T1/T2/T3 — same principle as using each platform's own SDK elsewhere.
+The client path is **ZeroMQ + protobuf + RSA-1024/SHA-256**, not gRPC/brpc:
 
-Either outcome is written up in full in
-[neuchain-client-implementation.md](neuchain-client-implementation.md): what was
-reimplemented, which Go file holds each piece, which NeuChain C++ source it
-mirrors, and any deviations.
+- **submit** → ZMQ PUB to `<block-server>:5001`, message
+  `comm.UserRequest{payload = marshal(TransactionPayload{header=funcName,
+  payload=marshal(YCSB_PAYLOAD{table,reads,update}), nonce}),
+  digest = RSA_sign_PKCS1v15_SHA256(payload)}`. The signature is the tx id.
+- **finality** → ZMQ REQ to `<block-server>:7003`:
+  `UserQueryRequest{type:"tip_query"}` for height, `{type:"block_query",
+  payload:str(n)}` for block `n`; each block entry is a hand-rolled varint frame
+  `tid,epoch,digestLen,digest,result` (`result` 0=COMMIT, 2/3=ABORT).
 
-Finality (T3): block-height poll or a gRPC stream of committed blocks — whichever
-the `ev` branch exposes.
+`pkg/adapters/neuchain` therefore needs: generated protobuf stubs
+(`scripts/neuchain-proto-spike.sh`), `github.com/go-zeromq/zmq4` (pure Go),
+`crypto/rsa`, `encoding/binary`. No cgo, no native `user` binary.
 
 ## Local caveat
 

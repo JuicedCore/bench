@@ -10,9 +10,11 @@
 #   scripts/neuchain-proto-spike.sh              # clone shallow, extract, gen
 #   scripts/neuchain-proto-spike.sh /path/to/NeuChain   # use a local checkout
 #
-# Requires: git, protoc, protoc-gen-go, protoc-gen-go-grpc
+# Requires: git, protoc, protoc-gen-go
 #   go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
-#   go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
+#
+# No protoc-gen-go-grpc: the client path is ZeroMQ + protobuf messages, not gRPC.
+# (chain.proto's ChainService is proto2/brpc and inter-server only - not used.)
 set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 DEST="$ROOT/pkg/adapters/neuchain/proto"
@@ -21,7 +23,7 @@ REPO="${NEUCHAIN_REPO:-https://github.com/iDC-NEU/NeuChain.git}"
 
 for t in git protoc; do command -v "$t" >/dev/null || { echo "missing $t"; exit 1; }; done
 command -v protoc-gen-go     >/dev/null || { echo "need protoc-gen-go (go install google.golang.org/protobuf/cmd/protoc-gen-go@latest)"; exit 1; }
-command -v protoc-gen-go-grpc>/dev/null || { echo "need protoc-gen-go-grpc (go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest)"; exit 1; }
+
 
 SRC="${1:-}"
 TMP=""
@@ -54,22 +56,33 @@ $(printf '  %s\n' "${PROTOS[@]}")
 regenerate:
   protoc -I pkg/adapters/neuchain/proto \\
     --go_out=pkg/adapters/neuchain/proto --go_opt=paths=source_relative \\
-    --go-grpc_out=pkg/adapters/neuchain/proto --go-grpc_opt=paths=source_relative \\
     \$(cd pkg/adapters/neuchain/proto && find . -name '*.proto')
 EOF
 
-echo "generating Go stubs -> $DEST"
+GO_PKG="github.com/juicedcore/bench/pkg/adapters/neuchain/proto"
+echo "generating Go stubs -> $DEST  (go_package = $GO_PKG)"
+# NeuChain protos have no 'option go_package'; map every file explicitly.
+MOPTS=()
+while IFS= read -r p; do
+  rel="${p#./}"
+  MOPTS+=("--go_opt=M${rel}=${GO_PKG}")
+done < <(cd "$DEST" && find . -name '*.proto')
+
 ( cd "$DEST" && protoc -I . \
-    --go_out=. --go_opt=paths=source_relative \
-    --go-grpc_out=. --go-grpc_opt=paths=source_relative \
+    --go_out=. --go_opt=paths=source_relative "${MOPTS[@]}" \
     $(find . -name '*.proto') ) || {
   echo
   echo "protoc failed - common causes:"
   echo "  * proto files import each other with paths relative to a different root"
   echo "    (add more -I include dirs)"
-  echo "  * missing 'option go_package' - add it or pass --go_opt=Mfile.proto=..."
+  echo "  * a proto pulls in google/protobuf/*.proto - install the well-known"
+  echo "    types include dir and add it with -I"
   exit 1
 }
+echo "note: only the client-path protos are needed - transaction, comm, tpc-c,"
+echo "block, kv_rwset. common.proto / chaincode.proto are vendored Fabric protos"
+echo "and are not on the client path; delete them from $DEST if protoc pulls in"
+echo "google/protobuf well-known types you don't want."
 
 [ -n "$TMP" ] && rm -rf "$TMP"
 
