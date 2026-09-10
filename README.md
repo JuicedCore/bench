@@ -14,15 +14,19 @@ One adapter interface, one load generator, one metrics pipeline. Normalized
 workloads for the cross-platform comparison; platform-native workloads for
 ceilings. Every methodology decision is written down in [`docs/`](docs/README.md).
 
-## Status — phased delivery ([adr-015](docs/decisions/adr-015-phased-delivery.md))
+## Status
 
-| Phase | Scope | State |
-| ----- | ----- | ----- |
-| 1 | Core harness + Fabric CFT + Drunix | **done**; Drunix deploy verified against `npci/drunix` (LP :7051 / CP :7061, LevelDB patch for normalized runs) |
-| 2 | Fabric BFT (SmartBFT) | deploy script ready; needs a real run |
-| 3 | Fabric-X (Arma + FSC view + Token SDK) | adapter matches the **verified** `fabric-x-samples` token REST API (unit-tested); token workloads run; deploy wraps `tokens/ make start`; custom `/kv` view service is a stub (spec written) |
-| 4 | NeuChain (proto spike → adapter, Dockerised build) | **adapter written** — pure-Go ZMQ+protobuf+RSA/SHA-256, unit-tested (sign, result-frame, tx build); build images + topology scaffolded (run flags still placeholder); needs a live-node integration pass |
-| 5 | Full suite + GCP | not started |
+Full breakdown + why the two remaining items need heavy compute or GCP creds:
+**[docs/REMAINING-WORK.md](docs/REMAINING-WORK.md)**.
+
+| Platform | Adapter | Live-tested | Notes |
+| -------- | ------- | ----------- | ----- |
+| `fabric-cft` (Raft) | ✅ | ✅ smoke + probe-sweep (Fabric 2.5.16) | e2e p50 165–565 ms across the sweep |
+| `fabric-bft` (SmartBFT) | ✅ | ✅ smoke (Fabric 3.1.5, 4 orderers) | ≈ cft at low load once batching is pinned |
+| `drunix` (npci/drunix) | ✅ (wraps fabric) | network verified end to end; runs on YugabyteDB (Drunix's shipped default) | LevelDB parity unavailable in the shipped test-network — disclosed as a manifest caveat |
+| `fabricx` (token REST) | ✅ matches the **verified** `fabric-x-samples` API, `httptest`-tested | token `transfer` runs today | normalized `kv-*` needs the custom `/kv` FSC view (stub + code-level spec) — **live-devnet gated** |
+| `neuchain` (pure-Go ZMQ+protobuf+RSA) | ✅ unit-tested (sign, result-frame, tx-build) | — | server binaries need a ~1 h C++ build — **compute gated**, `deploy/docker/neuchain/build.sh` |
+| GCP campaign | `scripts/gcp-run.sh` + Terraform ready | — | **credential gated** — provide `-var project=…` |
 
 ## Quick start
 
