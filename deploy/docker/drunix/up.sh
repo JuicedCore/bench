@@ -112,9 +112,42 @@ fi
 export PATH="${NET}/../bin:${NET}/bin:${PATH}"
 peer version >/dev/null 2>&1 || die "drunix: 'peer' not runnable after prereq (PATH=${NET}/../bin)"
 
+# --- KeyDB (mandatory for the drunix-peer KVStore, regardless of state DB) ---
+# The drunix-peer image always needs CORE_PEER_KVSTORE_ADDRESS=hlf_keydb_*:6379
+# (the "reduced private-data network calls" feature). KeyDB is only bundled in
+# scripts/yugabyte/compose.yaml, which network.sh starts only for -s yugabyte.
+# For a LevelDB run we bring up just the two KeyDB containers ourselves.
+KEYDB_COMPOSE="${NET}/scripts/keydb-only.bench.yaml"
+cat > "$KEYDB_COMPOSE" <<'YAML'
+networks:
+  test:
+    name: drunix_test
+services:
+  hlf_keydb_org1msp:
+    image: eqalpha/keydb
+    container_name: hlf_keydb_org1msp
+    command: ["keydb-server", "/etc/keydb/keydb.conf"]
+    environment: ["ALLOW_EMPTY_PASSWORD=yes"]
+    ports: ["6479:6379"]
+    networks: [test]
+  hlf_keydb_org2msp:
+    image: eqalpha/keydb
+    container_name: hlf_keydb_org2msp
+    command: ["keydb-server", "/etc/keydb/keydb.conf"]
+    environment: ["ALLOW_EMPTY_PASSWORD=yes"]
+    ports: ["6389:6379"]
+    networks: [test]
+YAML
+
 # --- start network + channel + chaincode --------------------------------
 ./network.sh down || true
+docker compose -f "$KEYDB_COMPOSE" down 2>/dev/null || true
 drop_caches
+for n in 1 2 3; do docker pull eqalpha/keydb && break; sleep 5; done
+# Pre-create the network + start KeyDB so the peers find it on first boot.
+docker network create drunix_test 2>/dev/null || true
+docker compose -f "$KEYDB_COMPOSE" up -d
+sleep 4
 ./network.sh up createChannel -c "$CHANNEL" -s "$NETWORK_SH_DB"
 log "deploying ${CC_NAME} from ${CC_SRC}"
 ./network.sh deployCC -c "$CHANNEL" -ccn "$CC_NAME" -ccp "$CC_SRC" -ccl go
