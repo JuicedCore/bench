@@ -59,9 +59,24 @@ absolute TPS is **not** comparable to the ~200k figure. The *shape* of the
 latency curve and relative behaviour under contention remain informative.
 Full-scale numbers need `gcp-full`.
 
-## Deploy (Phase 3 — not yet implemented)
+## Adapter status (Phase 3 — functional against an assumed contract)
 
-`deploy/docker/fabricx/up.sh` currently exits with a Phase-3 notice. Planned:
-clone the pinned Fabric-X + fabric-x-orderer tags, bring up Arma
-(routers/batchers/consenters/assemblers) + endorser/validator/committer, register
-the custom FSC KV view, wire the Token SDK REST endpoint, emit `connection.env`.
+`pkg/adapters/fabricx` is implemented against the REST contract in
+`fsc_client.go` (routes + JSON shapes, all overridable via the run config's
+`adapter:` block): `POST {KVRoute}` write/read, `POST {TransferRoute}` native
+transfer, `GET {TxStatusRoute}` / `GET {TxWaitRoute}` for finality. `Submit`
+returns at REST-accept (T2); `WaitForFinality` polls or long-polls
+(`finality_mode: poll|longpoll`) to T3; reads finalise immediately.
+Unit-tested with an `httptest` fake. **The contract is assumed** — verify it
+against the real tokens sample and adjust `fsc_client.go` before quoting numbers.
+
+## Deploy (Phase 3 — scaffold)
+
+- `deploy/docker/fabricx/up.sh` — clones `hyperledger/fabric-x` +
+  `hyperledger/fabric-x-orderer`, prefers an upstream sample compose if present,
+  else brings up `docker-compose.yml` (Arma router/batchers/consenters/assembler
+  + endorser/validator/committer + `rest-facade`). Emits `connection.env`.
+- `deploy/docker/fabricx/docker-compose.yml` — reference topology; **image
+  names, ports, config mounts are placeholders**.
+- `deploy/docker/fabricx/kvview/` — where the custom FSC "kv-write" view + REST
+  façade program lives (Phase 3 TODO list in its README).
