@@ -1,19 +1,26 @@
 #!/usr/bin/env bash
-# Bring up a Drunix network (Lite Peer + Committing Peer + Validation Service +
-# Raft orderer + KeyDB) and deploy the kvstore chaincode.
+# Bring up a Drunix network (Lite Peer + Committing Peer + VSCC validation
+# service + Raft orderer, 2 orgs) and deploy the kvstore chaincode.
 #
-# Drunix is HLF 2.5.x-compatible, so this wraps drunix-network/test-network from
-# the NPCI Drunix repo the same way fabric-cft wraps fabric-samples. Normalized
-# runs use LevelDB; YugabyteDB is only wired in for platform-native runs.
+#   ./up.sh [profile]
 #
-# NOTE: set BENCH_DRUNIX_REPO to a local checkout or a clone URL of the Drunix
-# source. The repo layout is expected to expose drunix-network/test-network/
-# with a network.sh compatible with the fabric-samples one.
+# Wraps npci/drunix -> drunix-network/test-network/network.sh (fabric-samples
+# style). Verified against github.com/npci/drunix @ main:
+#   - lite peer  org1 = peer0.org1.example.com : 7051   (endorsement + gateway)
+#   - committing peer org1 = peer1.org1.example.com : 7061
+#   - vscc       org1 = peer2.org1.example.com
+#   - the lite peer knows CORE_PEER_COMMITTINGPEER_ENDPOINT, so its gateway
+#     federates commit-status; the adapter connects to :7051 only.
+#
+# IMPORTANT: the shipped test-network hardcodes CORE_LEDGER_STATE_STATEDATABASE
+# =sqldb (YugabyteDB) on the peers. Normalized runs (adr-012) require LevelDB, so
+# for state_db=leveldb this script patches compose-test-net.yaml to drop the SQL
+# env (peer then falls back to goleveldb from core.yaml).
 source "$(dirname "${BASH_SOURCE[0]}")/../lib.sh"
-need docker; need git
+need docker; need git; need jq
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-DRUNIX_REPO="${BENCH_DRUNIX_REPO:-}"
+DRUNIX_REPO="${BENCH_DRUNIX_REPO:-https://github.com/npci/drunix.git}"
 DRUNIX_REF="${BENCH_DRUNIX_REF:-main}"
 CACHE="${HERE}/.cache"
 SRC="${CACHE}/drunix"
@@ -21,13 +28,11 @@ CHANNEL="${CHANNEL:-mychannel}"
 CC_NAME="kvstore"
 CC_SRC="${REPO_ROOT}/chaincodes/kvstore"
 
-[ -n "$DRUNIX_REPO" ] || die "set BENCH_DRUNIX_REPO to a Drunix git URL or local path (see docs/platforms/drunix.md)"
-
 mkdir -p "$CACHE"
-if [ -d "$DRUNIX_REPO/.git" ] || [ -d "$DRUNIX_REPO/drunix-network" ]; then
-  SRC="$DRUNIX_REPO"                       # local checkout supplied directly
+if [ -d "$DRUNIX_REPO/drunix-network" ]; then
+  SRC="$DRUNIX_REPO"                                   # local checkout supplied
 elif [ ! -d "$SRC/.git" ]; then
-  log "cloning Drunix @ ${DRUNIX_REF}"
+  log "cloning Drunix ${DRUNIX_REPO} @ ${DRUNIX_REF}"
   git clone --depth 1 --branch "$DRUNIX_REF" "$DRUNIX_REPO" "$SRC"
 fi
 
@@ -35,20 +40,72 @@ NET="${SRC}/drunix-network/test-network"
 [ -d "$NET" ] || die "expected ${NET} - check the Drunix repo layout"
 cd "$NET"
 
-STATE_DB="$(state_db drunix)"
-log "drunix state_db=${STATE_DB} (normalized runs must be leveldb)"
+STATE_DB="$(state_db drunix)"          # "leveldb" for normalized runs, else profile value
+log "drunix state_db=${STATE_DB}"
 
+# --- pin orderer batch params (ADR-011) -----------------------------------
+CONFIGTX="${NET}/configtx/configtx.yaml"
+if [ -f "$CONFIGTX" ]; then
+  BT="$(platform_field drunix orderer_batch.batch_timeout       || echo 1s)"
+  MMC="$(platform_field drunix orderer_batch.max_message_count   || echo 100)"
+  PMB="$(platform_field drunix orderer_batch.preferred_max_bytes || echo '2 MB')"
+  AMB="$(platform_field drunix orderer_batch.absolute_max_bytes  || echo '10 MB')"
+  log "pinning orderer batch: timeout=${BT} maxMsgCount=${MMC} preferred=${PMB} absolute=${AMB}"
+  python3 - "$CONFIGTX" "$BT" "$MMC" "$PMB" "$AMB" <<'PY'
+import re, sys
+path, bt, mmc, pmb, amb = sys.argv[1:6]
+s = open(path).read()
+s = re.sub(r'BatchTimeout:\s*\S+',        f'BatchTimeout: {bt}', s, count=1)
+s = re.sub(r'MaxMessageCount:\s*\d+',     f'MaxMessageCount: {mmc}', s, count=1)
+s = re.sub(r'PreferredMaxBytes:\s*[^\n]+',f'PreferredMaxBytes: {pmb}', s, count=1)
+s = re.sub(r'AbsoluteMaxBytes:\s*[^\n]+', f'AbsoluteMaxBytes: {amb}', s, count=1)
+open(path,'w').write(s)
+PY
+fi
+
+# --- LevelDB patch for normalized parity ---------------------------------
+COMPOSE_NET="${NET}/compose/compose-test-net.yaml"
+NETWORK_SH_DB="$STATE_DB"
+if [ "$STATE_DB" = "leveldb" ] && [ -f "$COMPOSE_NET" ]; then
+  if grep -q 'CORE_LEDGER_STATE_STATEDATABASE=sqldb' "$COMPOSE_NET"; then
+    log "patching compose-test-net.yaml: sqldb/Yugabyte env -> goleveldb"
+    cp "$COMPOSE_NET" "${COMPOSE_NET}.bench.bak"
+    python3 - "$COMPOSE_NET" <<'PY'
+import re, sys
+p = sys.argv[1]
+out = []
+for ln in open(p):
+    if 'CORE_LEDGER_STATE_STATEDATABASE=sqldb' in ln:
+        out.append(ln.replace('sqldb', 'goleveldb')); continue
+    if 'CORE_LEDGER_STATE_SQLDBCONFIG_' in ln:
+        continue                      # drop SQL connection env
+    out.append(ln)
+open(p, 'w').write(''.join(out))
+PY
+  fi
+  # network.sh only special-cases "yugabyte"; anything else is a passthrough label.
+  NETWORK_SH_DB="leveldb"
+fi
+
+# --- prereq (installs binaries + pulls npcioss/drunix-* images) ----------
+if [ ! -x "${NET}/../bin/peer" ] && [ ! -x "${NET}/bin/peer" ]; then
+  log "running network.sh prereq (Fabric bins + Drunix images)"
+  ./network.sh prereq || warn "prereq returned non-zero; continuing"
+fi
+
+# --- start network + channel + chaincode --------------------------------
 ./network.sh down || true
 drop_caches
-# Flags mirror fabric-samples; Drunix adds LP/CP split automatically. If the
-# Drunix network.sh uses different flag names, adjust here.
-./network.sh up createChannel -c "$CHANNEL" -s "$STATE_DB"
-./network.sh deployCC -c "$CHANNEL" -ccn "$CC_NAME" -ccp "$CC_SRC" -ccl go -ccv 1 -ccs 1
+./network.sh up createChannel -c "$CHANNEL" -s "$NETWORK_SH_DB"
+log "deploying ${CC_NAME} from ${CC_SRC}"
+./network.sh deployCC -c "$CHANNEL" -ccn "$CC_NAME" -ccp "$CC_SRC" -ccl go
 
+# --- emit connection.env ----------------------------------------------
 ORG1="${NET}/organizations/peerOrganizations/org1.example.com"
 cat > "${HERE}/connection.env" <<EOF
 # generated by deploy/docker/drunix/up.sh  ($(date -u +%FT%TZ))
-# endorse against the Lite Peer; the LP gateway federates commit-status from the CP.
+# endorse against the Lite Peer (:7051); its gateway federates commit-status
+# from the Committing Peer (:7061).
 BENCH_ADAPTER_PEER_ENDPOINT=localhost:7051
 BENCH_ADAPTER_ENDORSE_ENDPOINT=localhost:7051
 BENCH_ADAPTER_COMMIT_ENDPOINT=localhost:7061
@@ -59,7 +116,7 @@ BENCH_ADAPTER_KEY_PATH=${ORG1}/users/User1@org1.example.com/msp/keystore
 BENCH_ADAPTER_TLS_CA_CERT_PATH=${ORG1}/peers/peer0.org1.example.com/tls/ca.crt
 BENCH_ADAPTER_CHANNEL=${CHANNEL}
 BENCH_ADAPTER_CHAINCODE=${CC_NAME}
-BENCH_ADAPTER_METRICS_ENDPOINT=http://localhost:9543/metrics
-BENCH_PLATFORM_VERSION=drunix
+BENCH_ADAPTER_METRICS_ENDPOINT=http://localhost:9444/metrics
+BENCH_PLATFORM_VERSION=drunix-${DRUNIX_REF}
 EOF
-log "drunix up. lite-peer :7051  committing-peer :7061"
+log "drunix up. lite-peer :7051  committing-peer :7061  lite-peer operations :9444"

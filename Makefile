@@ -46,6 +46,7 @@ monitoring-down:
 clean:
 	rm -rf bin results/*/ docs/reports/*.html docs/reports/*.png
 	find deploy/docker -maxdepth 2 -name connection.env -delete
+	find deploy/docker -name '*.bench.bak' -delete
 
 help: ## list targets
 	@grep -hE '^[a-zA-Z_-]+:.*?## ' $(MAKEFILE_LIST) | awk 'BEGIN{FS=":.*?## "}{printf "  \033[36m%-16s\033[0m %s\n",$$1,$$2}'

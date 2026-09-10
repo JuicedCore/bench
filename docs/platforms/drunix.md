@@ -44,29 +44,40 @@ they stay on for every Drunix run and are what the comparison is measuring.
 
 ## Deploy
 
-Drunix source is not vendored. Point the deploy at a checkout or clone URL:
+Source: `github.com/npci/drunix` (public). `up.sh` clones it by default; override
+with `BENCH_DRUNIX_REPO` (git URL or local checkout) / `BENCH_DRUNIX_REF`.
 
 ```
-export BENCH_DRUNIX_REPO=/path/to/drunix        # or a git URL
-export BENCH_DRUNIX_REF=main
 bash deploy/docker/drunix/up.sh local
 set -a; source deploy/docker/drunix/connection.env; set +a
 ./bin/benchrunner run --config configs/quick-smoke.yaml --platform drunix
 bash deploy/docker/drunix/down.sh
 ```
 
-`up.sh` expects `drunix-network/test-network/network.sh` with fabric-samples-style
-flags (`up createChannel -c <ch> -s <db>`, `deployCC ...`). If the Drunix repo
-layout or flags differ, adjust `deploy/docker/drunix/up.sh` — the adapter and
-config do not change.
+Verified layout (`npci/drunix @ main`):
 
-Native metrics: Lite Peer `:9543`, Committing Peer `:9544`, Validation Service
-`:9545` (informational only).
+| Role | Container | Endpoint | Operations/metrics |
+| ---- | --------- | -------- | ------------------ |
+| Lite Peer org1 (endorse + gateway) | `lp1.org1` | `localhost:7051` | `localhost:9444` |
+| Committing Peer org1 | `cp.org1` | `localhost:7061` | `localhost:9454` |
+| VSCC validation service org1 | `vs1.org1` | — | — |
+| Orderer (Raft, 1 node) | `orderer` | `localhost:7050` | `localhost:9443` |
 
-## Open questions for the implementer
+org2 mirrors on 9051 / 9061. The Lite Peer carries
+`CORE_PEER_COMMITTINGPEER_ENDPOINT=dns:///peer1.org1.example.com:7061`, so its
+gateway federates commit-status — the adapter connects to `:7051` only, no
+second connection needed.
 
-- Confirm the exact `network.sh` flag names in the Drunix repo (endorsement org
-  layout, LP/CP ports).
-- Confirm whether commit events must be subscribed on the Committing Peer
-  directly; if the LP gateway does not federate `Commit.Status`, the adapter
-  needs a second connection (a small change isolated to `fabric.Adapter`).
+`network.sh` interface (fabric-samples style): `prereq`,
+`up createChannel -c <ch> -s <db>`, `deployCC -c <ch> -ccn <n> -ccp <path> -ccl go`.
+
+### State DB — Yugabyte-only by default
+
+The shipped `compose/compose-test-net.yaml` **hardcodes**
+`CORE_LEDGER_STATE_STATEDATABASE=sqldb` + YugabyteDB connection env on the peers;
+there is no LevelDB/CouchDB compose variant. For normalized runs (LevelDB,
+[adr-012](../decisions/adr-012-state-db-leveldb.md)) `up.sh` patches that file:
+rewrites `sqldb` → `goleveldb` and strips the `CORE_LEDGER_STATE_SQLDBCONFIG_*`
+lines (peer then uses goleveldb from `core.yaml`). `down.sh` restores the
+original from a `.bench.bak`. Native Drunix runs keep Yugabyte and record it in
+the manifest.
