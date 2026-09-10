@@ -7,18 +7,23 @@ data point is itself misleading.
 
 ## Fabric-X + `kv-write` / `kv-read` / `kv-mixed`
 
-Fabric-X has no `PutState`/`GetState`. The harness uses a **custom minimal FSC
-view** that performs a plain key/value write/read. This is closer to the other
-platforms' KV path than Token SDK `Issue` would be, but it is still:
+Fabric-X has no `PutState`/`GetState`, and — confirmed against
+`fabric-x-samples/tokens/swagger.yaml` — the sample REST façade has **no KV route
+at all** (token issue/transfer/redeem + account balance only). The harness runs a
+**custom FSC view service** (`deploy/docker/fabricx/kvview/`) that adds a `/kv`
+route doing a plain key/value write/read. It is still:
 
 - a view/session round-trip, not a chaincode simulation;
 - carrying FSC negotiation overhead the EOV platforms do not have;
-- routed through an FSC client node + REST server that sit in the measured path.
+- routed through an FSC client node + HTTP server in the measured path;
+- **synchronous to finality** — like the token routes, the view runs
+  ordering + finality before responding, so Fabric-X has no separable submit-ack
+  (T2). Only E2E latency and confirmed TPS are comparable for Fabric-X.
 
-**Caveat attached to these runs:** "Fabric-X KV via FSC view — not a native
-Fabric-X primitive; submit-side cost includes FSC negotiation and the REST/FSC
-node, which have no equivalent on Fabric/Drunix/NeuChain. Compare shapes and
-trends, not absolute submit latency."
+**Caveat attached to these runs:** "Fabric-X KV via a custom FSC view — not a
+native Fabric-X primitive; the FSC node + HTTP server are in the measured path
+and have no equivalent on Fabric/Drunix/NeuChain. Submit latency is N/A (call is
+synchronous to finality). Compare E2E latency and TPS trends only."
 
 ## Fabric-X + `transfer` (normalized)
 

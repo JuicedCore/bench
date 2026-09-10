@@ -20,7 +20,7 @@ ceilings. Every methodology decision is written down in [`docs/`](docs/README.md
 | ----- | ----- | ----- |
 | 1 | Core harness + Fabric CFT + Drunix | **done**; Drunix deploy verified against `npci/drunix` (LP :7051 / CP :7061, LevelDB patch for normalized runs) |
 | 2 | Fabric BFT (SmartBFT) | deploy script ready; needs a real run |
-| 3 | Fabric-X (Arma + FSC view + Token SDK) | adapter works against an assumed REST contract (unit-tested); deploy is a placeholder scaffold |
+| 3 | Fabric-X (Arma + FSC view + Token SDK) | adapter matches the **verified** `fabric-x-samples` token REST API (unit-tested); token workloads run; deploy wraps `tokens/ make start`; custom `/kv` view service is a stub (spec written) |
 | 4 | NeuChain (proto spike → adapter, Dockerised build) | **adapter written** — pure-Go ZMQ+protobuf+RSA/SHA-256, unit-tested (sign, result-frame, tx build); build images + topology scaffolded (run flags still placeholder); needs a live-node integration pass |
 | 5 | Full suite + GCP | not started |
 

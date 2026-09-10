@@ -1,93 +1,28 @@
-# Fabric-X topology - PHASE 3 SCAFFOLD. Arma ordering (router / batcher /
-# consenter / assembler) + endorser / validator / committer microservices + the
-# REST façade the fabricx adapter talks to.
-#
-# Image names, ports, config mounts and CLI args are PLACEHOLDERS - align them
-# with hyperledger/fabric-x + hyperledger/fabric-x-orderer sample compose during
-# Phase 3. Prefer `up.sh` deferring to the upstream sample compose when present;
-# this file is the fallback / reference.
-name: bench-fabricx
-
-x-limits: &limits
-  deploy:
-    resources:
-      limits:
-        cpus: "${BENCH_FX_CPUS:-0.8}"
-        memory: "${BENCH_FX_MEM:-800m}"
+# Just the custom kv-write view service. The Fabric-X network (Arma + committer)
+# and the token services (issuer/endorser/owner) come from fabric-x-samples
+# itself - `tokens/` `make setup && make start` - see up.sh. This service joins
+# the same `fabric_test` network so it can reach the committer / FSC config.
+name: bench-fabricx-kvview
 
 services:
-  arma-router:
-    image: ${FX_ORDERER_IMAGE:-hyperledger/fabric-x-orderer:latest}
-    <<: *limits
-    command: ["router", "--config", "/etc/arma/router.yaml"]     # PLACEHOLDER
-    volumes: ["./conf/arma:/etc/arma:ro"]
-    ports: ["7050:7050"]
-    networks: [fx]
-
-  arma-batcher-0: &batcher
-    image: ${FX_ORDERER_IMAGE:-hyperledger/fabric-x-orderer:latest}
-    <<: *limits
-    command: ["batcher", "--id", "0", "--config", "/etc/arma/batcher.yaml"]
-    volumes: ["./conf/arma:/etc/arma:ro"]
-    depends_on: [arma-router]
-    networks: [fx]
-  arma-batcher-1:
-    <<: *batcher
-    command: ["batcher", "--id", "1", "--config", "/etc/arma/batcher.yaml"]
-
-  arma-consenter-0: &consenter
-    image: ${FX_ORDERER_IMAGE:-hyperledger/fabric-x-orderer:latest}
-    <<: *limits
-    command: ["consenter", "--id", "0", "--config", "/etc/arma/consenter.yaml"]
-    volumes: ["./conf/arma:/etc/arma:ro"]
-    depends_on: [arma-batcher-0, arma-batcher-1]
-    networks: [fx]
-  arma-consenter-1:
-    <<: *consenter
-    command: ["consenter", "--id", "1", "--config", "/etc/arma/consenter.yaml"]
-
-  arma-assembler:
-    image: ${FX_ORDERER_IMAGE:-hyperledger/fabric-x-orderer:latest}
-    <<: *limits
-    command: ["assembler", "--config", "/etc/arma/assembler.yaml"]
-    depends_on: [arma-consenter-0, arma-consenter-1]
-    volumes: ["./conf/arma:/etc/arma:ro"]
-    networks: [fx]
-
-  endorser:
-    image: ${FX_IMAGE:-hyperledger/fabric-x:latest}
-    <<: *limits
-    command: ["endorser", "--config", "/etc/fabricx/endorser.yaml"]
-    volumes: ["./conf/fabricx:/etc/fabricx:ro"]
-    depends_on: [arma-assembler]
-    networks: [fx]
-
-  validator:
-    image: ${FX_IMAGE:-hyperledger/fabric-x:latest}
-    <<: *limits
-    command: ["validator", "--config", "/etc/fabricx/validator.yaml"]
-    volumes: ["./conf/fabricx:/etc/fabricx:ro"]
-    depends_on: [arma-assembler]
-    networks: [fx]
-
-  committer:
-    image: ${FX_IMAGE:-hyperledger/fabric-x:latest}
-    <<: *limits
-    command: ["committer", "--config", "/etc/fabricx/committer.yaml"]
-    volumes: ["./conf/fabricx:/etc/fabricx:ro"]
-    depends_on: [validator]
-    ports: ["9643:9643"]      # native /metrics (informational only)
-    networks: [fx]
-
-  # The REST façade + FSC client node the adapter talks to. Built from
-  # deploy/docker/fabricx/kvview (custom FSC "kv-write" view + Token SDK routes).
-  rest-facade:
+  kvview:
     image: bench/fabricx-rest:latest
-    <<: *limits
-    command: ["--listen", ":8080", "--committer", "committer:9643"]   # PLACEHOLDER
-    depends_on: [committer]
-    ports: ["8080:8080"]
-    networks: [fx]
+    build:
+      context: kvview
+    container_name: fabricx-kvview
+    environment:
+      KVVIEW_PORT: "9700"
+      KVVIEW_CONF: /etc/fabricx/kvview
+    volumes:
+      # mount the devnet's FSC config so the view can join the network
+      - ${FXS_DEVNET_CONF:-./.cache/fabric-x-samples/devnet/config}:/etc/fabricx/kvview:ro
+    ports:
+      - "9700:9700"
+    networks:
+      - fabric_test
+    restart: unless-stopped
 
 networks:
-  fx: {}
+  fabric_test:
+    name: fabric_test
+    external: true

@@ -1,43 +1,73 @@
-# Fabric-X custom "kv-write" FSC view + REST façade
+# Fabric-X custom `kv-write` view service
 
-**Phase 3 deliverable.** A small Go program that:
+**Why this exists.** The fabric-x-samples "tokens" REST API
+(`hyperledger/fabric-x-samples/tokens/swagger.yaml`, verified) is token-only —
+`/issuer/issue`, `/owner/accounts/{id}/transfer`, `/owner/accounts/{id}/redeem`,
+`GET /owner/accounts/{id}`. There is **no key/value route**. The normalized
+`kv-write` / `kv-read` workloads need one, so this service adds a custom FSC view
+and a `/kv` route (decision: adr-003, confirmed after the API check).
 
-1. Runs an **FSC view** implementing the normalized KV operations — `write(key,
-   value)` and `read(key)` — as a Fabric-X transaction (no chaincode). This is
-   the closest analog to the other platforms' KV path; it is deliberately *not*
-   a Token SDK `Issue` (see
-   [../../../../docs/decisions/adr-003-fabricx-fsc-view-and-rest.md](../../../../docs/decisions/adr-003-fabricx-fsc-view-and-rest.md)).
-2. Runs the **Token SDK** transfer view for the native workload.
-3. Exposes the **REST routes** the `fabricx` adapter expects (see
-   `pkg/adapters/fabricx/fsc_client.go` — `KVRoute`, `TransferRoute`,
-   `TxStatusRoute`, `TxWaitRoute`). Keep the JSON shapes in sync with that file,
-   or override the routes/shapes there.
+## Current state — Phase 3 stub
 
-## Assumed REST contract (adjust to reality)
+`main.go` builds with the Go stdlib only and serves:
+
+| route | behaviour |
+| ----- | --------- |
+| `GET /healthz` | `200 {"message":"ok"}` — lets the topology + adapter health check pass |
+| `POST /kv` | `501` with a "not wired yet" body |
+
+The container runs; the `fabricx` adapter treats `/kv` `501` as a failed tx.
+
+## Contract the adapter expects (`pkg/adapters/fabricx/fsc_client.go`)
 
 ```
-POST /api/v1/kv                 {"op":"write","key":"k","value":"<base64>"}  -> {"txID":"...","accepted":true}
-POST /api/v1/kv                 {"op":"read","key":"k"}                      -> {"txID":"...","value":"<base64>","found":true}
-POST /api/v1/tokens/transfer    {"tokenType":"BENCH","from":"a","to":"b","amount":1} -> {"txID":"..."}
-GET  /api/v1/tx/{txID}                                                       -> {"txID":"...","status":"pending|committed|invalid","blockNum":N}
-GET  /api/v1/tx/{txID}/wait     (long-poll to finality)                      -> same as above once terminal
+POST /kv   {"op":"write","key":"k","value":"<base64>"}  -> 200 {"txID":"<id>"}
+POST /kv   {"op":"read","key":"k"}                       -> 200 {"txID":"<id>","value":"<base64>","found":true}
 ```
 
-## Build
+Both are **synchronous to finality** (the view runs ordering + finality before
+responding), matching the token routes — so the adapter's background-POST model
+and the T2-collapse hold uniformly for Fabric-X.
+
+## Implementation spec (Phase 3 build, needs a running Fabric-X network)
+
+Mirror `fabric-x-samples/tokens/owner`:
+
+1. **Deps** (add to `go.mod`):
+   - `github.com/hyperledger-labs/fabric-smart-client` — FSC node + view registry
+   - `github.com/LFDT-Panurus/panurus/token/...` — token/ttx services (the
+     fabric-x token SDK; used here only for the `ttx.NewOrderingAndFinalityView`
+     pattern, not for tokens)
+   - or, simpler: use the **fabric3 platform state API** directly for a plain
+     `PutState` / `GetState` inside a view — no token SDK needed for KV.
+
+2. **`common.StartFSC(confDir, dataDir)`** to bring up the FSC node against the
+   Fabric-X network's `core.yaml` (mounted at `--conf`).
+
+3. **Views** (`service/kvview.go`):
+   - `WriteView{Key string; Value []byte}` — `RunView`:
+     build a fabric3 transaction, `tx.PutState(ns, key, value)`, then
+     `ttx.NewCollectEndorsementsView(tx)` (or the fabric3 endorsement collector),
+     then `NewOrderingAndFinalityView(tx)`; return `tx.ID()`.
+   - `ReadView{Key string}` — `RunView`: `GetState(ns, key)` via a query view;
+     return `{value, found}`. (Decide: does a read produce a ledger tx? If it is
+     a local query, mark it finalized immediately in the adapter — the adapter
+     already does for `TxRead`.)
+   - Register both with `viewregistry.GetRegistry(fsc).RegisterFactory("kv-write", …)`
+     and `"kv-read"`.
+
+4. **HTTP handler** (`handleKV` in `main.go`): decode `kvRequest`, base64-decode
+   `value`, `viewManager.InitiateView(ctx, &WriteView{...})`, marshal `kvResponse`.
+
+5. **Namespace**: use a dedicated chaincode/namespace id (e.g. `benchkv`) that the
+   Fabric-X committer is configured to accept. Document it in the run manifest
+   via the adapter (`adapter.namespace`).
+
+## Build (Phase 3)
 
 ```
 docker build -t bench/fabricx-rest:latest deploy/docker/fabricx/kvview
 ```
 
-Wired as the `rest-facade` service in `../docker-compose.yml`.
-
-## TODO (Phase 3)
-
-- [ ] Pin `hyperledger/fabric-x` + `fabric-x-orderer` tags in `../up.sh`
-- [ ] Implement the FSC KV view against the pinned Fabric-X FSC libraries
-- [ ] Confirm the commit-event / status API the committer exposes; map it to
-      `TxStatusRoute` / `TxWaitRoute`
-- [ ] Decide read semantics: does a "read" produce a ledger tx (finality path) or
-      a local FSC query (immediate)? The adapter currently treats reads as
-      immediate — change `Adapter.WaitForFinality` if reads must finalize.
-- [ ] Record the exact contract here and in `fsc_client.go`
+Wired as the `kvview` service in `../docker-compose.yml`, port 9700, `--conf`
+pointing at the Fabric-X network config mount.

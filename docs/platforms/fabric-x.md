@@ -8,19 +8,19 @@ scalable microservices — **endorser, validator, committer** — and replaces t
 Raft/SmartBFT orderer with **Arma**, a sharded BFT ordering service. Published
 evaluation: **>200,000 TPS** on a large cluster (CBDC benchmark).
 
-Repos: `github.com/hyperledger/fabric-x`, `github.com/hyperledger/fabric-x-orderer`.
+Repos: `github.com/hyperledger/fabric-x`, `github.com/hyperledger/fabric-x-orderer`,
+samples: `github.com/hyperledger/fabric-x-samples`.
 
 ## No chaincode
 
 Fabric-X replaces the chaincode execution model with **peer-to-peer transaction
 negotiation** built on **Fabric-Smart-Client (FSC)** views/sessions and the
 **Fabric-Token-SDK** (UTXO model). There is no `PutState`/`GetState` chaincode to
-deploy. This is confirmed by the LF Fabric-X roadmap, not an assumption.
+deploy. Confirmed by the LF Fabric-X roadmap.
 
 Consequence: the *same* smart contract cannot be deployed across all four
-platforms. Instead the harness defines **functionally equivalent workloads** and
-implements them natively per platform (see
-[adr-009](../decisions/adr-009-workload-strategy.md)).
+platforms. The harness defines **functionally equivalent workloads** implemented
+natively per platform ([adr-009](../decisions/adr-009-workload-strategy.md)).
 
 ## Arma ordering
 
@@ -29,54 +29,71 @@ Four server roles: **routers** (accept + dispatch), **batchers** (form batches),
 (reconstruct full blocks). Ordering digests instead of payloads is where the
 throughput comes from.
 
-## Adapter (Phase 3)
+## Real REST API (verified — `fabric-x-samples/tokens/swagger.yaml`)
 
-`pkg/adapters/fabricx` — **cannot** use the Fabric Gateway SDK. Two entry points:
+Token-only. **No KV route.**
 
-- **normalized `kv-write`** → a **custom minimal FSC view** that performs a plain
-  key/value write. Chosen over Token SDK `Issue` because it is a closer analog to
-  the other platforms' KV path (see
-  [adr-003](../decisions/adr-003-fabricx-fsc-view-and-rest.md) and
-  [workloads/mismatches.md](../workloads/mismatches.md)).
-- **native `token-transfer`** → Token SDK `Issue` / `Transfer` / `Redeem` via the
-  REST API the tokens sample exposes.
+| Route | Port | Body | Reply | Synchronous? |
+| ----- | ---- | ---- | ----- | ------------ |
+| `POST /issuer/issue` | 9100 | `TransferRequest{amount{code,value},counterparty{node,account},message?}` | `{message,payload:"<txid>"}` | **to finality** |
+| `POST /owner/accounts/{id}/transfer` | 9500 / 9600 | same | same | **to finality** |
+| `POST /owner/accounts/{id}/redeem` | 9500 | `RedeemRequest` | `{message,payload:"<txid>"}` | to finality |
+| `GET /owner/accounts/{id}?code=<type>` | 9500 | — | `{message,payload:Account{id,balance[]}}` | — |
+| `POST /endorser/init` | 9300 | — | health | one-time network init |
+| `GET /healthz` `/readyz` | all | — | `{message}` | — |
 
-The harness interface is unchanged: `Submit` (view accepts the request → T2) →
-`WaitForFinality` (committer commit event → T3).
+`tokens/owner/service/fsc.go` runs `ttx.NewOrderingAndFinalityView(tx)` before
+the POST returns → the call blocks to finality. **Fabric-X has no separable
+submit-ack (T2).**
 
-### Disclosed asymmetry
+## Adapter (`pkg/adapters/fabricx`)
 
-The FSC client node (and the REST server fronting it) sits **in the measured
-path** and has no equivalent on the other platforms. This is recorded in the
-manifest and footnoted in every comparison — it is disclosed, not "corrected".
+HTTP client for the token routes above + one custom `/kv` route
+(`deploy/docker/fabricx/kvview/`). Config keys: `owner_url`, `issuer_url`,
+`kv_url`, `sender_account`, `counterparty_node`, `token_code`, `metrics_endpoint`.
+
+- `TxTransfer` → `POST /owner/accounts/{sender}/transfer` (native).
+- `TxWrite` → `POST /kv` (custom view) if `kv_url` set, else `POST /issuer/issue`.
+- `TxRead` → `POST /kv` read, or `GET /owner/accounts/{id}`.
+- The POST is synchronous, so `Submit` fires it in a **background goroutine** and
+  returns immediately with `AckTime = now` (advisory); `WaitForFinality` returns
+  when that POST completes (T3). Submit latency is reported **N/A** for Fabric-X
+  ([adr-003](../decisions/adr-003-fabricx-fsc-view-and-rest.md),
+  [fairness-guarantees](../architecture/fairness-guarantees.md)).
+
+`httptest`-tested against the real route shapes (transfer, kv write/read,
+unreachable, Submit-returns-before-finality).
+
+## The custom KV view (normalized workloads)
+
+Since the sample API has no KV route, `deploy/docker/fabricx/kvview/` adds one:
+an FSC view doing plain key/value writes/reads, exposed at `POST /kv`, written to
+the same synchronous-to-finality contract. **Currently a stub** (`POST /kv` →
+501); the implementation spec (register FSC Write/Read views, run
+ordering+finality, mirror the owner service) is in
+`deploy/docker/fabricx/kvview/README.md`. Token workloads
+(`configs/quick-smoke-fabricx.yaml`, `workload: transfer`) run today; `kv-write`
+needs the stub finished.
+
+## Deploy (Phase 3)
+
+`deploy/docker/fabricx/up.sh`:
+
+1. clones `hyperledger/fabric-x-samples`;
+2. `tokens/` `make setup && make start` — devnet (Arma + committer) + issuer /
+   endorser1 / owner1 / owner2 services (ports 9100 / 9300 / 9500 / 9600);
+3. `POST /endorser/init` to commit token parameters;
+4. builds + starts the `kvview` service (`bench/fabricx-rest`, :9700) on the
+   shared `fabric_test` network;
+5. emits `connection.env` (`BENCH_ADAPTER_OWNER_URL` etc.).
+
+`down.sh` runs `tokens/` `make teardown` + `docker compose down`.
 
 ## Local caveat
 
-Arma and the committer stack are scale-out designs. On the `local` profile
-(≈8 cores across all Fabric-X services) throughput is far below the published
-ceiling. Every `local` Fabric-X run carries an automatic manifest caveat:
-absolute TPS is **not** comparable to the ~200k figure. The *shape* of the
-latency curve and relative behaviour under contention remain informative.
-Full-scale numbers need `gcp-full`.
-
-## Adapter status (Phase 3 — functional against an assumed contract)
-
-`pkg/adapters/fabricx` is implemented against the REST contract in
-`fsc_client.go` (routes + JSON shapes, all overridable via the run config's
-`adapter:` block): `POST {KVRoute}` write/read, `POST {TransferRoute}` native
-transfer, `GET {TxStatusRoute}` / `GET {TxWaitRoute}` for finality. `Submit`
-returns at REST-accept (T2); `WaitForFinality` polls or long-polls
-(`finality_mode: poll|longpoll`) to T3; reads finalise immediately.
-Unit-tested with an `httptest` fake. **The contract is assumed** — verify it
-against the real tokens sample and adjust `fsc_client.go` before quoting numbers.
-
-## Deploy (Phase 3 — scaffold)
-
-- `deploy/docker/fabricx/up.sh` — clones `hyperledger/fabric-x` +
-  `hyperledger/fabric-x-orderer`, prefers an upstream sample compose if present,
-  else brings up `docker-compose.yml` (Arma router/batchers/consenters/assembler
-  + endorser/validator/committer + `rest-facade`). Emits `connection.env`.
-- `deploy/docker/fabricx/docker-compose.yml` — reference topology; **image
-  names, ports, config mounts are placeholders**.
-- `deploy/docker/fabricx/kvview/` — where the custom FSC "kv-write" view + REST
-  façade program lives (Phase 3 TODO list in its README).
+Arma and the committer stack are scale-out designs. On `local` (≈8 cores across
+all Fabric-X services) throughput is far below the published ceiling. Every
+`local` Fabric-X run carries an automatic manifest caveat: absolute TPS is not
+comparable to the ~200k figure. The *shape* of the latency curve and relative
+behaviour under contention remain informative. Full-scale numbers need
+`gcp-full`.

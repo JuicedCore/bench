@@ -8,104 +8,132 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"net/url"
 	"strings"
-	"time"
 )
 
-// fscClient is a thin HTTP client for the Fabric-X REST façade. It carries the
-// ASSUMED request/response shapes; adjust here (and only here) once the real
-// tokens-sample API is confirmed.
+// fscClient is a thin HTTP client for the fabric-x-samples tokens REST services
+// plus the custom kv-write view. Request/response shapes below are transcribed
+// from hyperledger/fabric-x-samples/tokens/swagger.yaml.
 type fscClient struct {
-	base string
-	hc   *http.Client
-	cfg  *Config
+	hc  *http.Client
+	cfg *Config
 }
 
 func newFSCClient(cfg *Config) *fscClient {
-	return &fscClient{
-		base: strings.TrimRight(cfg.BaseURL, "/"),
-		hc:   &http.Client{Timeout: cfg.HTTPTimeout},
-		cfg:  cfg,
-	}
+	return &fscClient{hc: &http.Client{Timeout: cfg.HTTPTimeout}, cfg: cfg}
 }
 
-// ---- request / response bodies (assumed contract) ----
+// ---- token API bodies (swagger.yaml) ----
 
-type kvReq struct {
+type amount struct {
+	Code  string `json:"code"`
+	Value uint64 `json:"value"`
+}
+
+type counterparty struct {
+	Node    string `json:"node"`
+	Account string `json:"account"`
+}
+
+// transferRequest is the swagger "TransferRequest" (used for both transfer and issue).
+type transferRequest struct {
+	Amount       amount       `json:"amount"`
+	Counterparty counterparty `json:"counterparty"`
+	Message      string       `json:"message,omitempty"`
+}
+
+// tokenResponse is the swagger "TransferSuccess"/"IssueSuccess" shape:
+// { "message": "...", "payload": "<txid>" }.
+type tokenResponse struct {
+	Message string `json:"message"`
+	Payload string `json:"payload"`
+}
+
+// account is the swagger "Account" shape returned by GET /owner/accounts/{id}.
+type account struct {
+	ID      string   `json:"id"`
+	Balance []amount `json:"balance"`
+}
+
+type accountResponse struct {
+	Message string  `json:"message"`
+	Payload account `json:"payload"`
+}
+
+// ---- custom kv-write view body (deploy/docker/fabricx/kvview) ----
+
+type kvRequest struct {
 	Op    string `json:"op"`              // "write" | "read"
 	Key   string `json:"key"`
 	Value string `json:"value,omitempty"` // base64, write only
 }
 
-type submitResp struct {
-	TxID     string `json:"txID"`
-	Accepted bool   `json:"accepted"`
-	Value    string `json:"value,omitempty"` // base64, read responses
-	Found    bool   `json:"found,omitempty"`
-	Error    string `json:"error,omitempty"`
-}
-
-type transferReq struct {
-	TokenType string `json:"tokenType"`
-	From      string `json:"from"`
-	To        string `json:"to"`
-	Amount    int64  `json:"amount"`
-}
-
-type statusResp struct {
-	TxID     string `json:"txID"`
-	Status   string `json:"status"` // "pending" | "committed" | "invalid"
-	BlockNum uint64 `json:"blockNum"`
-	Error    string `json:"error,omitempty"`
+type kvResponse struct {
+	TxID  string `json:"txID"`
+	Value string `json:"value,omitempty"` // base64, read replies
+	Found bool   `json:"found,omitempty"`
+	Error string `json:"error,omitempty"`
 }
 
 // ---- calls ----
 
-func (c *fscClient) kvWrite(ctx context.Context, key string, value []byte) (*submitResp, error) {
-	return c.postSubmit(ctx, c.cfg.KVRoute, kvReq{
-		Op: "write", Key: key, Value: base64.StdEncoding.EncodeToString(value),
-	})
+// transfer POSTs to the owner service. Returns the tx id. This call blocks until
+// the transaction is ordered AND final (fabric-x-samples runs
+// ttx.NewOrderingAndFinalityView before responding) - so its return marks T3.
+func (c *fscClient) transfer(ctx context.Context, sender, recipient string, value uint64) (string, error) {
+	body := transferRequest{
+		Amount:       amount{Code: c.cfg.TokenCode, Value: value},
+		Counterparty: counterparty{Node: c.cfg.CounterpartyNode, Account: recipient},
+	}
+	u := strings.TrimRight(c.cfg.OwnerURL, "/") + "/owner/accounts/" + url.PathEscape(sender) + "/transfer"
+	var out tokenResponse
+	if err := c.postJSON(ctx, u, body, &out); err != nil {
+		return "", err
+	}
+	return out.Payload, nil
 }
 
-func (c *fscClient) kvRead(ctx context.Context, key string) (*submitResp, error) {
-	return c.postSubmit(ctx, c.cfg.KVRoute, kvReq{Op: "read", Key: key})
+// issue POSTs to the issuer service (mint to an account). Also synchronous to finality.
+func (c *fscClient) issue(ctx context.Context, recipient string, value uint64) (string, error) {
+	body := transferRequest{
+		Amount:       amount{Code: c.cfg.TokenCode, Value: value},
+		Counterparty: counterparty{Node: c.cfg.CounterpartyNode, Account: recipient},
+	}
+	u := strings.TrimRight(c.cfg.IssuerURL, "/") + "/issuer/issue"
+	var out tokenResponse
+	if err := c.postJSON(ctx, u, body, &out); err != nil {
+		return "", err
+	}
+	return out.Payload, nil
 }
 
-func (c *fscClient) transfer(ctx context.Context, from, to string, amount int64) (*submitResp, error) {
-	return c.postSubmit(ctx, c.cfg.TransferRoute, transferReq{
-		TokenType: c.cfg.TokenType, From: from, To: to, Amount: amount,
-	})
+// kvWrite / kvRead hit the custom FSC view service. kvWrite is synchronous to
+// finality (the view runs ordering+finality); its return marks T3.
+func (c *fscClient) kvWrite(ctx context.Context, key string, value []byte) (*kvResponse, error) {
+	return c.kv(ctx, kvRequest{Op: "write", Key: key, Value: base64.StdEncoding.EncodeToString(value)})
 }
 
-func (c *fscClient) postSubmit(ctx context.Context, route string, body any) (*submitResp, error) {
-	b, _ := json.Marshal(body)
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, c.base+route, bytes.NewReader(b))
-	if err != nil {
+func (c *fscClient) kvRead(ctx context.Context, key string) (*kvResponse, error) {
+	return c.kv(ctx, kvRequest{Op: "read", Key: key})
+}
+
+func (c *fscClient) kv(ctx context.Context, req kvRequest) (*kvResponse, error) {
+	u := strings.TrimRight(c.cfg.KVURL, "/") + "/kv"
+	var out kvResponse
+	if err := c.postJSON(ctx, u, req, &out); err != nil {
 		return nil, err
 	}
-	req.Header.Set("Content-Type", "application/json")
-	resp, err := c.hc.Do(req)
-	if err != nil {
-		return nil, err
+	if out.Error != "" {
+		return &out, fmt.Errorf("fabricx kv: %s", out.Error)
 	}
-	defer resp.Body.Close()
-	raw, _ := io.ReadAll(io.LimitReader(resp.Body, 1<<20))
-	if resp.StatusCode/100 != 2 {
-		return nil, fmt.Errorf("fabricx %s: HTTP %d: %s", route, resp.StatusCode, raw)
-	}
-	var sr submitResp
-	if err := json.Unmarshal(raw, &sr); err != nil {
-		return nil, fmt.Errorf("fabricx %s: bad response: %w", route, err)
-	}
-	if sr.Error != "" {
-		return &sr, fmt.Errorf("fabricx %s: %s", route, sr.Error)
-	}
-	return &sr, nil
+	return &out, nil
 }
 
-// status does one commit-status GET.
-func (c *fscClient) status(ctx context.Context, txID string) (*statusResp, error) {
-	u := c.base + fmt.Sprintf(c.cfg.TxStatusRoute, txID)
+// balance reads an account's balance for the configured token code.
+func (c *fscClient) balance(ctx context.Context, accountID string) (*account, error) {
+	u := strings.TrimRight(c.cfg.OwnerURL, "/") + "/owner/accounts/" + url.PathEscape(accountID) +
+		"?code=" + url.QueryEscape(c.cfg.TokenCode)
 	req, _ := http.NewRequestWithContext(ctx, http.MethodGet, u, nil)
 	resp, err := c.hc.Do(req)
 	if err != nil {
@@ -114,55 +142,51 @@ func (c *fscClient) status(ctx context.Context, txID string) (*statusResp, error
 	defer resp.Body.Close()
 	raw, _ := io.ReadAll(io.LimitReader(resp.Body, 1<<20))
 	if resp.StatusCode/100 != 2 {
-		return nil, fmt.Errorf("fabricx status %s: HTTP %d: %s", txID, resp.StatusCode, raw)
+		return nil, fmt.Errorf("fabricx balance %s: HTTP %d: %s", accountID, resp.StatusCode, raw)
 	}
-	var s statusResp
-	if err := json.Unmarshal(raw, &s); err != nil {
+	var ar accountResponse
+	if err := json.Unmarshal(raw, &ar); err != nil {
 		return nil, err
 	}
-	return &s, nil
+	return &ar.Payload, nil
 }
 
-// waitFinality blocks until the tx is committed/invalid or the deadline passes,
-// using either long-poll or a status poll loop per Config.FinalityMode.
-func (c *fscClient) waitFinality(ctx context.Context, txID string, timeout time.Duration) (*statusResp, error) {
-	deadline := time.Now().Add(timeout)
-	cctx, cancel := context.WithDeadline(ctx, deadline)
-	defer cancel()
-
-	if c.cfg.FinalityMode == "longpoll" {
-		u := c.base + fmt.Sprintf(c.cfg.TxWaitRoute, txID)
-		req, _ := http.NewRequestWithContext(cctx, http.MethodGet, u, nil)
-		resp, err := c.hc.Do(req)
-		if err != nil {
-			return nil, err
-		}
-		defer resp.Body.Close()
-		raw, _ := io.ReadAll(io.LimitReader(resp.Body, 1<<20))
-		if resp.StatusCode/100 != 2 {
-			return nil, fmt.Errorf("fabricx wait %s: HTTP %d: %s", txID, resp.StatusCode, raw)
-		}
-		var s statusResp
-		if err := json.Unmarshal(raw, &s); err != nil {
-			return nil, err
-		}
-		return &s, nil
+// health probes GET {OwnerURL}/healthz for the reachability check.
+func (c *fscClient) health(ctx context.Context) error {
+	base := c.cfg.OwnerURL
+	if base == "" {
+		base = c.cfg.KVURL
 	}
+	u := strings.TrimRight(base, "/") + "/healthz"
+	req, _ := http.NewRequestWithContext(ctx, http.MethodGet, u, nil)
+	resp, err := c.hc.Do(req)
+	if err != nil {
+		return err
+	}
+	resp.Body.Close()
+	return nil
+}
 
-	t := time.NewTicker(c.cfg.PollInterval)
-	defer t.Stop()
-	for {
-		s, err := c.status(cctx, txID)
-		if err == nil && s.Status != "pending" && s.Status != "" {
-			return s, nil
-		}
-		select {
-		case <-cctx.Done():
-			if err != nil {
-				return nil, err
-			}
-			return nil, fmt.Errorf("fabricx: finality timeout for %s", txID)
-		case <-t.C:
+func (c *fscClient) postJSON(ctx context.Context, u string, body, out any) error {
+	b, _ := json.Marshal(body)
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, u, bytes.NewReader(b))
+	if err != nil {
+		return err
+	}
+	req.Header.Set("Content-Type", "application/json")
+	resp, err := c.hc.Do(req)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+	raw, _ := io.ReadAll(io.LimitReader(resp.Body, 1<<20))
+	if resp.StatusCode/100 != 2 {
+		return fmt.Errorf("fabricx POST %s: HTTP %d: %s", u, resp.StatusCode, raw)
+	}
+	if out != nil {
+		if err := json.Unmarshal(raw, out); err != nil {
+			return fmt.Errorf("fabricx POST %s: bad response: %w", u, err)
 		}
 	}
+	return nil
 }

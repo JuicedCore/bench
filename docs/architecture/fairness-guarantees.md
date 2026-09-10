@@ -7,14 +7,17 @@ answer is "these numbers are not directly comparable, here is why".
 
 Collected the same way for every platform, from the same code path:
 
-| Metric | Source |
-| ------ | ------ |
-| Confirmed TPS | `metrics.Collector`, T3 timestamps |
-| End-to-end latency p50…p99.99 | `metrics.Collector`, T3 − scheduled |
-| Submit latency | T2 − T1 |
-| Commit latency | T3 − T2 |
-| Failure rate | invalid + errored + timed-out over submitted |
-| Host CPU / memory / disk | node_exporter + cAdvisor, or the built-in `docker stats` sampler |
+| Metric | Source | Notes |
+| ------ | ------ | ----- |
+| Confirmed TPS | `metrics.Collector`, T3 timestamps | all platforms |
+| End-to-end latency p50…p99.99 | `metrics.Collector`, T3 − scheduled | all platforms |
+| Submit latency | T2 − T1 | **Fabric-X: N/A** — the tokens REST POST is synchronous to finality, so there is no separable ack. The adapter reports `AckTime = now`; ignore Fabric-X submit/commit split. |
+| Commit latency | T3 − T2 | same caveat for Fabric-X |
+| Failure rate | invalid + errored + timed-out over submitted | all platforms |
+| Host CPU / memory / disk | node_exporter + cAdvisor, or the built-in `docker stats` sampler | all platforms |
+
+For Fabric-X, compare **E2E latency and confirmed TPS only**; the T1/T2/T3
+breakdown is not meaningful (see adr-003).
 
 ## Not comparable — platform-native metrics
 

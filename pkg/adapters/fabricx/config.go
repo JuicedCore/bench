@@ -5,102 +5,91 @@ import (
 	"time"
 )
 
-// Config is the Fabric-X adapter's connection + endpoint configuration, decoded
-// from the run config's `adapter:` map.
+// Config is the Fabric-X adapter configuration, decoded from the run config's
+// `adapter:` map.
 //
-// The adapter talks HTTP to the REST façade the Fabric-X tokens sample exposes
-// in front of an FSC client node (see
-// docs/decisions/adr-003-fabricx-fsc-view-and-rest.md). The exact routes below
-// are an ASSUMED contract - they are all overridable so they can be corrected
-// against the real sample without touching adapter logic.
+// The adapter is an HTTP client for the fabric-x-samples "tokens" REST services
+// plus one custom route:
+//
+//   - native transfer  -> POST {OwnerURL}/owner/accounts/{sender}/transfer   (real, from swagger.yaml)
+//   - native issue      -> POST {IssuerURL}/issuer/issue                      (real)
+//   - normalized kv     -> POST {KVURL}/kv                                    (custom FSC view, deploy/docker/fabricx/kvview)
+//   - state read        -> GET  {OwnerURL}/owner/accounts/{id}?code=<type>    (real)
+//
+// The token transfer/issue POST is SYNCHRONOUS to finality
+// (service/fsc.go runs ttx.NewOrderingAndFinalityView before returning), so for
+// Fabric-X there is no separable submit-ack (T2). The adapter reports T1 and T3;
+// submit latency is N/A. See docs/architecture/fairness-guarantees.md and adr-003.
 type Config struct {
-	// BaseURL of the REST façade, e.g. "http://localhost:8080".
-	BaseURL string `yaml:"base_url"`
+	// OwnerURL fronts the owner service (swagger default :9500 for alice/bob).
+	OwnerURL string `yaml:"owner_url"`
+	// IssuerURL fronts the issuer service (swagger default :9100).
+	IssuerURL string `yaml:"issuer_url"`
+	// KVURL fronts the custom kv-write view service (deploy/docker/fabricx/kvview).
+	KVURL string `yaml:"kv_url"`
 
-	// Routes. %s in TxStatusRoute / TxWaitRoute is replaced with the tx id.
-	KVRoute       string `yaml:"kv_route"`        // POST: normalized kv-* via a custom FSC view
-	TransferRoute string `yaml:"transfer_route"` // POST: native Token SDK transfer
-	TxStatusRoute string `yaml:"tx_status_route"` // GET:  poll commit status
-	TxWaitRoute   string `yaml:"tx_wait_route"`   // GET:  optional long-poll to finality ("" disables)
-
-	// FinalityMode: "poll" or "longpoll". longpoll uses TxWaitRoute; poll loops
-	// TxStatusRoute every PollInterval.
-	FinalityMode string        `yaml:"finality_mode"`
-	PollInterval time.Duration `yaml:"poll_interval"`
-
-	HTTPTimeout time.Duration `yaml:"http_timeout"`
+	// SenderAccount is the {id} path segment for owner routes (e.g. "alice").
+	SenderAccount string `yaml:"sender_account"`
+	// CounterpartyNode is the FSC node holding the recipient account (e.g. "owner1").
+	CounterpartyNode string `yaml:"counterparty_node"`
+	// TokenCode is the token type for transfer/issue amounts (swagger default "EURX").
+	TokenCode string `yaml:"token_code"`
 
 	// MetricsEndpointURL is the committer's /metrics (informational only).
 	MetricsEndpointURL string `yaml:"metrics_endpoint"`
 
-	// Owner identities for the token workload; if empty the adapter derives
-	// "acct-<n>" names from the transaction keys.
-	TokenType string `yaml:"token_type"`
+	HTTPTimeout time.Duration `yaml:"http_timeout"`
 }
 
 func (c *Config) applyDefaults() {
-	if c.BaseURL == "" {
-		c.BaseURL = "http://localhost:8080"
+	if c.OwnerURL == "" {
+		c.OwnerURL = "http://localhost:9500"
 	}
-	if c.KVRoute == "" {
-		c.KVRoute = "/api/v1/kv"
+	if c.IssuerURL == "" {
+		c.IssuerURL = "http://localhost:9100"
 	}
-	if c.TransferRoute == "" {
-		c.TransferRoute = "/api/v1/tokens/transfer"
+	if c.KVURL == "" {
+		c.KVURL = "http://localhost:9700"
 	}
-	if c.TxStatusRoute == "" {
-		c.TxStatusRoute = "/api/v1/tx/%s"
+	if c.SenderAccount == "" {
+		c.SenderAccount = "alice"
 	}
-	if c.TxWaitRoute == "" {
-		c.TxWaitRoute = "/api/v1/tx/%s/wait"
+	if c.CounterpartyNode == "" {
+		c.CounterpartyNode = "owner1"
 	}
-	if c.FinalityMode == "" {
-		c.FinalityMode = "poll"
-	}
-	if c.PollInterval == 0 {
-		c.PollInterval = 100 * time.Millisecond
+	if c.TokenCode == "" {
+		c.TokenCode = "EURX"
 	}
 	if c.HTTPTimeout == 0 {
-		c.HTTPTimeout = 30 * time.Second
-	}
-	if c.TokenType == "" {
-		c.TokenType = "BENCH"
+		// generous: the transfer POST blocks to finality.
+		c.HTTPTimeout = 2 * time.Minute
 	}
 }
 
 func (c *Config) validate() error {
-	if c.BaseURL == "" {
-		return fmt.Errorf("fabricx: base_url is required")
-	}
-	switch c.FinalityMode {
-	case "poll", "longpoll":
-	default:
-		return fmt.Errorf("fabricx: finality_mode must be poll or longpoll, got %q", c.FinalityMode)
-	}
-	if c.FinalityMode == "longpoll" && c.TxWaitRoute == "" {
-		return fmt.Errorf("fabricx: finality_mode=longpoll needs tx_wait_route")
+	if c.OwnerURL == "" && c.KVURL == "" {
+		return fmt.Errorf("fabricx: owner_url or kv_url is required")
 	}
 	return nil
 }
 
 func configFromExtra(extra map[string]any) (*Config, error) {
 	c := &Config{}
-	str := func(k string) (string, bool) {
-		if extra == nil {
-			return "", false
+	if extra != nil {
+		str := func(k string) string { s, _ := extra[k].(string); return s }
+		c.OwnerURL = str("owner_url")
+		c.IssuerURL = str("issuer_url")
+		c.KVURL = str("kv_url")
+		if s := str("sender_account"); s != "" {
+			c.SenderAccount = s
 		}
-		v, ok := extra[k].(string)
-		return v, ok
-	}
-	for k, dst := range map[string]*string{
-		"base_url": &c.BaseURL, "kv_route": &c.KVRoute, "transfer_route": &c.TransferRoute,
-		"tx_status_route": &c.TxStatusRoute, "tx_wait_route": &c.TxWaitRoute,
-		"finality_mode": &c.FinalityMode, "metrics_endpoint": &c.MetricsEndpointURL,
-		"token_type": &c.TokenType,
-	} {
-		if v, ok := str(k); ok {
-			*dst = v
+		if s := str("counterparty_node"); s != "" {
+			c.CounterpartyNode = s
 		}
+		if s := str("token_code"); s != "" {
+			c.TokenCode = s
+		}
+		c.MetricsEndpointURL = str("metrics_endpoint")
 	}
 	c.applyDefaults()
 	if err := c.validate(); err != nil {
