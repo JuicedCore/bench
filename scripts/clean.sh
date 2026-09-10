@@ -47,10 +47,16 @@ fi
 log "stopping all platforms + monitoring"
 bash scripts/down-all.sh local || true
 
-# 2. generated chaincode images
-log "removing generated chaincode images"
+# 2. generated chaincode images + orphaned build-intermediate containers
+log "removing generated chaincode images + build intermediates"
 docker images --format '{{.Repository}}:{{.Tag}}' | grep -E '^dev-peer[0-9].*-kvstore' | xargs -r docker rmi -f >/dev/null 2>&1 || true
 docker images --filter dangling=true --filter label=org.hyperledger.fabric -q | xargs -r docker rmi -f >/dev/null 2>&1 || true
+# "Created" (never-started) containers whose image is a bare 12-hex id with no
+# repo:tag - these are Fabric/Drunix ccenv chaincode-build intermediates the
+# peer orphaned. Named images (i.e. the user's own containers) are left alone.
+docker ps -a --filter status=created --format '{{.ID}} {{.Image}}' \
+  | awk '$2 ~ /^[0-9a-f]{12}$/ {print $1}' \
+  | xargs -r docker rm -f >/dev/null 2>&1 || true
 
 # 3. dangling compose_* volumes left by the sample networks
 log "removing bench compose volumes"
