@@ -6,9 +6,9 @@ source "$(dirname "${BASH_SOURCE[0]}")/../lib.sh"
 need docker; need curl; need jq
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-FABRIC_VERSION="${FABRIC_VERSION:-3.1.1}"
-FABRIC_CA_VERSION="${FABRIC_CA_VERSION:-1.5.15}"
-SAMPLES_TAG="${SAMPLES_TAG:-v3.1.1}"
+FABRIC_VERSION="${FABRIC_VERSION:-3.1.5}"
+FABRIC_CA_VERSION="${FABRIC_CA_VERSION:-1.5.22}"
+SAMPLES_REF="${SAMPLES_REF:-main}"
 CACHE="${HERE}/.cache"
 SAMPLES="${CACHE}/fabric-samples"
 CHANNEL="${CHANNEL:-mychannel}"
@@ -17,8 +17,8 @@ CC_SRC="${REPO_ROOT}/chaincodes/kvstore"
 
 mkdir -p "$CACHE"
 if [ ! -d "$SAMPLES/.git" ]; then
-  log "cloning fabric-samples @ ${SAMPLES_TAG}"
-  git clone --depth 1 --branch "$SAMPLES_TAG" https://github.com/hyperledger/fabric-samples.git "$SAMPLES"
+  log "cloning fabric-samples @ ${SAMPLES_REF}"
+  git clone --depth 1 --branch "$SAMPLES_REF" https://github.com/hyperledger/fabric-samples.git "$SAMPLES"
 fi
 if [ ! -x "${SAMPLES}/bin/peer" ]; then
   log "installing Fabric ${FABRIC_VERSION} binaries + docker images"
