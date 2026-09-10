@@ -9,3 +9,4 @@ deploy/docker/*/connection.env
 *.test
 __pycache__/
 /chaincodes/*/vendor/
+deploy/docker/.cache/
