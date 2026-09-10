@@ -1,0 +1,73 @@
+// Faithful SUBSET of the NeuChain client-path protobuf messages, transcribed
+// from iDC-NEU/NeuChain @ ev (commit 5180d5e85ff152eac9c8773378cce84a205080b2):
+//   include/proto/transaction.proto  -> TransactionPayload
+//   include/proto/tpc-c.proto        -> YCSB_PAYLOAD
+//   include/proto/comm.proto         -> UserRequest, UserQueryRequest, QueryResult, KVRead
+//   include/proto/block.proto        -> Block, BlockHeader, BlockData, BlockMetadata
+//
+// Field numbers and types match upstream exactly. The block "result frame"
+// inside BlockData.data entries is NOT protobuf - it is hand-rolled varint
+// framing decoded in resultframe.go (see docs/platforms/neuchain-client-implementation.md).
+syntax = "proto3";
+
+package neuchain;
+option go_package = "github.com/juicedcore/bench/pkg/adapters/neuchain/proto";
+
+// transaction.proto
+message TransactionPayload {
+  bytes  header  = 1; // chaincode function name
+  bytes  payload = 2; // serialized YCSB_PAYLOAD
+  uint64 nonce   = 3; // rand64 | (seq << 32)
+  bytes  digest  = 4; // left empty by the client; server fills
+}
+
+// tpc-c.proto
+message YCSB_PAYLOAD {
+  repeated bytes reads  = 1;
+  repeated bytes update = 2;
+  bytes          table  = 3;
+}
+
+// comm.proto
+message UserRequest {
+  bytes payload = 1; // serialized TransactionPayload
+  bytes digest  = 2; // RSA-1024 PKCS1v15 SHA-256 signature over payload; also the tx id
+}
+
+message UserQueryRequest {
+  bytes type    = 1; // "tip_query" | "block_query"
+  bytes payload = 2; // "" | decimal block number
+  bytes digest  = 3; // signature over payload
+}
+
+message KVRead {
+  string table = 1;
+  string key   = 2;
+  bytes  value = 3;
+}
+
+message QueryResult {
+  bytes           proof = 1;
+  repeated KVRead  reads = 2;
+}
+
+// block.proto
+message BlockHeader {
+  uint64 number        = 1;
+  bytes  previous_hash = 2;
+  bytes  data_hash     = 3;
+}
+
+message BlockData {
+  repeated bytes data = 1; // each entry is a hand-rolled result frame (see resultframe.go)
+}
+
+message BlockMetadata {
+  repeated bytes metadata = 1;
+}
+
+message Block {
+  BlockHeader   header   = 1;
+  BlockData     data     = 2;
+  BlockMetadata metadata = 3;
+}

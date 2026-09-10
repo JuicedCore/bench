@@ -1,0 +1,22 @@
+NeuChain client-path protobuf messages.
+
+repo:   https://github.com/iDC-NEU/NeuChain.git
+ref:    ev
+commit: 5180d5e85ff152eac9c8773378cce84a205080b2
+
+neuchain.proto is a hand-transcribed SUBSET of:
+  include/proto/transaction.proto   TransactionPayload
+  include/proto/tpc-c.proto         YCSB_PAYLOAD
+  include/proto/comm.proto          UserRequest, UserQueryRequest, QueryResult, KVRead
+  include/proto/block.proto         Block, BlockHeader, BlockData, BlockMetadata
+
+Field numbers/types match upstream exactly. Upstream protos carry no
+'option go_package'; that is the only addition here. The block "result frame"
+is not protobuf - see resultframe.go.
+
+regenerate:
+  cd pkg/adapters/neuchain/proto
+  protoc -I . --go_out=. --go_opt=paths=source_relative neuchain.proto
+
+To re-verify against a fresh checkout:
+  scripts/neuchain-proto-spike.sh   # pulls the real upstream .proto files

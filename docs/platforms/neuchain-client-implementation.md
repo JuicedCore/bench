@@ -157,17 +157,25 @@ msp_note:                   "NeuChain EV: RSA-1024 user signature over the seria
 
 ## 6. Validation plan
 
-- [ ] `scripts/neuchain-proto-spike.sh` generates stubs that compile.
-- [ ] Unit test: build a `UserRequest` in Go, sign with a test RSA-1024 key,
-      verify with Go's `rsa.VerifyPKCS1v15` (round-trip) and against an
-      OpenSSL-generated signature of the same bytes (cross-impl).
-- [ ] Unit test: decode a hand-crafted result frame, assert tid/epoch/digest/
-      result.
+- [x] Protobuf stubs compile. `pkg/adapters/neuchain/proto/neuchain.proto` is a
+      faithful field-number-exact subset (transaction / tpc-c / comm / block);
+      `proto/ORIGIN` records the commit + how to re-verify against a fresh
+      checkout via `scripts/neuchain-proto-spike.sh`.
+- [x] Unit test `TestSignerRoundTrip`: RSA-1024 PKCS1v15-SHA256 sign → verify;
+      signature is 128 bytes. `TestLoadSignerRejectsEncrypted`.
+- [x] Unit test `TestDecodeResultFrame` / `…Truncated`: varint frame decode,
+      COMMIT→valid, ABORT→invalid, truncated→error.
+- [x] Unit test `TestBuildInvokeShape`: `UserRequest.digest == sig`; signature is
+      over the marshaled `TransactionPayload`; transfer → 2 reads + 2 updates;
+      nonce low 32 bits == seq; header == func name.
 - [ ] Integration (`//go:build integration`, live 4-node NeuChain): submit 10
       writes, poll to finality, assert every digest resolves to `COMMIT` and
       `T1 ≤ T2 ≤ T3`.
 - [ ] Cross-check harness TPS against NeuChain's own `StatusThread` KTPS log over
       the same window (within ~10%).
+- [ ] Confirm the `:7003` reply for `tip_query` is a bare ASCII integer and
+      `block_query` is a serialized `block.Block` on the deployed `ev` build
+      (matches source read; verify on a real node).
 
 ## 7. Known divergences from the VLDB paper setup
 

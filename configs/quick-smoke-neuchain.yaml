@@ -1,0 +1,38 @@
+# 30s NeuChain sanity run.
+#   bash deploy/docker/neuchain/up.sh local
+#   set -a; source deploy/docker/neuchain/connection.env; set +a
+#   benchrunner run --config configs/quick-smoke-neuchain.yaml --platform neuchain
+name: quick-smoke-neuchain
+platform: neuchain
+workload: kv-write
+profile: local
+normalized: true
+
+load:
+  mode: open-loop
+  target_tps: 50
+  hold_duration: 30s
+  key_distribution: uniform
+  key_space: 5000
+  finality_wait: 30s
+  seed: 1
+
+metrics:
+  warmup: 5s
+  cooldown: 3s
+  output_dir: ./results
+  output_format: json
+
+system_metrics:
+  enabled: true
+  sample_interval: 1s
+  container_names: ["neuchain", "block-server", "epoch-server"]
+
+adapter:
+  block_servers: "${BENCH_ADAPTER_BLOCK_SERVERS}"
+  query_endpoint: "${BENCH_ADAPTER_QUERY_ENDPOINT}"
+  user_priv_key_path: "${BENCH_ADAPTER_USER_PRIV_KEY_PATH}"
+  user_pub_key_path: "${BENCH_ADAPTER_USER_PUB_KEY_PATH}"
+  func_name: "${BENCH_ADAPTER_FUNC_NAME}"
+  table_name: "${BENCH_ADAPTER_TABLE_NAME}"
+  poll_interval: 50ms
