@@ -28,17 +28,40 @@ Full breakdown + why the two remaining items need heavy compute or GCP creds:
 | `neuchain` (pure-Go ZMQ+protobuf+RSA) | ✅ unit-tested (sign, result-frame, tx-build, finality timestamping) | — | server binaries need a 45–90 min C++ build — **compute gated**, `deploy/docker/neuchain/build.sh`. Runs the full normalized mode set once built |
 | GCP campaign | `scripts/gcp-run.sh` + Terraform ready | — | **credential gated** — provide `-var project=…` |
 
-## Quick start
+## Quick start on a fresh machine
 
 ```
-scripts/setup.sh                                   # build + monitoring + unit tests
+git clone <this repo> && cd bench
+scripts/preflight.sh                 # can THIS host run it, and with which profile?
+scripts/setup.sh [profile]           # build + unit tests + monitoring stack
 ./bin/benchrunner run --config configs/normalized/quick-smoke.yaml --platform mock   # no network needed
+```
 
+`preflight.sh` checks tooling, the Docker daemon, and — the part that actually
+bites — whether the host has the CPU/RAM/disk the profile budgets. A run on an
+over-committed host measures swap, not the platform. If `local` (16 GB) does not
+fit, it names one that does; pass that profile everywhere below.
+
+Then one platform end to end:
+
+```
 ./bin/benchrunner setup --platform fabric-cft --profile local
 set -a; source deploy/docker/fabric-cft/connection.env; set +a
 ./bin/benchrunner run --config configs/normalized/probe-sweep.yaml --platform fabric-cft
 ./bin/benchrunner teardown --platform fabric-cft
 ```
+
+Or the whole comparison, one platform at a time with full inter-run isolation —
+this is what produces the head-to-head table:
+
+```
+scripts/run-all.sh configs/normalized/probe-sweep.yaml local fabric-cft fabric-bft drunix
+# -> docs/reports/comparison.html
+```
+
+Note the Fabric-family platforms (`fabric-cft`, `fabric-bft`, `drunix`) share
+ports and container names, so **only one can be up at a time**; `run-all.sh`
+sequences and isolates them for you.
 
 Bring up / tear down / wipe **everything** at once:
 
@@ -90,4 +113,22 @@ docs/                architecture, per-platform notes, workloads, 15 ADRs, guide
 ## Requirements
 
 Go 1.26+, Docker + compose plugin, `git`, `curl`, `jq`, `python3` (+ `matplotlib`
-for charts). Drunix needs a source checkout (`BENCH_DRUNIX_REPO`).
+for charts, `pyyaml` or `yq` for profile parsing). Drunix needs a source checkout
+(`BENCH_DRUNIX_REPO`). Run `scripts/preflight.sh` — it checks all of these plus
+host capacity and tells you what is missing.
+
+**Host sizing.** Profiles live in `deploy/profiles/`. `local` needs ~14 GB
+(11 GB platform + 2 GB load generator + 1 GB monitoring) on a 16 GB machine;
+`local-small` needs ~11 GB and fits a 13-14 GB host. Every fairness lever
+(orderer batch params, state DB, workload, seed, windows) is identical between
+them — only the resource envelope differs, and the manifest records it. Runs are
+comparable **within** a profile, never across profiles.
+
+Some platforms need more than this repo:
+
+| Platform | Extra requirement |
+| -------- | ----------------- |
+| `fabric-cft` / `fabric-bft` | none — images are pulled on first bring-up |
+| `drunix` | clones `github.com/npci/drunix`; pulls `npcioss/drunix-*` images |
+| `fabricx` | clones `fabric-x-samples` and builds a committer/orderer backend from source (~15-20 min, several GB) |
+| `neuchain` | a `bench/neuchain:ev` image from a 45-90 min C++ build (`deploy/docker/neuchain/build.sh`, ~25-30 GB disk, 6-10 GB RAM) |

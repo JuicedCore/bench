@@ -1,0 +1,73 @@
+# Local profile for a ~13-14 GB host (the `local` profile needs 16 GB and will
+# be refused by scripts/preflight.sh on a smaller machine).
+#
+#   Host OS         2 cores / 2 GB
+#   Load generator  2 cores / 2 GB
+#   Monitoring      1 core  / 1 GB
+#   Platform under test        8 cores / 8 GB   <-- budget below
+#
+# Everything that is a FAIRNESS LEVER is identical to local.yaml: the same
+# orderer_batch anchor, and state_db forced to leveldb for normalized runs by the
+# engine. Only the resource envelope differs, and the manifest records it - so
+# runs on this profile are comparable to each other, and NOT to runs on `local`.
+# Absolute throughput will be lower than `local`; the shape of the curves is what
+# carries over.
+name: local-small
+budget:
+  total_cpus: 8
+  total_memory_gb: 8
+  load_gen_cpus: 2
+
+# Identical to local.yaml - block-cutting must not vary across platforms OR
+# profiles, or nothing is comparable (adr-011).
+_orderer_batch_normalized: &orderer_batch_normalized
+  max_message_count: 100
+  absolute_max_bytes: "10 MB"
+  preferred_max_bytes: "2 MB"
+  batch_timeout: "1s"
+
+platforms:
+  fabric-cft:
+    nodes: {peer: 1, orderer: 1, ca: 1}
+    per_container: {cpus: 1.5, memory: "1600m"}
+    state_db: leveldb
+    orderer_batch: *orderer_batch_normalized
+
+  fabric-bft:
+    # SmartBFT needs 3f+1 orderers, minimum 4.
+    nodes: {peer: 1, orderer: 4, ca: 1}
+    per_container: {cpus: 1.0, memory: "1g"}
+    state_db: leveldb
+    orderer_batch: *orderer_batch_normalized
+
+  drunix:
+    nodes: {lite_peer: 1, committing_peer: 1, validation_service: 1, orderer: 1, keydb: 1, yugabyte: 1}
+    per_container: {cpus: 1.0, memory: "1200m"}
+    # YugabyteDB is permitted ONLY for platform-native runs; normalized runs are
+    # forced to leveldb by the engine. Note drunix's shipped test-network only
+    # wires the full node set for Yugabyte - see docs/platforms/drunix.md.
+    state_db: leveldb
+    orderer_batch: *orderer_batch_normalized
+
+  fabricx:
+    # Arma routers/batchers/consenters/assemblers plus the endorser, validator and
+    # committer microservices. Heavily starved at this size - see
+    # docs/architecture/fairness-guarantees.md.
+    nodes: {arma_router: 1, arma_batcher: 2, arma_consenter: 2, arma_assembler: 1, endorser: 1, validator: 1, committer: 1}
+    per_container: {cpus: 0.6, memory: "600m"}
+    load_gen_cpus: 2
+    state_db: leveldb
+    orderer_batch: *orderer_batch_normalized
+
+  neuchain:
+    nodes: {block_server: 4, epoch_server: 1}
+    per_container: {cpus: 1.0, memory: "1400m"}
+    load_gen_cpus: 2
+    state_db: leveldb
+    orderer_batch: {}
+
+  mock:
+    nodes: {node: 1}
+    per_container: {cpus: 1.0, memory: "1g"}
+    state_db: leveldb
+    orderer_batch: *orderer_batch_normalized
