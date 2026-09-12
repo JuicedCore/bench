@@ -1,3 +1,17 @@
+// Package fabricx is the PlatformAdapter for Hyperledger Fabric-X.
+//
+// Transactions are submitted by broadcasting a signed envelope to an Arma
+// router over gRPC, and outcomes are read from the sidecar's deliver stream.
+// Those are separate operations on separate connections, so unlike the previous
+// REST-based integration this adapter observes a genuine submit ack (T2)
+// distinct from finality (T3).
+//
+// Namespace bootstrap is NOT done here - it is a deploy-time concern handled by
+// deploy/docker/fabricx/up.sh, which registers the namespace's verification key
+// in the `_meta` namespace before the benchmark starts. This adapter only needs
+// the matching signing key.
+//
+// See docs/platforms/fabricx-integration.md.
 package fabricx
 
 import (
@@ -7,91 +21,82 @@ import (
 
 // Config is the Fabric-X adapter configuration, decoded from the run config's
 // `adapter:` map.
-//
-// The adapter is an HTTP client for the fabric-x-samples "tokens" REST services
-// plus one custom route:
-//
-//   - native transfer  -> POST {OwnerURL}/owner/accounts/{sender}/transfer   (real, from swagger.yaml)
-//   - native issue      -> POST {IssuerURL}/issuer/issue                      (real)
-//   - normalized kv     -> POST {KVURL}/kv                                    (custom FSC view, deploy/docker/fabricx/kvview)
-//   - state read        -> GET  {OwnerURL}/owner/accounts/{id}?code=<type>    (real)
-//
-// The token transfer/issue POST is SYNCHRONOUS to finality
-// (service/fsc.go runs ttx.NewOrderingAndFinalityView before returning), so for
-// Fabric-X there is no separable submit-ack (T2). The adapter reports T1 and T3;
-// submit latency is N/A. See docs/architecture/fairness-guarantees.md and adr-003.
 type Config struct {
-	// OwnerURL fronts the owner service (swagger default :9500 for alice/bob).
-	OwnerURL string `yaml:"owner_url"`
-	// IssuerURL fronts the issuer service (swagger default :9100).
-	IssuerURL string `yaml:"issuer_url"`
-	// KVURL fronts the custom kv-write view service (deploy/docker/fabricx/kvview).
-	KVURL string `yaml:"kv_url"`
+	// BroadcastEndpoint is the Arma router's host:port that accepts
+	// AtomicBroadcast (party 1's router by default).
+	BroadcastEndpoint string `yaml:"broadcast_endpoint"`
+	// DeliverEndpoint is where committed blocks are read from. The sidecar is
+	// preferred: it delivers blocks carrying per-transaction validation codes,
+	// which is what finality is decided on.
+	DeliverEndpoint string `yaml:"deliver_endpoint"`
 
-	// SenderAccount is the {id} path segment for owner routes (e.g. "alice").
-	SenderAccount string `yaml:"sender_account"`
-	// CounterpartyNode is the FSC node holding the recipient account (e.g. "owner1").
-	CounterpartyNode string `yaml:"counterparty_node"`
-	// TokenCode is the token type for transfer/issue amounts (swagger default "EURX").
-	TokenCode string `yaml:"token_code"`
+	// ChannelID is the Arma channel. armageddon hardcodes "arma".
+	ChannelID string `yaml:"channel_id"`
+	// Namespace is the application namespace transactions are written to.
+	Namespace string `yaml:"namespace"`
+	// SigningKeyPath is a PKCS#8 PEM ECDSA private key whose public half was
+	// registered as the namespace's policy at deploy time. Signatures are
+	// rejected if the two do not match.
+	SigningKeyPath string `yaml:"signing_key_path"`
 
-	// MetricsEndpointURL is the committer's /metrics (informational only).
+	// MetricsEndpointURL is the committer's /metrics, scraped once at end of run
+	// for the native (never cross-platform) section.
 	MetricsEndpointURL string `yaml:"metrics_endpoint"`
 
-	HTTPTimeout time.Duration `yaml:"http_timeout"`
+	// DialTimeout bounds connection setup in Setup.
+	DialTimeout time.Duration `yaml:"dial_timeout"`
 }
 
 func (c *Config) applyDefaults() {
-	if c.OwnerURL == "" {
-		c.OwnerURL = "http://localhost:9500"
+	if c.ChannelID == "" {
+		c.ChannelID = "arma"
 	}
-	if c.IssuerURL == "" {
-		c.IssuerURL = "http://localhost:9100"
+	if c.Namespace == "" {
+		c.Namespace = "0"
 	}
-	// KVURL is deliberately NOT defaulted. The kvview service is a stub that
-	// answers /kv with 501 (deploy/docker/fabricx/kvview), so defaulting to it
-	// made the normalized write path a guaranteed 100% failure while the working
-	// native write (token issue) was only reachable by explicitly clearing this.
-	// Configs that want the KV route now have to name it.
-	if c.SenderAccount == "" {
-		c.SenderAccount = "alice"
-	}
-	if c.CounterpartyNode == "" {
-		c.CounterpartyNode = "owner1"
-	}
-	if c.TokenCode == "" {
-		c.TokenCode = "EURX"
-	}
-	if c.HTTPTimeout == 0 {
-		// generous: the transfer POST blocks to finality.
-		c.HTTPTimeout = 2 * time.Minute
+	if c.DialTimeout == 0 {
+		c.DialTimeout = 10 * time.Second
 	}
 }
 
 func (c *Config) validate() error {
-	if c.OwnerURL == "" && c.KVURL == "" {
-		return fmt.Errorf("fabricx: owner_url or kv_url is required")
+	if c.BroadcastEndpoint == "" {
+		return fmt.Errorf("fabricx: broadcast_endpoint is required (Arma router host:port)")
+	}
+	if c.DeliverEndpoint == "" {
+		return fmt.Errorf("fabricx: deliver_endpoint is required (sidecar host:port)")
+	}
+	if c.SigningKeyPath == "" {
+		return fmt.Errorf("fabricx: signing_key_path is required; deploy/docker/fabricx/up.sh emits it")
 	}
 	return nil
 }
 
+// configFromExtra decodes the run config's `adapter:` map. Keys belonging to
+// other platforms are ignored, and an unset ${VAR} arrives as the empty string
+// rather than being absent - so "" always means unset, never a real value. That
+// is what lets one shared normalized config serve every platform.
 func configFromExtra(extra map[string]any) (*Config, error) {
 	c := &Config{}
 	if extra != nil {
 		str := func(k string) string { s, _ := extra[k].(string); return s }
-		c.OwnerURL = str("owner_url")
-		c.IssuerURL = str("issuer_url")
-		c.KVURL = str("kv_url")
-		if s := str("sender_account"); s != "" {
-			c.SenderAccount = s
-		}
-		if s := str("counterparty_node"); s != "" {
-			c.CounterpartyNode = s
-		}
-		if s := str("token_code"); s != "" {
-			c.TokenCode = s
-		}
+		c.BroadcastEndpoint = str("broadcast_endpoint")
+		c.DeliverEndpoint = str("deliver_endpoint")
+		c.SigningKeyPath = str("signing_key_path")
 		c.MetricsEndpointURL = str("metrics_endpoint")
+		if s := str("channel_id"); s != "" {
+			c.ChannelID = s
+		}
+		if s := str("namespace"); s != "" {
+			c.Namespace = s
+		}
+		if s := str("dial_timeout"); s != "" {
+			d, err := time.ParseDuration(s)
+			if err != nil {
+				return nil, fmt.Errorf("fabricx: bad dial_timeout %q: %w", s, err)
+			}
+			c.DialTimeout = d
+		}
 	}
 	c.applyDefaults()
 	if err := c.validate(); err != nil {

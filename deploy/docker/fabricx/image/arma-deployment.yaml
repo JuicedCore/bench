@@ -1,0 +1,35 @@
+# 4-party, 1-shard Arma on fx-node0 (172.29.0.10). TLS none on router/assembler
+# so the packed sidecar and SmallBank client can keep SC_*_TLS_MODE=none.
+# Intra-Arma consenter/batcher TLS stays on (armageddon default).
+
+Parties:
+  - ID: 1
+    AssemblerEndpoint: "172.29.0.10:6023"
+    ConsenterEndpoint: "172.29.0.10:6025"
+    RouterEndpoint: "172.29.0.10:6022"
+    BatchersEndpoints:
+      - "172.29.0.10:6024"
+
+  - ID: 2
+    AssemblerEndpoint: "172.29.0.10:6123"
+    ConsenterEndpoint: "172.29.0.10:6125"
+    RouterEndpoint: "172.29.0.10:6122"
+    BatchersEndpoints:
+      - "172.29.0.10:6124"
+
+  - ID: 3
+    AssemblerEndpoint: "172.29.0.10:6223"
+    ConsenterEndpoint: "172.29.0.10:6225"
+    RouterEndpoint: "172.29.0.10:6222"
+    BatchersEndpoints:
+      - "172.29.0.10:6224"
+
+  - ID: 4
+    AssemblerEndpoint: "172.29.0.10:6323"
+    ConsenterEndpoint: "172.29.0.10:6325"
+    RouterEndpoint: "172.29.0.10:6322"
+    BatchersEndpoints:
+      - "172.29.0.10:6324"
+
+UseTLSRouter: "none"
+UseTLSAssembler: "none"

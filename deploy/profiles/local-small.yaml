@@ -53,8 +53,8 @@ platforms:
     # Arma routers/batchers/consenters/assemblers plus the endorser, validator and
     # committer microservices. Heavily starved at this size - see
     # docs/architecture/fairness-guarantees.md.
-    nodes: {arma_router: 1, arma_batcher: 2, arma_consenter: 2, arma_assembler: 1, endorser: 1, validator: 1, committer: 1}
-    per_container: {cpus: 0.6, memory: "600m"}
+    nodes: {arma: 1, postgres: 1, pipeline: 1, committer: 1}
+    per_container: {cpus: 1.2, memory: "1200m"}
     load_gen_cpus: 2
     state_db: leveldb
     orderer_batch: *orderer_batch_normalized

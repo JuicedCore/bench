@@ -1,158 +1,176 @@
 package fabricx
 
 import (
-	"context"
-	"encoding/json"
-	"net/http"
-	"net/http/httptest"
-	"strings"
-	"sync/atomic"
+	"crypto/ecdsa"
+	"crypto/elliptic"
+	"crypto/rand"
+	"crypto/sha256"
+	"crypto/x509"
+	"encoding/pem"
+	"os"
+	"path/filepath"
 	"testing"
-	"time"
+
+	"github.com/hyperledger/fabric-x-common/api/applicationpb"
 
 	"github.com/juicedcore/bench/pkg/adapters"
 )
 
-// fakeFabricX implements the real fabric-x-samples token routes + the custom
-// /kv route. Token/kv POSTs are synchronous to finality (respond after delay).
-type fakeFabricX struct {
-	seq   atomic.Int64
-	delay time.Duration
-}
-
-func (f *fakeFabricX) handler() http.Handler {
-	mux := http.NewServeMux()
-	mux.HandleFunc("/healthz", func(w http.ResponseWriter, _ *http.Request) {
-		writeJSON(w, map[string]any{"message": "ok"})
-	})
-	mux.HandleFunc("/kv", func(w http.ResponseWriter, r *http.Request) {
-		var req kvRequest
-		_ = json.NewDecoder(r.Body).Decode(&req)
-		time.Sleep(f.delay)
-		id := "kvtx-" + itoa(f.seq.Add(1))
-		if req.Op == "read" {
-			writeJSON(w, kvResponse{TxID: id, Value: "", Found: false})
-			return
-		}
-		writeJSON(w, kvResponse{TxID: id})
-	})
-	mux.HandleFunc("/owner/accounts/", func(w http.ResponseWriter, r *http.Request) {
-		if strings.HasSuffix(r.URL.Path, "/transfer") {
-			time.Sleep(f.delay)
-			writeJSON(w, tokenResponse{Message: "transferred tokens", Payload: "tok-" + itoa(f.seq.Add(1))})
-			return
-		}
-		writeJSON(w, accountResponse{Message: "ok", Payload: account{
-			ID: "alice", Balance: []amount{{Code: "EURX", Value: 10000}},
-		}})
-	})
-	mux.HandleFunc("/issuer/issue", func(w http.ResponseWriter, _ *http.Request) {
-		time.Sleep(f.delay)
-		writeJSON(w, tokenResponse{Message: "issued", Payload: "iss-" + itoa(f.seq.Add(1))})
-	})
-	return mux
-}
-
-func writeJSON(w http.ResponseWriter, v any) {
-	w.Header().Set("Content-Type", "application/json")
-	_ = json.NewEncoder(w).Encode(v)
-}
-
-func itoa(n int64) string {
-	if n == 0 {
-		return "0"
-	}
-	var b []byte
-	for n > 0 {
-		b = append([]byte{byte('0' + n%10)}, b...)
-		n /= 10
-	}
-	return string(b)
-}
-
-func setup(t *testing.T, srvURL string) *Adapter {
+// writeTestKey emits a PKCS#8 PEM ECDSA key, the format up.sh exports and the
+// committer parses.
+func writeTestKey(t *testing.T) (string, *ecdsa.PrivateKey) {
 	t.Helper()
-	a := &Adapter{}
-	err := a.Setup(context.Background(), adapters.AdapterConfig{Extra: map[string]any{
-		"owner_url":  srvURL,
-		"issuer_url": srvURL,
-		"kv_url":     srvURL,
-	}})
+	key, err := ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
 	if err != nil {
-		t.Fatalf("setup: %v", err)
+		t.Fatal(err)
 	}
-	return a
+	der, err := x509.MarshalPKCS8PrivateKey(key)
+	if err != nil {
+		t.Fatal(err)
+	}
+	path := filepath.Join(t.TempDir(), "ns.pem")
+	if err := os.WriteFile(path, pem.EncodeToMemory(&pem.Block{Type: "PRIVATE KEY", Bytes: der}), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	return path, key
 }
 
-func TestFabricXKVWriteFinality(t *testing.T) {
-	fake := &fakeFabricX{delay: 120 * time.Millisecond}
-	srv := httptest.NewServer(fake.handler())
-	defer srv.Close()
-	a := setup(t, srv.URL)
-
-	ctx := context.Background()
-	sr, err := a.Submit(ctx, &adapters.Transaction{Kind: adapters.TxWrite, Key: "k1", Value: []byte("v1"), Seq: 1})
-	if err != nil {
-		t.Fatalf("submit: %v", err)
+func TestLoadNsSignerRejectsNonPEM(t *testing.T) {
+	path := filepath.Join(t.TempDir(), "junk.pem")
+	if err := os.WriteFile(path, []byte("not a pem"), 0o600); err != nil {
+		t.Fatal(err)
 	}
-	if sr.TxID == "" || !strings.HasPrefix(sr.TxID, "fx-") {
-		t.Fatalf("expected local correlation id, got %q", sr.TxID)
-	}
-	// Submit must return promptly (before the synchronous POST finishes).
-	if time.Since(sr.SubmitTime) > 80*time.Millisecond {
-		t.Errorf("Submit blocked %s - should return immediately", time.Since(sr.SubmitTime))
-	}
-
-	fr, err := a.WaitForFinality(ctx, sr.TxID, 5*time.Second)
-	if err != nil {
-		t.Fatalf("finality: %v", err)
-	}
-	if !fr.Valid || !strings.HasPrefix(fr.TxID, "kvtx-") {
-		t.Errorf("expected committed real kv tx id, got %+v", fr)
-	}
-	if fr.FinalityTime.Sub(sr.SubmitTime) < 120*time.Millisecond {
-		t.Errorf("finality returned before the synchronous POST could complete: %s", fr.FinalityTime.Sub(sr.SubmitTime))
+	if _, err := loadNsSigner(path); err == nil {
+		t.Fatal("expected an error for a non-PEM key file")
 	}
 }
 
-func TestFabricXTransfer(t *testing.T) {
-	fake := &fakeFabricX{delay: 10 * time.Millisecond}
-	srv := httptest.NewServer(fake.handler())
-	defer srv.Close()
-	a := setup(t, srv.URL)
+// The endorsement must verify under exactly the rule the committer applies:
+// ecdsa.VerifyASN1 over sha256 of the namespace's ASN.1 marshalling. If either
+// half drifts, every transaction fails validation on a live network with no
+// local signal, so this pins it.
+func TestEndorsementVerifiesTheWayTheCommitterChecksIt(t *testing.T) {
+	path, key := writeTestKey(t)
+	signer, err := loadNsSigner(path)
+	if err != nil {
+		t.Fatal(err)
+	}
 
-	sr, err := a.Submit(context.Background(), &adapters.Transaction{
-		Kind: adapters.TxTransfer, Key: "alice", DestKey: "bob", Amount: 1, Seq: 2,
+	const txID = "tx-under-test"
+	tx := &applicationpb.Tx{Namespaces: []*applicationpb.TxNamespace{{
+		NsId:        "0",
+		NsVersion:   0,
+		BlindWrites: []*applicationpb.Write{{Key: []byte("k"), Value: []byte("v")}},
+	}}}
+
+	if err := signer.endorse(txID, tx); err != nil {
+		t.Fatal(err)
+	}
+	if len(tx.Endorsements) != 1 {
+		t.Fatalf("got %d endorsement sets, want 1 per namespace", len(tx.Endorsements))
+	}
+	sigs := tx.Endorsements[0].GetEndorsementsWithIdentity()
+	if len(sigs) != 1 {
+		t.Fatalf("got %d signatures, want 1", len(sigs))
+	}
+
+	msg, err := tx.Namespaces[0].ASN1Marshal(txID, tx.Metadata)
+	if err != nil {
+		t.Fatal(err)
+	}
+	digest := sha256.Sum256(msg)
+	if !ecdsa.VerifyASN1(&key.PublicKey, digest[:], sigs[0].GetEndorsement()) {
+		t.Error("endorsement does not verify under sha256 + ecdsa.VerifyASN1")
+	}
+
+	// A different txID must not verify: the ID is inside the signed payload, so
+	// signatures cannot be replayed onto another transaction.
+	other, err := tx.Namespaces[0].ASN1Marshal("some-other-tx", tx.Metadata)
+	if err != nil {
+		t.Fatal(err)
+	}
+	otherDigest := sha256.Sum256(other)
+	if ecdsa.VerifyASN1(&key.PublicKey, otherDigest[:], sigs[0].GetEndorsement()) {
+		t.Error("endorsement verified against a different txID; the ID is not being bound in")
+	}
+}
+
+// A read must carry a write. The validator rejects read-only transactions with
+// MALFORMED_NO_WRITES, so kv-read would report 100% failure without this.
+func TestReadCarriesAUniqueBlindWrite(t *testing.T) {
+	a := &Adapter{cfg: &Config{Namespace: "0", ChannelID: "arma"}}
+
+	first, err := a.namespaceFor(&adapters.Transaction{Kind: adapters.TxRead, Key: "key-1", Seq: 1})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(first.ReadsOnly) != 1 {
+		t.Errorf("read set has %d entries, want 1", len(first.ReadsOnly))
+	}
+	if len(first.BlindWrites) != 1 {
+		t.Fatalf("read must carry a blind write, got %d", len(first.BlindWrites))
+	}
+
+	// Two reads of the SAME key must write different keys, or concurrent reads
+	// write-after-write conflict with each other and abort.
+	second, err := a.namespaceFor(&adapters.Transaction{Kind: adapters.TxRead, Key: "key-1", Seq: 2})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if string(first.BlindWrites[0].Key) == string(second.BlindWrites[0].Key) {
+		t.Errorf("two reads of the same key produced the same dummy write key %q; they would abort each other",
+			first.BlindWrites[0].Key)
+	}
+}
+
+func TestWriteAndTransferShape(t *testing.T) {
+	a := &Adapter{cfg: &Config{Namespace: "0", ChannelID: "arma"}}
+
+	w, err := a.namespaceFor(&adapters.Transaction{Kind: adapters.TxWrite, Key: "k", Value: []byte("v")})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(w.BlindWrites) != 1 || len(w.ReadWrites) != 0 {
+		t.Errorf("kv-write should be a single blind write, got %d blind / %d rw", len(w.BlindWrites), len(w.ReadWrites))
+	}
+
+	// transfer touches two accounts, which is what makes MVCC conflicts visible
+	// and must match the two-key shape the other platforms produce.
+	tr, err := a.namespaceFor(&adapters.Transaction{
+		Kind: adapters.TxTransfer, Key: "acct-1", DestKey: "acct-2", Value: []byte("1"),
 	})
 	if err != nil {
 		t.Fatal(err)
 	}
-	fr, err := a.WaitForFinality(context.Background(), sr.TxID, 3*time.Second)
-	if err != nil || !fr.Valid || !strings.HasPrefix(fr.TxID, "tok-") {
-		t.Fatalf("transfer finality: fr=%+v err=%v", fr, err)
+	if len(tr.ReadWrites) != 2 {
+		t.Fatalf("transfer should read-modify-write 2 accounts, got %d", len(tr.ReadWrites))
 	}
 }
 
-func TestFabricXReadReturnsQuickly(t *testing.T) {
-	fake := &fakeFabricX{delay: 5 * time.Millisecond}
-	srv := httptest.NewServer(fake.handler())
-	defer srv.Close()
-	a := setup(t, srv.URL)
-
-	sr, _ := a.Submit(context.Background(), &adapters.Transaction{Kind: adapters.TxRead, Key: "k1", Seq: 3})
-	fr, err := a.WaitForFinality(context.Background(), sr.TxID, time.Second)
-	if err != nil || !fr.Valid {
-		t.Fatalf("read finality: fr=%+v err=%v", fr, err)
+func TestConfigRejectsMissingEndpoints(t *testing.T) {
+	// Unset ${VAR} arrives as "" - it must be treated as missing, not accepted.
+	if _, err := configFromExtra(map[string]any{
+		"broadcast_endpoint": "", "deliver_endpoint": "", "signing_key_path": "",
+	}); err == nil {
+		t.Error("expected an error when the endpoints are empty")
 	}
 }
 
-func TestFabricXUnreachable(t *testing.T) {
-	a := &Adapter{}
-	err := a.Setup(context.Background(), adapters.AdapterConfig{Extra: map[string]any{
-		"owner_url": "http://127.0.0.1:1",
-		"kv_url":    "http://127.0.0.1:1",
-	}})
-	if err == nil {
-		t.Fatal("expected unreachable error")
+func TestConfigIgnoresForeignKeys(t *testing.T) {
+	// The shared normalized config carries every platform's keys; fabricx must
+	// ignore the others rather than choking on them.
+	cfg, err := configFromExtra(map[string]any{
+		"broadcast_endpoint": "localhost:6022",
+		"deliver_endpoint":   "localhost:4001",
+		"signing_key_path":   "/tmp/k.pem",
+		"peer_endpoint":      "localhost:7051",
+		"block_servers":      "localhost:5001",
+		"poll_interval":      "50ms",
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if cfg.ChannelID != "arma" || cfg.Namespace != "0" {
+		t.Errorf("defaults not applied: channel=%q ns=%q", cfg.ChannelID, cfg.Namespace)
 	}
 }

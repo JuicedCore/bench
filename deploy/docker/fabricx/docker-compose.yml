@@ -1,28 +1,73 @@
-# Just the custom kv-write view service. The Fabric-X network (Arma + committer)
-# and the token services (issuer/endorser/owner) come from fabric-x-samples
-# itself - `tokens/` `make setup && make start` - see up.sh. This service joins
-# the same `fabric_test` network so it can reach the committer / FSC config.
-name: bench-fabricx-kvview
+# Fabric-X benchmark topology: four containers from one image.
+#
+#   fabricx-arma      4-party / 1-shard Arma (16 processes: router, batcher,
+#                     consenter, assembler x4). Publishes party 1's router and
+#                     assembler, which is what the adapter broadcasts to.
+#   fabricx-db        PostgreSQL, the committer's state store.
+#   fabricx-pipeline  sidecar + verifier + coordinator.
+#   fabricx-committer validator-committer + query service.
+#
+# The load generator is NOT here - Bench drives load from the host over gRPC.
+#
+# Static IPs: Arma's generated configs are IP-keyed, so the subnet is pinned.
+# Resource limits come from the profile via BENCH_FX_* (up.sh exports them).
+name: bench-fabricx
+
+x-node: &node
+  image: ${BENCH_FX_IMAGE:-bench/fabricx:local}
+  restart: "no"
+  cpus: ${BENCH_FX_CPUS:-0.8}
+  mem_limit: ${BENCH_FX_MEM:-800m}
+  memswap_limit: ${BENCH_FX_MEM:-800m}
+  env_file: [./endpoints.env]
 
 services:
-  kvview:
-    image: bench/fabricx-rest:latest
-    build:
-      context: kvview
-    container_name: fabricx-kvview
-    environment:
-      KVVIEW_PORT: "9700"
-      KVVIEW_CONF: /etc/fabricx/kvview
-    volumes:
-      # mount the devnet's FSC config so the view can join the network
-      - ${FXS_DEVNET_CONF:-./.cache/fabric-x-samples/devnet/config}:/etc/fabricx/kvview:ro
-    ports:
-      - "9700:9700"
-    networks:
-      - fabric_test
-    restart: unless-stopped
+  fabricx-db:
+    <<: *node
+    command: ["db"]
+    networks: { fx: { ipv4_address: 172.29.0.11 } }
+    volumes: ["fx-pgdata:/var/lib/postgresql"]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+
+  fabricx-arma:
+    <<: *node
+    command: ["orderer"]
+    depends_on:
+      fabricx-db: { condition: service_healthy }
+    networks: { fx: { ipv4_address: 172.29.0.10 } }
+    volumes: ["fx-arma:/data/arma"]
+    # Party 1 router (broadcast) and assembler (deliver fallback). Chosen to
+    # avoid every port the other platforms and the monitoring stack use.
+    ports: ["6022:6022", "6023:6023"]
+
+  fabricx-pipeline:
+    <<: *node
+    command: ["pipeline"]
+    depends_on: [fabricx-arma]
+    networks: { fx: { ipv4_address: 172.29.0.12 } }
+    volumes: ["fx-ledger:/data/ledger"]
+    # Sidecar deliver stream - this is where the adapter reads finality from.
+    ports: ["4001:4001"]
+
+  fabricx-committer:
+    <<: *node
+    command: ["committer"]
+    depends_on: [fabricx-pipeline]
+    networks: { fx: { ipv4_address: 172.29.0.13 } }
+    # Committer metrics. 9643 is already reserved for fabricx in
+    # deploy/docker/monitoring/prometheus.yml and collides with nothing.
+    ports: ["9643:2116"]
 
 networks:
-  fabric_test:
-    name: fabric_test
-    external: true
+  fx:
+    ipam:
+      config: [{ subnet: 172.29.0.0/24 }]
+
+volumes:
+  fx-pgdata:
+  fx-arma:
+  fx-ledger:

@@ -64,15 +64,15 @@ differs is whether the platform can currently be brought up at all.
 
 ¹ Runs, with two automatic manifest caveats — see below.
 
-² **Fabric-X is not runnable today**, for two stacked reasons. Setup itself is
-fixed and reliable (three real `up.sh` bugs found and fixed; the original
-`fabric-x-committer:0.1.7` version-skew against the samples' bundled `tokens`
-app is resolved by building committer+orderer from source in
-`deploy/docker/fabricx/backend/`). What blocks it now is namespace bootstrap on
-that from-scratch network failing `ABORTED_SIGNATURE_INVALID`. On top of that,
-the `kv-*` modes need the `/kv` FSC view service
-(`deploy/docker/fabricx/kvview/`), which is still a stub answering 501. Full
-trail: [`docs/platforms/fabricx-comparability.md`](docs/platforms/fabricx-comparability.md).
+² **Fabric-X was rebuilt on its native gRPC path** and has not yet been
+live-verified. The previous REST/token integration is gone: it measured Fabric
+Smart Client and ZKP generation rather than Fabric-X, and never produced a
+number. The deploy now builds Arma + committer from pinned upstream tags and the
+adapter broadcasts to the Arma router, reading finality from the sidecar's
+deliver stream. See
+[`docs/platforms/fabricx-integration.md`](docs/platforms/fabricx-integration.md)
+and [adr-016](docs/decisions/adr-016-fabricx-native-grpc.md). Because submit and
+commit are separate operations, Fabric-X now reports a real submit latency.
 
 ³ **NeuChain has no server binaries yet** — a 45–90 min C++ build, see
 [`docs/neuchain/build-and-portability-guide.md`](docs/neuchain/build-and-portability-guide.md).
@@ -90,27 +90,11 @@ adapter's `configFromExtra` is a key lookup that ignores keys it does not know,
 and an undefined `${VAR}` expands to the empty string. `pkg/harness/configparity_test.go`
 asserts the levers stay identical and that every platform's keys are present.
 
-### Native set — `configs/native/` (per-platform ceilings)
+### Native set
 
-| Config | Platform | Workload | Status |
-| --- | --- | --- | --- |
-| `quick-smoke-fabricx.yaml` | fabricx | transfer | unverified² |
-| `probe-sweep-fabricx.yaml` | fabricx | transfer | unverified² |
-| `throughput-scan-fabricx.yaml` | fabricx | transfer | unverified² |
-| `latency-profile-fabricx.yaml` | fabricx | transfer | unverified² |
-| `contention-fabricx.yaml` | fabricx | transfer | unverified² |
-| `multi-client-fabricx.yaml` | fabricx | transfer | unverified² |
-
-These keep Fabric-X's small key spaces, low sweep ladders and short windows —
-correct as *native tuning*, which is why they no longer masquerade as the
-comparison set. They pin `kv_url: ""` so writes take the working token-`issue`
-path rather than the 501 stub.
-
-Drunix write runs carry two manifest caveats automatically (no flag needed): YugabyteDB
-vs LevelDB state-DB mismatch, and the client-side JSON-wrap workaround for a YugabyteDB
-statedb bug (see `docs/platforms/drunix.md`).
-
----
+There is currently no `configs/native/`. The six Fabric-X files that lived there
+targeted the REST token API, which the platform rebuild removed. Fabric-X now
+runs the same normalized modes as everything else.
 
 ## `quick-smoke.yaml` — 30s low-rate sanity check
 
@@ -130,7 +114,7 @@ source deploy/docker/fabric-bft/connection.env
 # drunix
 set -a; source deploy/docker/drunix/connection.env; set +a
 ./bin/benchrunner run --config configs/normalized/quick-smoke.yaml --platform drunix
-# fabricx (blocked - see footnote 2)
+# fabricx (rebuilt on native gRPC; unverified - see footnote 2)
 set -a; source deploy/docker/fabricx/connection.env; set +a
 ./bin/benchrunner run --config configs/normalized/quick-smoke.yaml --platform fabricx
 
@@ -163,7 +147,7 @@ source deploy/docker/fabric-bft/connection.env
 # drunix
 set -a; source deploy/docker/drunix/connection.env; set +a
 ./bin/benchrunner run --config configs/normalized/probe-sweep.yaml --platform drunix
-# fabricx (blocked - see footnote 2)
+# fabricx (rebuilt on native gRPC; unverified - see footnote 2)
 set -a; source deploy/docker/fabricx/connection.env; set +a
 ./bin/benchrunner run --config configs/normalized/probe-sweep.yaml --platform fabricx
 
@@ -190,7 +174,7 @@ source deploy/docker/fabric-bft/connection.env
 # drunix
 set -a; source deploy/docker/drunix/connection.env; set +a
 ./bin/benchrunner run --config configs/normalized/throughput-scan.yaml --platform drunix
-# fabricx (blocked - see footnote 2)
+# fabricx (rebuilt on native gRPC; unverified - see footnote 2)
 set -a; source deploy/docker/fabricx/connection.env; set +a
 ./bin/benchrunner run --config configs/normalized/throughput-scan.yaml --platform fabricx
 
@@ -218,7 +202,7 @@ source deploy/docker/fabric-bft/connection.env
 # drunix
 set -a; source deploy/docker/drunix/connection.env; set +a
 ./bin/benchrunner run --config configs/normalized/latency-profile.yaml --platform drunix
-# fabricx (blocked - see footnote 2)
+# fabricx (rebuilt on native gRPC; unverified - see footnote 2)
 set -a; source deploy/docker/fabricx/connection.env; set +a
 ./bin/benchrunner run --config configs/normalized/latency-profile.yaml --platform fabricx
 
@@ -247,7 +231,7 @@ source deploy/docker/fabric-bft/connection.env
 # drunix
 set -a; source deploy/docker/drunix/connection.env; set +a
 ./bin/benchrunner run --config configs/normalized/contention.yaml --platform drunix
-# fabricx (blocked - see footnote 2)
+# fabricx (rebuilt on native gRPC; unverified - see footnote 2)
 set -a; source deploy/docker/fabricx/connection.env; set +a
 ./bin/benchrunner run --config configs/normalized/contention.yaml --platform fabricx
 
@@ -276,7 +260,7 @@ source deploy/docker/fabric-bft/connection.env
 # drunix
 set -a; source deploy/docker/drunix/connection.env; set +a
 ./bin/benchrunner run --config configs/normalized/multi-client.yaml --platform drunix
-# fabricx (blocked - see footnote 2)
+# fabricx (rebuilt on native gRPC; unverified - see footnote 2)
 set -a; source deploy/docker/fabricx/connection.env; set +a
 ./bin/benchrunner run --config configs/normalized/multi-client.yaml --platform fabricx
 
@@ -285,35 +269,22 @@ set -a; source deploy/docker/neuchain/connection.env; set +a
 ./bin/benchrunner run --config configs/normalized/multi-client.yaml --platform neuchain
 ```
 
-## `configs/native/*-fabricx.yaml` — Fabric-X native set, currently blocked
-
-`transfer` workload over Fabric-X's native REST token-transfer route (owner/issuer/
-committer/arma services) — **previously documented as working, disproven by a live
-test this session.** `fabric-x-samples`' own token network fails at `endorser/init`
-(a version-skew bug between its bundled sample app and the committer image its own
-Ansible playbook pins — not caused by anything in this repo). See
-[`docs/platforms/fabricx-comparability.md`](docs/platforms/fabricx-comparability.md)
-for the full investigation.
-
-`kv-write`/`kv-read` remain separately blocked by the still-stubbed `kvview` FSC
-view service, independent of the above.
-
-The five additional configs (`contention-fabricx.yaml`, `probe-sweep-fabricx.yaml`,
-`throughput-scan-fabricx.yaml`, `latency-profile-fabricx.yaml`,
-`multi-client-fabricx.yaml`) mirror their Fabric-family namesakes' load shape
-(Zipfian contention, probe-and-sweep, ramp scan, fixed-rate latency profile,
-closed-loop worker pool) but retarget `workload: transfer` and swap in Fabric-X's
-adapter block — ready to run once the underlying devnet issue is fixed. All six
-files use the same command shape:
+## Fabric-X — bringing it up
 
 ```bash
-bash deploy/docker/fabricx/up.sh local
+bash deploy/docker/fabricx/up.sh local-small     # clones pinned sources, builds, starts, bootstraps the namespace
 set -a; source deploy/docker/fabricx/connection.env; set +a
-./bin/benchrunner run --config configs/native/quick-smoke-fabricx.yaml --platform fabricx
-# or: contention-fabricx.yaml / probe-sweep-fabricx.yaml / throughput-scan-fabricx.yaml /
-#     latency-profile-fabricx.yaml / multi-client-fabricx.yaml
-bash deploy/docker/fabricx/down.sh
+./bin/benchrunner run --config configs/normalized/quick-smoke.yaml --platform fabricx --profile local-small
+bash deploy/docker/fabricx/down.sh local-small
 ```
+
+Four containers from one image: Arma (4 parties, 16 processes), PostgreSQL, the
+sidecar/verifier/coordinator pipeline, and the validator-committer. Ports 6022
+(broadcast), 4001 (deliver) and 9643 (metrics) — none of which collide with the
+Fabric family, NeuChain, or the monitoring stack.
+
+The first `up.sh` compiles Arma and the committer from source: 15-20 minutes and
+several GB. Subsequent runs reuse the image.
 
 ## `read-profile.yaml` — the kv-read leg of the normalized set
 

@@ -56,7 +56,7 @@ func TestNormalizedConfigsAreNormalized(t *testing.T) {
 			continue
 		}
 		if !cfg.Normalized {
-			t.Errorf("%s: normalized=false in configs/normalized - move it to configs/native", filepath.Base(p))
+			t.Errorf("%s: normalized=false in configs/normalized", filepath.Base(p))
 		}
 		if cfg.Load.Seed != 1 {
 			t.Errorf("%s: seed=%d, want 1 (one seed drives every generator across platforms)", filepath.Base(p), cfg.Load.Seed)
@@ -168,7 +168,7 @@ func TestUnionAdapterBlockLoadsOnEveryPlatform(t *testing.T) {
 		// back to adapter defaults instead of reading its connection.env.
 		for _, key := range []string{
 			"peer_endpoint", "channel", "chaincode", // fabric family
-			"owner_url", "kv_url", "sender_account", // fabricx
+			"broadcast_endpoint", "deliver_endpoint", "signing_key_path", // fabricx
 			"block_servers", "query_endpoint", "func_name", // neuchain
 		} {
 			if _, ok := cfg.Adapter[key]; !ok {

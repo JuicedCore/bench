@@ -56,7 +56,7 @@ bash deploy/docker/fabricx/down.sh
 **Currently still fails `endorser/init`** — `up.sh` will run to completion showing
 `relation "ns_token_namespace" does not exist`, a *different* error than
 before. `kv-write`/`kv-read` remain separately blocked by the `/kv` FSC view
-stub (`deploy/docker/fabricx/kvview/`, returns `501`).
+superseded: Fabric-X now runs on its native gRPC path (adr-016).
 
 Three real bugs were found and fixed in `up.sh` (stale `FXS_REF` never
 re-cloning, `endorser/init` silently swallowing failures, `tokens/`'s own

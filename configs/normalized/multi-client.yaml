@@ -55,12 +55,7 @@ system_metrics:
     - drunix
     - keydb
     - yugabyte
-    - arma          # fabricx
-    - owner
-    - issuer
-    - endorser
-    - committer
-    - validator
+    - fabricx       # fabricx (fabricx-arma / -db / -pipeline / -committer)
     - neuchain      # neuchain
     - block-server
     - epoch-server
@@ -81,15 +76,14 @@ adapter:
   tls_ca_cert_path: "${BENCH_ADAPTER_TLS_CA_CERT_PATH}"
   channel: "${BENCH_ADAPTER_CHANNEL}"
   chaincode: "${BENCH_ADAPTER_CHAINCODE}"
-  # fabricx. kv_url is named explicitly because the adapter no longer defaults
-  # it: normalized kv-* work must go through the FSC KV view, never silently
-  # fall back to the native token-issue path.
-  owner_url: "${BENCH_ADAPTER_OWNER_URL}"
-  issuer_url: "${BENCH_ADAPTER_ISSUER_URL}"
-  kv_url: "${BENCH_ADAPTER_KV_URL}"
-  sender_account: "${BENCH_ADAPTER_SENDER_ACCOUNT}"
-  counterparty_node: "${BENCH_ADAPTER_COUNTERPARTY_NODE}"
-  token_code: "${BENCH_ADAPTER_TOKEN_CODE}"
+  # fabricx: native gRPC. Submit by broadcasting to the Arma router, read
+  # finality from the sidecar's deliver stream. signing_key_path is the key whose
+  # public half is registered as the namespace policy at deploy time.
+  broadcast_endpoint: "${BENCH_ADAPTER_BROADCAST_ENDPOINT}"
+  deliver_endpoint: "${BENCH_ADAPTER_DELIVER_ENDPOINT}"
+  channel_id: "${BENCH_ADAPTER_CHANNEL_ID}"
+  namespace: "${BENCH_ADAPTER_NAMESPACE}"
+  signing_key_path: "${BENCH_ADAPTER_SIGNING_KEY_PATH}"
   # neuchain
   block_servers: "${BENCH_ADAPTER_BLOCK_SERVERS}"
   query_endpoint: "${BENCH_ADAPTER_QUERY_ENDPOINT}"

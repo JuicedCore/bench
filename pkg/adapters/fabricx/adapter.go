@@ -1,26 +1,16 @@
-// Package fabricx is the PlatformAdapter for Fabric-X (Arma ordering + FSC views
-// + Token SDK). It is an HTTP client for the fabric-x-samples "tokens" REST
-// services plus one custom "kv-write" view service
-// (deploy/docker/fabricx/kvview/) that provides the normalized KV path Fabric-X
-// otherwise lacks.
-//
-// Verified against hyperledger/fabric-x-samples/tokens/swagger.yaml:
-//   - token transfer POST (/owner/accounts/{id}/transfer) and issue POST
-//     (/issuer/issue) are SYNCHRONOUS to finality - the sample runs
-//     ttx.NewOrderingAndFinalityView before responding. There is therefore no
-//     separable submit-ack (T2) for Fabric-X: Submit kicks the POST off in the
-//     background and reports AckTime=now (advisory); WaitForFinality returns
-//     when the POST completes (T3). Submit latency is reported N/A in the
-//     manifest / fairness table. See docs/architecture/fairness-guarantees.md
-//     and docs/decisions/adr-003-fabricx-fsc-view-and-rest.md.
 package fabricx
 
 import (
 	"context"
-	"encoding/base64"
+	"crypto/rand"
 	"fmt"
 	"sync"
 	"time"
+
+	fxcommon "github.com/hyperledger/fabric-protos-go-apiv2/common"
+	"github.com/hyperledger/fabric-x-common/api/applicationpb"
+	"github.com/hyperledger/fabric-x-common/protoutil"
+	"google.golang.org/protobuf/proto"
 
 	"github.com/juicedcore/bench/pkg/adapters"
 )
@@ -31,20 +21,17 @@ func init() {
 	adapters.Register(platformName, func() adapters.PlatformAdapter { return &Adapter{} })
 }
 
-// Adapter implements adapters.PlatformAdapter for Fabric-X via its REST services.
+// Adapter implements adapters.PlatformAdapter for Fabric-X over its native gRPC
+// path: broadcast to an Arma router, finality from the sidecar's deliver stream.
 type Adapter struct {
-	cfg *Config
-	cl  *fscClient
+	cfg    *Config
+	signer *nsSigner
+	bc     *broadcaster
+	dl     *deliverer
 
-	mu      sync.Mutex
-	pending map[string]chan finalityMsg
-}
-
-type finalityMsg struct {
-	realTxID string
-	valid    bool
-	err      error
-	at       time.Time
+	mu       sync.Mutex
+	waiters  map[string]chan blockOutcome
+	resolved map[string]blockOutcome
 }
 
 func (a *Adapter) Name() string            { return platformName }
@@ -57,15 +44,17 @@ func (a *Adapter) MetricsEndpoint() string {
 	return a.cfg.MetricsEndpointURL
 }
 
-// CryptoInfo: Fabric-X keeps X.509 MSP identity; the committer verifies
-// signatures. The REST/FSC node sits in the measured path (disclosed, not
-// corrected).
+// CryptoInfo: application transactions carry an ECDSA-P256 endorsement over the
+// namespace's ASN.1 encoding, verified by the committer against the policy
+// registered for that namespace. Unlike the Fabric family there is no
+// per-transaction endorsement round-trip to a peer - the client signs directly.
 func (a *Adapter) CryptoInfo() adapters.CryptoInfo {
 	return adapters.CryptoInfo{
 		SignatureAlg:           "ECDSA-P256",
 		HashAlg:                "SHA-256",
 		PerTxEndorsementVerify: true,
-		MSPNote:                "Fabric-X: FSC view/session + Token SDK; committer verifies signatures. REST/FSC node is in the measured path; submit latency (T2-T1) is N/A - the sample POST blocks to finality.",
+		MSPNote: "Fabric-X: client-signed ECDSA endorsement per namespace, verified by the committer " +
+			"against the namespace policy registered in _meta at deploy time. No peer endorsement round-trip.",
 	}
 }
 
@@ -75,149 +64,210 @@ func (a *Adapter) Setup(ctx context.Context, ac adapters.AdapterConfig) error {
 		return err
 	}
 	a.cfg = cfg
-	a.cl = newFSCClient(cfg)
-	a.pending = map[string]chan finalityMsg{}
 
-	pctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+	if a.signer, err = loadNsSigner(cfg.SigningKeyPath); err != nil {
+		return err
+	}
+	a.waiters = map[string]chan blockOutcome{}
+	a.resolved = map[string]blockOutcome{}
+
+	dctx, cancel := context.WithTimeout(ctx, cfg.DialTimeout)
 	defer cancel()
-	if err := a.cl.health(pctx); err != nil {
-		return fmt.Errorf("fabricx: REST services unreachable (%s / %s): %w", cfg.OwnerURL, cfg.KVURL, err)
+
+	// Deliver first: a transaction broadcast before the stream is live would
+	// never be observed and would time out for no visible reason.
+	if a.dl, err = newDeliverer(cfg.DeliverEndpoint, cfg.ChannelID, a.onOutcomes); err != nil {
+		return err
+	}
+	if a.bc, err = newBroadcaster(dctx, cfg.BroadcastEndpoint); err != nil {
+		a.dl.close()
+		a.dl = nil
+		return err
 	}
 	return nil
 }
 
-// Teardown drains the pending map. The REST calls themselves are detached
-// goroutines bounded by HTTPTimeout, so they cannot be cancelled here, but
-// closing out the map stops WaitForFinality callers blocking forever on a tx
-// whose goroutine outlived the run, and releases the channels.
 func (a *Adapter) Teardown(context.Context) error {
+	if a.bc != nil {
+		a.bc.close()
+		a.bc = nil
+	}
+	if a.dl != nil {
+		a.dl.close()
+		a.dl = nil
+	}
+	a.mu.Lock()
+	a.waiters = map[string]chan blockOutcome{}
+	a.resolved = map[string]blockOutcome{}
+	a.mu.Unlock()
+	return nil
+}
+
+// onOutcomes routes a decoded block's results to whoever is waiting, or parks
+// them for a caller that has not arrived yet.
+func (a *Adapter) onOutcomes(outs []blockOutcome) {
 	a.mu.Lock()
 	defer a.mu.Unlock()
-	for id := range a.pending {
-		delete(a.pending, id)
-	}
-	return nil
-}
-
-// Submit starts the (synchronous-to-finality) REST call in the background and
-// returns immediately. The returned TxID is a local correlation id; the real
-// platform tx id is delivered to WaitForFinality.
-func (a *Adapter) Submit(ctx context.Context, tx *adapters.Transaction) (*adapters.SubmitResult, error) {
-	t1 := time.Now()
-	localID := fmt.Sprintf("fx-%d-%d", tx.Seq, t1.UnixNano())
-
-	ch := make(chan finalityMsg, 1)
-	a.mu.Lock()
-	a.pending[localID] = ch
-	a.mu.Unlock()
-
-	go func() {
-		// Detached from ctx: the load generator's per-submit ctx is short-lived,
-		// but this call legitimately runs until finality.
-		cctx, cancel := context.WithTimeout(context.Background(), a.cfg.HTTPTimeout)
-		defer cancel()
-
-		var (
-			realID string
-			err    error
-		)
-		switch tx.Kind {
-		case adapters.TxRead:
-			var kr *kvResponse
-			kr, err = a.cl.kvRead(cctx, tx.Key)
-			if kr != nil {
-				realID = kr.TxID
+	for _, o := range outs {
+		if ch, ok := a.waiters[o.txID]; ok {
+			select {
+			case ch <- o:
+			default:
 			}
-		case adapters.TxTransfer:
-			realID, err = a.cl.transfer(cctx, orDefault(tx.Key, a.cfg.SenderAccount), tx.DestKey, uint64(max64(tx.Amount, 1)))
-		default: // TxWrite
-			if a.cfg.KVURL != "" {
-				var kr *kvResponse
-				kr, err = a.cl.kvWrite(cctx, tx.Key, tx.Value)
-				if kr != nil {
-					realID = kr.TxID
-				}
-			} else {
-				realID, err = a.cl.issue(cctx, orDefault(tx.Key, a.cfg.SenderAccount), 1)
-			}
+			continue
 		}
-		ch <- finalityMsg{realTxID: realID, valid: err == nil, err: err, at: time.Now()}
-	}()
-
-	return &adapters.SubmitResult{TxID: localID, SubmitTime: t1, AckTime: time.Now()}, nil
+		a.resolved[o.txID] = o
+	}
 }
 
-// WaitForFinality blocks until the background REST call for localID completes.
-func (a *Adapter) WaitForFinality(ctx context.Context, localID string, timeout time.Duration) (*adapters.FinalityResult, error) {
-	a.mu.Lock()
-	ch, ok := a.pending[localID]
-	a.mu.Unlock()
-	if !ok {
-		return nil, fmt.Errorf("fabricx: no in-flight tx %s", localID)
+// Submit builds, signs and broadcasts one transaction. It returns as soon as the
+// router has taken the envelope - that is a real ack, so T2 is meaningful here.
+func (a *Adapter) Submit(_ context.Context, tx *adapters.Transaction) (*adapters.SubmitResult, error) {
+	if a.bc == nil {
+		return nil, fmt.Errorf("fabricx: adapter not set up")
 	}
+	t1 := time.Now()
+
+	txID, env, err := a.buildEnvelope(tx)
+	if err != nil {
+		return &adapters.SubmitResult{SubmitTime: t1}, err
+	}
+
+	// Register before sending so the deliver stream can never resolve a
+	// transaction we are not yet listening for.
+	a.mu.Lock()
+	if _, dup := a.waiters[txID]; !dup {
+		a.waiters[txID] = make(chan blockOutcome, 1)
+	}
+	a.mu.Unlock()
+
+	if err := a.bc.send(env); err != nil {
+		a.mu.Lock()
+		delete(a.waiters, txID)
+		a.mu.Unlock()
+		return &adapters.SubmitResult{TxID: txID, SubmitTime: t1}, err
+	}
+	return &adapters.SubmitResult{TxID: txID, SubmitTime: t1, AckTime: time.Now()}, nil
+}
+
+func (a *Adapter) WaitForFinality(ctx context.Context, txID string, timeout time.Duration) (*adapters.FinalityResult, error) {
+	a.mu.Lock()
+	if o, ok := a.resolved[txID]; ok {
+		delete(a.resolved, txID)
+		delete(a.waiters, txID)
+		a.mu.Unlock()
+		return finality(o), nil
+	}
+	ch, ok := a.waiters[txID]
+	if !ok {
+		ch = make(chan blockOutcome, 1)
+		a.waiters[txID] = ch
+	}
+	a.mu.Unlock()
+
 	defer func() {
 		a.mu.Lock()
-		delete(a.pending, localID)
+		delete(a.waiters, txID)
+		delete(a.resolved, txID)
 		a.mu.Unlock()
 	}()
 
 	select {
-	case m := <-ch:
-		id := m.realTxID
-		if id == "" {
-			id = localID
-		}
-		// A refusal by the REST facade is a terminal platform outcome, so report
-		// it as an invalid tx rather than an adapter error - otherwise every
-		// rejection lands in the "errored" bucket and the failure-rate breakdown
-		// cannot distinguish "the platform said no" from "we could not reach it".
-		// Transport failures still surface as errors.
-		if m.err != nil {
-			if isRejected(m.err) {
-				return &adapters.FinalityResult{TxID: id, FinalityTime: m.at, Valid: false}, nil
-			}
-			return nil, m.err
-		}
-		return &adapters.FinalityResult{TxID: id, FinalityTime: m.at, Valid: m.valid}, nil
+	case o := <-ch:
+		return finality(o), nil
 	case <-time.After(timeout):
-		return nil, fmt.Errorf("fabricx: finality timeout for %s", localID)
+		return nil, fmt.Errorf("fabricx: finality timeout for %s", txID)
 	case <-ctx.Done():
 		return nil, ctx.Err()
 	}
 }
 
-// Query reads an account balance (token workloads) or a kv key (normalized).
-func (a *Adapter) Query(ctx context.Context, key string) (*adapters.QueryResult, error) {
-	if a.cfg.KVURL != "" {
-		kr, err := a.cl.kvRead(ctx, key)
-		if err != nil || kr == nil {
-			return &adapters.QueryResult{Key: key}, nil
-		}
-		val, _ := base64.StdEncoding.DecodeString(kr.Value)
-		return &adapters.QueryResult{Key: key, Value: val, Found: kr.Found}, nil
+// finality reports T3 as the instant the block was observed on the deliver
+// stream. A non-VALID validation code is a platform verdict, so it comes back as
+// a terminal result with Valid=false rather than an error - that is what lets the
+// failure breakdown separate a rejected transaction from an unreachable platform.
+func finality(o blockOutcome) *adapters.FinalityResult {
+	return &adapters.FinalityResult{
+		TxID:         o.txID,
+		FinalityTime: o.observedAt,
+		BlockNum:     o.blockNum,
+		Valid:        o.valid,
 	}
-	acct, err := a.cl.balance(ctx, orDefault(key, a.cfg.SenderAccount))
-	if err != nil || acct == nil {
-		return &adapters.QueryResult{Key: key}, nil
-	}
-	for _, b := range acct.Balance {
-		if b.Code == a.cfg.TokenCode {
-			return &adapters.QueryResult{Key: key, Value: []byte(fmt.Sprintf("%d", b.Value)), Found: true}, nil
-		}
-	}
-	return &adapters.QueryResult{Key: key, Found: true}, nil
 }
 
-func orDefault(s, def string) string {
-	if s == "" {
-		return def
-	}
-	return s
+// Query is not wired: Fabric-X's query service is a separate endpoint from the
+// benchmark path, and nothing in the harness calls Query. Returns not-found so
+// workload verification degrades visibly rather than reporting a wrong value.
+func (a *Adapter) Query(context.Context, string) (*adapters.QueryResult, error) {
+	return &adapters.QueryResult{Found: false}, nil
 }
 
-func max64(a, b int64) int64 {
-	if a > b {
-		return a
+// buildEnvelope maps a normalized transaction onto a Fabric-X application
+// transaction and wraps it for broadcast. The envelope shape mirrors upstream's
+// own tx builder (loadgen/workload/tx_builder.go).
+func (a *Adapter) buildEnvelope(tx *adapters.Transaction) (string, *fxcommon.Envelope, error) {
+	nonce := make([]byte, 24)
+	if _, err := rand.Read(nonce); err != nil {
+		return "", nil, err
 	}
-	return b
+	sigHeader := &fxcommon.SignatureHeader{Nonce: nonce}
+	txID := protoutil.ComputeTxID(sigHeader.Nonce, sigHeader.Creator)
+
+	ns, err := a.namespaceFor(tx)
+	if err != nil {
+		return "", nil, err
+	}
+	appTx := &applicationpb.Tx{Namespaces: []*applicationpb.TxNamespace{ns}}
+	if err := a.signer.endorse(txID, appTx); err != nil {
+		return "", nil, err
+	}
+
+	chanHeader := protoutil.MakeChannelHeader(fxcommon.HeaderType_MESSAGE, 0, a.cfg.ChannelID, 0)
+	chanHeader.TxId = txID
+	body, err := proto.Marshal(appTx)
+	if err != nil {
+		return "", nil, err
+	}
+	payload, err := proto.Marshal(&fxcommon.Payload{
+		Header: protoutil.MakePayloadHeader(chanHeader, sigHeader),
+		Data:   body,
+	})
+	if err != nil {
+		return "", nil, err
+	}
+	return txID, &fxcommon.Envelope{Payload: payload}, nil
+}
+
+// namespaceFor maps the normalized workload onto Fabric-X read/write sets.
+func (a *Adapter) namespaceFor(tx *adapters.Transaction) (*applicationpb.TxNamespace, error) {
+	ns := &applicationpb.TxNamespace{NsId: a.cfg.Namespace, NsVersion: 0}
+
+	switch tx.Kind {
+	case adapters.TxRead:
+		// The validator rejects read-only transactions outright
+		// (MALFORMED_NO_WRITES), so a read must carry a write to be accepted at
+		// all. A unique blind write is used rather than echoing the value back,
+		// which would make concurrent reads of one key abort each other. This is
+		// overhead no other platform pays and is disclosed in the run caveats -
+		// see docs/workloads/mismatches.md.
+		ns.ReadsOnly = []*applicationpb.Read{{Key: []byte(tx.Key)}}
+		ns.BlindWrites = []*applicationpb.Write{{
+			Key:   []byte(fmt.Sprintf("_r/%s/%d", tx.Key, tx.Seq)),
+			Value: []byte{1},
+		}}
+
+	case adapters.TxTransfer:
+		// Read-modify-write on both accounts. Values are the workload's, not a
+		// computed balance: Fabric-X has no chaincode to evaluate a predicate,
+		// so the transfer is modelled as a two-key RW set of the same shape the
+		// other platforms produce.
+		ns.ReadWrites = []*applicationpb.ReadWrite{
+			{Key: []byte(tx.Key), Value: tx.Value},
+			{Key: []byte(tx.DestKey), Value: tx.Value},
+		}
+
+	default: // TxWrite
+		ns.BlindWrites = []*applicationpb.Write{{Key: []byte(tx.Key), Value: tx.Value}}
+	}
+	return ns, nil
 }

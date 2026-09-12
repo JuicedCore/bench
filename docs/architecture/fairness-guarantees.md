@@ -11,13 +11,14 @@ Collected the same way for every platform, from the same code path:
 | ------ | ------ | ----- |
 | Confirmed TPS | `metrics.Collector`, T3 timestamps | all platforms |
 | End-to-end latency p50…p99.99 | `metrics.Collector`, T3 − scheduled | all platforms |
-| Submit latency | T2 − T1 | **Fabric-X and NeuChain: N/A.** Fabric-X's tokens REST POST is synchronous to finality, so there is no separable ack. NeuChain's ZeroMQ PUB is fire-and-forget — there is no ack to receive. Both adapters report `AckTime = now`, which measures a local call return, not a platform acknowledgement. Ignore the submit/commit split for both. |
-| Commit latency | T3 − T2 | same caveat for Fabric-X and NeuChain |
+| Submit latency | T2 − T1 | **NeuChain: N/A** — its ZeroMQ PUB is fire-and-forget, so `AckTime = now` measures a local call return, not a platform acknowledgement. Ignore its submit/commit split. Fabric-X reports a real ack: the Arma router accepts the envelope for ordering strictly before commit. |
+| Commit latency | T3 − T2 | same caveat for NeuChain |
 | Failure rate | invalid + errored + timed-out over submitted | all platforms, but see the breakdown caveat below |
 | Host CPU / memory / disk | node_exporter + cAdvisor, or the built-in `docker stats` sampler | all platforms |
 
-For Fabric-X and NeuChain, compare **E2E latency and confirmed TPS only**; the
-T1/T2/T3 breakdown is not meaningful (see adr-003).
+For NeuChain, compare **E2E latency and confirmed TPS only**; its T1/T2/T3
+breakdown is not meaningful. Fabric-X's is, since it moved to the native gRPC
+path ([adr-016](../decisions/adr-016-fabricx-native-grpc.md)).
 
 ### Where T3 is stamped
 
@@ -29,7 +30,7 @@ the moment the harness got round to reading it:
 | -------- | -- |
 | fabric-cft / fabric-bft | `Commit.StatusWithContext` returns (push-based) |
 | drunix | the Committing Peer's filtered-block event is decoded |
-| fabricx | the synchronous REST POST returns (the whole FSC + HTTP stack is inside T3 — disclosed, see mismatches.md) |
+| fabricx | the sidecar's deliver stream yields the block carrying the transaction |
 | neuchain | the poller decodes the block carrying the tx |
 
 NeuChain's poller stamps once per block fetch and carries that instant through to
@@ -45,15 +46,11 @@ The aggregate failure rate is comparable. Its breakdown is not:
   MVCC conflict lands in `invalid` and a transport failure in `errored`.
 - **neuchain** reads the result frame (COMMIT / ABORT), which is a genuine
   platform verdict.
-- **fabricx** can only judge at the HTTP layer: a non-2xx (or a 2xx carrying an
-  error field) is classified `invalid`, anything else that fails is `errored`.
-  This distinguishes "the platform refused it" from "we could not reach it", but
-  it is *not* a committer validation code — an MVCC-style conflict and an
-  application-level refusal are indistinguishable. Fabric-X also reports no block
-  number.
+- **fabricx** reads the per-transaction validation code out of the block's
+  `TRANSACTIONS_FILTER` metadata — a real committer verdict, and it reports the
+  block number.
 
-Compare aggregate failure rate across platforms; compare the invalid/errored
-split only within the Fabric family.
+The invalid/errored split is now comparable across every platform.
 
 ## Not comparable — platform-native metrics
 

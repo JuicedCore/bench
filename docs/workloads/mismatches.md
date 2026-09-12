@@ -5,32 +5,28 @@ Where a normalized workload maps awkwardly onto a platform's model. Per
 anyway** and reported with an explicit caveat, never silently dropped — a missing
 data point is itself misleading.
 
-## Fabric-X + `kv-write` / `kv-read` / `kv-mixed`
+## Fabric-X + `kv-read`
 
-Fabric-X has no `PutState`/`GetState`, and — confirmed against
-`fabric-x-samples/tokens/swagger.yaml` — the sample REST façade has **no KV route
-at all** (token issue/transfer/redeem + account balance only). The harness runs a
-**custom FSC view service** (`deploy/docker/fabricx/kvview/`) that adds a `/kv`
-route doing a plain key/value write/read. It is still:
+The validator rejects read-only transactions outright (`MALFORMED_NO_WRITES`), so
+a read must carry a write to be accepted at all. The adapter attaches a unique
+blind write per read (`_r/<key>/<seq>`), unique so that concurrent reads of one
+key do not write-after-write conflict and abort each other.
 
-- a view/session round-trip, not a chaincode simulation;
-- carrying FSC negotiation overhead the EOV platforms do not have;
-- routed through an FSC client node + HTTP server in the measured path;
-- **synchronous to finality** — like the token routes, the view runs
-  ordering + finality before responding, so Fabric-X has no separable submit-ack
-  (T2). Only E2E latency and confirmed TPS are comparable for Fabric-X.
+That is overhead no other platform pays, and it means a Fabric-X "read" performs
+a state mutation. Read throughput is therefore a floor, not a like-for-like
+figure.
 
-**Caveat attached to these runs:** "Fabric-X KV via a custom FSC view — not a
-native Fabric-X primitive; the FSC node + HTTP server are in the measured path
-and have no equivalent on Fabric/Drunix/NeuChain. Submit latency is N/A (call is
-synchronous to finality). Compare E2E latency and TPS trends only."
+**Caveat:** "Fabric-X reads carry a unique dummy blind write; the validator
+rejects read-only transactions. Read cost includes a write no other platform
+performs."
 
-## Fabric-X + `transfer` (normalized)
+## Fabric-X + `transfer`
 
-`transfer` maps to a Token SDK `Transfer` — which *is* native — but the
-normalized run pins it to a value-transfer of amount 1 between two fixed-identity
-accounts, not a realistic multi-denomination UTXO flow. Native token behaviour
-(coin selection, change outputs) shows only in the platform-native run.
+There is no chaincode to evaluate a predicate, so `transfer` is modelled as a
+two-key read-modify-write carrying the workload's values rather than a computed
+balance. Contention behaviour — two accounts touched per transaction, hot keys
+colliding — is comparable. Token semantics, coin selection and change outputs are
+not exercised.
 
 ## NeuChain + `transfer`
 

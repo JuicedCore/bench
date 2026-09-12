@@ -282,49 +282,52 @@ go test -tags integration -run Integration ./pkg/adapters/drunix/
 
 ---
 
-## 4. Fabric-X — namespace-bootstrap blocker on a self-built backend; KV view still gated
+## 4. Fabric-X — REBUILT ON THE NATIVE PATH, NOT YET LIVE-VERIFIED
 
-**Status as of the most recent investigation (see
-[`docs/platforms/fabricx-comparability.md`](platforms/fabricx-comparability.md)
-for the full trail — start there, not here, before debugging):** Fabric-X
-`transfer` (token) workloads do **not** currently run. `fabric-x-samples/tokens`'
-Ansible-deployed committer (`fabric-x-committer:0.1.7`) has a version-skew bug
-against the samples' own bundled endorser app — fixed by building committer +
-orderer from source instead (`deploy/docker/fabricx/backend/`), confirmed
-working (RPC present, consensus running, blocks committing). What's blocking
-`transfer` now is a **different, narrower problem**: bootstrapping a namespace
-on that from-scratch network fails signature validation
-(`ABORTED_SIGNATURE_INVALID`). Every identity/command tried, and exact source
-pointers into `fabric-x-committer`/`fabric-x-orderer` for continuing the
-investigation, are in the comparability doc's "Lever C" section.
+The REST/token integration is gone. It was built on `fabric-x-samples/tokens`, a
+Token-SDK demo app, so it would have measured Fabric Smart Client and ZKP
+generation rather than Fabric-X — and it never produced a number. Post-mortem in
+[adr-003](decisions/adr-003-fabricx-fsc-view-and-rest.md); the replacement is
+[adr-016](decisions/adr-016-fabricx-native-grpc.md), with the research trail in
+[platforms/fabricx-integration.md](platforms/fabricx-integration.md).
 
-The normalised `kv-write` / `kv-read` workloads need a
-custom FSC view service (`deploy/docker/fabricx/kvview/`), which is currently a
-compiling stub (`POST /kv` → 501) with a **code-level implementation spec** in
-its `README.md` (confirmed against `fabric-smart-client@v0.20.0`'s
-`platform/fabric/services/endorser` API). This is gated on `transfer` working
-first (below), which is now itself gated on the namespace-bootstrap issue
-above.
+What exists now: the adapter broadcasts to an Arma router and reads finality from
+the sidecar deliver stream, and `deploy/docker/fabricx/up.sh` builds Arma +
+committer from pinned upstream tags, starts four containers, and bootstraps the
+namespace. Unit tests cover the signing path against upstream's exact
+verification rule.
 
-Finishing it needs a **running Fabric-X devnet** to build and iterate against:
+### What is left
 
-- The FSC node must join a real Fabric-X network (`common.StartFSC` against the
-  devnet's `core.yaml`), which means `fabric-x-samples/tokens` `make setup &&
-  make start` has to be up first — that builds Docker images and runs the Arma
-  ordering service + committer stack (compute-ish, ~15-20 min, several GB).
-- A dedicated chaincode namespace (`benchkv`) must be registered with the
-  Fabric-X **validator/committer** config in `fabric-x-samples/devnet` — a
-  one-line policy addition, but it requires editing and redeploying the devnet.
-- The FSC dep tree (`fabric-smart-client` + the sample's non-modular
-  `token-sdk/common` package) has to be vendored and the view logic iterated
-  against the live committer until commits land.
+A live run. Specifically:
 
-None of that can be exercised without the devnet running, so it is grouped with
-the compute-gated work. The Go adapter side is complete and route-configurable
-(`kv_url`, `KVRoute`); when the view service is finished it drops in with no
-adapter change.
+```
+bash deploy/docker/fabricx/up.sh local-small
+set -a; source deploy/docker/fabricx/connection.env; set +a
+./bin/benchrunner run --config configs/normalized/quick-smoke.yaml --platform fabricx --profile local-small
+```
 
----
+Unverified until that happens:
+
+- the first image build (15-20 min; compiles Arma and the committer),
+- whether `loadgen --only-namespace` satisfies the MAJORITY `LifecycleEndorsement`
+  policy in this exact 4-party configuration,
+- whether the sidecar's deliver stream is reachable on `:4001` from the host and
+  carries `TRANSACTIONS_FILTER` metadata in the shape the adapter decodes,
+- whether the exported namespace key is the one the committer validates against.
+
+A known-good reference deployment lives at
+`~/Projects/NeuChain/harness/fabric-x/` (~69 recorded runs,
+saturation knee around 1500 offered TPS on this host). Its workload is Blockbench
+SmallBank and it tunes blocks to 50 ms / 50 tx to match NeuChain, so its numbers
+are not ours — but it is the recipe this was rebuilt from and the place to check
+against when something does not come up.
+
+### Out of scope
+
+`kv-*` through an FSC view. The old `kvview` stub is deleted; the normalized KV
+workloads now map onto namespace read/write sets directly, which is both simpler
+and closer to what the platform actually does.
 
 ## Local lifecycle scripts
 

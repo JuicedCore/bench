@@ -46,54 +46,40 @@ Token-only. **No KV route.**
 the POST returns → the call blocks to finality. **Fabric-X has no separable
 submit-ack (T2).**
 
-## Adapter (`pkg/adapters/fabricx`)
+## Adapter
 
-HTTP client for the token routes above + one custom `/kv` route
-(`deploy/docker/fabricx/kvview/`). Config keys: `owner_url`, `issuer_url`,
-`kv_url`, `sender_account`, `counterparty_node`, `token_code`, `metrics_endpoint`.
+Native gRPC — see [fabricx-integration.md](fabricx-integration.md) for how this
+was established and [adr-016](../decisions/adr-016-fabricx-native-grpc.md) for
+the decision.
 
-- `TxTransfer` → `POST /owner/accounts/{sender}/transfer` (native).
-- `TxWrite` → `POST /kv` (custom view) if `kv_url` set, else `POST /issuer/issue`.
-- `TxRead` → `POST /kv` read, or `GET /owner/accounts/{id}`.
-- The POST is synchronous, so `Submit` fires it in a **background goroutine** and
-  returns immediately with `AckTime = now` (advisory); `WaitForFinality` returns
-  when that POST completes (T3). Submit latency is reported **N/A** for Fabric-X
-  ([adr-003](../decisions/adr-003-fabricx-fsc-view-and-rest.md),
-  [fairness-guarantees](../architecture/fairness-guarantees.md)).
+| | |
+| --- | --- |
+| Submit | broadcast a signed `common.Envelope` to the Arma router (`:6022`) |
+| Finality | sidecar deliver stream (`:4001`); per-transaction validation codes from the block's `TRANSACTIONS_FILTER` metadata |
+| Signing | ECDSA-P256 over the namespace's ASN.1 marshalling, sha256-digested — upstream's own encoding via `fabric-x-common` |
+| Config keys | `broadcast_endpoint`, `deliver_endpoint`, `channel_id`, `namespace`, `signing_key_path`, `metrics_endpoint` |
 
-`httptest`-tested against the real route shapes (transfer, kv write/read,
-unreachable, Submit-returns-before-finality).
+Workload mapping: `kv-write` → a blind write; `transfer` → a two-key
+read-modify-write; `kv-read` → a read plus a **unique dummy blind write**,
+because the validator rejects read-only transactions (`MALFORMED_NO_WRITES`).
+That last one is disclosed in [../workloads/mismatches.md](../workloads/mismatches.md).
 
-## The custom KV view (normalized workloads)
+Submit and commit are separate operations, so unlike the previous REST
+integration Fabric-X reports a genuine submit latency.
 
-Since the sample API has no KV route, `deploy/docker/fabricx/kvview/` adds one:
-an FSC view doing plain key/value writes/reads, exposed at `POST /kv`, written to
-the same synchronous-to-finality contract. **Currently a stub** (`POST /kv` →
-501); the implementation spec (register FSC Write/Read views, run
-ordering+finality, mirror the owner service) is in
-`deploy/docker/fabricx/kvview/README.md`. Token workloads
-(`configs/native/quick-smoke-fabricx.yaml`, `workload: transfer`) run today; `kv-write`
-needs the stub finished.
+## Deployment
 
-## Deploy (Phase 3)
+`deploy/docker/fabricx/up.sh <profile>` clones `fabric-x-committer` and
+`fabric-x-orderer` at pinned tags, builds one image serving four roles, starts
+them in dependency order, registers the application namespace, and writes
+`connection.env`.
 
-`deploy/docker/fabricx/up.sh`:
+Namespace creation is a write to the `_meta` namespace, governed by the channel's
+`LifecycleEndorsement` policy — MAJORITY of the four Arma orgs. `up.sh` runs
+`loadgen --only-namespace` inside the Arma container, whose config declares all
+four identities, so it signs with all of them. The namespace's ECDSA verification
+key is registered at the same time and the matching private key is exported to
+the host for the adapter.
 
-1. clones `hyperledger/fabric-x-samples`;
-2. `tokens/` `make setup && make start` — devnet (Arma + committer) + issuer /
-   endorser1 / owner1 / owner2 services (ports 9100 / 9300 / 9500 / 9600);
-3. `POST /endorser/init` to commit token parameters;
-4. builds + starts the `kvview` service (`bench/fabricx-rest`, :9700) on the
-   shared `fabric_test` network;
-5. emits `connection.env` (`BENCH_ADAPTER_OWNER_URL` etc.).
-
-`down.sh` runs `tokens/` `make teardown` + `docker compose down`.
-
-## Local caveat
-
-Arma and the committer stack are scale-out designs. On `local` (≈8 cores across
-all Fabric-X services) throughput is far below the published ceiling. Every
-`local` Fabric-X run carries an automatic manifest caveat: absolute TPS is not
-comparable to the ~200k figure. The *shape* of the latency curve and relative
-behaviour under contention remain informative. Full-scale numbers need
-`gcp-full`.
+Block-cutting parameters come from the profile's shared `orderer_batch` anchor,
+so Fabric-X cuts blocks identically to the Fabric family.

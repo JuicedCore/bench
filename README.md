@@ -24,7 +24,7 @@ Full breakdown + why the two remaining items need heavy compute or GCP creds:
 | `fabric-cft` (Raft) | ✅ | ✅ smoke + probe-sweep (Fabric 2.5.16) | e2e p50 165–565 ms across the sweep |
 | `fabric-bft` (SmartBFT) | ✅ | ✅ smoke (Fabric 3.1.5, 4 orderers) | ≈ cft at low load once batching is pinned |
 | `drunix` (npci/drunix) | ✅ (wraps fabric; CP block-event finality) | deploy + lifecycle + write path verified live | write path **unblocked**: the cause was Drunix's YugabyteDB statedb rejecting non-JSON values, fixed client-side in `pkg/adapters/drunix/valuecodec.go`. The earlier sparse-block diagnosis was wrong ([docs/REMAINING-WORK.md §3](docs/REMAINING-WORK.md)). Runs on YugabyteDB, so normalized runs carry a state-DB caveat |
-| `fabricx` (token REST) | ✅ matches the **verified** `fabric-x-samples` API, `httptest`-tested | — | **not runnable today.** Namespace bootstrap on the self-built backend fails `ABORTED_SIGNATURE_INVALID` ([docs/platforms/fabricx-comparability.md](docs/platforms/fabricx-comparability.md)); normalized `kv-*` additionally needs the `/kv` FSC view, still a 501 stub. Configs exist for both lanes and are marked unverified |
+| `fabricx` (native gRPC) | ✅ broadcast to Arma router + sidecar deliver stream; real submit ack | — | rebuilt on the native path ([adr-016](docs/decisions/adr-016-fabricx-native-grpc.md)); deploy builds Arma + committer from pinned source. Not yet live-verified |
 | `neuchain` (pure-Go ZMQ+protobuf+RSA) | ✅ unit-tested (sign, result-frame, tx-build, finality timestamping) | — | server binaries need a 45–90 min C++ build — **compute gated**, `deploy/docker/neuchain/build.sh`. Runs the full normalized mode set once built |
 | GCP campaign | `scripts/gcp-run.sh` + Terraform ready | — | **credential gated** — provide `-var project=…` |
 
@@ -130,5 +130,5 @@ Some platforms need more than this repo:
 | -------- | ----------------- |
 | `fabric-cft` / `fabric-bft` | none — images are pulled on first bring-up |
 | `drunix` | clones `github.com/npci/drunix`; pulls `npcioss/drunix-*` images |
-| `fabricx` | clones `fabric-x-samples` and builds a committer/orderer backend from source (~15-20 min, several GB) |
+| `fabricx` | clones `fabric-x-committer` + `fabric-x-orderer` at pinned tags and builds one image serving four roles (~15-20 min, several GB) |
 | `neuchain` | a `bench/neuchain:ev` image from a 45-90 min C++ build (`deploy/docker/neuchain/build.sh`, ~25-30 GB disk, 6-10 GB RAM) |
