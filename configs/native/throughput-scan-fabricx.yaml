@@ -1,33 +1,38 @@
-# 30s Fabric-X sanity run. Uses the `transfer` workload -> the real token
-# transfer REST route (works today). `kv-write` needs the custom view service
-# (deploy/docker/fabricx/kvview) finished - Phase 3.
+# NATIVE (normalized: false) - Fabric-X only, tuned to this platform.
+# Never mixed with the normalized bucket in one comparison (adr-013).
+#
+# Fabric-X transfer-based throughput scan: adaptation of throughput-scan.yaml.
+# Cruder than probe-sweep-fabricx.yaml (linear ramp, no adaptive stepping) but
+# faster for a first look at where the synchronous-to-finality transfer path
+# falls over.
 #
 #   bash deploy/docker/fabricx/up.sh local
 #   set -a; source deploy/docker/fabricx/connection.env; set +a
-#   benchrunner run --config configs/native/quick-smoke-fabricx.yaml --platform fabricx
-name: quick-smoke-fabricx
+#   benchrunner run --config configs/native/throughput-scan-fabricx.yaml --platform fabricx
+name: throughput-scan-fabricx
 platform: fabricx
 workload: transfer
 profile: local
 normalized: false        # token transfer is Fabric-X native; not the normalized bucket
 
 load:
-  mode: closed-loop      # the token POST blocks to finality; closed-loop fits
-  workers: 8
-  hold_duration: 30s
+  mode: open-loop
+  ramp_from: 2
+  ramp_to: 150
+  ramp_duration: 3m
+  hold_duration: 1m
   key_distribution: uniform
   key_space: 2            # workload emits acct-000000000 / acct-000000001 -
-                          # NOT alice/bob. These must exist as real Fabric-X
-                          # accounts, or set sender_account and rely on the
-                          # adapter default for the sender side.
+                          # NOT alice/owner2. These must exist as real Fabric-X
+                          # accounts before these numbers mean anything.
   finality_wait: 120s
   seed: 1
 
 metrics:
-  warmup: 5s
-  cooldown: 3s
+  warmup: 15s
+  cooldown: 10s
   output_dir: ./results
-  output_format: json
+  output_format: csv
 
 system_metrics:
   enabled: true

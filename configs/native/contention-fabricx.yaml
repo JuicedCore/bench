@@ -1,0 +1,53 @@
+# NATIVE (normalized: false) - Fabric-X only, tuned to this platform.
+# Never mixed with the normalized bucket in one comparison (adr-013).
+#
+# Fabric-X transfer-based contention probe: adaptation of contention.yaml for a
+# platform where kv-write/kv-mixed are blocked (kvview is a 501 stub - see
+# COMMANDS.md). transfer is Fabric-X's one real, working operation, so this
+# measures hot-account contention the same way contention.yaml does for the
+# Fabric family, just over the native token-transfer REST route instead of
+# chaincode invoke. See docs/platforms/fabricx-comparability.md for how (and
+# whether) these numbers compare to contention.yaml's.
+#
+#   bash deploy/docker/fabricx/up.sh local
+#   set -a; source deploy/docker/fabricx/connection.env; set +a
+#   benchrunner run --config configs/native/contention-fabricx.yaml --platform fabricx
+name: contention-fabricx
+platform: fabricx
+workload: transfer
+profile: local
+normalized: false        # token transfer is Fabric-X native; not the normalized bucket
+
+load:
+  mode: open-loop
+  target_tps: 20
+  hold_duration: 2m
+  key_distribution: zipfian
+  zipfian_constant: 1.2
+  key_space: 8            # workload-generated "acct-N" identifiers; NOT alice/owner2 -
+                           # live-verify these are usable Fabric-X accounts before trusting results
+  finality_wait: 120s
+  seed: 1
+
+metrics:
+  warmup: 15s
+  cooldown: 10s
+  output_dir: ./results
+  output_format: csv
+
+system_metrics:
+  enabled: true
+  sample_interval: 1s
+  container_names: ["fabricx", "owner", "issuer", "endorser", "committer", "arma"]
+
+adapter:
+  owner_url: "${BENCH_ADAPTER_OWNER_URL}"
+  issuer_url: "${BENCH_ADAPTER_ISSUER_URL}"
+  # Native runs use the token routes, never the KV view. Pinned empty so the
+  # adapter takes the working `issue` path for writes instead of the kvview
+  # stub (which answers /kv with 501).
+  kv_url: ""
+  sender_account: "${BENCH_ADAPTER_SENDER_ACCOUNT}"
+  counterparty_node: "${BENCH_ADAPTER_COUNTERPARTY_NODE}"
+  token_code: "${BENCH_ADAPTER_TOKEN_CODE}"
+  metrics_endpoint: "${BENCH_ADAPTER_METRICS_ENDPOINT}"

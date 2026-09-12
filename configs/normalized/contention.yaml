@@ -1,0 +1,104 @@
+# NORMALIZED - runs on all five platforms, identical load and windows.
+#
+# High-conflict workload: Zipfian accounts over a small key space with the
+# transfer workload (read-modify-write two accounts). Measures MVCC-conflict
+# handling - expect a non-zero failure rate on Fabric/Drunix as hot keys collide.
+#
+#   set -a; source deploy/docker/<platform>/connection.env; set +a
+#   benchrunner run --config configs/normalized/contention.yaml --platform <platform>
+#
+# This is the one mode Fabric-X can meet with a native primitive (Token SDK
+# Transfer), so it is the narrowest, strongest cross-architecture comparison in
+# the set - see docs/platforms/fabricx-comparability.md.
+#
+# Accounts are named acct-%09d by pkg/workloads/workload.go. On Fabric-X those
+# identifiers must exist as real FSC accounts; provisioning them is part of
+# unblocking that platform, not something the config can assert.
+name: contention
+platform: fabric-cft        # nominal default; always pass --platform
+workload: transfer
+profile: local
+normalized: true
+
+load:
+  mode: open-loop
+  target_tps: 800
+  hold_duration: 5m
+  key_distribution: zipfian
+  zipfian_constant: 1.2       # higher = hotter keys
+  key_space: 2000
+  value_size_bytes: 64
+  finality_wait: 60s      # uniform across the normalized set: this is the
+                          # cutoff that decides timed-out vs committed, so a
+                          # tighter budget on one platform would manufacture
+                          # failures. Generous costs a fast platform nothing.
+  seed: 1
+
+metrics:
+  warmup: 30s
+  cooldown: 15s
+  output_dir: ./results
+  output_format: csv
+
+# --- Everything below is identical in every configs/normalized/*.yaml ---
+
+system_metrics:
+  enabled: true
+  sample_interval: 1s
+  prometheus_url: http://localhost:9090
+  cadvisor_url: http://localhost:8080
+  # Union of every platform's container name prefixes. Names that do not match
+  # anything on the platform under test are simply inert, which is what lets one
+  # file serve all five.
+  container_names:
+    - peer          # fabric-cft, fabric-bft, drunix
+    - orderer
+    - fabric
+    - drunix
+    - keydb
+    - yugabyte
+    - arma          # fabricx
+    - owner
+    - issuer
+    - endorser
+    - committer
+    - validator
+    - neuchain      # neuchain
+    - block-server
+    - epoch-server
+
+# Union of every adapter's keys. Each adapter reads only the keys it knows
+# (configFromExtra is a key lookup, unknown keys are ignored) and an undefined
+# ${VAR} expands to the empty string, so the block is inert for the platforms it
+# does not apply to. Source the target platform's connection.env before running.
+adapter:
+  # fabric-cft / fabric-bft / drunix
+  peer_endpoint: "${BENCH_ADAPTER_PEER_ENDPOINT}"
+  endorse_endpoint: "${BENCH_ADAPTER_ENDORSE_ENDPOINT}"
+  commit_endpoint: "${BENCH_ADAPTER_COMMIT_ENDPOINT}"
+  gateway_peer: "${BENCH_ADAPTER_GATEWAY_PEER}"
+  msp_id: "${BENCH_ADAPTER_MSP_ID}"
+  cert_path: "${BENCH_ADAPTER_CERT_PATH}"
+  key_path: "${BENCH_ADAPTER_KEY_PATH}"
+  tls_ca_cert_path: "${BENCH_ADAPTER_TLS_CA_CERT_PATH}"
+  channel: "${BENCH_ADAPTER_CHANNEL}"
+  chaincode: "${BENCH_ADAPTER_CHAINCODE}"
+  # fabricx. kv_url is named explicitly because the adapter no longer defaults
+  # it: normalized kv-* work must go through the FSC KV view, never silently
+  # fall back to the native token-issue path.
+  owner_url: "${BENCH_ADAPTER_OWNER_URL}"
+  issuer_url: "${BENCH_ADAPTER_ISSUER_URL}"
+  kv_url: "${BENCH_ADAPTER_KV_URL}"
+  sender_account: "${BENCH_ADAPTER_SENDER_ACCOUNT}"
+  counterparty_node: "${BENCH_ADAPTER_COUNTERPARTY_NODE}"
+  token_code: "${BENCH_ADAPTER_TOKEN_CODE}"
+  # neuchain
+  block_servers: "${BENCH_ADAPTER_BLOCK_SERVERS}"
+  query_endpoint: "${BENCH_ADAPTER_QUERY_ENDPOINT}"
+  user_priv_key_path: "${BENCH_ADAPTER_USER_PRIV_KEY_PATH}"
+  user_pub_key_path: "${BENCH_ADAPTER_USER_PUB_KEY_PATH}"
+  func_name: "${BENCH_ADAPTER_FUNC_NAME}"
+  table_name: "${BENCH_ADAPTER_TABLE_NAME}"
+  poll_interval: 50ms
+  # all platforms
+  metrics_endpoint: "${BENCH_ADAPTER_METRICS_ENDPOINT}"
