@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 	"time"
 
@@ -202,14 +203,19 @@ adapter: { submit_ms: 1, commit_ms: 15, jitter_ms: 4 }
 		t.Errorf("multi-gen confirmed TPS too low: %.1f", rr.Headline.ConfirmedTPS)
 	}
 	man := readManifest(t, outDir)
+	if man.Generators != 4 {
+		t.Errorf("manifest.generators = %d, want 4", man.Generators)
+	}
+	// An explicit count that differs from the profile default changes the key
+	// sequence (generator i uses seed+i), so a normalized run must say so.
 	found := false
 	for _, c := range man.Caveats {
-		if c == "load driven by 4 concurrent generators" {
+		if strings.Contains(c, "generator count overridden to 4") {
 			found = true
 		}
 	}
 	if !found {
-		t.Errorf("manifest missing multi-generator caveat: %v", man.Caveats)
+		t.Errorf("manifest missing generator-override caveat: %v", man.Caveats)
 	}
 }
 

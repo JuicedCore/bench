@@ -194,9 +194,12 @@ func (Engine) Run(ctx context.Context, cfg *RunConfig, opt Options) (*RunResult,
 
 	collector := metrics.NewCollector()
 
-	ngen := opt.Generators
-	if ngen < 1 {
-		ngen = 1
+	ngen := generatorCount(opt.Generators, prof, topo, cfg.Normalized)
+	man.Generators = ngen
+	if opt.Generators > 0 && cfg.Normalized && opt.Generators != generatorCount(0, prof, topo, true) {
+		man.Caveats = append(man.Caveats, fmt.Sprintf(
+			"generator count overridden to %d: each generator uses seed+i, so the key-access sequence differs from runs using the profile default",
+			ngen))
 	}
 	// One generator + its own workload per instance. Generator 0 reuses wl (so
 	// single-generator runs are byte-identical to before).
@@ -215,9 +218,6 @@ func (Engine) Run(ctx context.Context, cfg *RunConfig, opt Options) (*RunResult,
 			return nil, werr
 		}
 		gens[i] = &loadgen.Generator{Adapter: ad, Source: wi, Collector: collector}
-	}
-	if ngen > 1 {
-		man.Caveats = append(man.Caveats, fmt.Sprintf("load driven by %d concurrent generators", ngen))
 	}
 
 	// System sampling for the whole run.
@@ -479,6 +479,27 @@ func buildPhases(cfg *RunConfig) []phase {
 		p.Duration = 60 * time.Second
 	}
 	return []phase{{name: "single", profile: p}}
+}
+
+// generatorCount decides how many load generators drive the run.
+//
+// An explicit --generators wins. Otherwise it is one generator per load-generator
+// CPU the profile reserves. For a normalized run only the profile-wide budget is
+// used, never a per-platform override: generator i draws keys with seed+i, so a
+// different count means a different key-access sequence, which would quietly
+// break the "one seed drives every platform" fairness lever.
+func generatorCount(explicit int, prof *Profile, topo PlatformTopo, normalized bool) int {
+	if explicit > 0 {
+		return explicit
+	}
+	cpus := prof.Budget.LoadGenCPUs
+	if !normalized && topo.LoadGenCPUs > 0 {
+		cpus = topo.LoadGenCPUs
+	}
+	if n := int(cpus); n > 1 {
+		return n
+	}
+	return 1
 }
 
 // applyResourceEnv records the resource budget the deploy script actually applied.

@@ -53,7 +53,8 @@ type Manifest struct {
 	ResourceMemTotalGB float64        `json:"resource_memory_total_gb"`
 	Nodes              map[string]int `json:"nodes"`
 
-	// Load determinism.
+	// Load determinism. Generators matters here too: generator i uses seed+i.
+	Generators      int     `json:"generators"`
 	Seed            int64   `json:"seed"`
 	KeySpace        int     `json:"key_space"`
 	KeyDistribution string  `json:"key_distribution"`

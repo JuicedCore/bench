@@ -119,7 +119,7 @@ func cmdRun(ctx context.Context, args []string) error {
 	profileDir := fs.String("profile-dir", "", "directory holding profile YAMLs (default deploy/profiles)")
 	dryRun := fs.Bool("dry-run", false, "print the phase plan without generating load")
 	caveat := fs.String("caveat", "", "append a caveat string to the manifest")
-	generators := fs.Int("generators", 0, "concurrent load-generator instances sharing the adapter (default 1; use >1 for high-ceiling platforms)")
+	generators := fs.Int("generators", 0, "load-generator instances sharing the adapter (default: one per load_gen_cpus in the profile; overriding it on a normalized run changes the key sequence and is caveated)")
 	quiet := fs.Bool("quiet", false, "disable live progress output")
 	progress := fs.Bool("progress", false, "force live progress output even when stderr is not a terminal (one plain line per tick, log-safe)")
 	_ = fs.Parse(args)
