@@ -23,6 +23,9 @@ type PhaseResult struct {
 	OfferedTPS int            `json:"offered_tps"` // nominal target for the phase
 	Window     WindowInfo     `json:"window"`
 	Result     metrics.Result `json:"result"`
+	// Verdict, for sweep steps only: "held", or the rule that rejected the step.
+	// Makes a sweep readable without re-deriving the saturation rules.
+	Verdict string `json:"verdict,omitempty"`
 }
 
 // WindowInfo records the measurement window bounds relative to phase start.
@@ -290,7 +293,9 @@ func (Engine) Run(ctx context.Context, cfg *RunConfig, opt Options) (*RunResult,
 		rr.Phases = append(rr.Phases, pr)
 
 		if isSweepStep {
-			if stepPassed(res.FailureRate, sweep.MaxFailRate) {
+			v := stepVerdict(ph.profile.TargetTPS, res, sweep)
+			rr.Phases[len(rr.Phases)-1].Verdict = orDefault(v, "held")
+			if v == "" {
 				consecFailed = 0
 				if ph.profile.TargetTPS > bestPassing {
 					bestPassing = ph.profile.TargetTPS
@@ -308,11 +313,19 @@ func (Engine) Run(ctx context.Context, cfg *RunConfig, opt Options) (*RunResult,
 
 	// Determine saturation: highest sweep step whose failure rate stayed under threshold.
 	if cfg.Load.Sweep.Enabled {
-		rr.SaturationTPS = detectSaturation(rr.Phases, cfg.Load.Sweep.MaxFailRate)
+		rr.SaturationTPS = detectSaturation(rr.Phases, cfg.Load.Sweep)
+		// Every step holding means the ladder ran out before the platform did: the
+		// knee is somewhere above the top step, and reporting the top step as
+		// "saturation" would understate the platform.
+		if n := len(sweep.Steps); n > 0 && len(rr.Manifest.SkippedSteps) == 0 && rr.SaturationTPS == sweep.Steps[n-1] {
+			rr.Manifest.Caveats = append(rr.Manifest.Caveats, fmt.Sprintf(
+				"every sweep step held: the platform did not saturate within the ladder, so %d TPS is a lower bound on its knee, not the knee",
+				rr.SaturationTPS))
+		}
 		if rr.SaturationTPS == 0 {
 			rr.Manifest.Caveats = append(rr.Manifest.Caveats, fmt.Sprintf(
-				"no sweep step held under the %.1f%% failure threshold; hold ran at the probe rate (%d TPS) and the headline is a floor, not a saturation figure",
-				sweep.MaxFailRate*100, sweep.ProbeTPS))
+				"no sweep step held (failure <= %.1f%%, goodput >= %.0f%%, send-gap p99 <= %.0f ms); hold ran at the probe rate (%d TPS) and the headline is a floor, not a saturation figure",
+				sweep.MaxFailRate*100, sweep.GoodputRatio*100, sweep.MaxSendGapMs, sweep.ProbeTPS))
 		}
 		if n := len(rr.Manifest.SkippedSteps); n > 0 {
 			rr.Manifest.Caveats = append(rr.Manifest.Caveats, fmt.Sprintf(
@@ -478,10 +491,29 @@ func actualStateDB(requested string) string {
 	return requested
 }
 
-// stepPassed is the single definition of "this sweep step held": failure rate at
-// or under the configured ceiling. Both the live phase loop and detectSaturation
-// go through it so the knee cannot be judged by two different rules.
-func stepPassed(failureRate, maxFail float64) bool { return failureRate <= maxFail }
+// stepVerdict is the single definition of "this sweep step held". Both the live
+// phase loop and detectSaturation go through it, so the knee can never be judged
+// by two different rules. It returns "" when the step held, otherwise the rule
+// that rejected it.
+//
+// Three rules, because the obvious one is not enough. Failure rate alone missed
+// every real saturation on record: the historical fabric-cft sweep confirmed
+// 1000, 1753, 618 and then 0 TPS at offered 1000, 2000, 5000 and 10000 with a
+// failure rate of 0.0000 throughout, so it "held" at 10000 and headlined a rate
+// ten times its real knee. A platform past its knee commits less rather than
+// failing more, so the step is also required to deliver its offered goodput and
+// to have been sent on schedule.
+func stepVerdict(offeredTPS int, r metrics.Result, s SweepConfig) string {
+	switch {
+	case r.FailureRate > s.MaxFailRate:
+		return fmt.Sprintf("failure rate %.2f%% > %.2f%%", r.FailureRate*100, s.MaxFailRate*100)
+	case offeredTPS > 0 && r.ConfirmedTPS < s.GoodputRatio*float64(offeredTPS):
+		return fmt.Sprintf("goodput %.0f of %d TPS offered (< %.0f%%)", r.ConfirmedTPS, offeredTPS, s.GoodputRatio*100)
+	case r.SendGap.Percentiles["p99"] > s.MaxSendGapMs:
+		return fmt.Sprintf("send-gap p99 %.0f ms > %.0f ms (generator fell behind)", r.SendGap.Percentiles["p99"], s.MaxSendGapMs)
+	}
+	return ""
+}
 
 // holdTarget is the offered rate for the hold phase: hold_fraction of the highest
 // step that actually held. With no passing step there is no knee to sit below, so
@@ -497,13 +529,13 @@ func holdTarget(bestPassing int, s SweepConfig) int {
 	return 1
 }
 
-func detectSaturation(phases []PhaseResult, maxFail float64) int {
+func detectSaturation(phases []PhaseResult, s SweepConfig) int {
 	best := 0
 	for _, ph := range phases {
 		if !strings.HasPrefix(ph.Name, "sweep-") {
 			continue
 		}
-		if stepPassed(ph.Result.FailureRate, maxFail) && ph.OfferedTPS > best {
+		if stepVerdict(ph.OfferedTPS, ph.Result, s) == "" && ph.OfferedTPS > best {
 			best = ph.OfferedTPS
 		}
 	}

@@ -121,3 +121,50 @@ func TestClosedLoopBoundedByWorkers(t *testing.T) {
 		t.Errorf("closed-loop submitted only %d, expected at least one round per worker", got)
 	}
 }
+
+// Slow finality observation must not throttle submission. An adapter whose
+// WaitForFinality takes 200ms, driven at 1000 TPS, needs ~200 transactions
+// outstanding at once - comfortably inside a 500-slot in-flight cap.
+//
+// The old design fed a fixed pool of 64 finality workers (~320 waits/s here)
+// through a buffered channel. Once that fell behind, submit goroutines blocked
+// holding their in-flight slot, the cap filled, and the schedule stalled: the
+// generator throttled itself and the platform was blamed for the send gap and the
+// queueing latency. The cap is pinned here so that happens within a short test;
+// with the old 4-seconds-of-load default it takes ~6s, well inside a real 60s
+// sweep step. The historical fabric-cft sweep recorded a 246s send-gap p99.
+func TestOpenLoopSlowFinalityDoesNotThrottleSubmission(t *testing.T) {
+	fa := &fakeAdapter{commit: 200 * time.Millisecond}
+	col := metrics.NewCollector()
+	g := &loadgen.Generator{Adapter: fa, Source: &txSrc{}, Collector: col}
+
+	const target = 1000
+	const dur = 3 * time.Second
+	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
+	defer cancel()
+	start := time.Now()
+	if err := g.Run(ctx, loadgen.LoadProfile{
+		Mode: loadgen.OpenLoop, TargetTPS: target, Duration: dur, FinalityWait: 5 * time.Second,
+		MaxInFlight: 500,
+	}); err != nil {
+		t.Fatalf("run: %v", err)
+	}
+
+	got := fa.submits.Load()
+	want := float64(target) * dur.Seconds()
+	if float64(got) < want*0.85 {
+		t.Errorf("submitted %d, want ~%.0f: slow finality throttled the offered rate", got, want)
+	}
+
+	res := col.Aggregate(metrics.Window{Start: start, End: start.Add(dur)})
+	if p99 := res.SendGap.Percentiles["p99"]; p99 > 50 {
+		t.Errorf("send_gap p99 = %.1f ms, want <= 50 (the documented reject threshold): the generator fell behind its own schedule", p99)
+	}
+	// E2E should be the adapter's 200ms, not 200ms plus time queued for a worker.
+	if p50 := res.E2E.Percentiles["p50"]; p50 > 400 {
+		t.Errorf("e2e p50 = %.0f ms, want ~200: finality was observed late and queueing billed as latency", p50)
+	}
+	if !res.InvariantOK {
+		t.Errorf("invariant broken: submitted=%d committed=%d timedout=%d", res.Submitted, res.Committed, res.TimedOut)
+	}
+}

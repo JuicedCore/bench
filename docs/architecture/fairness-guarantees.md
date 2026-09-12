@@ -164,3 +164,5 @@ A run is invalid if any of:
 - the manifest is missing a fairness lever (state DB, batch params, seed)
 - the headline came from a hold phase with no passing sweep step (a floor
   reading quoted as a saturation figure)
+- a probe-sweep's `saturation_tps` is the top of the ladder (the platform never
+  saturated; that figure is a lower bound, not a knee)

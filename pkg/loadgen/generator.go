@@ -34,25 +34,26 @@ type LoadProfile struct {
 	Mode Mode
 
 	// Open-loop:
-	StartTPS int           // offered rate at t=0 (after ramp this is ignored if RampFrom set)
-	TargetTPS int          // offered rate to hold
-	RampFrom  int          // if >0, linearly ramp offered rate RampFrom->TargetTPS over RampDur
+	StartTPS  int // offered rate at t=0 (after ramp this is ignored if RampFrom set)
+	TargetTPS int // offered rate to hold
+	RampFrom  int // if >0, linearly ramp offered rate RampFrom->TargetTPS over RampDur
 	RampDur   time.Duration
 
 	// Closed-loop:
 	Workers int
 
 	// Both:
-	Duration       time.Duration // total phase length including ramp
-	FinalityWait   time.Duration // per-tx WaitForFinality timeout
-	FinalityPool   int           // open-loop: concurrent finality waiters (default 4*sqrt(TargetTPS))
-	MaxInFlight    int           // open-loop: cap on outstanding submits; 0 = unbounded
+	Duration     time.Duration // total phase length including ramp
+	FinalityWait time.Duration // per-tx WaitForFinality timeout
+	// MaxInFlight caps outstanding transactions in open loop: submitted but not
+	// yet terminal. 0 = default (see maxInflight).
+	MaxInFlight int
 }
 
 // Generator drives one adapter with one workload for the duration of a phase.
 type Generator struct {
-	Adapter  adapters.PlatformAdapter
-	Source   TxSource
+	Adapter   adapters.PlatformAdapter
+	Source    TxSource
 	Collector *metrics.Collector
 
 	seq uint64
@@ -84,28 +85,19 @@ func (g *Generator) runOpen(ctx context.Context, p LoadProfile) error {
 	if p.FinalityWait <= 0 {
 		p.FinalityWait = 30 * time.Second
 	}
-	finPool := p.FinalityPool
-	if finPool <= 0 {
-		finPool = 64
-	}
 
-	type pending struct {
-		id        string
-		scheduled time.Time
-	}
-	finCh := make(chan pending, finPool*4)
-	var finWG sync.WaitGroup
-	for i := 0; i < finPool; i++ {
-		finWG.Add(1)
-		go func() {
-			defer finWG.Done()
-			for pv := range finCh {
-				g.awaitFinality(ctx, pv.id, p.FinalityWait)
-			}
-		}()
-	}
-
-	var subWG sync.WaitGroup
+	// Each transaction gets one goroutine that submits it and then waits for its
+	// finality, holding an in-flight slot for the whole of that.
+	//
+	// This replaced a fixed pool of 64 finality workers fed by a buffered channel.
+	// When finality observation fell behind, that channel filled, submit
+	// goroutines blocked on it while still holding their slot, and the schedule
+	// loop stalled - so the generator throttled itself on how fast it could
+	// *observe* commits, and the platform was blamed for the resulting send gap
+	// and latency. The only thing that may stall the schedule now is transactions
+	// genuinely not finalizing, which saturation detection reports as lost
+	// goodput rather than hiding.
+	var wg sync.WaitGroup
 	inflight := make(chan struct{}, maxInflight(p))
 
 	start := time.Now()
@@ -143,35 +135,32 @@ func (g *Generator) runOpen(ctx context.Context, p LoadProfile) error {
 
 		seq := g.nextSeq()
 		tx := g.Source.Next(seq)
-		subWG.Add(1)
+		wg.Add(1)
 		go func(tx *adapters.Transaction, scheduled time.Time) {
-			defer subWG.Done()
+			defer wg.Done()
 			defer func() { <-inflight }()
-			id, ok := g.submit(ctx, tx, scheduled)
-			if ok {
-				select {
-				case finCh <- pending{id: id, scheduled: scheduled}:
-				case <-ctx.Done():
-				}
+			if id, ok := g.submit(ctx, tx, scheduled); ok {
+				g.awaitFinality(ctx, id, p.FinalityWait)
 			}
 		}(tx, scheduled)
 	}
 
 drain:
-	subWG.Wait()
-	close(finCh)
-	finWG.Wait()
+	wg.Wait()
 	return ctx.Err()
 }
 
+// maxInflight bounds outstanding (submitted, not yet terminal) transactions.
+// The default is 8 seconds of offered load: far beyond any latency a platform
+// could have and still be below its knee, so it never binds on a healthy run,
+// while still capping goroutines if a platform stops finalizing entirely.
 func maxInflight(p LoadProfile) int {
 	if p.MaxInFlight > 0 {
 		return p.MaxInFlight
 	}
-	// generous default: 4s worth of offered load
-	m := p.TargetTPS * 4
-	if m < 256 {
-		m = 256
+	m := p.TargetTPS * 8
+	if m < 1024 {
+		m = 1024
 	}
 	return m
 }

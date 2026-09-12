@@ -42,7 +42,7 @@ type Adapter struct {
 	gw       *client.Gateway
 	contract *client.Contract
 
-	cp *cpListener // non-nil when cfg.UseCommitPeerEvents (Drunix)
+	cp *cpListener // block-event finality source; set by Setup for every platform
 
 	mu      sync.Mutex
 	pending map[string]*inflight
@@ -131,9 +131,19 @@ func (a *Adapter) Setup(ctx context.Context, ac adapters.AdapterConfig) error {
 	a.gw = gw
 	a.contract = gw.GetNetwork(a.cfg.Channel).GetContract(a.cfg.Chaincode)
 
-	// Drunix: the Gateway is on the Lite Peer, which never commits. Watch the
-	// Committing Peer's block events for finality instead.
-	if a.cfg.UseCommitPeerEvents {
+	// Finality always comes from a block event stream so T3 is stamped at
+	// observation (see cpListener). Drunix: the Gateway is on the Lite Peer, which
+	// never commits, so watch the separate Committing Peer. Otherwise the gateway
+	// peer is the committing peer and its own stream is used.
+	if !a.cfg.UseCommitPeerEvents {
+		l, lerr := listenBlockEvents(gw, a.cfg.Channel)
+		if lerr != nil {
+			gw.Close()
+			conn.Close()
+			return fmt.Errorf("fabric: block-event listener: %w", lerr)
+		}
+		a.cp = l
+	} else {
 		cpSNI := a.cfg.CommitPeerGateway
 		if cpSNI == "" {
 			cpSNI = defaultCommitPeerSNI(a.cfg.GatewayPeer)
@@ -230,7 +240,8 @@ func (a *Adapter) WaitForFinality(ctx context.Context, txID string, timeout time
 		return &adapters.FinalityResult{TxID: txID, FinalityTime: time.Now(), Valid: true}, nil
 	}
 
-	// Drunix: resolve from the Committing Peer's block events.
+	// Resolve from the block event stream: T3 is when the block was observed,
+	// not when this call happened to run.
 	if a.cp != nil {
 		r, err := a.cp.wait(ctx, txID, timeout)
 		if err != nil {
@@ -341,4 +352,3 @@ func loadSign(keyPath string) (identity.Sign, error) {
 	}
 	return identity.NewPrivateKeySign(key)
 }
-

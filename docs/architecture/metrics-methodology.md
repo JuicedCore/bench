@@ -84,21 +84,42 @@ Set `load.sweep.enabled: true`.
 | ----- | ------- | -------- |
 | **probe** | 10 TPS for 30 s | Floor latency — the architectural cost with no load. |
 | **sweep-N** | 100, 500, 1 000, 2 000, 5 000, 10 000, 20 000 TPS, 60 s each | Confirmed TPS + full percentile latency at each offered rate. |
-| **hold** | 90% of the highest sweep step whose failure rate stayed ≤ `max_fail_rate` (default 0.02), for 5 min | Stability under sustained near-peak load. |
+| **hold** | 90% of the highest sweep step that **held** (below), for 5 min | Stability under sustained near-peak load. |
 
 `result.json` carries every phase; `saturation_tps` is the detected knee; the
 `hold` phase is the headline. Plot offered TPS (x) against confirmed p50/p99
 latency (y) to get the hockey-stick curve.
 
-Two rules keep a single shared ladder honest across platforms with very different
-ceilings (docs/architecture/fairness-guarantees.md, "One ladder for every platform"):
+### When a step "holds"
+
+A sweep step holds only if **all three** are true:
+
+| Rule | Default | Why it exists |
+| ---- | ------- | ------------- |
+| failure rate ≤ `max_fail_rate` | 0.02 | invalid, errored and timed-out transactions |
+| confirmed TPS ≥ `goodput_ratio` × the step's offered rate | 0.95 | a platform past its knee usually commits *less* rather than failing *more*, and the generator then submits less too — so failure rate stays at zero while throughput collapses |
+| send-gap p99 ≤ `max_send_gap_ms` | 50 ms | the generator fell behind its own schedule, so the step measured the generator |
+
+Failure rate alone is not a saturation signal. The only capacity run recorded
+before this rule existed (fabric-cft) confirmed 1000, 1753, 618 and 0 TPS at
+offered 1000, 2000, 5000 and 10000, with a failure rate of 0.0000 on every step —
+so it "held" all the way up and headlined ten times its real knee.
+
+Each step's result carries a `verdict` (`held`, or the rule that rejected it), in
+`result.json`, `phases.csv` and `summary.txt`. If **every** step holds, the
+platform did not saturate within the ladder: the top step is a lower bound on the
+knee, and the run says so rather than reporting it as the knee.
+
+Two more rules keep a single shared ladder honest across platforms with very
+different ceilings (docs/architecture/fairness-guarantees.md, "One ladder for
+every platform"):
 
 - The hold target is computed from the **measured** knee at runtime. `buildPhases`
   pre-fills it with `0.9 × top step` so `--dry-run` can print an upper bound; the
   run then rewrites it before the phase starts. If no step held, hold falls back
   to the probe rate and the run is caveated as a floor reading.
 - **`abort_after_failed_steps`** (default 2) stops the ladder after that many
-  consecutive steps over `max_fail_rate`. Skipped steps are listed in
+  consecutive steps that did not hold. Skipped steps are listed in
   `manifest.skipped_steps` and caveated, so a truncated ladder cannot be mistaken
   for a shorter configured one. `0` runs the whole ladder.
 

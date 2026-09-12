@@ -11,11 +11,17 @@ import (
 	"google.golang.org/grpc"
 )
 
-// cpListener watches a Committing Peer's filtered-block event stream and resolves
-// transaction finality from there. Drunix's Gateway runs on the Lite Peer, which
-// endorses + broadcasts but does NOT commit; its `Commit.Status()` therefore
-// never fires. The Committing Peer (a separate node) is where blocks land, so
-// finality for Drunix is read from the CP's block events instead.
+// cpListener watches a peer's filtered-block event stream and resolves transaction
+// finality from there, stamping T3 the moment the block is decoded.
+//
+// Every Fabric-family platform uses it. For Drunix it is required: the Gateway
+// runs on the Lite Peer, which never commits, so `Commit.Status()` never fires and
+// the Committing Peer's stream is the only source. For fabric-cft/bft it is about
+// fairness: `Commit.Status()` is called per transaction by a bounded pool of
+// finality workers, so T3 used to be stamped when a worker got round to asking -
+// queueing delay billed as platform latency - while Fabric-X and NeuChain stamp
+// at observation. Reading the gateway peer's own block stream puts all of them on
+// the same rule (docs/architecture/fairness-guarantees.md).
 type cpListener struct {
 	conn   *grpc.ClientConn
 	gw     *client.Gateway
@@ -23,8 +29,8 @@ type cpListener struct {
 	done   chan struct{}
 
 	mu       sync.Mutex
-	resolved map[string]cpResult          // txid -> outcome (for finality seen before the wait)
-	waiters  map[string]chan cpResult     // txid -> signal
+	resolved map[string]cpResult      // txid -> outcome (for finality seen before the wait)
+	waiters  map[string]chan cpResult // txid -> signal
 }
 
 type cpResult struct {
@@ -48,18 +54,30 @@ func startCPListener(endpoint, tlsCACertPath, serverNameOverride, channel string
 		return nil, fmt.Errorf("cp gateway connect: %w", err)
 	}
 
+	l, err := listenBlockEvents(gw, channel)
+	if err != nil {
+		gw.Close()
+		conn.Close()
+		return nil, fmt.Errorf("cp %w", err)
+	}
+	// This listener dialled its own connection, so it owns closing it.
+	l.conn, l.gw = conn, gw
+	return l, nil
+}
+
+// listenBlockEvents subscribes to filtered block events on an existing gateway.
+// The returned listener does not own gw: closing it stops the stream only.
+func listenBlockEvents(gw *client.Gateway, channel string) (*cpListener, error) {
 	ctx, cancel := context.WithCancel(context.Background())
 	l := &cpListener{
-		conn: conn, gw: gw, cancel: cancel, done: make(chan struct{}),
+		cancel: cancel, done: make(chan struct{}),
 		resolved: map[string]cpResult{}, waiters: map[string]chan cpResult{},
 	}
 
 	events, err := gw.GetNetwork(channel).FilteredBlockEvents(ctx)
 	if err != nil {
 		cancel()
-		gw.Close()
-		conn.Close()
-		return nil, fmt.Errorf("cp filtered block events: %w", err)
+		return nil, fmt.Errorf("filtered block events: %w", err)
 	}
 
 	go func() {

@@ -76,7 +76,7 @@ type LoadConfig struct {
 	Seed            int64    `yaml:"seed"`
 
 	// Probe-and-sweep. When Sweep.Enabled the run does: probe -> stepped sweep ->
-	// hold at 90% of the highest step whose failure rate stayed under Sweep.MaxFailRate.
+	// hold at hold_fraction of the highest step that held (see stepVerdict).
 	Sweep SweepConfig `yaml:"sweep"`
 }
 
@@ -92,8 +92,20 @@ type SweepConfig struct {
 	HoldDur     Duration `yaml:"hold_duration"`
 	MaxFailRate float64  `yaml:"max_fail_rate"` // step is "sustained" if fail rate <= this
 
+	// GoodputRatio is the fraction of a step's nominal offered rate that must
+	// actually be confirmed for the step to count as held. Failure rate alone is
+	// not enough: a platform that falls behind usually does not *fail*
+	// transactions, it just commits fewer of them, and the generator ends up
+	// submitting fewer too - so fail_rate stays at 0.0000 even when confirmed
+	// throughput has collapsed. Default 0.95.
+	GoodputRatio float64 `yaml:"goodput_ratio"`
+	// MaxSendGapMs rejects a step whose send-gap p99 exceeds it: the generator fell
+	// behind its own schedule, so the step measured the generator, not the
+	// platform. Default 50, the reject threshold in fairness-guarantees.md.
+	MaxSendGapMs float64 `yaml:"max_send_gap_ms"`
+
 	// AbortAfterFailedSteps stops offering further steps once this many in a row
-	// have exceeded MaxFailRate, then goes straight to hold. This is what lets
+	// have failed to hold (any rule in stepVerdict), then goes straight to hold. This is what lets
 	// every platform share one ladder: a platform that saturates at step 2 stops
 	// there instead of spending the rest of the run failing steps 3..N. Skipped
 	// steps are recorded in the manifest. Explicit 0 disables (run the whole
@@ -193,6 +205,12 @@ func (c *RunConfig) applyDefaults() {
 		}
 		if c.Load.Sweep.MaxFailRate == 0 {
 			c.Load.Sweep.MaxFailRate = 0.02
+		}
+		if c.Load.Sweep.GoodputRatio == 0 {
+			c.Load.Sweep.GoodputRatio = 0.95
+		}
+		if c.Load.Sweep.MaxSendGapMs == 0 {
+			c.Load.Sweep.MaxSendGapMs = 50
 		}
 		if len(c.Load.Sweep.Steps) == 0 {
 			c.Load.Sweep.Steps = []int{100, 500, 1000, 2000, 5000, 10000, 20000}
