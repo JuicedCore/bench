@@ -21,6 +21,8 @@ services:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
       - prom-data:/prometheus
     ports: ["9090:9090"]
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     deploy:
       resources:
         limits: {cpus: "0.5", memory: 512M}
@@ -45,7 +47,7 @@ services:
     restart: unless-stopped
 
   cadvisor:
-    image: gcr.io/cadvisor/cadvisor:v0.52.1
+    image: ghcr.io/google/cadvisor:0.57.0
     command: ["--housekeeping_interval=1s", "--docker_only=true"]
     volumes:
       - /:/rootfs:ro

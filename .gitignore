@@ -10,3 +10,4 @@ deploy/docker/*/connection.env
 __pycache__/
 /chaincodes/*/vendor/
 deploy/docker/.cache/
+/report.html

@@ -186,5 +186,9 @@ BENCH_ADAPTER_CHANNEL=${CHANNEL}
 BENCH_ADAPTER_CHAINCODE=${CC_NAME}
 BENCH_ADAPTER_METRICS_ENDPOINT=http://localhost:9444/metrics
 BENCH_PLATFORM_VERSION=drunix-${DRUNIX_REF}
+# The state DB this network ACTUALLY came up on. The harness records it as
+# manifest.state_db alongside the requested value, so a normalized run cannot
+# silently claim LevelDB parity it does not have.
+BENCH_ACTUAL_STATE_DB=${NETWORK_SH_DB}
 EOF
 log "drunix up. lite-peer :7051  committing-peer :7061  lite-peer operations :9444"

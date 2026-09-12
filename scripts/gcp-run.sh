@@ -15,7 +15,7 @@
 #
 # Requires: terraform, gcloud (for `gcloud compute ssh/scp`).
 # Pass the project and any extra settings as full terraform tokens, e.g.:
-#   scripts/gcp-run.sh fabric-cft configs/probe-sweep.yaml gcp-full -var project=my-proj -var node_count=4
+#   scripts/gcp-run.sh fabric-cft configs/normalized/probe-sweep.yaml gcp-full -var project=my-proj -var node_count=4
 set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT"

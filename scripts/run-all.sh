@@ -4,8 +4,15 @@
 #
 #   scripts/run-all.sh <config.yaml> [profile] [platform ...]
 #
-# Default platforms: fabric-cft fabric-bft drunix   (Phase 1/2 - the ones with
-# working deploys). Add fabricx / neuchain once their phases land.
+# Pass a config from configs/normalized/ for a comparison run: those files are
+# platform-agnostic by construction (one file, all five platforms), which is what
+# makes running the same bytes against each platform meaningful. A config from
+# configs/native/ is per-platform and belongs to one platform only.
+#
+# Default platforms: fabric-cft fabric-bft drunix - the ones with working
+# deploys today. fabricx and neuchain accept the same normalized configs but are
+# blocked at the platform level (see docs/REMAINING-WORK.md); add them here once
+# their networks come up.
 set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT"

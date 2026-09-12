@@ -79,6 +79,9 @@ BENCH_ADAPTER_CHANNEL=${CHANNEL}
 BENCH_ADAPTER_CHAINCODE=${CC_NAME}
 BENCH_ADAPTER_METRICS_ENDPOINT=http://localhost:9443/metrics
 BENCH_PLATFORM_VERSION=${FABRIC_VERSION}
+# State DB this network actually came up on; the harness records it as
+# manifest.state_db next to the requested value (fairness lever).
+BENCH_ACTUAL_STATE_DB=leveldb
 EOF
 log "wrote ${HERE}/connection.env"
 log "fabric-cft up. peer :7051  orderer :7050  operations :9443"

@@ -20,7 +20,7 @@ services:
     entrypoint: ["/usr/local/bin/epoch_server"]
     command: ["--config", "/etc/neuchain/epoch.conf"]      # PLACEHOLDER
     volumes: ["./conf:/etc/neuchain:ro"]
-    ports: ["18000:18000"]                                  # PLACEHOLDER
+    ports: ["18000:18000"]                                  # PLACEHOLDER (epoch server; no adapter route)
     networks: [nc]
 
   block-server-0: &bs
@@ -30,23 +30,28 @@ services:
     entrypoint: ["/usr/local/bin/block_server_test_comm"]
     command: ["--id", "0", "--config", "/etc/neuchain/block.conf"]   # PLACEHOLDER
     volumes: ["./conf:/etc/neuchain:ro"]
-    ports: ["19000:19000"]                                  # PLACEHOLDER (gRPC submit)
+    # NeuChain block servers speak ZeroMQ on TWO sockets, not gRPC on one:
+    # :5001 is the SUB (submit) target the client PUBs to, :7003 is the REP
+    # (query) socket the finality poller uses for tip_query / block_query.
+    # Host ports follow 5001+10n / 7003+10n per server so they match the
+    # BENCH_ADAPTER_BLOCK_SERVERS / _QUERY_ENDPOINT that up.sh emits.
+    ports: ["5001:5001", "7003:7003"]
     networks: [nc]
 
   block-server-1:
     <<: *bs
     command: ["--id", "1", "--config", "/etc/neuchain/block.conf"]
-    ports: ["19001:19000"]
+    ports: ["5011:5001", "7013:7003"]
 
   block-server-2:
     <<: *bs
     command: ["--id", "2", "--config", "/etc/neuchain/block.conf"]
-    ports: ["19002:19000"]
+    ports: ["5021:5001", "7023:7003"]
 
   block-server-3:
     <<: *bs
     command: ["--id", "3", "--config", "/etc/neuchain/block.conf"]
-    ports: ["19003:19000"]
+    ports: ["5031:5001", "7033:7003"]
 
 networks:
   nc: {}

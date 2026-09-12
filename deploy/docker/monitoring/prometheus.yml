@@ -32,9 +32,11 @@ scrape_configs:
     metrics_path: /metrics
     static_configs:
       - targets:
-          - "host.docker.internal:9543"   # lite peer
-          - "host.docker.internal:9544"   # committing peer
-          - "host.docker.internal:9545"   # validation service
+          - "host.docker.internal:9443"   # orderer
+          - "host.docker.internal:9444"   # lite peer org1
+          - "host.docker.internal:9454"   # committing peer org1
+          - "host.docker.internal:9445"   # lite peer org2
+          - "host.docker.internal:9455"   # committing peer org2
         labels: {platform: drunix}
 
   - job_name: fabricx

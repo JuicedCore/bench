@@ -3,6 +3,7 @@ source "$(dirname "${BASH_SOURCE[0]}")/../lib.sh"
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$HERE"
 docker compose down 2>/dev/null || true
+docker rm -f fabricx-backend >/dev/null 2>&1 || true
 FXS="${HERE}/.cache/fabric-x-samples"
 [ -d "$FXS/tokens" ] && ( cd "$FXS/tokens" && make teardown ) || true
 rm -f "${HERE}/connection.env"

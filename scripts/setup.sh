@@ -33,7 +33,7 @@ next:
   1. bring up a platform:   ./bin/benchrunner setup --platform fabric-cft --profile local
      (or directly:          bash deploy/docker/fabric-cft/up.sh local )
   2. load its connection:   set -a; source deploy/docker/fabric-cft/connection.env; set +a
-  3. smoke test:            ./bin/benchrunner run --config configs/quick-smoke.yaml --platform fabric-cft
-  4. full methodology:      ./bin/benchrunner run --config configs/probe-sweep.yaml --platform fabric-cft
+  3. smoke test:            ./bin/benchrunner run --config configs/normalized/quick-smoke.yaml --platform fabric-cft
+  4. full methodology:      ./bin/benchrunner run --config configs/normalized/probe-sweep.yaml --platform fabric-cft
   5. tear down:             ./bin/benchrunner teardown --platform fabric-cft
 EOF
