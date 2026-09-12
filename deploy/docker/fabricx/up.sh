@@ -54,10 +54,7 @@ BT="$(platform_field fabricx orderer_batch.batch_timeout     || echo 1s)"
 MMC="$(platform_field fabricx orderer_batch.max_message_count || echo 100)"
 log "orderer batch from profile '${PROFILE}': timeout=${BT} maxMessageCount=${MMC}"
 
-# --- resource limits from the profile ---------------------------------------
-BENCH_FX_CPUS="$(platform_field fabricx per_container.cpus   || echo 0.8)"
-BENCH_FX_MEM="$(platform_field fabricx per_container.memory  || echo 800m)"
-export BENCH_FX_CPUS BENCH_FX_MEM BENCH_FX_IMAGE="$IMAGE"
+export BENCH_FX_IMAGE="$IMAGE"
 
 log "building ${IMAGE} (first build pulls a Go toolchain and compiles Arma + committer; several minutes)"
 docker build \
@@ -71,6 +68,10 @@ drop_caches
 
 log "starting stack"
 docker compose up -d
+
+# Resource budget (equal total across platforms, split evenly). Applied straight
+# away so bring-up itself runs under the real limits, not the compose placeholders.
+RES_ENV="$(apply_budget fabricx '^bench-fabricx-')"
 
 # --- readiness --------------------------------------------------------------
 # Arma's routers must be listening before anything is submitted; compose's
@@ -125,6 +126,7 @@ BENCH_ADAPTER_METRICS_ENDPOINT=http://localhost:9643/metrics
 BENCH_PLATFORM_VERSION=fabricx-committer-${COMMITTER_REF}-orderer-${ORDERER_REF}
 # State DB this network actually came up on; recorded as manifest.state_db.
 BENCH_ACTUAL_STATE_DB=postgres
+${RES_ENV}
 ENVEOF
 
 log "fabricx up. broadcast :6022  deliver :4001  metrics :9643"

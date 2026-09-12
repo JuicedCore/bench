@@ -76,6 +76,7 @@ union `adapter:` block, whose irrelevant keys each adapter ignores.
 | World-state DB | LevelDB requested everywhere; the DB **actually used** is recorded | `PlatformTopo.EffectiveStateDB(true)` sets `state_db_requested`; deploy scripts export `BENCH_ACTUAL_STATE_DB` into `state_db`. When they differ the run carries an automatic caveat — see below |
 | Orderer batch params (Fabric family) | identical `max_message_count`, `batch_timeout`, `preferred/absolute_max_bytes` across fabric-cft, fabric-bft, drunix, fabricx | `deploy/profiles/*.yaml` `orderer_batch`; recorded in manifest |
 | Workload | same normalized workload, same key space, same distribution, same value size | `workloads.New` from the run config |
+| Resource budget | the profile's **total** CPU/memory, split evenly across the platform's real containers (no swap) | `lib.sh apply_budget` in every `up.sh`; manifest records containers, per-container and total; unreported budget is caveated |
 | RNG seed | one `seed` drives every KeyGen and the read/write chooser | manifest records it |
 | Warmup / cooldown | fixed 30 s / 15 s (configurable, but the same for every platform in a comparison) | `metrics.Window` |
 | Load mode + target | identical `load:` block | one shared config file per mode |
@@ -161,7 +162,7 @@ A run is invalid if any of:
 - `invariant_ok == false` (a submitted tx never reached a terminal state)
 - `send_gap p99 > 50 ms` (the load generator was the bottleneck)
 - the measurement window is shorter than warmup + cooldown for a non-probe phase
-- the manifest is missing a fairness lever (state DB, batch params, seed)
+- the manifest is missing a fairness lever (state DB, batch params, seed, resource budget)
 - the headline came from a hold phase with no passing sweep step (a floor
   reading quoted as a saturation figure)
 - a probe-sweep's `saturation_tps` is the top of the ladder (the platform never

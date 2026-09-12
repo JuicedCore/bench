@@ -166,6 +166,12 @@ export CORE_PEER_CLIENT_CONNTIMEOUT=120s
 log "deploying ${CC_NAME} from ${CC_SRC} (connTimeout=120s, retries=10)"
 ./network.sh deployCC -c "$CHANNEL" -ccn "$CC_NAME" -ccp "$CC_SRC" -ccl go -r 10 -d 10
 
+# --- resource budget (equal total across platforms, split evenly) ------------
+# Every Drunix node counts: Lite/Committing Peers, VSCC, orderer, and the KeyDB +
+# YugabyteDB state stores the Committing Peers depend on.
+warm_chaincode "$NET" "$CHANNEL" "$CC_NAME" 1 2
+RES_ENV="$(apply_budget drunix '^(lp1\.org[12]|cp\.org[12]|vs1\.org[12]|orderer\.example\.com|hlf_keydb_org[12]msp|yugabyte-org[12]|dev-)')"
+
 # --- emit connection.env ----------------------------------------------
 ORG1="${NET}/organizations/peerOrganizations/org1.example.com"
 USER_MSP="${ORG1}/users/User1@org1.example.com/msp"
@@ -190,5 +196,6 @@ BENCH_PLATFORM_VERSION=drunix-${DRUNIX_REF}
 # manifest.state_db alongside the requested value, so a normalized run cannot
 # silently claim LevelDB parity it does not have.
 BENCH_ACTUAL_STATE_DB=${NETWORK_SH_DB}
+${RES_ENV}
 EOF
 log "drunix up. lite-peer :7051  committing-peer :7061  lite-peer operations :9444"

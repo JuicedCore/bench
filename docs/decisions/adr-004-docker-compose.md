@@ -8,7 +8,7 @@ topology.
 
 ## Decision
 
-Local deployment is Docker Compose with per-container `--cpus` / `--memory`
+Local deployment is Docker Compose, with each platform's total resource budget split evenly across its containers via `docker update --cpus` / `--memory` (`deploy/docker/lib.sh` `apply_budget`)
 limits derived from `deploy/profiles/<profile>.yaml`. Kubernetes is not used
 locally. (GCP multi-VM is a separate concern — [adr-005](adr-005-sequential-runs.md),
 guides/gcp-deployment.md.)

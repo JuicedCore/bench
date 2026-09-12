@@ -17,29 +17,24 @@ _orderer_batch_normalized: &orderer_batch_normalized
 
 platforms:
   fabric-cft:
-    nodes: {peer: 4, orderer: 3, ca: 2}
-    per_container: {cpus: 6.0, memory: "24g"}
+    nodes: {peer: 2, orderer: 1, chaincode: 2}
     state_db: leveldb
     orderer_batch: *orderer_batch_normalized
   fabric-bft:
-    nodes: {peer: 4, orderer: 4, ca: 2}
-    per_container: {cpus: 6.0, memory: "24g"}
+    nodes: {peer: 2, orderer: 4, chaincode: 2}
     state_db: leveldb
     orderer_batch: *orderer_batch_normalized
   drunix:
-    nodes: {lite_peer: 4, committing_peer: 2, validation_service: 4, orderer: 3, keydb: 1, yugabyte: 3}
-    per_container: {cpus: 4.0, memory: "16g"}
+    nodes: {lite_peer: 2, committing_peer: 2, validation_service: 2, orderer: 1, keydb: 2, yugabyte: 2, chaincode: 2}
     state_db: leveldb
     orderer_batch: *orderer_batch_normalized
   fabricx:
-    nodes: {arma_router: 2, arma_batcher: 4, arma_consenter: 4, arma_assembler: 2, endorser: 4, validator: 4, committer: 2}
-    per_container: {cpus: 3.0, memory: "12g"}
+    nodes: {arma: 1, postgres: 1, pipeline: 1, committer: 1}
     load_gen_cpus: 16
     state_db: leveldb
     orderer_batch: *orderer_batch_normalized
   neuchain:
-    nodes: {block_server: 8, epoch_server: 1}
-    per_container: {cpus: 6.0, memory: "24g"}
+    nodes: {block_server: 4, epoch_server: 1}
     load_gen_cpus: 16
     state_db: leveldb
     orderer_batch: {}

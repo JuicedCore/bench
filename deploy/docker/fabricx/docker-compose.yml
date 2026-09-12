@@ -10,7 +10,9 @@
 # The load generator is NOT here - Bench drives load from the host over gRPC.
 #
 # Static IPs: Arma's generated configs are IP-keyed, so the subnet is pinned.
-# Resource limits come from the profile via BENCH_FX_* (up.sh exports them).
+# Resource limits here are placeholders: up.sh calls lib.sh apply_budget right
+# after `compose up`, which splits the profile's total budget evenly across the
+# containers that are actually running.
 name: bench-fabricx
 
 x-node: &node

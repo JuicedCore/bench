@@ -44,7 +44,7 @@ and add a caveat (see [../workloads/mismatches.md](../workloads/mismatches.md)).
 `deploy/docker/<name>/up.sh` + `down.sh`:
 
 - `source ../lib.sh` for helpers.
-- Bring up the topology with per-container limits from
+- Bring up the topology, then call `apply_budget <platform> <container-regex>` (lib.sh) so the profile's total budget is split evenly across every container on the measured path, and append its output to `connection.env`. Budget from
   `deploy/profiles/<profile>.yaml`.
 - For normalized parity: LevelDB (or equivalent), pinned batch params if it has
   an orderer.
@@ -55,7 +55,7 @@ and add a caveat (see [../workloads/mismatches.md](../workloads/mismatches.md)).
 ## 5. Profile entries
 
 Add `<name>:` under `platforms:` in each `deploy/profiles/*.yaml` with `nodes`,
-`per_container`, `state_db`, and `orderer_batch` (or `{}` if none).
+`nodes` (the containers your deploy really starts), `state_db`, and `orderer_batch` (or `{}` if none).
 
 ## 6. Config + docs
 

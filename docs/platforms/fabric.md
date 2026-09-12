@@ -81,6 +81,6 @@ Native metrics: peer operations `:9443/metrics`, orderer `:9444/metrics`
 
 - First `up.sh` downloads ~1 GB of Docker images; budget time.
 - SmartBFT (`fabric-bft`) needs the 4-orderer set even locally — it is the most
-  memory-hungry Fabric variant (`per_container` is tuned down in `local.yaml`).
+  memory-hungry Fabric variant (it runs the most containers, so its even share of the budget is the smallest per container).
 - If `deployCC` fails on chaincode build, check the chaincode module builds:
   `cd chaincodes/kvstore && go build ./...` (uses `fabric-contract-api-go/v2`).

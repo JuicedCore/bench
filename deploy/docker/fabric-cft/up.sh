@@ -59,6 +59,10 @@ drop_caches
 log "deploying ${CC_NAME} chaincode from ${CC_SRC}"
 ./network.sh deployCC -c "$CHANNEL" -ccn "$CC_NAME" -ccp "$CC_SRC" -ccl go -ccv 1.0 -ccs 1
 
+# --- resource budget (equal total across platforms, split evenly) ------------
+warm_chaincode "${SAMPLES}/test-network" "$CHANNEL" "$CC_NAME" 1 2
+RES_ENV="$(apply_budget fabric-cft '^(peer0\.org[12]\.example\.com|orderer\.example\.com|dev-peer)')"
+
 # --- emit connection.env for the run config --------------------------------
 ORG1="${SAMPLES}/test-network/organizations/peerOrganizations/org1.example.com"
 USER_MSP="${ORG1}/users/User1@org1.example.com/msp"
@@ -82,6 +86,7 @@ BENCH_PLATFORM_VERSION=${FABRIC_VERSION}
 # State DB this network actually came up on; the harness records it as
 # manifest.state_db next to the requested value (fairness lever).
 BENCH_ACTUAL_STATE_DB=leveldb
+${RES_ENV}
 EOF
 log "wrote ${HERE}/connection.env"
 log "fabric-cft up. peer :7051  orderer :7050  operations :9443"

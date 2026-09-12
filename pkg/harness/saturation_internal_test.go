@@ -65,3 +65,30 @@ func TestStepVerdictRules(t *testing.T) {
 		}
 	}
 }
+
+// A run whose deploy did not report the budget it applied must not look like a
+// resource-controlled run.
+func TestResourceBudgetUnreportedIsCaveated(t *testing.T) {
+	for _, k := range []string{"BENCH_RESOURCE_CONTAINERS", "BENCH_RESOURCE_CPUS_EACH", "BENCH_RESOURCE_MEMORY_EACH"} {
+		t.Setenv(k, "")
+	}
+	var m Manifest
+	applyResourceEnv(&m)
+	if m.ResourceContainers != 0 || len(m.Caveats) != 1 || !strings.Contains(m.Caveats[0], "not reported") {
+		t.Errorf("unreported budget not caveated: containers=%d caveats=%v", m.ResourceContainers, m.Caveats)
+	}
+}
+
+func TestResourceBudgetRecordsWhatDeployApplied(t *testing.T) {
+	t.Setenv("BENCH_RESOURCE_CONTAINERS", "13")
+	t.Setenv("BENCH_RESOURCE_CPUS_EACH", "0.62")
+	t.Setenv("BENCH_RESOURCE_MEMORY_EACH", "630m")
+	t.Setenv("BENCH_RESOURCE_CPUS_TOTAL", "8")
+	t.Setenv("BENCH_RESOURCE_MEMORY_TOTAL_GB", "8")
+	var m Manifest
+	applyResourceEnv(&m)
+	if m.ResourceContainers != 13 || m.ResourceLimit.CPUs != 0.62 || m.ResourceLimit.Memory != "630m" ||
+		m.ResourceCPUsTotal != 8 || m.ResourceMemTotalGB != 8 || len(m.Caveats) != 0 {
+		t.Errorf("manifest did not record the applied budget: %+v caveats=%v", m, m.Caveats)
+	}
+}

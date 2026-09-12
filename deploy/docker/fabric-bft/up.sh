@@ -52,6 +52,10 @@ drop_caches
 ./network.sh up createChannel -c "$CHANNEL" -s leveldb -bft
 ./network.sh deployCC -c "$CHANNEL" -ccn "$CC_NAME" -ccp "$CC_SRC" -ccl go -ccv 1.0 -ccs 1
 
+# --- resource budget (equal total across platforms, split evenly) ------------
+warm_chaincode "${SAMPLES}/test-network" "$CHANNEL" "$CC_NAME" 1 2
+RES_ENV="$(apply_budget fabric-bft '^(peer0\.org[12]\.example\.com|orderer[0-9]*\.example\.com|dev-peer)')"
+
 ORG1="${SAMPLES}/test-network/organizations/peerOrganizations/org1.example.com"
 USER_MSP="${ORG1}/users/User1@org1.example.com/msp"
 CERT="$(ls "${USER_MSP}"/signcerts/* 2>/dev/null | head -1)"
@@ -72,5 +76,6 @@ BENCH_PLATFORM_VERSION=${FABRIC_VERSION}
 # State DB this network actually came up on; the harness records it as
 # manifest.state_db next to the requested value (fairness lever).
 BENCH_ACTUAL_STATE_DB=leveldb
+${RES_ENV}
 EOF
 log "fabric-bft up (SmartBFT, 4 orderers). peer :7051  operations :9443"

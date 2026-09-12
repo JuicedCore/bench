@@ -1,6 +1,7 @@
 # NeuChain topology - PHASE 4. 4 block servers + 1 epoch server (the local
-# profile). Resource limits come from deploy/profiles/<profile>.yaml
-# (neuchain.per_container); up.sh substitutes them via BENCH_NC_* env.
+# profile). Resource limits here are placeholders: up.sh calls lib.sh apply_budget
+# after `compose up`, splitting the profile's total budget evenly across the
+# containers that are actually running.
 #
 # Ports, config-file layout and CLI flags below are PLACEHOLDERS - fill in from
 # the iDC-NEU/NeuChain@ev repo (its scripts/ or run guide) during Phase 4.

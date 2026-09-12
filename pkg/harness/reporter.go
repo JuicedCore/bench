@@ -27,6 +27,12 @@ func writeSummaryText(path string, cfg *RunConfig, rr *RunResult) error {
 	} else {
 		fmt.Fprintf(&b, "profile:    %s   state_db=%s\n", cfg.Profile, rr.Manifest.StateDB)
 	}
+	if m := rr.Manifest; m.ResourceContainers > 0 {
+		fmt.Fprintf(&b, "resources:  %.2g CPU / %.2g GB total over %d containers (%.2f CPU / %s each)\n",
+			m.ResourceCPUsTotal, m.ResourceMemTotalGB, m.ResourceContainers, m.ResourceLimit.CPUs, m.ResourceLimit.Memory)
+	} else {
+		fmt.Fprintf(&b, "resources:  NOT REPORTED - limits unverified\n")
+	}
 	fmt.Fprintf(&b, "batch:      msgcount=%d timeout=%s preferred=%s\n",
 		rr.Manifest.OrdererBatch.MaxMessageCount, rr.Manifest.OrdererBatch.BatchTimeout, rr.Manifest.OrdererBatch.PreferredMaxBytes)
 	fmt.Fprintf(&b, "crypto:     sig=%s hash=%s per_tx_endorse_verify=%v\n",

@@ -7,6 +7,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -133,7 +134,6 @@ func (Engine) Run(ctx context.Context, cfg *RunConfig, opt Options) (*RunResult,
 		StateDB:          actualStateDB(topo.EffectiveStateDB(cfg.Normalized)),
 		StateDBRequested: topo.EffectiveStateDB(cfg.Normalized),
 		OrdererBatch:     topo.OrdererBatch,
-		ResourceLimit:    topo.PerContainer,
 		Nodes:            topo.Nodes,
 		Seed:             cfg.Load.Seed,
 		KeySpace:         cfg.Load.KeySpace,
@@ -157,6 +157,7 @@ func (Engine) Run(ctx context.Context, cfg *RunConfig, opt Options) (*RunResult,
 	if cp, ok := ad.(adapters.CryptoReporter); ok {
 		man.Crypto = cp.CryptoInfo()
 	}
+	applyResourceEnv(&man)
 	// A platform that could not honour the requested state DB is not holding
 	// that fairness lever, so say so next to the numbers rather than only in the
 	// manifest fields.
@@ -478,6 +479,30 @@ func buildPhases(cfg *RunConfig) []phase {
 		p.Duration = 60 * time.Second
 	}
 	return []phase{{name: "single", profile: p}}
+}
+
+// applyResourceEnv records the resource budget the deploy script actually applied.
+//
+// The profile's per-platform figures are not used: platforms run different
+// numbers of containers, so the fairness lever is the TOTAL budget, which
+// deploy/docker/lib.sh apply_budget splits evenly across the containers that are
+// really running and reports via connection.env. Without that report nothing
+// proves the platform was constrained at all, and the run says so.
+func applyResourceEnv(man *Manifest) {
+	envF := func(k string) float64 {
+		v, _ := strconv.ParseFloat(strings.TrimSpace(os.Getenv(k)), 64)
+		return v
+	}
+	n, _ := strconv.Atoi(strings.TrimSpace(os.Getenv("BENCH_RESOURCE_CONTAINERS")))
+	if n <= 0 {
+		man.Caveats = append(man.Caveats,
+			"resource budget not reported by the deploy script: container limits are unverified, so this run's hardware share is unknown")
+		return
+	}
+	man.ResourceContainers = n
+	man.ResourceLimit = Limits{CPUs: envF("BENCH_RESOURCE_CPUS_EACH"), Memory: strings.TrimSpace(os.Getenv("BENCH_RESOURCE_MEMORY_EACH"))}
+	man.ResourceCPUsTotal = envF("BENCH_RESOURCE_CPUS_TOTAL")
+	man.ResourceMemTotalGB = envF("BENCH_RESOURCE_MEMORY_TOTAL_GB")
 }
 
 // actualStateDB reports the world-state backend the platform really came up on.

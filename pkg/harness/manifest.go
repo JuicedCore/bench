@@ -39,12 +39,19 @@ type Manifest struct {
 	// They differ where a platform cannot honour the request - Drunix's up.sh
 	// always deploys YugabyteDB - and recording only the request would make the
 	// manifest claim a parity it does not have.
-	StateDB          string         `json:"state_db"`
-	StateDBRequested string         `json:"state_db_requested"`
-	OrdererBatch     OrdererBatch   `json:"orderer_batch"`
-	Crypto           CryptoInfo     `json:"crypto"`
-	ResourceLimit    Limits         `json:"resource_limit_per_container"`
-	Nodes            map[string]int `json:"nodes"`
+	StateDB          string       `json:"state_db"`
+	StateDBRequested string       `json:"state_db_requested"`
+	OrdererBatch     OrdererBatch `json:"orderer_batch"`
+	Crypto           CryptoInfo   `json:"crypto"`
+	// Resources as actually applied by the deploy script (lib.sh apply_budget):
+	// the profile's total budget split evenly across the platform's real
+	// containers. Zero values mean the deploy did not report limits, which the
+	// engine caveats - see applyResourceEnv.
+	ResourceLimit      Limits         `json:"resource_limit_per_container"`
+	ResourceContainers int            `json:"resource_containers"`
+	ResourceCPUsTotal  float64        `json:"resource_cpus_total"`
+	ResourceMemTotalGB float64        `json:"resource_memory_total_gb"`
+	Nodes              map[string]int `json:"nodes"`
 
 	// Load determinism.
 	Seed            int64   `json:"seed"`

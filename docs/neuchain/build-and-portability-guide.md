@@ -256,7 +256,7 @@ stale and need to change, not the other way round. Concretely:
 
 Resource limits (`BENCH_NC_CPUS`/`BENCH_NC_MEM`) are already wired from
 `deploy/profiles/local.yaml`'s `neuchain: {nodes: {block_server: 4,
-epoch_server: 1}, per_container: {cpus: 1.2, memory: "1g"}}` — no change needed
+epoch_server: 1}}` — no change needed; `up.sh` splits the profile budget across the five containers
 there.
 
 ---

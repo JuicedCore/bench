@@ -12,8 +12,8 @@ import (
 // deploy/profiles/<name>.yaml. The benchrunner "setup" command turns a platform
 // entry into Docker Compose --cpus/--memory overrides.
 type Profile struct {
-	Name   string        `yaml:"name"`
-	Budget Budget        `yaml:"budget"`
+	Name   string `yaml:"name"`
+	Budget Budget `yaml:"budget"`
 	// Platforms maps platform name -> topology.
 	Platforms map[string]PlatformTopo `yaml:"platforms"`
 }
@@ -28,10 +28,12 @@ type Budget struct {
 	LoadGenCPUs float64 `yaml:"load_gen_cpus"`
 }
 
-// PlatformTopo is node counts + per-container limits for one platform.
+// PlatformTopo is one platform's deployed topology and fairness parameters.
 type PlatformTopo struct {
-	Nodes        map[string]int `yaml:"nodes"` // role -> count, e.g. {"peer":1,"orderer":1}
-	PerContainer Limits         `yaml:"per_container"`
+	// Nodes is the container topology the deploy script really starts, role ->
+	// count. Informational (recorded in the manifest); the enforced resource lever
+	// is Budget, split evenly across those containers by lib.sh apply_budget.
+	Nodes map[string]int `yaml:"nodes"`
 	// LoadGenCPUs overrides Budget.LoadGenCPUs for this platform.
 	LoadGenCPUs float64 `yaml:"load_gen_cpus"`
 	// StateDB is the world-state backend for native runs ("leveldb","couchdb","yugabyte").
