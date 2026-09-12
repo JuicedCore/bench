@@ -38,7 +38,7 @@ You should see confirmed TPS near 200, `invariant_ok=true`, e2e p50 ≈ 20–30 
 
 set -a; source deploy/docker/fabric-cft/connection.env; set +a
 
-./bin/benchrunner run --config configs/quick-smoke.yaml --platform fabric-cft
+./bin/benchrunner run --config configs/normalized/quick-smoke.yaml --platform fabric-cft
 cat results/fabric-cft/*/summary.txt
 ```
 
@@ -50,21 +50,21 @@ First `setup` pulls ~1 GB of Docker images.
 export BENCH_DRUNIX_REPO=/path/to/drunix     # or a git URL
 ./bin/benchrunner setup --platform drunix --profile local
 set -a; source deploy/docker/drunix/connection.env; set +a
-./bin/benchrunner run --config configs/quick-smoke.yaml --platform drunix
+./bin/benchrunner run --config configs/normalized/quick-smoke.yaml --platform drunix
 ```
 
 ## 5. Real methodology run
 
 ```
 set -a; source deploy/docker/fabric-cft/connection.env; set +a
-./bin/benchrunner run --config configs/probe-sweep.yaml --platform fabric-cft
+./bin/benchrunner run --config configs/normalized/probe-sweep.yaml --platform fabric-cft
 python3 scripts/plot.py results/fabric-cft/<timestamp>/phases.csv
 ```
 
 ## 6. Compare platforms with isolation
 
 ```
-scripts/run-all.sh configs/probe-sweep.yaml local fabric-cft drunix
+scripts/run-all.sh configs/normalized/probe-sweep.yaml local fabric-cft drunix
 open docs/reports/comparison.html
 ```
 

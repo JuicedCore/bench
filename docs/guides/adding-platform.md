@@ -59,7 +59,7 @@ Add `<name>:` under `platforms:` in each `deploy/profiles/*.yaml` with `nodes`,
 
 ## 6. Config + docs
 
-- Add a config or reuse `configs/quick-smoke.yaml` (works if you export the same
+- Add a config or reuse `configs/normalized/quick-smoke.yaml` (works if you export the same
   `BENCH_ADAPTER_*` keys).
 - Write `docs/platforms/<name>.md`: what it's built for, tx lifecycle, adapter
   notes, fairness levers, deploy, gotchas.

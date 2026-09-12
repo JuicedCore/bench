@@ -11,13 +11,49 @@ Collected the same way for every platform, from the same code path:
 | ------ | ------ | ----- |
 | Confirmed TPS | `metrics.Collector`, T3 timestamps | all platforms |
 | End-to-end latency p50…p99.99 | `metrics.Collector`, T3 − scheduled | all platforms |
-| Submit latency | T2 − T1 | **Fabric-X: N/A** — the tokens REST POST is synchronous to finality, so there is no separable ack. The adapter reports `AckTime = now`; ignore Fabric-X submit/commit split. |
-| Commit latency | T3 − T2 | same caveat for Fabric-X |
-| Failure rate | invalid + errored + timed-out over submitted | all platforms |
+| Submit latency | T2 − T1 | **Fabric-X and NeuChain: N/A.** Fabric-X's tokens REST POST is synchronous to finality, so there is no separable ack. NeuChain's ZeroMQ PUB is fire-and-forget — there is no ack to receive. Both adapters report `AckTime = now`, which measures a local call return, not a platform acknowledgement. Ignore the submit/commit split for both. |
+| Commit latency | T3 − T2 | same caveat for Fabric-X and NeuChain |
+| Failure rate | invalid + errored + timed-out over submitted | all platforms, but see the breakdown caveat below |
 | Host CPU / memory / disk | node_exporter + cAdvisor, or the built-in `docker stats` sampler | all platforms |
 
-For Fabric-X, compare **E2E latency and confirmed TPS only**; the T1/T2/T3
-breakdown is not meaningful (see adr-003).
+For Fabric-X and NeuChain, compare **E2E latency and confirmed TPS only**; the
+T1/T2/T3 breakdown is not meaningful (see adr-003).
+
+### Where T3 is stamped
+
+E2E latency is only comparable if every adapter stamps finality at the same kind
+of instant — the moment the platform's own commit signal was *observed*, never
+the moment the harness got round to reading it:
+
+| Platform | T3 |
+| -------- | -- |
+| fabric-cft / fabric-bft | `Commit.StatusWithContext` returns (push-based) |
+| drunix | the Committing Peer's filtered-block event is decoded |
+| fabricx | the synchronous REST POST returns (the whole FSC + HTTP stack is inside T3 — disclosed, see mismatches.md) |
+| neuchain | the poller decodes the block carrying the tx |
+
+NeuChain's poller stamps once per block fetch and carries that instant through to
+the caller. It must not be stamped when `WaitForFinality` returns: that would add
+the poll interval, and for a transaction already resolved before the caller waited,
+an unbounded amount of caller-side delay.
+
+### The invalid/errored split is not equally observable
+
+The aggregate failure rate is comparable. Its breakdown is not:
+
+- **fabric / drunix** read a real validation code (`GetTxValidationCode`), so an
+  MVCC conflict lands in `invalid` and a transport failure in `errored`.
+- **neuchain** reads the result frame (COMMIT / ABORT), which is a genuine
+  platform verdict.
+- **fabricx** can only judge at the HTTP layer: a non-2xx (or a 2xx carrying an
+  error field) is classified `invalid`, anything else that fails is `errored`.
+  This distinguishes "the platform refused it" from "we could not reach it", but
+  it is *not* a committer validation code — an MVCC-style conflict and an
+  application-level refusal are indistinguishable. Fabric-X also reports no block
+  number.
+
+Compare aggregate failure rate across platforms; compare the invalid/errored
+split only within the Fabric family.
 
 ## Not comparable — platform-native metrics
 
@@ -31,18 +67,53 @@ excludes them from every comparison table by construction.
 
 See [adr-013](../decisions/adr-013-config-parity-policy.md).
 
+Every normalized mode is **one config file serving all five platforms**
+(`configs/normalized/<mode>.yaml`, selected with `--platform`). The `load:` and
+`metrics:` blocks are therefore physically the same bytes for every platform, so
+the levers below cannot drift; `pkg/harness/configparity_test.go` fails if anyone
+reintroduces per-platform copies. Platform-specific settings live only in the
+union `adapter:` block, whose irrelevant keys each adapter ignores.
+
 | Lever | Normalized value | Enforced by |
 | ----- | ---------------- | ----------- |
-| World-state DB | LevelDB everywhere | `PlatformTopo.EffectiveStateDB(true)` forces `leveldb`; deploy scripts read it |
+| World-state DB | LevelDB requested everywhere; the DB **actually used** is recorded | `PlatformTopo.EffectiveStateDB(true)` sets `state_db_requested`; deploy scripts export `BENCH_ACTUAL_STATE_DB` into `state_db`. When they differ the run carries an automatic caveat — see below |
 | Orderer batch params (Fabric family) | identical `max_message_count`, `batch_timeout`, `preferred/absolute_max_bytes` across fabric-cft, fabric-bft, drunix, fabricx | `deploy/profiles/*.yaml` `orderer_batch`; recorded in manifest |
 | Workload | same normalized workload, same key space, same distribution, same value size | `workloads.New` from the run config |
 | RNG seed | one `seed` drives every KeyGen and the read/write chooser | manifest records it |
 | Warmup / cooldown | fixed 30 s / 15 s (configurable, but the same for every platform in a comparison) | `metrics.Window` |
-| Load mode + target | identical `load:` block | run config |
+| Load mode + target | identical `load:` block | one shared config file per mode |
+| Finality wait | identical (60 s) | shared config; a tighter budget on one platform would manufacture timeouts |
+| Sweep ladder | identical `steps` for every platform | shared config; see "One ladder for every platform" below |
 
 For **platform-native runs** (`normalized: false`) each platform is tuned to its
 best and the tuning is recorded in the manifest. Native and normalized numbers
-are never mixed in one comparison.
+are never mixed in one comparison. Native configs live in `configs/native/`.
+
+### State DB: requested vs actual
+
+`state_db_requested` is what the normalized contract asked for (always LevelDB).
+`state_db` is what the platform came up on, taken from `BENCH_ACTUAL_STATE_DB` in
+each `up.sh`'s `connection.env`. They differ on Drunix, whose shipped
+test-network only wires the full node set for YugabyteDB. Recording only the
+request would have the manifest assert a parity the run does not have, so the
+engine records both and appends a caveat whenever they disagree.
+
+## One ladder for every platform
+
+Normalized sweeps offer every platform the **same** `steps`. A platform is not
+given a gentler ladder to flatter it. Two rules make that practical and honest:
+
+- **The hold phase follows the measured knee.** The headline result is the hold
+  phase, offered at `hold_fraction` × the highest step that stayed under
+  `max_fail_rate` — *not* × the top of the configured ladder. A platform that
+  saturates early therefore has its headline measured just below its own knee,
+  not deep in overload. If no step held at all, hold falls back to the probe rate
+  and the run is caveated as a floor reading, not a saturation figure.
+- **Early abort.** After `abort_after_failed_steps` (default 2) consecutive steps
+  over `max_fail_rate`, the remaining steps are skipped and recorded in
+  `manifest.skipped_steps`, with a caveat. A platform that saturates at step 2
+  stops there instead of spending the rest of the run failing steps 3..N. Set it
+  to `0` to force the whole ladder.
 
 ## Disclosed, not equalized — cryptography
 
@@ -71,6 +142,13 @@ and the HTML report:
 - **Mismatched workloads on Fabric-X** (`kv-write` mapped onto a token mint) —
   see [workloads/mismatches.md](../workloads/mismatches.md) and
   [adr-010](../decisions/adr-010-mismatch-report.md).
+- **State-DB parity not held** — emitted automatically whenever `state_db`
+  differs from `state_db_requested` (Drunix on YugabyteDB).
+- **Sweep aborted early** / **no sweep step held** — emitted automatically by the
+  ladder rules above; the second means the headline is a floor, not a saturation
+  figure.
+- **Drunix write payloads are JSON-wrapped** — `value_size_bytes` is not the
+  on-wire size for Drunix (`pkg/adapters/drunix/valuecodec.go`).
 
 ## Inter-run isolation
 
@@ -87,3 +165,5 @@ A run is invalid if any of:
 - `send_gap p99 > 50 ms` (the load generator was the bottleneck)
 - the measurement window is shorter than warmup + cooldown for a non-probe phase
 - the manifest is missing a fairness lever (state DB, batch params, seed)
+- the headline came from a hold phase with no passing sweep step (a floor
+  reading quoted as a saturation figure)

@@ -23,20 +23,20 @@ Full breakdown + why the two remaining items need heavy compute or GCP creds:
 | -------- | ------- | ----------- | ----- |
 | `fabric-cft` (Raft) | ✅ | ✅ smoke + probe-sweep (Fabric 2.5.16) | e2e p50 165–565 ms across the sweep |
 | `fabric-bft` (SmartBFT) | ✅ | ✅ smoke (Fabric 3.1.5, 4 orderers) | ≈ cft at low load once batching is pinned |
-| `drunix` (npci/drunix) | ✅ (wraps fabric; CP block-event finality) | deploy + lifecycle verified live | **write path blocked upstream** — Drunix's sparse-block format panics the Committing Peer on vanilla-SDK writes; needs a Drunix client SDK or CP fix ([docs/REMAINING-WORK.md §3](docs/REMAINING-WORK.md)) |
-| `fabricx` (token REST) | ✅ matches the **verified** `fabric-x-samples` API, `httptest`-tested | token `transfer` runs today | normalized `kv-*` needs the custom `/kv` FSC view (stub + code-level spec) — **live-devnet gated** |
-| `neuchain` (pure-Go ZMQ+protobuf+RSA) | ✅ unit-tested (sign, result-frame, tx-build) | — | server binaries need a ~1 h C++ build — **compute gated**, `deploy/docker/neuchain/build.sh` |
+| `drunix` (npci/drunix) | ✅ (wraps fabric; CP block-event finality) | deploy + lifecycle + write path verified live | write path **unblocked**: the cause was Drunix's YugabyteDB statedb rejecting non-JSON values, fixed client-side in `pkg/adapters/drunix/valuecodec.go`. The earlier sparse-block diagnosis was wrong ([docs/REMAINING-WORK.md §3](docs/REMAINING-WORK.md)). Runs on YugabyteDB, so normalized runs carry a state-DB caveat |
+| `fabricx` (token REST) | ✅ matches the **verified** `fabric-x-samples` API, `httptest`-tested | — | **not runnable today.** Namespace bootstrap on the self-built backend fails `ABORTED_SIGNATURE_INVALID` ([docs/platforms/fabricx-comparability.md](docs/platforms/fabricx-comparability.md)); normalized `kv-*` additionally needs the `/kv` FSC view, still a 501 stub. Configs exist for both lanes and are marked unverified |
+| `neuchain` (pure-Go ZMQ+protobuf+RSA) | ✅ unit-tested (sign, result-frame, tx-build, finality timestamping) | — | server binaries need a 45–90 min C++ build — **compute gated**, `deploy/docker/neuchain/build.sh`. Runs the full normalized mode set once built |
 | GCP campaign | `scripts/gcp-run.sh` + Terraform ready | — | **credential gated** — provide `-var project=…` |
 
 ## Quick start
 
 ```
 scripts/setup.sh                                   # build + monitoring + unit tests
-./bin/benchrunner run --config configs/quick-smoke.yaml --platform mock   # no network needed
+./bin/benchrunner run --config configs/normalized/quick-smoke.yaml --platform mock   # no network needed
 
 ./bin/benchrunner setup --platform fabric-cft --profile local
 set -a; source deploy/docker/fabric-cft/connection.env; set +a
-./bin/benchrunner run --config configs/probe-sweep.yaml --platform fabric-cft
+./bin/benchrunner run --config configs/normalized/probe-sweep.yaml --platform fabric-cft
 ./bin/benchrunner teardown --platform fabric-cft
 ```
 

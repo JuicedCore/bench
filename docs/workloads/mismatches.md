@@ -40,6 +40,26 @@ deterministic transaction. Any such composition is recorded in
 [neuchain-client-implementation.md](../platforms/neuchain-client-implementation.md)
 §4 and becomes a caveat.
 
+## kv-read on every platform
+
+`kv-read` is in the normalized set (adr-009) but a read is not a commit anywhere,
+so its latency is not comparable to the write modes:
+
+- **fabric / drunix** — `Evaluate` against one peer; `WaitForFinality` returns
+  immediately with `Valid: true` and nothing reaches the ledger. The number is a
+  client-observed evaluate round-trip.
+- **fabricx** — the same synchronous FSC-view POST as a write.
+- **neuchain** — a real submitted transaction carrying a read set, through the
+  full commit path (`txbuild.go` maps `TxRead` to a read-set-only YCSB payload).
+
+So NeuChain's read cost includes consensus while Fabric's does not. Read paths are
+comparable *to each other* as read paths; `read-profile` numbers must never be set
+beside `kv-write` numbers as though they measured the same thing.
+
+**Caveat wording:** "kv-read is an evaluate round-trip on Fabric/Drunix and a
+committed transaction on NeuChain; read latency is not comparable to write
+latency, and not uniformly comparable across platforms."
+
 ## NeuChain / Fabric-X on the `local` profile
 
 Not a workload mismatch but a resource mismatch — see

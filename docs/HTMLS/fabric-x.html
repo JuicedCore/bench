@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fabric-X Report</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<nav class="topnav">
+  <span class="brand">Bench</span>
+  <a href="index.html">Overview</a>
+  <a href="fabric.html">Fabric</a>
+  <a href="drunix.html">Drunix</a>
+  <a href="fabric-x.html" class="current">Fabric-X</a>
+  <a href="neuchain.html">NeuChain</a>
+  <a href="normalization.html">Normalization</a>
+</nav>
+<main>
+
+<h1>Fabric-X <span class="badge warn">token workloads live &mdash; normalized KV devnet-gated</span>
+<span class="subtitle">A ground-up re-architecture of Fabric for ultra-scalability, with no chaincode and a UTXO transaction model</span>
+</h1>
+
+<h2>1. What it is</h2>
+<p>Fabric-X (LF Decentralized Trust) is not a fork or a variant of Fabric &mdash; it is a ground-up re-architecture that decomposes the monolithic Fabric peer into independently scalable microservices (<strong>endorser</strong>, <strong>validator</strong>, <strong>committer</strong>) and replaces the Raft/SmartBFT orderer entirely with <strong>Arma</strong>, a sharded BFT ordering service. Its published evaluation reports throughput above <strong>200,000 TPS</strong> on a large cluster (a CBDC benchmark). Of the four platforms in this benchmark, Fabric-X is the one furthest from Fabric's original design, on two independent axes at once: how consensus works, and what a transaction even <em>is</em>.</p>
+
+<h2>2. No chaincode: a different transaction model, not just a different consensus</h2>
+<p>This is the single most important thing to understand about Fabric-X, and it's easy to under-appreciate: Fabric-X does not run chaincode at all. There is no <code>PutState</code>/<code>GetState</code>, no deployable smart contract, nothing to install or approve. In its place, transactions are negotiated peer-to-peer through <strong>Fabric-Smart-Client (FSC)</strong> views and sessions, built on top of the <strong>Fabric-Token-SDK</strong> &mdash; a UTXO (unspent transaction output) model, the same conceptual family as Bitcoin's ledger, not an account-balance model.</p>
+<div class="callout note">
+<strong class="label">UTXO vs. account/KV, concretely</strong>
+<p>On Fabric, Drunix, or NeuChain, a <code>transfer</code> is a read-modify-write: read account A's balance, read account B's balance, write both back updated. On Fabric-X, a transfer <strong>consumes</strong> existing unspent token outputs belonging to the sender and <strong>creates new outputs</strong> assigned to the recipient (plus, in a full implementation, a change output back to the sender) &mdash; nothing is ever overwritten in place. This changes what "the same transaction" even means across platforms, and is exactly why the harness defines workloads by <em>logical effect</em> rather than by wire format &mdash; see <a href="normalization.html#comparable-table">the normalization page</a>.</p>
+</div>
+<p>The direct consequence: the exact same smart-contract bytecode cannot be deployed across all four platforms in this benchmark, because Fabric-X has nowhere to deploy it to. The harness's answer is to define each normalized workload as a logical effect and implement it natively per platform &mdash; for Fabric-X, that means routing through FSC views and the Token SDK instead of chaincode invocations.</p>
+
+<h2>3. Arma: sharded ordering by digest, not by payload</h2>
+<p>Arma replaces the single-leader-or-BFT-quorum orderer model with four distinct server roles working as a pipeline:</p>
+<ul>
+<li><strong>Routers</strong> &mdash; accept incoming transactions from clients and dispatch them onward.</li>
+<li><strong>Batchers</strong> &mdash; group transactions into batches.</li>
+<li><strong>Consenters</strong> &mdash; run BFT agreement over compact <strong>digests</strong> of each batch, not the full transaction payloads themselves.</li>
+<li><strong>Assemblers</strong> &mdash; reconstruct full, ordered blocks from the agreed-upon digests plus the batch data held by the batchers.</li>
+</ul>
+<p>Ordering digests instead of full payloads is specifically where Arma's throughput advantage comes from: the expensive BFT agreement step only ever moves small, fixed-size digests across the network, regardless of how large the underlying transactions are, while the bulk transaction data moves separately and can be pipelined. This is a genuinely different scaling strategy than SmartBFT's approach of running BFT agreement directly over the transaction batch.</p>
+
+<h2>4. How this harness measures it &mdash; and where the T1/T2/T3 timeline breaks down</h2>
+<p>The real Fabric-X REST API (verified directly against <code>fabric-x-samples/tokens/swagger.yaml</code>) is token-only, with no KV route at all:</p>
+<table>
+<tr><th>Route</th><th>Port</th><th>Reply</th><th>Synchronous?</th></tr>
+<tr><td><code>POST /issuer/issue</code></td><td>9100</td><td><code>{message, payload:"&lt;txid&gt;"}</code></td><td><strong>to finality</strong></td></tr>
+<tr><td><code>POST /owner/accounts/{id}/transfer</code></td><td>9500 / 9600</td><td>same shape</td><td><strong>to finality</strong></td></tr>
+<tr><td><code>POST /owner/accounts/{id}/redeem</code></td><td>9500</td><td>same shape</td><td><strong>to finality</strong></td></tr>
+<tr><td><code>GET /owner/accounts/{id}?code=&lt;type&gt;</code></td><td>9500</td><td>account balance</td><td>&mdash;</td></tr>
+</table>
+<p>Every write route runs <code>ttx.NewOrderingAndFinalityView(tx)</code> internally <strong>before the HTTP response is returned</strong> &mdash; confirmed directly in the sample's own source (<code>tokens/owner/service/fsc.go</code>). This is not a client-library quirk or a timeout misconfiguration; it's how the API is built. The POST call blocks until the transaction is already ordered and final, and only then sends back a response.</p>
+
+<div class="callout bad">
+<strong class="label">Why Fabric-X genuinely has no T2</strong>
+<p>Recall from <a href="normalization.html">the normalization page</a> that T2 is meant to capture "the platform acknowledged receipt, before finality." On Fabric, that's the orderer accepting a broadcast &mdash; a real, separate event. On Fabric-X, there simply is no earlier point to observe: by the time the POST call returns at all, ordering and finality have already happened. Asking "what was the submit-ack latency" is not a question this API can answer, in the same way you can't ask a synchronous function call what its "acknowledgement time" was separately from its return time &mdash; there's only one event to observe, not two. This is a structural property of the API, not a gap in the adapter.</p>
+</div>
+
+<p>The adapter (<code>pkg/adapters/fabricx</code>) works around the blocking call as gracefully as the situation allows: <code>Submit</code> fires the POST in a background goroutine and returns immediately with <code>AckTime = now</code> &mdash; explicitly marked <strong>advisory</strong>, not a real measurement &mdash; while <code>WaitForFinality</code> blocks on that same goroutine and reports its completion as T3. T1 (generator-side, before submit) and T3 (the POST actually completing) are both real and comparable to every other platform. Submit latency and commit latency, individually, are reported as <strong>N/A</strong> for Fabric-X in every comparison table &mdash; not zero, not omitted silently, but explicitly flagged as not applicable, so a reader never mistakes "no data" for "instant."</p>
+
+<h2>5. The custom KV view: filling a gap the real API doesn't have</h2>
+<p>Because the normalized <code>kv-write</code>/<code>kv-read</code>/<code>kv-mixed</code> workloads need <em>some</em> key-value primitive to drive, and Fabric-X's real, published API has no KV route whatsoever, the harness adds one: a custom FSC view service at <code>deploy/docker/fabricx/kvview/</code> exposing a plain <code>POST /kv</code> endpoint that does key/value writes and reads over the same FSC session mechanism the token routes use.</p>
+<div class="callout warn">
+<strong class="label">This is honestly disclosed as a mismatch, not presented as native</strong>
+<p>The KV view is a view/session round-trip built specifically for this benchmark &mdash; it is <strong>not</strong> a native Fabric-X primitive, it carries FSC negotiation overhead that has no equivalent step on Fabric, Drunix, or NeuChain, and it inherits the same synchronous-to-finality behavior as the token routes (so it has no T2 either). Every run using it carries an explicit caveat: <em>"Fabric-X KV via a custom FSC view &mdash; not a native Fabric-X primitive; the FSC node + HTTP server are in the measured path and have no equivalent on Fabric/Drunix/NeuChain. Submit latency is N/A. Compare E2E latency and TPS trends only."</em> See <a href="normalization.html">the normalization page, Section&nbsp;5</a> for the general policy this follows: run it anyway, caveat it loudly, never silently drop the data point.</p>
+</div>
+<p>The KV view is currently a <strong>compiling stub</strong> &mdash; <code>POST /kv</code> returns HTTP 501 &mdash; with a full code-level implementation spec written up in its own <code>README.md</code>, confirmed against the real <code>fabric-smart-client@v0.20.0</code> API for registering FSC write/read views. Finishing it requires a live Fabric-X devnet to build and iterate against (the FSC node has to join a real network before its views can be tested), which is why it's grouped with the other devnet/compute-gated work rather than something completable without infrastructure. Token workloads (issue/transfer/redeem) work today and don't depend on this at all.</p>
+
+<h2>6. Local-run scale caveat</h2>
+<p>Arma and the Fabric-X committer stack are explicitly scale-out designs &mdash; the published 200,000+ TPS figure comes from a large multi-node cluster. Run locally (roughly 8 cores shared across all Fabric-X services on this benchmark's default profile), throughput sits far below that published ceiling, for reasons that have nothing to do with Arma's design being slow and everything to do with there simply not being enough independent hardware to shard across. Every local Fabric-X run automatically carries a manifest caveat stating that absolute TPS is not comparable to the ~200k figure. What <em>does</em> remain informative locally is the <strong>shape</strong> of the latency curve as offered load increases, and relative behavior under contention &mdash; those characteristics of Arma's design don't require cluster scale to observe, even though the absolute ceiling does. Full-scale, publication-comparable numbers require the <code>gcp-full</code> resource profile.</p>
+
+<h2>7. Deploying it</h2>
+<p><code>deploy/docker/fabricx/up.sh</code> runs the whole devnet bring-up:</p>
+<ol>
+<li>Clones <code>hyperledger/fabric-x-samples</code>.</li>
+<li>Runs <code>tokens/</code> <code>make setup && make start</code> &mdash; brings up the Arma ordering service, the committer stack, and issuer/endorser1/owner1/owner2 services (ports 9100/9300/9500/9600).</li>
+<li>Calls <code>POST /endorser/init</code> to commit the token parameters that the network needs before any transaction can run.</li>
+<li>Builds and starts the <code>kvview</code> service (<code>bench/fabricx-rest</code>, port 9700) on the shared <code>fabric_test</code> Docker network.</li>
+<li>Emits <code>connection.env</code> (<code>BENCH_ADAPTER_OWNER_URL</code> and friends) for the benchrunner CLI to pick up.</li>
+</ol>
+<p><code>down.sh</code> runs <code>tokens/</code> <code>make teardown</code> followed by <code>docker compose down</code>.</p>
+
+<h2>8. Where this stands today</h2>
+<div class="callout ok">
+<strong class="label">Working today</strong>
+<p>The adapter matches the verified real <code>fabric-x-samples/tokens</code> API and is <code>httptest</code>-tested against real route shapes (transfer, KV write/read, an unreachable-service case, and the submit-returns-before-finality behavior). Token <code>transfer</code> workloads run live against a real devnet today.</p>
+</div>
+<div class="callout warn">
+<strong class="label">Gated on a live devnet</strong>
+<p>Normalized <code>kv-*</code> workloads need the custom KV view finished, which needs an already-running Fabric-X devnet to iterate against &mdash; grouped with other infrastructure-dependent work, not a code gap on this benchmark's side.</p>
+</div>
+
+<footer class="pagefoot">
+  <span>Source: <code>docs/platforms/fabric-x.md</code>, <code>docs/workloads/mismatches.md</code></span>
+  <span><a href="drunix.html">&larr; Drunix</a> &nbsp;|&nbsp; <a href="neuchain.html">NeuChain &rarr;</a></span>
+</footer>
+</main>
+</body>
+</html>

@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>How We Compare Four Incompatible Chains</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<nav class="topnav">
+  <span class="brand">Bench</span>
+  <a href="index.html">Overview</a>
+  <a href="fabric.html">Fabric</a>
+  <a href="drunix.html">Drunix</a>
+  <a href="fabric-x.html">Fabric-X</a>
+  <a href="neuchain.html">NeuChain</a>
+  <a href="normalization.html" class="current">Normalization</a>
+</nav>
+<main>
+
+<h1>How we make four incompatible platforms "do the same thing"
+<span class="subtitle">The normalization methodology behind every cross-platform number in this benchmark</span>
+</h1>
+
+<div class="callout note">
+<strong class="label">The problem in one sentence</strong>
+<p>Fabric runs chaincode. Fabric-X has no chaincode at all &mdash; it moves UTXO-style tokens through a view/session protocol. NeuChain has no ordering service. You cannot point the same script at all three and expect it to submit "the same transaction," because there is no such thing as a transaction shape that is native to all three at once.</p>
+</div>
+
+<h2>1. Why "just run the same code everywhere" doesn't work</h2>
+
+<p>Every one of these platforms is a permissioned ledger, and every one of them ends up with the same effect if you squint &mdash; some piece of state changes, and eventually everyone agrees it changed. But the <em>path</em> to that agreement is architecturally different in ways that go deeper than configuration:</p>
+
+<table>
+<tr><th>Model</th><th>Platforms</th><th>Shape</th></tr>
+<tr><td>Execute&#8209;Order&#8209;Validate (EOV) with chaincode</td><td>Fabric (CFT + BFT), Drunix</td><td>Client &rarr; endorse (execute) &rarr; order &rarr; validate &rarr; commit</td></tr>
+<tr><td>Execute&#8209;Order&#8209;Validate without chaincode</td><td>Fabric&#8209;X</td><td>FSC view/session negotiation + Token SDK (UTXO), Arma sharded ordering</td></tr>
+<tr><td>Ordering&#8209;free Execute&#8209;Validate (EV)</td><td>NeuChain</td><td>Deterministic execution &mdash; no dedicated ordering step at all</td></tr>
+</table>
+
+<p>A benchmark tool that submits "a chaincode invoke" simply has nowhere to send that invocation on Fabric-X (there's no chaincode container to receive it) or on NeuChain (there's no chaincode execution model &mdash; it runs a fixed, deterministic function set). Conversely, a tool that drives each platform through its own bespoke client can't produce comparable numbers, because "fast on platform A's own benchmark tool" and "fast on platform B's own benchmark tool" tells you nothing about which platform is actually faster under the same conditions &mdash; the tools themselves might differ by more than the platforms do.</p>
+
+<p>The way out is not to force one wire format onto all four platforms. It's to define what "the same transaction" means at a <strong>logical</strong> level, and let each platform satisfy that logical contract using whatever primitive is native to it.</p>
+
+<h2>2. The normalized workload: one contract, four implementations</h2>
+
+<p>This is the actual definition used across the whole harness (<code>pkg/workloads/workload.go</code>). "Equivalent" here does not mean identical bytes on the wire &mdash; that's provably impossible across three transaction models. It means three things hold simultaneously:</p>
+
+<ol>
+<li><strong>The same logical state effect.</strong> "Set this key to this value" or "move this amount from account A to account B" &mdash; not "call this specific function with this specific payload format."</li>
+<li><strong>The same key-selection process.</strong> One deterministic, seeded generator decides which keys are touched, in what order, under what contention pattern (uniform / zipfian / fixed) &mdash; identical across all four platforms for a given run.</li>
+<li><strong>Measured at the same two points in time.</strong> Not the same wire message, but the same two <em>conceptual</em> moments: "the platform has acknowledged this" and "the platform has finalized this." (Section&nbsp;3 below explains why even this needs care.)</li>
+</ol>
+
+<table>
+<tr><th>Normalized workload</th><th>What it means</th><th>Fabric / Drunix</th><th>Fabric&#8209;X</th><th>NeuChain</th></tr>
+<tr><td><code>kv-write</code></td><td>Set one key</td><td>chaincode <code>Put(key,value)</code></td><td>custom FSC KV-write view</td><td>native KV write RPC</td></tr>
+<tr><td><code>kv-read</code></td><td>Read one key</td><td>chaincode <code>Get(key)</code> (Evaluate)</td><td>FSC read view</td><td>native KV read RPC</td></tr>
+<tr><td><code>kv-mixed</code></td><td>Read/write blend by ratio</td><td><code>Get</code> / <code>Put</code></td><td>read / write view</td><td>read / write RPC</td></tr>
+<tr><td><code>transfer</code></td><td>Move value between two accounts</td><td>chaincode <code>Transfer(from,to,amount)</code> (read-modify-write two accounts)</td><td>Token SDK <code>Transfer</code> (native) or FSC transfer view (normalized)</td><td>native transfer RPC</td></tr>
+</table>
+
+<p>Each row is implemented once as a stream of abstract <code>adapters.Transaction</code> values, and then translated into whatever that specific platform actually understands. The translation layer is a <a href="index.html">PlatformAdapter</a> &mdash; the harness never special-cases a platform inside the load generator or the metrics collector; all platform-specific knowledge lives behind one narrow interface (<code>Setup</code> / <code>Submit</code> / <code>WaitForFinality</code> / <code>Query</code>).</p>
+
+<div class="callout note">
+<strong class="label">Why this is fair and not just "close enough"</strong>
+<p>The alternative to normalization isn't a more perfect comparison &mdash; it's an impossible one, or a meaningless one. Since Fabric-X has no <code>PutState</code>, insisting on byte-identical wire behavior would mean simply never benchmarking Fabric-X's KV performance at all. Normalizing at the logical-effect level is what makes a same-key, same-contention, same-measurement-window comparison possible in the first place.</p>
+</div>
+
+<h2>3. The real trick: one timeline, even when a platform can't natively produce all of it</h2>
+
+<p>Every transaction on every platform is measured against the same three-point timeline:</p>
+
+<div class="timeline">
+  <div class="seg"><span class="t">scheduled</span>when the load generator intended to send it</div>
+  <div class="seg"><span class="t">T1</span>captured right before <code>adapter.Submit</code> &mdash; identical code path for every platform</div>
+  <div class="seg"><span class="t">T2</span>the platform acknowledges receipt</div>
+  <div class="seg"><span class="t">T3</span>the adapter observes it committed in a finalized block</div>
+</div>
+
+<p>T1 is easy &mdash; it's generator-side, so it's trivially identical across platforms. T3 is also well-defined everywhere: every one of these systems eventually produces a finalized, ordered block (or, for NeuChain, a deterministically-agreed execution result), and "I saw my transaction land there" is a real, comparable event on all four. <strong>Throughput and headline latency are always computed from T3, never from T1</strong> &mdash; reporting only submit-to-ack latency, as some blockchain benchmarks do, silently discards the entire cost of ordering, validation, and commit.</p>
+
+<p>T2 is where the four platforms genuinely stop being comparable, and this is the crux of the whole normalization exercise. It's not a measurement bug to be fixed &mdash; it's a real difference in what each platform's client protocol makes observable, and pretending otherwise would produce numbers that look comparable but aren't.</p>
+
+<h3>Why T2 means something different everywhere &mdash; and where it means nothing at all</h3>
+
+<table>
+<tr><th>Platform</th><th>What T2 actually is</th><th>Is it a real, separate measurement?</th></tr>
+<tr><td>Fabric / Drunix</td><td>The orderer accepts the broadcast envelope (Gateway SDK's <code>Submit</code> returns)</td><td><span class="badge ok">yes</span> Endorsement happens client-side <em>before</em> this point, ordering happens <em>after</em> &mdash; two genuinely separate network round-trips with independent costs.</td></tr>
+<tr><td>Fabric&#8209;X</td><td>N/A &mdash; the REST call blocks until finality</td><td><span class="badge bad">no</span> There is no moment where the platform says "received, will get back to you" &mdash; the HTTP POST simply doesn't return until the transaction is already final. T2 is not missing because nobody built it; it structurally cannot exist over this API.</td></tr>
+<tr><td>NeuChain</td><td>The instant the client's ZeroMQ <code>PUB</code> socket's <code>send()</code> call returns</td><td><span class="badge bad">no</span> <code>PUB</code> is fire-and-forget &mdash; there is no reply, no acknowledgement frame, nothing from the network at all. A "T2" here is measuring how fast the client's own network stack accepted a local write, not anything the NeuChain platform did.</td></tr>
+</table>
+
+<p>This has a very concrete, very easy-to-miss consequence for reading any report this harness produces: <strong>a "submit latency" column that shows numbers for Fabric-cft and Fabric-X side by side is not comparing two measurements of the same thing.</strong> Fabric's number reflects real endorsement-and-broadcast network cost. Fabric-X's and NeuChain's numbers, if reported at all, would reflect essentially nothing &mdash; a REST client library returning after synchronous work, or a local syscall returning immediately. Because of this, the harness does not print a submit/commit split for Fabric-X or NeuChain at all; it reports those columns as <strong>N/A</strong> rather than a number that looks legitimate but isn't. See <a href="#comparable-table">the comparable-metrics table</a> below for the exact rule.</p>
+
+<div class="callout warn">
+<strong class="label">Rule of thumb when reading any result</strong>
+<p>If a metric can be produced by every platform's own client-observable network behavior, it's comparable. If producing it for one platform would mean measuring something structurally different from what it measures on another (a REST library's internal buffering vs. a real consensus round-trip), it is reported as N/A rather than as a misleadingly precise number.</p>
+</div>
+
+<h2 id="comparable-table">4. What's comparable, what's disclosed, what's held identical</h2>
+
+<h3>Comparable across all four platforms</h3>
+<table>
+<tr><th>Metric</th><th>Source</th><th>Caveat</th></tr>
+<tr><td>Confirmed TPS</td><td>T3 timestamps, committed &amp; valid only</td><td>none</td></tr>
+<tr><td>End-to-end latency (p50&ndash;p99.99)</td><td>T3 &minus; scheduled send time</td><td>none</td></tr>
+<tr><td>Failure rate</td><td>(invalid + errored + timed-out) / submitted</td><td>none</td></tr>
+<tr><td>Host CPU / memory / disk</td><td>node_exporter + cAdvisor, or built-in <code>docker stats</code></td><td>none</td></tr>
+<tr><td>Submit latency (T2&minus;T1) / commit latency (T3&minus;T2)</td><td>T1/T2/T3 collector</td><td><strong>Fabric-X: N/A</strong> for the reason above &mdash; treat as not reported, not as zero</td></tr>
+</table>
+
+<h3>Deliberately <em>not</em> compared: each platform's own metrics</h3>
+<p>Endorsement time, ordering time, validation-phase breakdown, mempool depth &mdash; every platform exposes some of its own <code>/metrics</code>, and every one of those numbers means something platform-specific. They're captured (stored as <code>native_scrapes</code> in each run's <code>result.json</code>) purely to help explain <em>why</em> a platform behaved a certain way after the fact. They never appear in a cross-platform comparison table &mdash; mixing "Fabric's self-reported endorsement time" against "NeuChain's self-reported execution time" would compare two numbers that were never measured the same way even in principle.</p>
+
+<h3>Held identical for every normalized run</h3>
+<p>These are the "fairness levers" &mdash; things that <em>could</em> vary and would then confound the comparison, so they're pinned to one value across every platform in a comparison run:</p>
+<table>
+<tr><th>Lever</th><th>Normalized value</th></tr>
+<tr><td>World-state database</td><td>LevelDB everywhere (Fabric family forced off Yugabyte/CouchDB for normalized runs)</td></tr>
+<tr><td>Orderer batch parameters</td><td>identical <code>max_message_count</code>, <code>batch_timeout</code>, max bytes across every Fabric-family platform</td></tr>
+<tr><td>Workload, key space, key distribution, value size</td><td>same normalized workload definition, same seed</td></tr>
+<tr><td>RNG seed</td><td>one seed drives every key generator and every read/write chooser</td></tr>
+<tr><td>Warmup / cooldown windows</td><td>fixed 30&nbsp;s / 15&nbsp;s, same for every platform in one comparison</td></tr>
+<tr><td>Load mode and target rate</td><td>identical <code>load:</code> block in the run config</td></tr>
+</table>
+
+<h3>Disclosed, never "equalized": cryptography</h3>
+<p>The EOV platforms (Fabric, Drunix, Fabric-X) verify an endorsement signature on <em>every single transaction</em> during validation. NeuChain's EV path has no endorsement round at all &mdash; a transaction is verified once, at submit time, by whichever block server receives it, and that's the only signature check it ever gets. This is not a bug or a shortcut in the harness; it is a real architectural difference between deterministic-execution consensus and endorsement-based consensus. Rather than trying to "equalize" it (which would mean either weakening Fabric's security model or bolting an artificial endorsement step onto NeuChain that it doesn't actually have), the harness discloses it plainly in every run's manifest:</p>
+<pre><code>signature_alg:             (e.g. ECDSA-P256-SHA256, or RSA-1024-PKCS1v15)
+hash_alg:                  SHA-256 everywhere
+per_tx_endorsement_verify: true (Fabric/Drunix/Fabric-X) | false (NeuChain)
+msp_note:                  free-text explanation of what verification actually happens</code></pre>
+<p>Every comparison table footnotes this next to the throughput numbers &mdash; a platform that skips per-tx endorsement verification has a structural advantage on raw TPS that has nothing to do with how good its ordering layer is, and a reader should be able to see that in the same glance as the number.</p>
+
+<h2>5. Where normalization gets awkward, and what happens then</h2>
+<p>Not every platform maps cleanly onto every normalized workload. When it doesn't, the policy (see the platform pages for specifics) is: <strong>run it anyway, and attach an explicit, readable caveat</strong> &mdash; never silently skip the data point, because a missing number is itself misleading (it looks like "we forgot" rather than "here's why this isn't a fair fight").</p>
+<ul>
+<li><strong>Fabric-X + <code>kv-write</code>/<code>kv-read</code>/<code>kv-mixed</code></strong> &mdash; Fabric-X has no KV route at all in its real API, so the harness runs a purpose-built FSC view service that adds one. That service is not a native Fabric-X primitive, it carries FSC negotiation overhead none of the other platforms pay, and &mdash; like the token routes &mdash; it's synchronous to finality, so it inherits the "no T2" caveat too. Full detail: <a href="fabric-x.html">the Fabric-X page</a>.</li>
+<li><strong>Fabric-X + <code>transfer</code></strong> &mdash; this one <em>is</em> native (Token SDK <code>Transfer</code>), but the normalized version pins it to a plain amount-1 transfer between two fixed accounts, not a realistic multi-denomination UTXO flow with coin selection and change outputs. That richer behavior only shows up in Fabric-X's platform-native runs.</li>
+<li><strong>NeuChain + <code>transfer</code></strong> &mdash; if NeuChain's deployed chaincode config doesn't expose a native two-account read-modify-write, the adapter composes it from two KV operations inside one deterministic transaction. Any such composition is recorded as a manifest caveat.</li>
+<li><strong>Fabric-X / NeuChain on the local resource profile</strong> &mdash; not a workload mismatch but a scale mismatch: both are scale-out designs (Arma's sharded ordering, NeuChain's multi-block-server pipeline) benchmarked here on roughly 6&ndash;8 cores instead of the cluster hardware their published numbers assume. Every local run of these two platforms carries an automatic caveat that absolute TPS is not comparable to their published ceilings &mdash; only the <em>shape</em> of the latency curve and relative behavior under contention are informative locally.</li>
+</ul>
+
+<h2>6. Two kinds of run, never mixed</h2>
+<p>Alongside the normalized comparison, each platform also runs its own <strong>platform-native</strong> workload &mdash; tuned to that platform's actual strengths (its preferred state DB, its own batch tuning, its own best-fit transaction shape). This answers a genuinely different question: not "how do these four compare on identical work" but "what can each one do when you let it play to its strengths."</p>
+<table>
+<tr><th>Platform</th><th>Native workload</th><th>Why it's the best case</th></tr>
+<tr><td>Fabric CFT</td><td><code>kv-write</code> on LevelDB, single-org endorsement, throughput-tuned batching</td><td>minimal endorsement + validation overhead</td></tr>
+<tr><td>Fabric BFT</td><td>same, SmartBFT-tuned batch size/timeout</td><td>isolates the cost of BFT ordering specifically</td></tr>
+<tr><td>Drunix</td><td><code>transfer</code> on YugabyteDB, Lite-Peer/Committing-Peer scaled out</td><td>exercises the disaggregated-peer design + SQL state it was built for</td></tr>
+<tr><td>Fabric-X</td><td>Token SDK Issue + Transfer + Redeem (UTXO), Arma sharded</td><td>the actual workload the published &gt;200k TPS benchmark used</td></tr>
+<tr><td>NeuChain</td><td>native KV + transfer at high concurrency, epoch/batch tuned per paper</td><td>the deterministic-execution pipeline at full width</td></tr>
+</table>
+<p>Native and normalized results are reported in separate sections and <strong>never appear in the same comparison table</strong> &mdash; mixing them would silently compare "platform A under identical constraints" against "platform B tuned to its own advantage," which defeats the entire point of normalizing in the first place.</p>
+
+<h2>7. What actually changes across the transaction models &mdash; UTXO vs. account/KV</h2>
+<p>The sharpest data-model divergence in this whole comparison is Fabric-X. Fabric, Drunix, and NeuChain are all, at bottom, key-value/account-style state models: a <code>transfer</code> reads two account balances and writes two new ones in place. Fabric-X's Token SDK is UTXO-based: a transfer <em>consumes</em> existing unspent outputs and <em>creates new ones</em> &mdash; nothing is overwritten in place, ever.</p>
+<p>This matters for reading throughput numbers honestly. A UTXO transfer's validation cost scales differently than a read-modify-write's &mdash; it depends on how many outputs need to be consumed and how large the resulting output set grows, not on lock contention over two fixed keys. If Fabric-X shows different throughput behavior under contention than the account-model platforms, that could be telling you something about Arma's ordering speed &mdash; or it could simply be an artifact of the two models having fundamentally different state-growth and conflict-detection costs that have nothing to do with consensus at all. The harness doesn't attempt to erase this difference (it can't &mdash; it's not a tuning knob, it's what the platform <em>is</em>); it just makes sure the difference is named so nobody mistakes a data-model effect for a consensus-speed effect.</p>
+
+<div class="callout ok">
+<strong class="label">The one-paragraph version</strong>
+<p>Every platform is driven through the same abstract workload definitions, the same key-selection process, and the same T1/T2/T3 timeline. Where a platform's protocol can't produce a genuine T2, the harness reports N/A instead of a fabricated number. Where an architectural difference (crypto, UTXO vs. KV, resource scale) would make a raw number misleading on its own, it's disclosed next to the number rather than smoothed away. That combination &mdash; identical measurement code, honest gaps where a platform genuinely can't be measured the same way, and disclosed rather than hidden architectural differences &mdash; is what "fair" means in this benchmark.</p>
+</div>
+
+<footer class="pagefoot">
+  <span>Sources: <code>docs/architecture/*.md</code>, <code>docs/workloads/*.md</code></span>
+  <span><a href="index.html">&larr; Back to overview</a></span>
+</footer>
+</main>
+</body>
+</html>

@@ -38,6 +38,17 @@ primitive is a poor fit (Fabric-X KV), that is documented in
 [mismatches.md](mismatches.md) and the run is caveated, not silently dropped
 ([adr-010](../decisions/adr-010-mismatch-report.md)).
 
+## One config file per mode
+
+The normalized set lives in `configs/normalized/`, **one file per mode serving all
+five platforms** (`--platform` selects the network). The `load:` and `metrics:`
+blocks are therefore the same bytes for every platform, so "identical config" is
+structural rather than a convention someone has to maintain. Platform-specific
+settings live only in the union `adapter:` block, whose irrelevant keys each
+adapter ignores. `pkg/harness/configparity_test.go` enforces it.
+
+Per-platform tuned runs live in `configs/native/` and are never mixed with these.
+
 ## Config knobs (run config `load:` block)
 
 ```

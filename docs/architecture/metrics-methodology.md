@@ -90,6 +90,18 @@ Set `load.sweep.enabled: true`.
 `hold` phase is the headline. Plot offered TPS (x) against confirmed p50/p99
 latency (y) to get the hockey-stick curve.
 
+Two rules keep a single shared ladder honest across platforms with very different
+ceilings (docs/architecture/fairness-guarantees.md, "One ladder for every platform"):
+
+- The hold target is computed from the **measured** knee at runtime. `buildPhases`
+  pre-fills it with `0.9 × top step` so `--dry-run` can print an upper bound; the
+  run then rewrites it before the phase starts. If no step held, hold falls back
+  to the probe rate and the run is caveated as a floor reading.
+- **`abort_after_failed_steps`** (default 2) stops the ladder after that many
+  consecutive steps over `max_fail_rate`. Skipped steps are listed in
+  `manifest.skipped_steps` and caveated, so a truncated ladder cannot be mistaken
+  for a shorter configured one. `0` runs the whole ladder.
+
 ## The correctness invariant
 
 For every aggregation window:

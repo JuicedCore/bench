@@ -95,7 +95,7 @@ multi-hour compute job.
 bash deploy/docker/neuchain/up.sh local
 set -a; source deploy/docker/neuchain/connection.env; set +a
 go test -tags integration -run Integration -v ./pkg/adapters/neuchain/   # 10 writes -> finality
-./bin/benchrunner run --config configs/quick-smoke-neuchain.yaml --platform neuchain
+./bin/benchrunner run --config configs/normalized/quick-smoke.yaml --platform neuchain
 ```
 
 Cross-check: the harness confirmed-TPS against NeuChain's own `StatusThread`
@@ -118,7 +118,7 @@ NeuChain are scale-out designs — [adr caveat C5](architecture/fairness-guarant
 
 ```
 # one platform at a time (adr-005 - sequential runs)
-scripts/gcp-run.sh fabric-cft configs/probe-sweep.yaml gcp-full -var project=YOUR_PROJECT
+scripts/gcp-run.sh fabric-cft configs/normalized/probe-sweep.yaml gcp-full -var project=YOUR_PROJECT
 ```
 
 `scripts/gcp-run.sh` does the whole cycle: `terraform apply` (node VMs + a
@@ -167,11 +167,11 @@ approved and committed on both Committing Peers** (VALID). The chaincode
 containers run. The Fabric-family lifecycle path (vanilla envelopes) is fully
 functional through Drunix.
 
-### What is blocked
+### What was blocked (now fixed — see below)
 
 Application **write** transactions submitted through the stock
 `hyperledger/fabric-gateway` SDK (which the drunix adapter reuses from the fabric
-adapter) reach the orderer but the **Committing Peer panics on commit**:
+adapter) reached the orderer but the **Committing Peer panicked on commit**:
 
 ```
 [orderer] WARN [common.sparseblock] aggregateOrgEnvelope -> txnEnv.LeanEnv is nil it could be vanilla-format txn   (x hundreds)
@@ -181,43 +181,93 @@ adapter) reach the orderer but the **Committing Peer panics on commit**:
 ```
 
 Every tx: `submitted 1101, errored 0, timed_out 1101` (Submit/endorse/broadcast
-succeed; the CP crashes before the block commits, so finality never arrives).
+succeed; the CP crashed before the block committed, so finality never arrived).
 
-### Root cause
+**This diagnosis was wrong.** The `aggregateOrgEnvelope -> LeanEnv is nil` WARN
+is benign — it fires on *every* vanilla-format transaction (confirmed: 13 hits
+in a single passing run below) and never by itself stops a block from
+committing. The identical `kvLedger.commit -> StoreBlock -> commitBlock` stack
+was misattributed to it. The real, sole cause was the statedb bug documented
+next — once that's fixed, writes through the stock Gateway SDK commit cleanly,
+`LeanEnv is nil` WARNs and all. There is no separate lean-envelope blocker.
 
-Drunix's "reduced network calls" + "sparse block" optimisations change the
-**transaction/block wire format**: the CP's `aggregateOrgEnvelope` expects a
-Drunix *lean envelope* (`txnEnv.LeanEnv`), and panics in `kvledger.commit` when
-handed a vanilla Fabric envelope. The stock Fabric Gateway SDK only produces
-vanilla envelopes. So Drunix is backwards-compatible with the Fabric SDK for
-**queries and the chaincode lifecycle**, but **not for the optimised
-application-write path**.
+### Root cause — YugabyteDB statedb requires JSON values
 
-Fixing this needs one of, from Drunix:
+Manually reproduced writes through raw `network.sh`/`peer` CLI (bypassing the
+harness) to confirm the blocker, and got a clearer panic than what was
+originally documented above:
 
-1. **A Drunix client SDK** (or a Drunix-patched `fabric-gateway`) that emits the
-   lean-envelope format. The `npci/drunix` repo currently ships only chaincode
-   samples and the CLI-driven `network.sh` — no client SDK.
-2. **A CP fix** so `aggregateOrgEnvelope` / `kvledger.commit` fall back cleanly
-   to vanilla envelopes instead of panicking.
-3. Documentation of a supported non-Yugabyte + vanilla-SDK deployment mode.
+```
+ERROR: invalid input syntax for type json (SQLSTATE 22P02)
+[sqldb] func1 -> Error in batch sql write. err:ERROR: invalid input syntax for type json (SQLSTATE 22P02)
+panic: error during commit to txmgr: ERROR: invalid input syntax for type json (SQLSTATE 22P02)
+        .../core/ledger/kvledger.(*kvLedger).commit
+        .../gossip/privdata.(*coordinator).StoreBlock
+```
 
-### What is in place for when that lands
+`core/ledger/kvledger/txmgmt/statedb/statesqldb/sql_client.go` in the drunix
+source (`Set`, ~lines 216-223) force-casts every non-lifecycle write value into
+a `JSONB` column, regardless of what the chaincode actually wrote:
+
+```go
+data["db_value"] = value.Value
+if !strings.HasSuffix(table, "_lifecycle") && !strings.Contains(table, "$$h") {
+    err := json.Unmarshal(value.Value, &data)
+    if err != nil {
+        // logger.Warningf("failed to unmarshal data, %v", err)   <- swallowed
+    }
+    data["db_value"] = datatypes.JSON(value.Value)   // <- forced regardless
+}
+```
+
+The unmarshal error is swallowed, so a non-JSON value still gets forced into a
+`JSON`-typed column, YugabyteDB rejects the `INSERT` at the SQL layer, and the
+panic is uncaught.
+
+**Confirmed via a controlled A/B on the same live network:** the upstream
+`asset-transfer-basic` ("basic") sample chaincode's `InitLedger` — whose values
+are JSON-marshaled `Asset` structs — commits fine. Our `kvstore` chaincode's
+`Put(key, value)` — a raw string, also perfectly valid Fabric usage — panicked
+the CP every time. `kvstore`'s `Transfer`/`setBalance` already JSON-marshals
+(`acct{Balance: bal}`), so only the plain `Put` path was affected. This hits
+every Drunix write, since `up.sh` always deploys on YugabyteDB regardless of
+`normalized` (see `up.sh:66-75` — LevelDB is gated behind an experimental,
+known-broken `BENCH_DRUNIX_FORCE_LEVELDB=1`).
+
+### Fix (committed) — client-side JSON-wrap, scoped to the drunix adapter
+
+`pkg/adapters/drunix/valuecodec.go` JSON-wraps `TxWrite` values client-side
+before they reach the chaincode's `Put`, and `pkg/adapters/drunix/adapter.go`'s
+`Submit`/`Query` wrap/unwrap transparently. Scoped to the drunix adapter only —
+the shared `kvstore` chaincode and the shared workload generator
+(`pkg/workloads`) are untouched, so every other platform's payload is
+unaffected. Disclosed as a manifest caveat in `cmd/benchrunner/main.go` since
+the on-wire payload no longer matches the shared workload's raw bytes for
+Drunix specifically.
+
+**Verified end-to-end through the real Go adapter** (Gateway SDK, not the raw
+`peer` CLI used for the initial repro): fresh `up.sh local` bring-up,
+`go test -tags integration -run Integration ./pkg/adapters/drunix/` —
+`PASS (2.74s)`, both Committing Peers stayed `Up` afterward, no panic in either
+CP's logs. `aggregateOrgEnvelope -> LeanEnv is nil` still logs 13 times during
+the run (confirming it's harmless noise), and the write reaches full finality.
+Drunix write-benchmarks are unblocked.
+
+### What is in place
 
 `pkg/adapters/fabric/commitpeer.go` already reads finality from the Committing
 Peer's `FilteredBlockEvents` stream (the drunix adapter sets
-`UseCommitPeerEvents=true`) — this was needed because the LP-hosted Gateway's
-`Commit.Status()` never fires (the LP does not commit). That path is correct and
-tested at build/vet level; it just cannot resolve txs the CP never commits. Once
-Drunix accepts vanilla writes (or a lean-envelope SDK exists), the drunix
-adapter runs with no further change.
+`UseCommitPeerEvents=true`) — needed because the LP-hosted Gateway's
+`Commit.Status()` never fires (the LP does not commit). Combined with the
+value-codec fix above, the full write → finality path now works.
 
-### Verify (once unblocked)
+### Verify
 
 ```
+bash deploy/docker/drunix/down.sh
 bash deploy/docker/drunix/up.sh local        # brings up on YugabyteDB (shipped default)
 set -a; source deploy/docker/drunix/connection.env; set +a
-./bin/benchrunner run --config configs/quick-smoke.yaml --platform drunix
+./bin/benchrunner run --config configs/normalized/quick-smoke.yaml --platform drunix
 go test -tags integration -run Integration ./pkg/adapters/drunix/
 ```
 
@@ -232,14 +282,29 @@ go test -tags integration -run Integration ./pkg/adapters/drunix/
 
 ---
 
-## 4. Fabric-X custom KV view — LIVE-DEVNET GATED
+## 4. Fabric-X — namespace-bootstrap blocker on a self-built backend; KV view still gated
 
-Fabric-X `transfer` (token) workloads run today against
-`fabric-x-samples/tokens`. The normalised `kv-write` / `kv-read` workloads need a
+**Status as of the most recent investigation (see
+[`docs/platforms/fabricx-comparability.md`](platforms/fabricx-comparability.md)
+for the full trail — start there, not here, before debugging):** Fabric-X
+`transfer` (token) workloads do **not** currently run. `fabric-x-samples/tokens`'
+Ansible-deployed committer (`fabric-x-committer:0.1.7`) has a version-skew bug
+against the samples' own bundled endorser app — fixed by building committer +
+orderer from source instead (`deploy/docker/fabricx/backend/`), confirmed
+working (RPC present, consensus running, blocks committing). What's blocking
+`transfer` now is a **different, narrower problem**: bootstrapping a namespace
+on that from-scratch network fails signature validation
+(`ABORTED_SIGNATURE_INVALID`). Every identity/command tried, and exact source
+pointers into `fabric-x-committer`/`fabric-x-orderer` for continuing the
+investigation, are in the comparability doc's "Lever C" section.
+
+The normalised `kv-write` / `kv-read` workloads need a
 custom FSC view service (`deploy/docker/fabricx/kvview/`), which is currently a
 compiling stub (`POST /kv` → 501) with a **code-level implementation spec** in
 its `README.md` (confirmed against `fabric-smart-client@v0.20.0`'s
-`platform/fabric/services/endorser` API).
+`platform/fabric/services/endorser` API). This is gated on `transfer` working
+first (below), which is now itself gated on the namespace-bootstrap issue
+above.
 
 Finishing it needs a **running Fabric-X devnet** to build and iterate against:
 
@@ -282,7 +347,7 @@ go test ./pkg/...                       # all pass
 cd chaincodes/kvstore && go build ./... # clean
 bash -n deploy/docker/**/*.sh scripts/*.sh   # clean
 ./bin/benchrunner list                  # drunix, fabric-bft, fabric-cft, fabricx, mock, neuchain
-./bin/benchrunner run --config configs/quick-smoke.yaml --platform mock   # end-to-end, no network
+./bin/benchrunner run --config configs/normalized/quick-smoke.yaml --platform mock   # end-to-end, no network
 ```
 
 Live, reproducible today with only Docker + this repo:
@@ -290,5 +355,5 @@ Live, reproducible today with only Docker + this repo:
 ```
 bash deploy/docker/fabric-cft/up.sh local
 set -a; source deploy/docker/fabric-cft/connection.env; set +a
-./bin/benchrunner run --config configs/probe-sweep.yaml --platform fabric-cft
+./bin/benchrunner run --config configs/normalized/probe-sweep.yaml --platform fabric-cft
 ```

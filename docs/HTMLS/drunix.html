@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Drunix Report</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<nav class="topnav">
+  <span class="brand">Bench</span>
+  <a href="index.html">Overview</a>
+  <a href="fabric.html">Fabric</a>
+  <a href="drunix.html" class="current">Drunix</a>
+  <a href="fabric-x.html">Fabric-X</a>
+  <a href="neuchain.html">NeuChain</a>
+  <a href="normalization.html">Normalization</a>
+</nav>
+<main>
+
+<h1>Drunix <span class="badge warn">deploy verified &mdash; write path blocked upstream</span>
+<span class="subtitle">NPCI's fork of Hyperledger Fabric 2.5.x, re-engineered for tokenization at scale</span>
+</h1>
+
+<h2>1. What it is</h2>
+<p>Drunix is an enhanced fork of Hyperledger Fabric 2.5.x, open-sourced by NPCI (National Payments Corporation of India) in mid-2026, aimed at tokenization workloads and large multi-organization networks. Critically, it keeps the standard Fabric Gateway SDK's API surface &mdash; existing Fabric client code is meant to work against it unchanged. That compatibility promise is exactly what this benchmark tests, and exactly where it currently breaks (Section&nbsp;5).</p>
+
+<h2>2. The transaction model: same EOV shape, restructured peer</h2>
+<p>Drunix does not change Fabric's fundamental Execute-Order-Validate model &mdash; a client still endorses, then orders, then validates and commits. What it changes is <em>who</em> performs each of those steps inside what used to be one monolithic peer process:</p>
+<table>
+<tr><th>Change</th><th>Effect</th></tr>
+<tr><td><strong>Peer split</strong> &mdash; Lite Peer (endorsement only) + Committing Peer (validation + commit)</td><td>Endorsement throughput and commit throughput can now scale independently of each other &mdash; you can add more Lite Peers without touching the commit path, or vice versa.</td></tr>
+<tr><td><strong>Stateless Validation Service</strong></td><td>MVCC/VSCC validation work is offloaded from the Committing Peer into a separate, horizontally-scalable service.</td></tr>
+<tr><td><strong>YugabyteDB (SQL) state option</strong></td><td>Alongside LevelDB and CouchDB, world state can live in a relational store &mdash; enabling SQL queries over ledger state, which the shipped default configuration uses.</td></tr>
+</table>
+<p>This is a meaningful architectural bet: stock Fabric's peer does endorsement, validation, and commit all in one process, so scaling any one of those means scaling all of them together. Drunix's disaggregation is trying to remove that coupling. Whether it actually delivers better throughput at scale is exactly the kind of question this benchmark exists to answer &mdash; but answering it honestly requires first understanding that the split changes <em>where</em> in the pipeline a client needs to look to find out "is my transaction done," which is the crux of Section&nbsp;4 below.</p>
+
+<h3>Consensus: CFT only</h3>
+<p>Drunix inherits Fabric 2.5.x's Raft orderer wholesale &mdash; there is no BFT ordering path at all. This is a real scope limitation, not a benchmark gap: Drunix simply cannot be run in a Byzantine-fault-tolerant configuration. Because of this, Drunix only appears in <strong>CFT comparisons</strong>, set directly against <code>fabric-cft</code> (both Raft, both crash-fault-tolerant). It is deliberately excluded from the stronger-ordering comparison group that includes Fabric SmartBFT, Fabric-X's Arma, and NeuChain's deterministic consensus &mdash; putting a CFT-only platform in a BFT comparison would be comparing systems with fundamentally different fault-tolerance guarantees as if throughput were the only thing that mattered.</p>
+
+<h2>3. How this harness measures it</h2>
+<p>The Drunix adapter (<code>pkg/adapters/drunix</code>) is a thin wrapper over the Fabric adapter &mdash; it reuses the identical Gateway SDK flow (<code>Endorse &rarr; Submit &rarr; Commit.Status</code>) and the identical T1/T2/T3 definitions described on <a href="fabric.html">the Fabric page</a>. This is possible precisely because Drunix preserves the Gateway SDK's API surface. What differs is <em>where the adapter points that SDK</em>:</p>
+<ul>
+<li><code>endorse_endpoint</code> targets the <strong>Lite Peer</strong> &mdash; the Gateway SDK opens its one connection here, since this is the node that runs endorsement and hosts the gateway service.</li>
+<li><code>commit_endpoint</code> documents the <strong>Committing Peer</strong> &mdash; but the Gateway SDK does not talk to it directly for the standard commit-status call, for the reason below.</li>
+</ul>
+
+<h3>Why finality has to be read differently here than on stock Fabric</h3>
+<p>On stock Fabric, the peer that endorses is generally also able to tell you when a transaction commits (<code>Commit.Status()</code> on the Gateway just works). On Drunix, endorsement and commit are two different processes on two different peers by design &mdash; and the Lite Peer, which is where the Gateway lives, <strong>never commits anything itself</strong>. That means <code>Commit.Status()</code> on the Lite-Peer-hosted Gateway simply never fires; there's nothing wrong with the call, it's asking the wrong node a question it structurally cannot answer.</p>
+<p>The adapter's fix: set <code>UseCommitPeerEvents=true</code> (implemented in <code>pkg/adapters/fabric/commitpeer.go</code>), which opens a <strong>second</strong> Gateway connection &mdash; this one to the Committing Peer directly (port <code>:7061</code>, same shared TLS CA, with SNI <code>peer1.org1.example.com</code>) &mdash; and reads transaction validation results from that peer's <code>FilteredBlockEvents</code> stream instead. This is a genuinely different signal path than any other platform in this benchmark uses: it's still watching for a block-commit event, so T3 still means the same thing conceptually, but the client needs two live connections to two different services to observe the full T1&rarr;T2&rarr;T3 lifecycle, where Fabric-proper needs one.</p>
+<div class="callout note">
+<strong class="label">Why this doesn't compromise comparability</strong>
+<p>T3 is still "the adapter observed this transaction committed in a validated block" &mdash; the same definition used everywhere else. Watching a different peer's event stream to observe that fact doesn't change what's being measured, only how the measurement is wired up. This is different in kind from Fabric-X's situation (next page), where the platform's own API makes a genuine T2 impossible to observe at all.</p>
+</div>
+
+<h2>4. Known blocker: vanilla writes panic the Committing Peer</h2>
+<div class="callout bad">
+<strong class="label">Application writes do not currently complete on Drunix</strong>
+<p>Every write transaction submitted through the stock <code>hyperledger/fabric-gateway</code> SDK reaches the orderer successfully, but the Committing Peer <strong>panics on commit</strong>. Across a live test run: <code>submitted&nbsp;1101, errored&nbsp;0, timed_out&nbsp;1101</code> &mdash; every single write endorsed and broadcast correctly, and every single one then failed to reach finality because the peer that was supposed to commit it crashed first.</p>
+</div>
+<pre><code>[orderer] WARN [common.sparseblock] aggregateOrgEnvelope -> txnEnv.LeanEnv is nil it could be vanilla-format txn   (x hundreds)
+[cp.org1] panic  github.com/npci/drunix/core/ledger/kvledger.(*kvLedger).commit
+                 github.com/npci/drunix/gossip/privdata.(*coordinator).StoreBlock
+                 github.com/npci/drunix/gossip/state.(*GossipStateProviderImpl).commitBlock</code></pre>
+
+<h3>The technical root cause, explained</h3>
+<p>Drunix advertises a "sparse block" optimization intended to reduce the amount of data peers exchange over gossip. To make that optimization work, it expects transactions to arrive in a Drunix-specific <em>lean envelope</em> format (<code>txnEnv.LeanEnv</code>) rather than the standard Fabric transaction envelope. The stock Fabric Gateway SDK &mdash; the one every Fabric client, including this benchmark's adapter, actually uses &mdash; has no concept of a lean envelope; it only ever produces vanilla Fabric envelopes, because that's the only format the public Fabric protocol defines. When the Committing Peer's <code>aggregateOrgEnvelope</code> function receives one of these vanilla envelopes and tries to unwrap it as if it were a lean envelope, the field it expects to find (<code>LeanEnv</code>) is simply absent, and the commit path panics rather than falling back gracefully.</p>
+<p><strong>In plain terms:</strong> Drunix quietly changed the format transactions need to arrive in to get the performance benefit of its sparse-block design, but never shipped a client that produces that format, and its server-side code doesn't recognize (and gracefully reject or accept) the old format &mdash; it crashes instead. Since the standard SDK is the only thing that exists to talk to a Fabric-compatible gateway, there is currently no way to submit an application write to Drunix that this benchmark (or any standard Fabric client) can reach.</p>
+
+<h3>What still works despite this</h3>
+<p>Critically, this is <strong>not</strong> a broken deployment &mdash; it's a narrow, specific gap. Read-only <code>Query</code> calls (<code>Evaluate</code>, no ordering/commit involved) work correctly, and the entire chaincode lifecycle (package, install, approve, commit the chaincode definition itself &mdash; which also uses vanilla envelopes) was verified working end to end: 7 <code>npcioss/drunix-*</code> containers running (Lite Peer / Committing Peer / stateless VSCC across 2 orgs, plus a Raft orderer), 2 KeyDB containers, YugabyteDB, a channel joined, blocks committing, and the <code>kvstore</code> chaincode packaged, installed, approved, and committed as <strong>VALID</strong> on both Committing Peers. Only the application-<em>write</em> data path &mdash; the actual normalized-workload transactions this benchmark needs to measure throughput &mdash; is blocked.</p>
+
+<h3>What resolves it</h3>
+<p>This needs one of three things from the Drunix side, none of which this benchmark can supply on its own:</p>
+<ol>
+<li>A Drunix-aware client SDK (or a Drunix-patched <code>fabric-gateway</code>) that actually emits lean-envelope-format transactions. The public <code>npci/drunix</code> repository currently ships only chaincode samples and the CLI-driven <code>network.sh</code> &mdash; no client SDK exists yet.</li>
+<li>A server-side fix so <code>aggregateOrgEnvelope</code>/<code>kvledger.commit</code> falls back cleanly to handling vanilla envelopes instead of panicking on them.</li>
+<li>Official documentation of a supported deployment mode that accepts vanilla-SDK writes (possibly by disabling the sparse-block optimization outright).</li>
+</ol>
+<p>Everything on this benchmark's side is already built and waiting: the Committing-Peer event-stream finality path described in Section&nbsp;3 is implemented and passes build/vet checks &mdash; it simply has nothing to resolve, because the Committing Peer never gets far enough to commit. Once any of the three fixes above lands upstream, the Drunix adapter should work with no further changes on this side.</p>
+
+<h2>5. State database: Yugabyte by default, LevelDB by patch</h2>
+<p>Drunix's shipped Docker Compose configuration <strong>hardcodes</strong> YugabyteDB as the state database (<code>CORE_LEDGER_STATE_STATEDATABASE=sqldb</code> plus the Yugabyte connection environment) &mdash; there is no ready-made LevelDB or CouchDB compose variant. But this benchmark's normalized runs require LevelDB everywhere for fairness (see <a href="normalization.html">the normalization page</a>), so <code>up.sh</code> patches the compose file for normalized runs: it rewrites <code>sqldb</code> to <code>goleveldb</code> and strips the SQL connection settings, so the peer falls back to LevelDB from its default <code>core.yaml</code>. <code>down.sh</code> restores the original file from a backup. Platform-native Drunix runs (measuring Drunix at its own best, not in a cross-platform comparison) keep Yugabyte and record that choice in the run manifest.</p>
+
+<h2>6. Fairness levers</h2>
+<p>Identical to Fabric for every normalized run: LevelDB (forced, as above), the same orderer batch parameters (shared anchor values in <code>deploy/profiles/*.yaml</code>), and the same crypto (ECDSA P-256/SHA-256, per-transaction endorsement verification, reported as Fabric's <code>CryptoInfo</code> with a Drunix note attached). The Lite-Peer/Committing-Peer split and the Validation Service are <strong>architectural, not tuning knobs</strong> &mdash; they stay on for every single Drunix run, because they are exactly the design this comparison is trying to measure. Turning them off to "simplify" the comparison would mean no longer benchmarking Drunix at all.</p>
+
+<h2>7. Deploying it</h2>
+<pre><code>bash deploy/docker/drunix/up.sh local
+set -a; source deploy/docker/drunix/connection.env; set +a
+./bin/benchrunner run --config configs/quick-smoke.yaml --platform drunix
+bash deploy/docker/drunix/down.sh</code></pre>
+<p>Source: <code>github.com/npci/drunix</code> (public). <code>up.sh</code> clones it by default; override with <code>BENCH_DRUNIX_REPO</code> (a git URL or local checkout path) and <code>BENCH_DRUNIX_REF</code>.</p>
+
+<h3>Verified container layout (<code>npci/drunix @ main</code>)</h3>
+<table>
+<tr><th>Role</th><th>Container</th><th>Endpoint</th><th>Metrics</th></tr>
+<tr><td>Lite Peer org1 (endorse + gateway)</td><td><code>lp1.org1</code></td><td><code>localhost:7051</code></td><td><code>localhost:9444</code></td></tr>
+<tr><td>Committing Peer org1</td><td><code>cp.org1</code></td><td><code>localhost:7061</code></td><td><code>localhost:9454</code></td></tr>
+<tr><td>VSCC validation service org1</td><td><code>vs1.org1</code></td><td>&mdash;</td><td>&mdash;</td></tr>
+<tr><td>Orderer (Raft, 1 node)</td><td><code>orderer</code></td><td><code>localhost:7050</code></td><td><code>localhost:9443</code></td></tr>
+</table>
+<p>Org2 mirrors the same roles on ports 9051/9061.</p>
+
+<h2>8. Where this stands today</h2>
+<div class="callout ok">
+<strong class="label">Verified live</strong>
+<p>Full deploy, channel join, chaincode lifecycle (package/install/approve/commit), and Committing-Peer finality-event wiring all confirmed working end to end against a live network.</p>
+</div>
+<div class="callout bad">
+<strong class="label">Blocked upstream</strong>
+<p>Application write throughput/latency cannot currently be measured &mdash; every write endorses and orders successfully but times out waiting for a commit that never happens, for the reason in Section&nbsp;4. This is tracked as a genuine third category of open work (distinct from "needs more compute" or "needs cloud credentials") &mdash; it needs a fix from the Drunix project itself.</p>
+</div>
+
+<footer class="pagefoot">
+  <span>Source: <code>docs/platforms/drunix.md</code>, <code>docs/REMAINING-WORK.md</code> &sect;3</span>
+  <span><a href="fabric.html">&larr; Fabric</a> &nbsp;|&nbsp; <a href="fabric-x.html">Fabric-X &rarr;</a></span>
+</footer>
+</main>
+</body>
+</html>

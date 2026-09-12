@@ -35,9 +35,13 @@ See [adr-007](../decisions/adr-007-drunix-cft-only.md).
 
 ## Fairness levers
 
-Identical to Fabric for normalized runs: **LevelDB** (the engine forces it —
-YugabyteDB is permitted only for `normalized: false` native runs), same orderer
-batch params (shared anchor in `deploy/profiles/*.yaml`), same crypto.
+Orderer batch params (shared anchor in `deploy/profiles/*.yaml`) and crypto are
+identical to Fabric for normalized runs. **State DB is not**: the shipped
+test-network's LevelDB path is experimental and known to break the VSCC path
+(gated behind `BENCH_DRUNIX_FORCE_LEVELDB=1`, off by default), so `up.sh`
+**always** deploys on YugabyteDB regardless of `normalized`. Normalized runs
+disclose this as a manifest caveat rather than silently claiming LevelDB
+parity with `fabric-cft`.
 
 The LP/CP split and Validation Service are *architectural*, not tuning knobs —
 they stay on for every Drunix run and are what the comparison is measuring.
@@ -50,7 +54,7 @@ with `BENCH_DRUNIX_REPO` (git URL or local checkout) / `BENCH_DRUNIX_REF`.
 ```
 bash deploy/docker/drunix/up.sh local
 set -a; source deploy/docker/drunix/connection.env; set +a
-./bin/benchrunner run --config configs/quick-smoke.yaml --platform drunix
+./bin/benchrunner run --config configs/normalized/quick-smoke.yaml --platform drunix
 bash deploy/docker/drunix/down.sh
 ```
 
@@ -74,15 +78,32 @@ second Gateway to the **Committing Peer** (`:7061`, shared TLS CA, SNI
 `peer1.org1.example.com`) and reads tx validation from its
 `FilteredBlockEvents` stream.
 
-### KNOWN BLOCKER — vanilla writes panic the Committing Peer
+### Write-path bug — YugabyteDB requires JSON values (fixed, verified)
 
-Application **write** transactions from the stock `fabric-gateway` SDK reach the
-orderer but the Committing Peer panics on commit:
-`aggregateOrgEnvelope -> txnEnv.LeanEnv is nil` → `panic kvledger.commit`.
-Drunix's "sparse block" optimisation expects a Drunix *lean envelope*; the
-vanilla Fabric SDK does not produce one. Queries and the chaincode lifecycle
-(also vanilla) work; the optimised write path needs a Drunix client SDK or a CP
-fix. See [../REMAINING-WORK.md §3](../REMAINING-WORK.md).
+Application **write** transactions used to panic the Committing Peer on commit.
+The original diagnosis blamed the orderer's `aggregateOrgEnvelope -> LeanEnv is
+nil` WARN (Drunix's sparse-block optimisation expecting a lean envelope the
+vanilla Fabric SDK doesn't produce) — that WARN is actually benign, logged on
+every vanilla-format tx whether or not the block ends up committing. The real,
+sole cause: Drunix's YugabyteDB statedb writer force-casts every non-lifecycle
+write value into a `JSONB` column and panics the Committing Peer if the value
+isn't valid JSON. The `kvstore` chaincode's `Put` writes a raw string, which
+tripped this on every call. Full root cause, A/B evidence (upstream `basic`
+sample chaincode survives; `kvstore`'s JSON-writing `Transfer` also survives)
+in [../REMAINING-WORK.md](../REMAINING-WORK.md).
+
+**Fixed client-side**, scoped to this adapter only:
+`pkg/adapters/drunix/valuecodec.go` JSON-wraps `TxWrite` values before they
+reach the chaincode, and `adapter.go`'s `Submit`/`Query` wrap/unwrap
+transparently. The shared `kvstore` chaincode and the shared workload generator
+are untouched — every other platform's payload is unaffected. Disclosed as a
+manifest caveat (`cmd/benchrunner/main.go`) since Drunix's on-wire payload no
+longer matches the shared workload's raw bytes for this reason.
+
+**Verified**: fresh `up.sh local` bring-up,
+`go test -tags integration -run Integration ./pkg/adapters/drunix/` passes,
+both Committing Peers stay up, `LeanEnv is nil` still logs repeatedly as
+harmless noise. Drunix write-benchmarks are unblocked.
 
 `network.sh` interface (fabric-samples style): `prereq`,
 `up createChannel -c <ch> -s <db>`, `deployCC -c <ch> -ccn <n> -ccp <path> -ccl go`.
@@ -90,10 +111,11 @@ fix. See [../REMAINING-WORK.md §3](../REMAINING-WORK.md).
 ### State DB — Yugabyte-only by default
 
 The shipped `compose/compose-test-net.yaml` **hardcodes**
-`CORE_LEDGER_STATE_STATEDATABASE=sqldb` + YugabyteDB connection env on the peers;
-there is no LevelDB/CouchDB compose variant. For normalized runs (LevelDB,
-[adr-012](../decisions/adr-012-state-db-leveldb.md)) `up.sh` patches that file:
-rewrites `sqldb` → `goleveldb` and strips the `CORE_LEDGER_STATE_SQLDBCONFIG_*`
-lines (peer then uses goleveldb from `core.yaml`). `down.sh` restores the
-original from a `.bench.bak`. Native Drunix runs keep Yugabyte and record it in
-the manifest.
+`CORE_LEDGER_STATE_STATEDATABASE=sqldb` + YugabyteDB connection env on the
+peers; there is no LevelDB/CouchDB compose variant. `up.sh` **always** deploys
+on YugabyteDB, normalized or not — the LevelDB patch (rewriting `sqldb` →
+`goleveldb`, stripping `CORE_LEDGER_STATE_SQLDBCONFIG_*`) exists but also broke
+the Committing Peer's VSCC path, so it's opt-in only via the experimental
+`BENCH_DRUNIX_FORCE_LEVELDB=1` (see `up.sh:66-75`). Normalized runs disclose
+the resulting state-DB mismatch vs `fabric-cft` as a manifest caveat instead of
+claiming parity.

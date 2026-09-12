@@ -70,7 +70,7 @@ large default so no seeding phase is needed.
 ```
 bash deploy/docker/fabric-cft/up.sh local     # clones fabric-samples @ v2.5.11, installs bins+images, brings up test-network, deploys kvstore
 set -a; source deploy/docker/fabric-cft/connection.env; set +a
-./bin/benchrunner run --config configs/quick-smoke.yaml --platform fabric-cft
+./bin/benchrunner run --config configs/normalized/quick-smoke.yaml --platform fabric-cft
 bash deploy/docker/fabric-cft/down.sh
 ```
 

@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NeuChain Report</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<nav class="topnav">
+  <span class="brand">Bench</span>
+  <a href="index.html">Overview</a>
+  <a href="fabric.html">Fabric</a>
+  <a href="drunix.html">Drunix</a>
+  <a href="fabric-x.html">Fabric-X</a>
+  <a href="neuchain.html" class="current">NeuChain</a>
+  <a href="normalization.html">Normalization</a>
+</nav>
+<main>
+
+<h1>NeuChain <span class="badge warn">adapter unit-tested &mdash; server build compute-gated</span>
+<span class="subtitle">An ordering-free permissioned blockchain built on deterministic execution &mdash; the most architecturally distinct platform in this benchmark</span>
+</h1>
+
+<h2>1. What it is</h2>
+<p>NeuChain is a research system from Northeastern University (iDC-NEU), published at <strong>VLDB 2022</strong> ("NeuChain: a fast permissioned blockchain system with deterministic ordering", PVLDB Vol.&nbsp;15). It's written in C++. This benchmark tracks branch <code>ev</code> only &mdash; the repository has several architectural variants (<code>eov</code>, <code>oe</code>, <code>oepv</code>) that are out of scope, plus a newer sharded successor, NeuChain+, which is also out of scope. Every claim on this page is specific to the <code>ev</code> branch.</p>
+
+<h2>2. The transaction model: ordering-free Execute-Validate</h2>
+<p>This is the deepest architectural departure of any platform in this benchmark. Every other platform here &mdash; Fabric, Drunix, Fabric-X &mdash; has a distinct ordering step: some process or set of processes runs a consensus protocol whose specific job is to agree on a sequence of transactions, and only after that agreement happens does validation/commit proceed. NeuChain has <strong>no dedicated ordering service at all</strong>.</p>
+<div class="callout note">
+<strong class="label">How you get agreement without an ordering step</strong>
+<p>NeuChain makes ordering <em>implicit</em> through deterministic execution: every node in the network executes the identical set of transactions in the identical logical order, using techniques (asynchronous block generation, execution pipelining, an epoch server for coordination, and block servers that do the actual execution/validation) that guarantee every honest node arrives at the same result without ever needing to run a distinct "vote on the order" round. If every node's execution is a pure, deterministic function of the same inputs processed in the same order, then getting every node to agree on the order <em>is</em> getting every node to agree on the outcome &mdash; there's no need to separate those into two steps.</p>
+</div>
+<p>This is a fundamentally different bet than every EOV platform makes. Fabric-family platforms assume execution might be non-deterministic or resource-intensive enough that you want to decide the order cheaply first (via consensus over transaction identifiers or digests) and defer execution until after. NeuChain instead assumes execution can be made cheap and deterministic enough that skipping the separate ordering round entirely is a net win &mdash; trading away the ordering step's overhead in exchange for requiring every transaction's execution to be reproducible byte-for-byte across every node.</p>
+
+<h3>The direct, disclosed cost of this design: no per-transaction endorsement</h3>
+<p>The EOV platforms (Fabric, Drunix, Fabric-X) each verify a cryptographic endorsement signature on <em>every single transaction</em> during validation &mdash; that's part of what "endorsement policy" means. NeuChain's EV path has no endorsement round at all; there is nothing analogous to endorsement in this design, because there's no separate execution-then-approve step to endorse. This isn't a corner that got cut for performance &mdash; it's inherent to what "ordering-free" means. The harness discloses it explicitly and permanently in every NeuChain run's manifest (<code>per_tx_endorsement_verify: false</code>) rather than attempting to "equalize" it by inventing an artificial endorsement step NeuChain doesn't actually have. See <a href="normalization.html">the normalization page</a> for why disclosure, not equalization, is the right response to a difference like this.</p>
+<p>One nuance worth being precise about: NeuChain <em>does</em> verify the submitting user's RSA signature once, at the moment a block server first receives the transaction (<code>CryptoHelper::getUserSigner(ip)-&gt;rsaDecrypt</code>) &mdash; it is not running with no cryptographic verification whatsoever. What it lacks is the EOV platforms' <em>per-endorser, per-committer</em> repeated verification during a multi-step validation process. <code>per_tx_endorsement_verify=false</code> is still the correct flag for the cross-platform comparison table, but the manifest's <code>msp_note</code> field carries this nuance in full so nobody misreads the flag as "NeuChain has no cryptographic security at all."</p>
+
+<h2>3. How this harness measures it: ZeroMQ, not gRPC</h2>
+<p>A reasonable assumption going in might be that NeuChain's client protocol is gRPC or Baidu's <code>brpc</code>, since both appear in the codebase. Direct source inspection (a half-day spike against NeuChain commit <code>5180d5e85ff152eac9c8773378cce84a205080b2</code>) found otherwise: <code>brpc</code> in NeuChain is used exclusively for <em>inter-server</em> communication (block-server-to-epoch-server), never for the client path. The actual client-to-block-server protocol is <strong>ZeroMQ + protobuf + RSA-1024/SHA-256 signing</strong> &mdash; simple enough that the whole client was reimplementable in pure Go with no C bindings at all (no cgo, no linking against NeuChain's own C++ client library).</p>
+
+<h3>Submit: a PUB socket, not a request</h3>
+<p>Submitting a transaction (traced directly from <code>src/user/block_bench/db_user_base.cpp</code>, function <code>sendInvokeRequest</code>):</p>
+<ol>
+<li>Build a <code>TransactionPayload</code> (function name, a serialized workload-specific payload, and a random nonce) and serialize it.</li>
+<li>Sign that serialized payload with RSA-1024 PKCS#1v1.5 over SHA-256 &mdash; this signature, not any separately generated ID, <strong>is</strong> the transaction's identifier used to track it through to finality.</li>
+<li>Wrap payload and signature into a <code>UserRequest</code> and serialize it.</li>
+<li>Publish that serialized message on a ZeroMQ <strong>PUB</strong> socket, addressed to <em>every</em> block server at once (a direct consequence of deterministic execution: every node needs the same input, so the client fans it out to all of them itself rather than relying on a leader to relay it).</li>
+</ol>
+<div class="callout bad">
+<strong class="label">Why "T2" is not a meaningful concept for NeuChain's submit path</strong>
+<p>ZeroMQ's <code>PUB</code> socket type is fire-and-forget by design &mdash; there is no reply, no acknowledgement frame, nothing that comes back over the wire at all. The only event a client-side adapter can observe at "submit time" is its own local <code>send()</code> call returning, which reflects how fast the client's own network stack accepted a local write into its outbound buffer &mdash; it says nothing whatsoever about whether any block server has received, let alone processed, the transaction. Reporting that as a "T2 acknowledgement" comparable to Fabric's real orderer-accept event would be actively misleading, in the same structural way Fabric-X's blocking REST call makes its T2 non-existent (see <a href="fabric-x.html">the Fabric-X page</a>) &mdash; two completely different root causes (fire-and-forget vs. synchronous-to-finality) producing the same practical conclusion: no real T2 to report.</p>
+</div>
+
+<h3>Finality: polled, not pushed</h3>
+<p>Since nothing is pushed back to the client, finality has to be actively polled, over a separate ZeroMQ <strong>REQ</strong> socket to a block server's query port:</p>
+<table>
+<tr><th>Query type</th><th>Payload</th><th>Reply</th></tr>
+<tr><td><code>tip_query</code></td><td>(empty)</td><td>latest committed block height, as a bare ASCII integer</td></tr>
+<tr><td><code>block_query</code></td><td>block number as a string</td><td>the full serialized block</td></tr>
+</table>
+<p>The polling algorithm: repeatedly ask <code>tip_query</code> for the current height; whenever it advances, fetch the new block(s) with <code>block_query</code>, then scan every transaction entry inside for one whose embedded digest matches a signature this client is still waiting on. When found, decode that entry's result frame (below) to learn whether it committed or aborted. T3 is the moment this match is found and decoded &mdash; a real, well-defined finality event, just reached by polling rather than by the platform notifying the client directly.</p>
+
+<h3>The result frame is hand-rolled, not protobuf</h3>
+<p>Somewhat surprisingly given how much of the rest of the protocol is protobuf, each transaction's result entry inside a queried block is a hand-rolled binary format, not a protobuf message:</p>
+<pre><code>uvarint tid
+uvarint epoch
+uvarint digestLen
+bytes   digest       # matches the UserRequest.digest sent at submit time
+uvarint result       # 0=COMMIT, 1=PENDING, 2=ABORT, 3=ABORT_NO_RETRY</code></pre>
+<p>The Go adapter decodes exactly this 5-field frame using <code>encoding/binary.Uvarint</code> &mdash; it does not need NeuChain's richer full-transaction frame (which additionally carries the original payload, a read/write set, and a trailing hash), because the client only ever needs to know whether its own submitted transaction committed or aborted, not to re-derive the transaction's contents from the block.</p>
+
+<h2>4. Mapping the normalized workload onto NeuChain's native call shape</h2>
+<p>NeuChain's chaincode-equivalent primitive is a <code>YCSB_PAYLOAD</code> (table name, a list of keys read, a list of keys updated) passed as the payload of a named function call. The normalized <code>TxKind</code> values map onto it directly:</p>
+<table>
+<tr><th>Harness <code>TxKind</code></th><th><code>reads</code></th><th><code>update</code></th></tr>
+<tr><td><code>TxWrite</code></td><td>&mdash;</td><td><code>[key]</code></td></tr>
+<tr><td><code>TxRead</code></td><td><code>[key]</code></td><td>&mdash;</td></tr>
+<tr><td><code>TxTransfer</code></td><td><code>[src, dst]</code></td><td><code>[src, dst]</code></td></tr>
+</table>
+<p>One caveat worth being explicit about: the actual function name and table name invoked come from NeuChain's own deployed chaincode configuration, not from the normalized workload definition itself &mdash; this is the one place where the "same logical effect, native implementation" principle has to lean on a NeuChain-side config value rather than something the harness fully controls, and it's recorded as a manifest caveat accordingly. Similarly, if the deployed chaincode doesn't expose a native two-account read-modify-write, the adapter composes a <code>transfer</code> from two separate KV operations inside one deterministic transaction &mdash; also a recorded caveat, not a silent substitution.</p>
+
+<h2>5. What is deliberately not reimplemented</h2>
+<p>Each of these is a conscious simplification, recorded as a manifest caveat on every NeuChain run rather than silently assumed:</p>
+<ul>
+<li><strong>Single logical user.</strong> NeuChain supports a multi-proxy mode with a separate keypair per block-server IP; this adapter uses one keypair for all servers, which is a reasonable simplification for a benchmark client but not how a production multi-tenant deployment would necessarily be configured.</li>
+<li><strong>No client-side MVCC awareness.</strong> The adapter submits and waits; all conflict resolution happens server-side via deterministic execution, and surfaces to the client only as a plain <code>result == ABORT</code>, with no detail about what conflicted.</li>
+<li><strong>RSA-1024.</strong> Weak by current cryptographic standards, but it's what NeuChain's own <code>ev</code> branch verifies (<code>RSA_KEY_LENGTH</code> is fixed at 1024 in the source) &mdash; the adapter matches the platform rather than silently "upgrading" it, since the point is to benchmark NeuChain as it actually behaves. Recorded plainly in <code>CryptoInfo</code>.</li>
+<li><strong>Empty private-key password.</strong> NeuChain's own key-generation utility uses an empty passphrase by default; if a real deployment sets one, the adapter would need that passphrase supplied via config.</li>
+<li><strong>Query load from polling.</strong> The <code>tip_query</code>/<code>block_query</code> polling loop itself adds request load on the block server's query port. At very high block rates the poller can lag behind; this shows up as growing finality latency in the results, not as lost transactions &mdash; a distinction worth knowing when reading a NeuChain latency curve that grows unexpectedly at the top end of a sweep.</li>
+</ul>
+
+<h2>6. Local-run scale caveat</h2>
+<p>Like Fabric-X's Arma, NeuChain is built for high core counts, and the published VLDB numbers reflect cluster-scale hardware. Run locally (4 block servers plus 1 epoch server sharing roughly 6 cores, in this benchmark's default profile), it performs well below its paper numbers for the same structural reason Fabric-X does &mdash; not enough independent hardware to exploit the pipeline parallelism the design assumes. Every local NeuChain run automatically carries this caveat; quotable, paper-comparable numbers require the <code>gcp-full</code> profile.</p>
+
+<h2>7. Where this stands today</h2>
+<div class="callout ok">
+<strong class="label">Done and unit-tested, pure Go</strong>
+<p>The full client-side implementation exists and is unit-tested: RSA-1024/SHA-256 sign-then-verify round-trip, the hand-rolled result-frame decoder (including truncated-frame error handling), and the shape of a built invoke request (correct digest, correct read/update sets for a transfer, correct nonce encoding). No live NeuChain network was needed to verify any of this &mdash; it's pure protocol-level correctness against the documented wire format.</p>
+</div>
+<div class="callout warn">
+<strong class="label">Compute-gated: the server binaries don't exist yet</strong>
+<p>NeuChain's own server (<code>block_server</code>, <code>epoch_server</code>) has to be compiled from source, and that build compiles roughly 15 pinned C++ libraries from scratch (protobuf via autotools, <code>brpc</code>, <code>braft</code>, and others) on Ubuntu 20.04 with a specific gcc/cmake toolchain. Measured cold-build time is <strong>45&ndash;90 minutes</strong>, needs <strong>25&ndash;30&nbsp;GB</strong> of free disk for the build image and intermediate objects, and RAM spikes to <strong>6&ndash;10&nbsp;GB</strong> during parallel compilation of the heaviest libraries &mdash; enough to risk an out-of-memory kill on a modest host if run alongside anything else. None of this reflects a problem with the adapter; it's simply a multi-hour, resource-heavy compute job that has to run to completion before there's a live NeuChain node for the already-finished adapter to talk to.</p>
+</div>
+<p>The pluggable entry point once compute is available: <code>bash deploy/docker/neuchain/build.sh</code>, followed by the pre-initialized-database and keypair-generation steps documented in <code>docs/REMAINING-WORK.md</code>&nbsp;&sect;1. Once the server images exist, <code>deploy/docker/neuchain/up.sh local</code> brings the topology up and the existing adapter runs against it with no code changes.</p>
+
+<footer class="pagefoot">
+  <span>Source: <code>docs/platforms/neuchain.md</code>, <code>docs/platforms/neuchain-client-implementation.md</code></span>
+  <span><a href="fabric-x.html">&larr; Fabric-X</a> &nbsp;|&nbsp; <a href="normalization.html">Normalization &rarr;</a></span>
+</footer>
+</main>
+</body>
+</html>

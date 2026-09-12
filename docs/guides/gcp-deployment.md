@@ -30,7 +30,7 @@ Profiles: `gcp-small` (single beefy VM per platform, fast iteration) and
 cd deploy/terraform
 terraform apply -var platform=fabric-cft -var profile=gcp-full
 # terraform brings up node VMs + loadgen VM, installs Docker, runs deploy/docker/<p>/up.sh remotely
-ssh loadgen "cd bench && source connection.env && ./benchrunner run --config configs/probe-sweep.yaml --platform fabric-cft --profile gcp-full"
+ssh loadgen "cd bench && source connection.env && ./benchrunner run --config configs/normalized/probe-sweep.yaml --platform fabric-cft --profile gcp-full"
 scp loadgen:bench/results/... ./results/
 terraform destroy -var platform=fabric-cft
 ```

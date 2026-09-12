@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hyperledger Fabric Report</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<nav class="topnav">
+  <span class="brand">Bench</span>
+  <a href="index.html">Overview</a>
+  <a href="fabric.html" class="current">Fabric</a>
+  <a href="drunix.html">Drunix</a>
+  <a href="fabric-x.html">Fabric-X</a>
+  <a href="neuchain.html">NeuChain</a>
+  <a href="normalization.html">Normalization</a>
+</nav>
+<main>
+
+<h1>Hyperledger Fabric <span class="badge ok">live-tested</span>
+<span class="subtitle">CFT (Raft) and BFT (SmartBFT) variants &mdash; the baseline platform for every comparison in this benchmark</span>
+</h1>
+
+<h2>1. What it is, in plain terms</h2>
+<p>Fabric is built for enterprise consortium ledgers: a known, permissioned set of participants, modular trust between organizations, a rich general-purpose data model, and a pluggable consensus layer. It optimizes for <strong>flexibility and auditability</strong>, not raw transactions-per-second &mdash; typical tuned throughput is a few thousand TPS, and the architecture deliberately trades some latency for endorsement-based programmability (any organization can require its own peers to independently re-execute and approve a transaction before it counts).</p>
+
+<h2>2. The transaction model: Execute&#8209;Order&#8209;Validate</h2>
+<p>Fabric's defining architectural choice is running these three phases in this specific order, which is <em>not</em> the obvious way to build a blockchain and has direct consequences for what can be measured:</p>
+<pre><code>client ──proposal──▶ endorsing peers   (simulate chaincode, sign RW-set)   ── T1..T2
+       ◀─endorsements─
+client ──envelope──▶ orderer (Raft / SmartBFT)  (batch into a block)       ── T2
+                     orderer ──block──▶ all peers
+                     peers: VSCC (endorsement policy) + MVCC (RW-set) + commit ── T3</code></pre>
+
+<h3>Why "execute before order" is the whole point</h3>
+<p>Most simpler ledger designs order transactions first, then execute them one at a time in that order (Execute-<em>after</em>-Order). Fabric does the opposite: the client sends a <em>proposal</em> to a set of endorsing peers, each of which independently <strong>simulates</strong> the chaincode against its current world state and returns a signed read/write set &mdash; before consensus has run at all. Only after enough endorsements are collected does the client assemble an envelope and hand it to the orderer.</p>
+<p>The practical effect: endorsement (execution) and ordering (consensus) are two genuinely separate network round-trips, each with its own, independently measurable cost. This is <em>why</em> Fabric can produce a real, meaningful T1&rarr;T2 number that reflects actual network and computation work &mdash; endorsement really did happen, and it really did take some measurable amount of time, before the orderer was ever involved. Compare this to Fabric-X (<a href="fabric-x.html">covered on its own page</a>), where the equivalent round-trip is folded into one blocking call and no such split exists.</p>
+
+<h3>What can go wrong that a simpler model can't represent</h3>
+<p>Because execution happens speculatively, before global ordering, two transactions can validly execute against overlapping state and only conflict once ordering imposes a sequence on them. Fabric's per-peer commit phase runs an MVCC (multi-version concurrency control) check against the read set each endorser captured; if the world state moved between simulation and commit, the transaction is <strong>committed to the ledger but marked invalid</strong>. Separately, VSCC (Validation System Chaincode) enforces the endorsement policy itself &mdash; did the required set of organizations actually sign this? A transaction can fail either check independently. The harness counts either failure mode as a benchmark failure (<code>Valid=false</code>), even though the transaction did make it into a block; a naive tool that only checked "did it get into a block" would over-count successes.</p>
+
+<h2>3. Exactly how this harness measures it</h2>
+<p>The Fabric adapter (<code>pkg/adapters/fabric</code>) deliberately uses the Fabric Gateway SDK's <strong>fine-grained</strong> call sequence &mdash; <code>NewProposal &rarr; Endorse &rarr; Submit &rarr; Commit.Status</code> &mdash; instead of the SDK's convenient one-shot <code>contract.SubmitTransaction</code> helper. That one-shot call blocks internally until the transaction commits, which would silently merge T2 and T3 into a single number and throw away the distinction between "the orderer accepted this" and "this is now final." Using the fine-grained flow keeps them genuinely separate:</p>
+<ul>
+<li><strong>Writes</strong> &mdash; <code>Endorse</code> then <code>Submit</code> (T2 = orderer accept); finality is observed via <code>Commit.StatusWithContext</code> (T3).</li>
+<li><strong>Reads</strong> &mdash; served by <code>Evaluate</code> against a single peer's current state, with no ordering step at all. Finality is immediate by construction (<code>Valid=true</code>, T3 = now) &mdash; a read never touches the orderer, so there is nothing to wait for.</li>
+<li><strong><code>TxTransfer</code></strong> &mdash; calls <code>Transfer(from, to, amount)</code> on the kvstore chaincode, which does a read-modify-write of two account keys inside one simulated proposal.</li>
+</ul>
+<p>The chaincode itself (<code>chaincodes/kvstore/kvstore.go</code>) exposes exactly three operations &mdash; <code>Put</code>, <code>Get</code>, <code>Transfer</code> &mdash; and is deliberately trivial, so the measured cost reflects Fabric's platform path (endorsement, ordering, validation, commit), not any complexity in the chaincode logic itself. Account balances are created lazily with a large default balance so no separate seeding phase is needed before a benchmark run.</p>
+
+<h2>4. The two variants: CFT and BFT</h2>
+<p>Both variants share the same adapter and the same T1/T2/T3 measurement approach &mdash; the only thing that changes is which consensus algorithm the orderer runs, which changes how many rounds of network agreement happen between T2 and T3.</p>
+<table>
+<tr><th>Variant</th><th>Branch / tag</th><th>Orderer</th><th>Local topology</th><th>Consensus fault model</th></tr>
+<tr><td><code>fabric-cft</code></td><td><code>release-2.5</code>, pinned <code>v2.5.11</code></td><td>Raft (etcd/raft)</td><td>1 peer, 1 orderer, 1 CA</td><td>Crash-fault tolerant: survives nodes going silent, not nodes acting maliciously</td></tr>
+<tr><td><code>fabric-bft</code></td><td><code>v3.1.x</code>, pinned <code>v3.1.1</code></td><td>SmartBFT</td><td>1 peer, 4 orderers, 1 CA</td><td>Byzantine-fault tolerant: needs 3f+1 nodes (minimum 4) to survive f actively malicious nodes</td></tr>
+</table>
+<p><code>main</code> is deliberately never used for either variant &mdash; both are pinned to specific tagged releases so that a result reported today is reproducible against the same binary later, rather than silently drifting as upstream Fabric changes. SmartBFT specifically needed the v3.1.x line because it only reached production-ready status there (v3.1.4, Feb 2026); the v3.0 line that GA'd in 2024 predates that.</p>
+<p>The practical consequence of the fault model difference: SmartBFT's minimum-4-orderer requirement means every BFT run pays for an extra round of cross-orderer agreement that Raft's single-leader design doesn't need at low contention. This shows up as ordering-phase cost between T2 and T3 &mdash; comparing CFT's and BFT's T3-based latency directly is exactly the kind of comparison this harness is built to make honestly, because both go through the identical endorse&rarr;order&rarr;validate&rarr;commit shape; only the middle step's cost differs, and that's a legitimate, meaningful thing to compare.</p>
+
+<h2>5. Fairness levers held identical</h2>
+<table>
+<tr><th>Lever</th><th>Value</th><th>Recorded in</th></tr>
+<tr><td>State DB</td><td>LevelDB</td><td><code>network.sh ... -s leveldb</code></td></tr>
+<tr><td>Orderer batch parameters</td><td>from <code>deploy/profiles/&lt;profile&gt;.yaml</code>, patched into <code>configtx.yaml</code> by <code>up.sh</code></td><td>manifest</td></tr>
+<tr><td>Endorsement policy</td><td>test-network default (<code>OR('Org1MSP.peer','Org2MSP.peer')</code> or single-org)</td><td>&mdash;</td></tr>
+<tr><td>TLS</td><td>on</td><td>test-network default</td></tr>
+<tr><td>Crypto</td><td>ECDSA P-256 / SHA-256, per-transaction endorsement signature verification</td><td><code>CryptoInfo</code></td></tr>
+</table>
+<p>These are the specific knobs that would otherwise let one run look artificially faster than another for reasons unrelated to Raft-vs-SmartBFT itself &mdash; a faster state DB, a looser endorsement policy, or disabled TLS would each independently inflate throughput. Pinning them means any latency or throughput difference actually reported reflects the consensus algorithm, not incidental configuration.</p>
+
+<h2>6. Where this stands today</h2>
+<div class="callout ok">
+<strong class="label">Live-tested</strong>
+<p><code>fabric-cft</code>: smoke + full probe-and-sweep completed on Fabric 2.5.16 &mdash; e2e p50 latency ran 165&ndash;565&nbsp;ms across the sweep. <code>fabric-bft</code>: smoke-tested on Fabric 3.1.5 with the full 4-orderer SmartBFT set &mdash; throughput and latency tracked CFT closely at low load once orderer batching was pinned to match.</p>
+</div>
+
+<h2>7. Deploying and running it</h2>
+<pre><code>bash deploy/docker/fabric-cft/up.sh local     # clones fabric-samples @ v2.5.11, installs bins+images,
+                                               # brings up test-network, deploys kvstore
+set -a; source deploy/docker/fabric-cft/connection.env; set +a
+./bin/benchrunner run --config configs/quick-smoke.yaml --platform fabric-cft
+bash deploy/docker/fabric-cft/down.sh</code></pre>
+<p>Native peer/orderer Prometheus metrics are exposed at <code>:9443</code>/<code>:9444</code> &mdash; informational only, never used in cross-platform comparison tables (see <a href="normalization.html">the normalization page</a> for why).</p>
+
+<h3>Known gotchas</h3>
+<ul>
+<li>First <code>up.sh</code> run downloads roughly 1&nbsp;GB of Docker images &mdash; budget time for it.</li>
+<li>SmartBFT needs its full 4-orderer set even for a local run &mdash; it is the most memory-hungry Fabric variant, so <code>local.yaml</code> tunes per-container limits down accordingly.</li>
+<li>If chaincode deployment fails, first check the chaincode module builds standalone: <code>cd chaincodes/kvstore && go build ./...</code> (it depends on <code>fabric-contract-api-go/v2</code>).</li>
+</ul>
+
+<h2>8. Why Fabric is the reference point for the other three</h2>
+<p>Fabric is the only platform in this benchmark where every stage of the T1/T2/T3 timeline maps directly onto a real, separately-observable network event with no approximation needed. That's exactly why it's useful as the baseline when reading the other platform pages: Drunix inherits this model nearly unchanged (and its one deviation &mdash; where finality has to be read from &mdash; is explained relative to this page); Fabric-X and NeuChain both diverge from it in ways that remove or reshape T2, and understanding why requires first understanding what T2 means <em>here</em>, where it's unambiguous.</p>
+
+<footer class="pagefoot">
+  <span>Source: <code>docs/platforms/fabric.md</code>, <code>docs/architecture/metrics-methodology.md</code></span>
+  <span><a href="normalization.html">Next: how we normalize across all four &rarr;</a></span>
+</footer>
+</main>
+</body>
+</html>

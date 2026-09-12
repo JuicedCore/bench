@@ -72,7 +72,7 @@ the same synchronous-to-finality contract. **Currently a stub** (`POST /kv` →
 501); the implementation spec (register FSC Write/Read views, run
 ordering+finality, mirror the owner service) is in
 `deploy/docker/fabricx/kvview/README.md`. Token workloads
-(`configs/quick-smoke-fabricx.yaml`, `workload: transfer`) run today; `kv-write`
+(`configs/native/quick-smoke-fabricx.yaml`, `workload: transfer`) run today; `kv-write`
 needs the stub finished.
 
 ## Deploy (Phase 3)
