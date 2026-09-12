@@ -105,7 +105,10 @@ Every run writes `results/<platform>/<timestamp>/`:
 ```bash
 cat results/fabric-cft/<timestamp>/summary.txt
 python3 scripts/plot.py results/fabric-cft/<timestamp>/phases.csv     # -> curve.png
-./bin/benchrunner report --results-dir ./results --output docs/reports/comparison.html   # cross-platform HTML
+./bin/benchrunner report --results-dir ./results --output docs/reports/comparison.html --since 2026-09-13
+# --since scopes the report to one campaign. Runs that fail the rejection rules in
+# docs/architecture/fairness-guarantees.md are listed with the reason, never averaged in;
+# normalized and native runs are separate sections. Replicates report median and min-max.   # cross-platform HTML
 ```
 
 ### Grafana walkthrough (beginner)

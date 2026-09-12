@@ -19,6 +19,7 @@ import (
 	"path/filepath"
 	"strings"
 	"syscall"
+	"time"
 
 	"github.com/juicedcore/bench/pkg/adapters"
 	"github.com/juicedcore/bench/pkg/harness"
@@ -245,8 +246,17 @@ func cmdReport(args []string) error {
 	fs := flag.NewFlagSet("report", flag.ExitOnError)
 	dir := fs.String("results-dir", "results", "directory of run outputs")
 	out := fs.String("output", "report.html", "HTML file to write")
+	since := fs.String("since", "", "only runs started after this: a date (2006-01-02), RFC3339 time, or a duration ago (e.g. 36h)")
 	_ = fs.Parse(args)
-	if err := harness.BuildReport(*dir, *out); err != nil {
+	var opt harness.ReportOptions
+	if *since != "" {
+		t, err := parseSince(*since, time.Now())
+		if err != nil {
+			return err
+		}
+		opt.Since = t
+	}
+	if err := harness.BuildReport(*dir, *out, opt); err != nil {
 		return err
 	}
 	fmt.Println("wrote", *out)
@@ -271,4 +281,18 @@ func cmdDeploy(ctx context.Context, args []string, action string) error {
 	cmd.Stdout, cmd.Stderr, cmd.Stdin = os.Stdout, os.Stderr, os.Stdin
 	cmd.Env = append(os.Environ(), "BENCH_PROFILE="+*profile)
 	return cmd.Run()
+}
+
+// parseSince accepts a date, an RFC3339 timestamp, or a duration measured back
+// from now, so a campaign's report can exclude older runs.
+func parseSince(v string, now time.Time) (time.Time, error) {
+	if d, err := time.ParseDuration(v); err == nil {
+		return now.Add(-d), nil
+	}
+	for _, layout := range []string{time.RFC3339, "2006-01-02T15:04", "2006-01-02"} {
+		if t, err := time.ParseInLocation(layout, v, time.Local); err == nil {
+			return t, nil
+		}
+	}
+	return time.Time{}, fmt.Errorf("--since %q: want a date (2006-01-02), RFC3339 time, or duration (36h)", v)
 }

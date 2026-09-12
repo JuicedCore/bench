@@ -2,14 +2,10 @@ package harness
 
 import (
 	"encoding/csv"
-	"encoding/json"
 	"fmt"
 	"os"
-	"path/filepath"
-	"sort"
 	"strconv"
 	"strings"
-	"time"
 
 	"github.com/juicedcore/bench/pkg/metrics"
 )
@@ -124,77 +120,3 @@ func goodput(ph PhaseResult) float64 {
 func f2(f float64) string { return strconv.FormatFloat(f, 'f', 2, 64) }
 func f4(f float64) string { return strconv.FormatFloat(f, 'f', 4, 64) }
 func i64(i int64) string  { return strconv.FormatInt(i, 10) }
-
-// ---- cross-run comparison report ----
-
-// BuildReport scans resultsDir for result.json files and writes an HTML
-// comparison table to out. Platform-native metrics are intentionally excluded
-// (see docs/architecture/fairness-guarantees.md).
-func BuildReport(resultsDir, out string) error {
-	type row struct {
-		Platform   string
-		Workload   string
-		Normalized bool
-		When       time.Time
-		ConfTPS    float64
-		FailRate   float64
-		E2EP50     float64
-		E2EP99     float64
-		Caveats    []string
-	}
-	var rows []row
-
-	err := filepath.WalkDir(resultsDir, func(path string, d os.DirEntry, err error) error {
-		if err != nil || d.IsDir() || d.Name() != "result.json" {
-			return nil
-		}
-		b, err := os.ReadFile(path)
-		if err != nil {
-			return nil
-		}
-		var rr RunResult
-		if json.Unmarshal(b, &rr) != nil || rr.Headline == nil {
-			return nil
-		}
-		rows = append(rows, row{
-			Platform:   rr.Manifest.Platform,
-			Workload:   rr.Manifest.Workload,
-			Normalized: rr.Manifest.Normalized,
-			When:       rr.Manifest.StartedAt,
-			ConfTPS:    rr.Headline.ConfirmedTPS,
-			FailRate:   rr.Headline.FailureRate,
-			E2EP50:     pctl(rr.Headline.E2E, "p50"),
-			E2EP99:     pctl(rr.Headline.E2E, "p99"),
-			Caveats:    rr.Manifest.Caveats,
-		})
-		return nil
-	})
-	if err != nil {
-		return err
-	}
-	sort.Slice(rows, func(i, j int) bool {
-		if rows[i].Workload != rows[j].Workload {
-			return rows[i].Workload < rows[j].Workload
-		}
-		return rows[i].ConfTPS > rows[j].ConfTPS
-	})
-
-	var b strings.Builder
-	b.WriteString("<!doctype html><meta charset=utf-8><title>Benchmark comparison</title>")
-	b.WriteString("<style>body{font:14px system-ui;margin:2rem}table{border-collapse:collapse}")
-	b.WriteString("td,th{border:1px solid #ccc;padding:.4rem .6rem;text-align:right}th{background:#f4f4f4}")
-	b.WriteString("td:first-child,td:nth-child(2){text-align:left}.caveat{color:#a60}</style>")
-	b.WriteString("<h1>Cross-platform comparison (harness metrics only)</h1>")
-	b.WriteString("<p>Platform-native endorsement/ordering/validation breakdowns are excluded by design.</p>")
-	b.WriteString("<table><tr><th>platform<th>workload<th>norm<th>confirmed TPS<th>fail rate<th>e2e p50 ms<th>e2e p99 ms<th>when</tr>")
-	for _, r := range rows {
-		fmt.Fprintf(&b, "<tr><td>%s<td>%s<td>%v<td>%.1f<td>%.4f<td>%.2f<td>%.2f<td>%s</tr>",
-			r.Platform, r.Workload, r.Normalized, r.ConfTPS, r.FailRate, r.E2EP50, r.E2EP99,
-			r.When.Format("2006-01-02 15:04"))
-		for _, c := range r.Caveats {
-			fmt.Fprintf(&b, "<tr><td colspan=8 class=caveat>&#9888; %s</td></tr>", c)
-		}
-	}
-	b.WriteString("</table>")
-	return os.WriteFile(out, []byte(b.String()), 0o644)
-}
