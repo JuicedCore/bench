@@ -36,6 +36,13 @@ type Config struct {
 
 	// StartBlock is the block height to begin polling from (default 1).
 	StartBlock uint64 `yaml:"start_block"`
+
+	// MetricsEndpointURL is NeuChain's own /metrics, scraped once at end of run
+	// for the native (never cross-platform) section. deploy/docker/monitoring/
+	// prometheus.yml defines a neuchain job on :9743 for builds that expose it;
+	// empty disables the scrape, which is the default since the upstream build
+	// only exposes metrics when compiled for it.
+	MetricsEndpointURL string `yaml:"metrics_endpoint"`
 }
 
 func (c *Config) applyDefaults() {
@@ -95,6 +102,7 @@ func configFromExtra(extra map[string]any) (*Config, error) {
 			return s
 		}
 		c.QueryEndpoint = str("query_endpoint")
+		c.MetricsEndpointURL = str("metrics_endpoint")
 		c.UserPrivKeyPath = str("user_priv_key_path")
 		c.UserPubKeyPath = str("user_pub_key_path")
 		c.KeyPassword = str("key_password")

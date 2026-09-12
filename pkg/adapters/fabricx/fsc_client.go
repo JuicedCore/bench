@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/base64"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -64,7 +65,7 @@ type accountResponse struct {
 // ---- custom kv-write view body (deploy/docker/fabricx/kvview) ----
 
 type kvRequest struct {
-	Op    string `json:"op"`              // "write" | "read"
+	Op    string `json:"op"` // "write" | "read"
 	Key   string `json:"key"`
 	Value string `json:"value,omitempty"` // base64, write only
 }
@@ -124,8 +125,10 @@ func (c *fscClient) kv(ctx context.Context, req kvRequest) (*kvResponse, error) 
 	if err := c.postJSON(ctx, u, req, &out); err != nil {
 		return nil, err
 	}
+	// A 2xx carrying an error field is still the view refusing the operation,
+	// so classify it the same way as a non-2xx: rejected, not a transport failure.
 	if out.Error != "" {
-		return &out, fmt.Errorf("fabricx kv: %s", out.Error)
+		return &out, &rejectedError{Status: http.StatusOK, Body: out.Error, URL: u}
 	}
 	return &out, nil
 }
@@ -167,6 +170,31 @@ func (c *fscClient) health(ctx context.Context) error {
 	return nil
 }
 
+// rejectedError is a non-2xx response: the Fabric-X REST facade received the
+// request and refused it. That is the closest observable analogue this platform
+// offers to Fabric's "invalid" outcome, and it is deliberately distinguished from
+// a transport error (which means the tx never reached the platform at all).
+//
+// It is NOT equivalent to a committer validation code: the judgement is made at
+// the HTTP layer, so an MVCC-style conflict and an application-level refusal look
+// the same here. See docs/architecture/fairness-guarantees.md.
+type rejectedError struct {
+	Status int
+	Body   string
+	URL    string
+}
+
+func (e *rejectedError) Error() string {
+	return fmt.Sprintf("fabricx POST %s: HTTP %d: %s", e.URL, e.Status, e.Body)
+}
+
+// isRejected reports whether err is a platform refusal rather than a transport
+// failure.
+func isRejected(err error) bool {
+	var re *rejectedError
+	return errors.As(err, &re)
+}
+
 func (c *fscClient) postJSON(ctx context.Context, u string, body, out any) error {
 	b, _ := json.Marshal(body)
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, u, bytes.NewReader(b))
@@ -181,7 +209,7 @@ func (c *fscClient) postJSON(ctx context.Context, u string, body, out any) error
 	defer resp.Body.Close()
 	raw, _ := io.ReadAll(io.LimitReader(resp.Body, 1<<20))
 	if resp.StatusCode/100 != 2 {
-		return fmt.Errorf("fabricx POST %s: HTTP %d: %s", u, resp.StatusCode, raw)
+		return &rejectedError{Status: resp.StatusCode, Body: string(raw), URL: u}
 	}
 	if out != nil {
 		if err := json.Unmarshal(raw, out); err != nil {

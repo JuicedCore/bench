@@ -48,9 +48,11 @@ func (c *Config) applyDefaults() {
 	if c.IssuerURL == "" {
 		c.IssuerURL = "http://localhost:9100"
 	}
-	if c.KVURL == "" {
-		c.KVURL = "http://localhost:9700"
-	}
+	// KVURL is deliberately NOT defaulted. The kvview service is a stub that
+	// answers /kv with 501 (deploy/docker/fabricx/kvview), so defaulting to it
+	// made the normalized write path a guaranteed 100% failure while the working
+	// native write (token issue) was only reachable by explicitly clearing this.
+	// Configs that want the KV route now have to name it.
 	if c.SenderAccount == "" {
 		c.SenderAccount = "alice"
 	}

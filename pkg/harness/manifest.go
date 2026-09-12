@@ -18,13 +18,13 @@ type CryptoInfo = adapters.CryptoInfo
 // If two runs disagree, the manifests explain why. Everything here is a fairness
 // lever identified during review (see docs/architecture/fairness-guarantees.md).
 type Manifest struct {
-	RunName   string    `json:"run_name"`
-	Platform  string    `json:"platform"`
-	Workload  string    `json:"workload"`
-	Profile   string    `json:"profile"`
-	Normalized bool     `json:"normalized"`
-	StartedAt time.Time `json:"started_at"`
-	EndedAt   time.Time `json:"ended_at"`
+	RunName    string    `json:"run_name"`
+	Platform   string    `json:"platform"`
+	Workload   string    `json:"workload"`
+	Profile    string    `json:"profile"`
+	Normalized bool      `json:"normalized"`
+	StartedAt  time.Time `json:"started_at"`
+	EndedAt    time.Time `json:"ended_at"`
 
 	HarnessGitSHA string `json:"harness_git_sha"`
 
@@ -32,11 +32,19 @@ type Manifest struct {
 	PlatformVersion string `json:"platform_version"` // git tag / image tag as reported by the adapter
 
 	// Fairness levers.
-	StateDB       string       `json:"state_db"`
-	OrdererBatch  OrdererBatch `json:"orderer_batch"`
-	Crypto        CryptoInfo   `json:"crypto"`
-	ResourceLimit Limits       `json:"resource_limit_per_container"`
-	Nodes         map[string]int `json:"nodes"`
+	//
+	// StateDB is the world-state backend the platform ACTUALLY ran on, taken
+	// from BENCH_ACTUAL_STATE_DB when the deploy script reports it. StateDBRequested
+	// is what the run config asked for (normalized runs always request leveldb).
+	// They differ where a platform cannot honour the request - Drunix's up.sh
+	// always deploys YugabyteDB - and recording only the request would make the
+	// manifest claim a parity it does not have.
+	StateDB          string         `json:"state_db"`
+	StateDBRequested string         `json:"state_db_requested"`
+	OrdererBatch     OrdererBatch   `json:"orderer_batch"`
+	Crypto           CryptoInfo     `json:"crypto"`
+	ResourceLimit    Limits         `json:"resource_limit_per_container"`
+	Nodes            map[string]int `json:"nodes"`
 
 	// Load determinism.
 	Seed            int64   `json:"seed"`
@@ -49,6 +57,11 @@ type Manifest struct {
 	// Windowing.
 	WarmupSec   float64 `json:"warmup_sec"`
 	CooldownSec float64 `json:"cooldown_sec"`
+
+	// Sweep outcome. SkippedSteps lists the sweep steps the early-abort rule
+	// never offered, so a truncated ladder is self-describing rather than
+	// looking like a shorter config.
+	SkippedSteps []int `json:"skipped_steps,omitempty"`
 
 	// Free-form caveats surfaced in the report (e.g. "fabricx local: Arma
 	// starved, not comparable to published ceiling").

@@ -4,8 +4,10 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io"
 	"os"
 	"path/filepath"
+	"strings"
 	"sync"
 	"time"
 
@@ -17,10 +19,10 @@ import (
 
 // PhaseResult is the aggregate for one load phase.
 type PhaseResult struct {
-	Name       string          `json:"name"`
-	OfferedTPS int             `json:"offered_tps"` // nominal target for the phase
-	Window     WindowInfo      `json:"window"`
-	Result     metrics.Result  `json:"result"`
+	Name       string         `json:"name"`
+	OfferedTPS int            `json:"offered_tps"` // nominal target for the phase
+	Window     WindowInfo     `json:"window"`
+	Result     metrics.Result `json:"result"`
 }
 
 // WindowInfo records the measurement window bounds relative to phase start.
@@ -32,12 +34,18 @@ type WindowInfo struct {
 
 // RunResult is the full output of one benchmark run.
 type RunResult struct {
-	Manifest     Manifest        `json:"manifest"`
-	Phases       []PhaseResult   `json:"phases"`
-	Headline     *metrics.Result `json:"headline"` // hold phase for sweeps, the single phase otherwise
-	SaturationTPS int            `json:"saturation_tps,omitempty"`
+	Manifest      Manifest               `json:"manifest"`
+	Phases        []PhaseResult          `json:"phases"`
+	Headline      *metrics.Result        `json:"headline"` // hold phase for sweeps, the single phase otherwise
+	SaturationTPS int                    `json:"saturation_tps,omitempty"`
 	NativeScrapes []metrics.NativeScrape `json:"native_scrapes,omitempty"`
 	SystemSamples []metrics.SystemSample `json:"system_samples,omitempty"`
+
+	// OutDir is the directory results were written to (not itself part of the
+	// JSON record on disk - a file doesn't need to know its own path - but set
+	// on the in-memory RunResult so callers like report generation don't have to
+	// recompute the timestamped path).
+	OutDir string `json:"-"`
 }
 
 // Options tunes engine behaviour not expressed in the run config.
@@ -55,6 +63,14 @@ type Options struct {
 	// (Fabric-X, NeuChain) where one Go generator + one gRPC conn is the
 	// bottleneck - size it to the profile's load_gen_cpus.
 	Generators int
+	// Progress, if non-nil, receives one live-updating line per second while
+	// each phase runs (phase name, elapsed/total, offered/confirmed TPS, p99,
+	// failure rate). nil disables it entirely - the run stays silent until it
+	// writes results, as before.
+	Progress io.Writer
+	// ProgressTTY selects redraw-in-place (\r) rendering when true, or one
+	// plain line per tick when false (log-file-safe: no control characters).
+	ProgressTTY bool
 }
 
 // Engine executes runs.
@@ -103,27 +119,28 @@ func (Engine) Run(ctx context.Context, cfg *RunConfig, opt Options) (*RunResult,
 
 	started := time.Now()
 	man := Manifest{
-		RunName:         cfg.Name,
-		Platform:        cfg.Platform,
-		Workload:        cfg.Workload,
-		Profile:         cfg.Profile,
-		Normalized:      cfg.Normalized,
-		StartedAt:       started,
-		HarnessGitSHA:   harnessGitSHA(),
-		PlatformVersion: "unknown",
-		StateDB:         topo.EffectiveStateDB(cfg.Normalized),
-		OrdererBatch:    topo.OrdererBatch,
-		ResourceLimit:   topo.PerContainer,
-		Nodes:           topo.Nodes,
-		Seed:            cfg.Load.Seed,
-		KeySpace:        cfg.Load.KeySpace,
-		KeyDistribution: cfg.Load.KeyDistribution,
-		ZipfianConstant: cfg.Load.ZipfianConstant,
-		ReadWriteRatio:  cfg.Load.ReadWriteRatio,
-		ValueSizeBytes:  cfg.Load.ValueSizeBytes,
-		WarmupSec:       cfg.Metrics.Warmup.D().Seconds(),
-		CooldownSec:     cfg.Metrics.Cooldown.D().Seconds(),
-		Caveats:         opt.Caveats,
+		RunName:          cfg.Name,
+		Platform:         cfg.Platform,
+		Workload:         cfg.Workload,
+		Profile:          cfg.Profile,
+		Normalized:       cfg.Normalized,
+		StartedAt:        started,
+		HarnessGitSHA:    harnessGitSHA(),
+		PlatformVersion:  "unknown",
+		StateDB:          actualStateDB(topo.EffectiveStateDB(cfg.Normalized)),
+		StateDBRequested: topo.EffectiveStateDB(cfg.Normalized),
+		OrdererBatch:     topo.OrdererBatch,
+		ResourceLimit:    topo.PerContainer,
+		Nodes:            topo.Nodes,
+		Seed:             cfg.Load.Seed,
+		KeySpace:         cfg.Load.KeySpace,
+		KeyDistribution:  cfg.Load.KeyDistribution,
+		ZipfianConstant:  cfg.Load.ZipfianConstant,
+		ReadWriteRatio:   cfg.Load.ReadWriteRatio,
+		ValueSizeBytes:   cfg.Load.ValueSizeBytes,
+		WarmupSec:        cfg.Metrics.Warmup.D().Seconds(),
+		CooldownSec:      cfg.Metrics.Cooldown.D().Seconds(),
+		Caveats:          opt.Caveats,
 	}
 	if vp, ok := ad.(adapters.VersionReporter); ok {
 		if v := vp.PlatformVersion(); v != "" {
@@ -136,6 +153,14 @@ func (Engine) Run(ctx context.Context, cfg *RunConfig, opt Options) (*RunResult,
 	}
 	if cp, ok := ad.(adapters.CryptoReporter); ok {
 		man.Crypto = cp.CryptoInfo()
+	}
+	// A platform that could not honour the requested state DB is not holding
+	// that fairness lever, so say so next to the numbers rather than only in the
+	// manifest fields.
+	if man.StateDB != man.StateDBRequested {
+		man.Caveats = append(man.Caveats, fmt.Sprintf(
+			"state-db parity not held: run requested %s, platform actually ran %s",
+			man.StateDBRequested, man.StateDB))
 	}
 
 	outDir := filepath.Join(cfg.Metrics.OutputDir, cfg.Platform, started.Format("20060102-150405"))
@@ -151,7 +176,7 @@ func (Engine) Run(ctx context.Context, cfg *RunConfig, opt Options) (*RunResult,
 		}
 		man.EndedAt = time.Now()
 		_ = man.Write(filepath.Join(outDir, "manifest.json"))
-		return &RunResult{Manifest: man}, nil
+		return &RunResult{Manifest: man, OutDir: outDir}, nil
 	}
 
 	if err := ad.Setup(ctx, acfg); err != nil {
@@ -203,13 +228,46 @@ func (Engine) Run(ctx context.Context, cfg *RunConfig, opt Options) (*RunResult,
 	}
 
 	phases := buildPhases(cfg)
-	rr := &RunResult{Manifest: man}
+	rr := &RunResult{Manifest: man, OutDir: outDir}
 	warm := cfg.Metrics.Warmup.D()
 	cool := cfg.Metrics.Cooldown.D()
 
+	// Sweep bookkeeping. bestPassing is the highest sweep step that stayed under
+	// the failure threshold; the hold phase is retargeted to hold_fraction of it
+	// so the headline is measured just below the MEASURED knee rather than just
+	// below the top of the configured ladder. consecFailed drives early abort.
+	sweep := cfg.Load.Sweep
+	abortAfter := 0
+	if sweep.AbortAfterFailedSteps != nil {
+		abortAfter = *sweep.AbortAfterFailedSteps
+	}
+	bestPassing, consecFailed := 0, 0
+
 	for _, ph := range phases {
+		isSweepStep := strings.HasPrefix(ph.name, "sweep-")
+
+		// Early abort: once the platform has failed abort_after_failed_steps
+		// steps in a row it will not recover further up the ladder, so stop
+		// offering steps and go straight to hold. probe and hold never abort.
+		if isSweepStep && abortAfter > 0 && consecFailed >= abortAfter {
+			rr.Manifest.SkippedSteps = append(rr.Manifest.SkippedSteps, ph.profile.TargetTPS)
+			continue
+		}
+		if ph.name == "hold" && sweep.Enabled {
+			ph.profile.TargetTPS = holdTarget(bestPassing, sweep)
+		}
+
 		phaseStart := time.Now()
-		if err := runGenerators(ctx, gens, splitProfile(ph.profile, len(gens))); err != nil && ctx.Err() != nil {
+		var liveProg *progressReporter
+		if opt.Progress != nil {
+			liveProg = newProgressReporter(opt.Progress, opt.ProgressTTY)
+			liveProg.start(ph.name, ph.profile.TargetTPS, ph.profile.Duration, phaseStart, collector)
+		}
+		genErr := runGenerators(ctx, gens, splitProfile(ph.profile, len(gens)))
+		if liveProg != nil {
+			liveProg.stop()
+		}
+		if genErr != nil && ctx.Err() != nil {
 			break
 		}
 		phaseEnd := time.Now()
@@ -231,6 +289,17 @@ func (Engine) Run(ctx context.Context, cfg *RunConfig, opt Options) (*RunResult,
 		}
 		rr.Phases = append(rr.Phases, pr)
 
+		if isSweepStep {
+			if stepPassed(res.FailureRate, sweep.MaxFailRate) {
+				consecFailed = 0
+				if ph.profile.TargetTPS > bestPassing {
+					bestPassing = ph.profile.TargetTPS
+				}
+			} else {
+				consecFailed++
+			}
+		}
+
 		if ph.name == "hold" || len(phases) == 1 {
 			cp := res
 			rr.Headline = &cp
@@ -240,6 +309,16 @@ func (Engine) Run(ctx context.Context, cfg *RunConfig, opt Options) (*RunResult,
 	// Determine saturation: highest sweep step whose failure rate stayed under threshold.
 	if cfg.Load.Sweep.Enabled {
 		rr.SaturationTPS = detectSaturation(rr.Phases, cfg.Load.Sweep.MaxFailRate)
+		if rr.SaturationTPS == 0 {
+			rr.Manifest.Caveats = append(rr.Manifest.Caveats, fmt.Sprintf(
+				"no sweep step held under the %.1f%% failure threshold; hold ran at the probe rate (%d TPS) and the headline is a floor, not a saturation figure",
+				sweep.MaxFailRate*100, sweep.ProbeTPS))
+		}
+		if n := len(rr.Manifest.SkippedSteps); n > 0 {
+			rr.Manifest.Caveats = append(rr.Manifest.Caveats, fmt.Sprintf(
+				"sweep aborted early after %d consecutive failed steps; %d higher step(s) were never offered",
+				abortAfter, n))
+		}
 	}
 
 	sampCancel()
@@ -256,8 +335,9 @@ func (Engine) Run(ctx context.Context, cfg *RunConfig, opt Options) (*RunResult,
 		cancel()
 	}
 
-	man.EndedAt = time.Now()
-	rr.Manifest = man
+	// rr.Manifest, not man: the phase loop appends skipped steps and caveats to
+	// rr.Manifest, and reassigning from man here would discard them.
+	rr.Manifest.EndedAt = time.Now()
 
 	if err := writeResults(outDir, cfg, rr); err != nil {
 		return rr, fmt.Errorf("write results: %w", err)
@@ -349,8 +429,10 @@ func buildPhases(cfg *RunConfig) []phase {
 			p.Duration = l.Sweep.StepDur.D()
 			out = append(out, phase{name: fmt.Sprintf("sweep-%d", s), profile: p})
 		}
-		// hold phase target is filled in after saturation detection at runtime;
-		// here we approximate with the top step * HoldFrac so a plan is printable.
+		// The real hold target is only known once the sweep has run, so Run
+		// rewrites this from the highest passing step before the phase starts
+		// (see holdTarget). The top-step approximation here exists purely so
+		// --dry-run can print an upper bound for the plan.
 		hold := common
 		top := 0
 		if len(l.Sweep.Steps) > 0 {
@@ -385,13 +467,43 @@ func buildPhases(cfg *RunConfig) []phase {
 	return []phase{{name: "single", profile: p}}
 }
 
+// actualStateDB reports the world-state backend the platform really came up on.
+// Deploy scripts export BENCH_ACTUAL_STATE_DB from connection.env because the
+// requested value can be unachievable - Drunix's up.sh always deploys YugabyteDB
+// even for a normalized run. Absent the variable, assume the request was honoured.
+func actualStateDB(requested string) string {
+	if v := strings.TrimSpace(os.Getenv("BENCH_ACTUAL_STATE_DB")); v != "" {
+		return v
+	}
+	return requested
+}
+
+// stepPassed is the single definition of "this sweep step held": failure rate at
+// or under the configured ceiling. Both the live phase loop and detectSaturation
+// go through it so the knee cannot be judged by two different rules.
+func stepPassed(failureRate, maxFail float64) bool { return failureRate <= maxFail }
+
+// holdTarget is the offered rate for the hold phase: hold_fraction of the highest
+// step that actually held. With no passing step there is no knee to sit below, so
+// fall back to the probe rate - a floor reading, caveated by the caller - rather
+// than holding at a rate the platform already demonstrably cannot serve.
+func holdTarget(bestPassing int, s SweepConfig) int {
+	if bestPassing <= 0 {
+		return s.ProbeTPS
+	}
+	if t := int(float64(bestPassing) * s.HoldFrac); t > 0 {
+		return t
+	}
+	return 1
+}
+
 func detectSaturation(phases []PhaseResult, maxFail float64) int {
 	best := 0
 	for _, ph := range phases {
-		if len(ph.Name) < 6 || ph.Name[:6] != "sweep-" {
+		if !strings.HasPrefix(ph.Name, "sweep-") {
 			continue
 		}
-		if ph.Result.FailureRate <= maxFail && ph.OfferedTPS > best {
+		if stepPassed(ph.Result.FailureRate, maxFail) && ph.OfferedTPS > best {
 			best = ph.OfferedTPS
 		}
 	}

@@ -9,6 +9,7 @@ package drunix
 
 import (
 	"context"
+	"errors"
 	"time"
 
 	"github.com/juicedcore/bench/pkg/adapters"
@@ -51,18 +52,51 @@ func (a *Adapter) Setup(ctx context.Context, ac adapters.AdapterConfig) error {
 	return a.inner.Setup(ctx, ac)
 }
 
-func (a *Adapter) Teardown(ctx context.Context) error { return a.inner.Teardown(ctx) }
+// errNotSetUp guards the delegating methods below. The PlatformAdapter contract
+// requires Teardown to be safe after a failed or skipped Setup, and the engine's
+// deferred Teardown runs on exactly that path; without the guard every one of
+// these nil-derefs a.inner.
+var errNotSetUp = errors.New("drunix: adapter not set up")
+
+func (a *Adapter) Teardown(ctx context.Context) error {
+	if a.inner == nil {
+		return nil
+	}
+	return a.inner.Teardown(ctx)
+}
 
 func (a *Adapter) Submit(ctx context.Context, tx *adapters.Transaction) (*adapters.SubmitResult, error) {
+	if a.inner == nil {
+		return nil, errNotSetUp
+	}
+	if tx.Kind == adapters.TxWrite {
+		// See valuecodec.go: Drunix's YugabyteDB statedb panics the Committing
+		// Peer on non-JSON write values.
+		wrapped := *tx
+		wrapped.Value = wrapValue(tx.Value)
+		return a.inner.Submit(ctx, &wrapped)
+	}
 	return a.inner.Submit(ctx, tx)
 }
 
 func (a *Adapter) WaitForFinality(ctx context.Context, txID string, timeout time.Duration) (*adapters.FinalityResult, error) {
+	if a.inner == nil {
+		return nil, errNotSetUp
+	}
 	return a.inner.WaitForFinality(ctx, txID, timeout)
 }
 
 func (a *Adapter) Query(ctx context.Context, key string) (*adapters.QueryResult, error) {
-	return a.inner.Query(ctx, key)
+	if a.inner == nil {
+		return nil, errNotSetUp
+	}
+	res, err := a.inner.Query(ctx, key)
+	if err != nil || res == nil || !res.Found {
+		return res, err
+	}
+	unwrapped := *res
+	unwrapped.Value = unwrapValue(res.Value)
+	return &unwrapped, nil
 }
 
 func (a *Adapter) MetricsEndpoint() string {

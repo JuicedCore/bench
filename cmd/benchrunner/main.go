@@ -1,6 +1,6 @@
 // benchrunner is the CLI entry point for the unified blockchain benchmark harness.
 //
-//	benchrunner run      --config configs/quick-smoke.yaml [--platform X] [--dry-run]
+//	benchrunner run      --config configs/normalized/quick-smoke.yaml [--platform X] [--dry-run]
 //	benchrunner suite    --configs configs/ --platforms a,b,c [--profile local]
 //	benchrunner report   --results-dir ./results --output ./report.html
 //	benchrunner setup    --platform fabric-cft --profile local
@@ -12,6 +12,7 @@ import (
 	"context"
 	"flag"
 	"fmt"
+	"io"
 	"os"
 	"os/exec"
 	"os/signal"
@@ -21,9 +22,11 @@ import (
 
 	"github.com/juicedcore/bench/pkg/adapters"
 	"github.com/juicedcore/bench/pkg/harness"
+	"github.com/juicedcore/bench/pkg/monitoring"
 
-	// Register adapters. fabricx/neuchain are Phase 3/4 skeletons that error on
-	// Setup; they register so `list` and `suite --dry-run` see all five.
+	// Register adapters. All five are fully implemented; fabricx and neuchain are
+	// blocked by their platforms (a devnet namespace-bootstrap failure and an
+	// unbuilt C++ image respectively), not by the adapter code.
 	_ "github.com/juicedcore/bench/pkg/adapters/drunix"
 	_ "github.com/juicedcore/bench/pkg/adapters/fabric"
 	_ "github.com/juicedcore/bench/pkg/adapters/fabricx"
@@ -79,6 +82,35 @@ commands:
 `)
 }
 
+// isTerminal reports whether f looks like an interactive terminal rather than
+// a pipe or redirected file - a char-device stat is the standard stdlib-only
+// heuristic for this (avoids pulling in golang.org/x/term for one check).
+func isTerminal(f *os.File) bool {
+	fi, err := f.Stat()
+	if err != nil {
+		return false
+	}
+	return fi.Mode()&os.ModeCharDevice != 0
+}
+
+// resolveProgress decides where (if anywhere) live progress output goes.
+// quiet always wins. Otherwise: a terminal on stderr gets redraw-in-place
+// output; a non-terminal (piped/redirected) stderr stays silent unless force
+// (--progress) is set, in which case it gets one plain line per tick instead
+// of raw carriage returns, so a log file stays readable.
+func resolveProgress(quiet, force bool) (io.Writer, bool) {
+	if quiet {
+		return nil, false
+	}
+	if isTerminal(os.Stderr) {
+		return os.Stderr, true
+	}
+	if force {
+		return os.Stderr, false
+	}
+	return nil, false
+}
+
 func cmdRun(ctx context.Context, args []string) error {
 	fs := flag.NewFlagSet("run", flag.ExitOnError)
 	cfgPath := fs.String("config", "", "path to run config YAML (required)")
@@ -88,6 +120,8 @@ func cmdRun(ctx context.Context, args []string) error {
 	dryRun := fs.Bool("dry-run", false, "print the phase plan without generating load")
 	caveat := fs.String("caveat", "", "append a caveat string to the manifest")
 	generators := fs.Int("generators", 0, "concurrent load-generator instances sharing the adapter (default 1; use >1 for high-ceiling platforms)")
+	quiet := fs.Bool("quiet", false, "disable live progress output")
+	progress := fs.Bool("progress", false, "force live progress output even when stderr is not a terminal (one plain line per tick, log-safe)")
 	_ = fs.Parse(args)
 	if *cfgPath == "" {
 		return fmt.Errorf("--config is required")
@@ -104,7 +138,8 @@ func cmdRun(ctx context.Context, args []string) error {
 		cfg.Profile = *profile
 	}
 
-	opt := harness.Options{ProfileDir: *profileDir, DryRun: *dryRun, Generators: *generators}
+	progW, progTTY := resolveProgress(*quiet, *progress)
+	opt := harness.Options{ProfileDir: *profileDir, DryRun: *dryRun, Generators: *generators, Progress: progW, ProgressTTY: progTTY}
 	if *caveat != "" {
 		opt.Caveats = append(opt.Caveats, *caveat)
 	}
@@ -120,9 +155,35 @@ func cmdRun(ctx context.Context, args []string) error {
 		opt.Caveats = append(opt.Caveats,
 			"drunix ran on YugabyteDB (its shipped test-network default); LevelDB parity is unavailable, so the state-DB variable is NOT held constant vs fabric-cft for this run")
 	}
+	// Drunix's YugabyteDB statedb force-casts every write value into a JSONB
+	// column and panics the Committing Peer on non-JSON values (see
+	// docs/platforms/drunix.md). The drunix adapter JSON-wraps TxWrite values
+	// client-side to survive this; disclose it since the on-wire payload no
+	// longer matches the shared kv workload's raw bytes on other platforms.
+	if cfg.Platform == "drunix" {
+		opt.Caveats = append(opt.Caveats,
+			"drunix write values are JSON-wrapped client-side to survive a YugabyteDB statedb bug (non-JSON values panic the Committing Peer); the on-wire payload format differs from the shared kv workload on other platforms for this run")
+	}
 
-	_, err = harness.Engine{}.Run(ctx, cfg, opt)
-	return err
+	rr, err := harness.Engine{}.Run(ctx, cfg, opt)
+	if err != nil {
+		return err
+	}
+	if !*dryRun {
+		generateMonitoringReport(ctx, cfg, rr)
+	}
+	return nil
+}
+
+// generateMonitoringReport writes the per-run monitoring HTML report. Failures
+// here are logged, never fatal - a run that succeeded must not be reported as
+// failed just because Prometheus was unreachable or a chart didn't render.
+func generateMonitoringReport(ctx context.Context, cfg *harness.RunConfig, rr *harness.RunResult) {
+	if err := monitoring.GenerateReport(ctx, cfg, rr); err != nil {
+		fmt.Fprintln(os.Stderr, "warning: monitoring report:", err)
+		return
+	}
+	fmt.Println("monitoring report:", filepath.Join(rr.OutDir, "monitoring-report.html"))
 }
 
 func cmdSuite(ctx context.Context, args []string) error {
@@ -132,6 +193,8 @@ func cmdSuite(ctx context.Context, args []string) error {
 	profile := fs.String("profile", "", "override profile for all runs")
 	profileDir := fs.String("profile-dir", "", "profile YAML directory")
 	dryRun := fs.Bool("dry-run", false, "print plans only")
+	quiet := fs.Bool("quiet", false, "disable live progress output")
+	progress := fs.Bool("progress", false, "force live progress output even when stderr is not a terminal (one plain line per tick, log-safe)")
 	_ = fs.Parse(args)
 
 	entries, err := os.ReadDir(*dir)
@@ -142,6 +205,7 @@ func cmdSuite(ctx context.Context, args []string) error {
 	if *platforms != "" {
 		plats = strings.Split(*platforms, ",")
 	}
+	progW, progTTY := resolveProgress(*quiet, *progress)
 
 	for _, e := range entries {
 		if e.IsDir() || !strings.HasSuffix(e.Name(), ".yaml") {
@@ -164,9 +228,13 @@ func cmdSuite(ctx context.Context, args []string) error {
 				cfg.Profile = *profile
 			}
 			fmt.Printf("=== %s  [%s]\n", e.Name(), cfg.Platform)
-			opt := harness.Options{ProfileDir: *profileDir, DryRun: *dryRun}
-			if _, err := (harness.Engine{}).Run(ctx, cfg, opt); err != nil {
+			opt := harness.Options{ProfileDir: *profileDir, DryRun: *dryRun, Progress: progW, ProgressTTY: progTTY}
+			rr, err := (harness.Engine{}).Run(ctx, cfg, opt)
+			if err != nil {
 				return fmt.Errorf("%s [%s]: %w", e.Name(), cfg.Platform, err)
+			}
+			if !*dryRun {
+				generateMonitoringReport(ctx, cfg, rr)
 			}
 		}
 	}

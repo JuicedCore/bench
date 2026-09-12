@@ -19,7 +19,14 @@ func writeSummaryText(path string, cfg *RunConfig, rr *RunResult) error {
 	fmt.Fprintf(&b, "run:        %s\n", cfg.Name)
 	fmt.Fprintf(&b, "platform:   %s  (version %s)\n", cfg.Platform, rr.Manifest.PlatformVersion)
 	fmt.Fprintf(&b, "workload:   %s   normalized=%v\n", cfg.Workload, cfg.Normalized)
-	fmt.Fprintf(&b, "profile:    %s   state_db=%s\n", cfg.Profile, rr.Manifest.StateDB)
+	// Show both when the platform could not honour the requested state DB, so the
+	// summary cannot be read as claiming a parity the run does not have.
+	if rr.Manifest.StateDBRequested != "" && rr.Manifest.StateDB != rr.Manifest.StateDBRequested {
+		fmt.Fprintf(&b, "profile:    %s   state_db=%s (requested %s - PARITY NOT HELD)\n",
+			cfg.Profile, rr.Manifest.StateDB, rr.Manifest.StateDBRequested)
+	} else {
+		fmt.Fprintf(&b, "profile:    %s   state_db=%s\n", cfg.Profile, rr.Manifest.StateDB)
+	}
 	fmt.Fprintf(&b, "batch:      msgcount=%d timeout=%s preferred=%s\n",
 		rr.Manifest.OrdererBatch.MaxMessageCount, rr.Manifest.OrdererBatch.BatchTimeout, rr.Manifest.OrdererBatch.PreferredMaxBytes)
 	fmt.Fprintf(&b, "crypto:     sig=%s hash=%s per_tx_endorse_verify=%v\n",
@@ -40,8 +47,14 @@ func writeSummaryText(path string, cfg *RunConfig, rr *RunResult) error {
 			pctl(r.E2E, "p50"), pctl(r.E2E, "p99"), pctl(r.Submit, "p50"), pctl(r.Commit, "p50"))
 	}
 	b.WriteString("\n")
+	if len(rr.Manifest.SkippedSteps) > 0 {
+		fmt.Fprintf(&b, "sweep aborted early; steps never offered: %v\n", rr.Manifest.SkippedSteps)
+	}
 	if rr.SaturationTPS > 0 {
 		fmt.Fprintf(&b, "detected saturation: ~%d offered TPS\n", rr.SaturationTPS)
+	} else if cfg.Load.Sweep.Enabled {
+		fmt.Fprintf(&b, "detected saturation: NONE - no sweep step held under the failure threshold;\n"+
+			"                     the headline below is a floor reading, not a saturation figure\n")
 	}
 	if rr.Headline != nil {
 		h := rr.Headline

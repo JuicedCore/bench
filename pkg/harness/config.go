@@ -56,8 +56,8 @@ type LoadConfig struct {
 	Mode string `yaml:"mode"` // open-loop | closed-loop
 
 	// Single-phase open-loop:
-	StartTPS int      `yaml:"start_tps"`
-	TargetTPS int     `yaml:"target_tps"`
+	StartTPS  int      `yaml:"start_tps"`
+	TargetTPS int      `yaml:"target_tps"`
 	RampFrom  int      `yaml:"ramp_from"`
 	RampTo    int      `yaml:"ramp_to"`
 	RampDur   Duration `yaml:"ramp_duration"`
@@ -91,6 +91,14 @@ type SweepConfig struct {
 	HoldFrac    float64  `yaml:"hold_fraction"` // e.g. 0.9
 	HoldDur     Duration `yaml:"hold_duration"`
 	MaxFailRate float64  `yaml:"max_fail_rate"` // step is "sustained" if fail rate <= this
+
+	// AbortAfterFailedSteps stops offering further steps once this many in a row
+	// have exceeded MaxFailRate, then goes straight to hold. This is what lets
+	// every platform share one ladder: a platform that saturates at step 2 stops
+	// there instead of spending the rest of the run failing steps 3..N. Skipped
+	// steps are recorded in the manifest. Explicit 0 disables (run the whole
+	// ladder); a pointer so that an explicit 0 is distinguishable from unset.
+	AbortAfterFailedSteps *int `yaml:"abort_after_failed_steps"`
 }
 
 // MetricsConfig controls windowing and output.
@@ -164,6 +172,9 @@ func (c *RunConfig) applyDefaults() {
 	if c.System.SampleInterval == 0 {
 		c.System.SampleInterval = Duration(time.Second)
 	}
+	if c.System.Enabled && c.System.PrometheusURL == "" {
+		c.System.PrometheusURL = "http://localhost:9090"
+	}
 	if c.Load.Sweep.Enabled {
 		if c.Load.Sweep.ProbeTPS == 0 {
 			c.Load.Sweep.ProbeTPS = 10
@@ -185,6 +196,10 @@ func (c *RunConfig) applyDefaults() {
 		}
 		if len(c.Load.Sweep.Steps) == 0 {
 			c.Load.Sweep.Steps = []int{100, 500, 1000, 2000, 5000, 10000, 20000}
+		}
+		if c.Load.Sweep.AbortAfterFailedSteps == nil {
+			n := 2
+			c.Load.Sweep.AbortAfterFailedSteps = &n
 		}
 	}
 }

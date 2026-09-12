@@ -36,13 +36,32 @@ type Adapter struct {
 	pollDone   chan struct{}
 
 	mu       sync.Mutex
-	waiters  map[string]chan resultFrame // hex(digest) -> signal
-	resolved map[string]resultFrame      // hex(digest) -> frame, for finality seen before WaitForFinality
+	waiters  map[string]chan observedFrame // hex(digest) -> signal
+	resolved map[string]observedFrame      // hex(digest) -> frame, for finality seen before WaitForFinality
+}
+
+// observedFrame pairs a decoded result frame with the instant the poller saw the
+// block carrying it. T3 must be that instant: stamping it when WaitForFinality
+// returns instead would fold in the poll interval and, for a tx already resolved
+// before the caller asked, however long the caller took to ask. Fabric, Drunix
+// and Fabric-X all stamp at observation; this keeps NeuChain on the same footing
+// (docs/architecture/fairness-guarantees.md).
+type observedFrame struct {
+	frame resultFrame
+	at    time.Time
 }
 
 func (a *Adapter) Name() string            { return platformName }
 func (a *Adapter) PlatformVersion() string { return platformName }
-func (a *Adapter) MetricsEndpoint() string { return "" }
+
+// MetricsEndpoint is whatever the run config set; empty when the NeuChain build
+// was not compiled with metrics, which disables the end-of-run native scrape.
+func (a *Adapter) MetricsEndpoint() string {
+	if a.cfg == nil {
+		return ""
+	}
+	return a.cfg.MetricsEndpointURL
+}
 
 // CryptoInfo: NeuChain verifies the user's RSA signature once on submit; there is
 // no endorsement round. per_tx_endorsement_verify=false is the right flag for
@@ -70,8 +89,8 @@ func (a *Adapter) Setup(ctx context.Context, ac adapters.AdapterConfig) error {
 		return err
 	}
 
-	a.waiters = map[string]chan resultFrame{}
-	a.resolved = map[string]resultFrame{}
+	a.waiters = map[string]chan observedFrame{}
+	a.resolved = map[string]observedFrame{}
 
 	// Verify the query path is alive (tip may legitimately be 0 pre-genesis).
 	tctx, cancel := context.WithTimeout(ctx, 5*time.Second)
@@ -122,7 +141,7 @@ func (a *Adapter) Submit(_ context.Context, tx *adapters.Transaction) (*adapters
 	// Register the waiter before publishing so the poller can never miss it.
 	a.mu.Lock()
 	if _, dup := a.waiters[id]; !dup {
-		a.waiters[id] = make(chan resultFrame, 1)
+		a.waiters[id] = make(chan observedFrame, 1)
 	}
 	a.mu.Unlock()
 
@@ -145,7 +164,7 @@ func (a *Adapter) WaitForFinality(ctx context.Context, txID string, timeout time
 	}
 	ch, ok := a.waiters[txID]
 	if !ok {
-		ch = make(chan resultFrame, 1)
+		ch = make(chan observedFrame, 1)
 		a.waiters[txID] = ch
 	}
 	a.mu.Unlock()
@@ -198,16 +217,19 @@ func (a *Adapter) poll() {
 			if err != nil {
 				break // retry this height next tick
 			}
+			// One stamp per block fetch: this is T3 for every tx it carries.
+			observedAt := time.Now()
 			for _, f := range frames {
 				id := hex.EncodeToString(f.Digest)
+				o := observedFrame{frame: f, at: observedAt}
 				a.mu.Lock()
 				if ch, ok := a.waiters[id]; ok {
 					select {
-					case ch <- f:
+					case ch <- o:
 					default:
 					}
 				} else {
-					a.resolved[id] = f
+					a.resolved[id] = o
 				}
 				a.mu.Unlock()
 			}
@@ -216,11 +238,14 @@ func (a *Adapter) poll() {
 	}
 }
 
-func finality(txID string, f resultFrame) *adapters.FinalityResult {
+// finality reports T3 as the moment the poller OBSERVED the block, carried on
+// the observedFrame, not the moment this function ran. BlockNum carries NeuChain's
+// epoch: the EV path has no ledger height, and the manifest caveat says so.
+func finality(txID string, o observedFrame) *adapters.FinalityResult {
 	return &adapters.FinalityResult{
 		TxID:         txID,
-		FinalityTime: time.Now(),
-		BlockNum:     f.Epoch,
-		Valid:        f.valid(),
+		FinalityTime: o.at,
+		BlockNum:     o.frame.Epoch,
+		Valid:        o.frame.valid(),
 	}
 }

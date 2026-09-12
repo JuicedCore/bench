@@ -86,7 +86,18 @@ func (a *Adapter) Setup(ctx context.Context, ac adapters.AdapterConfig) error {
 	return nil
 }
 
-func (a *Adapter) Teardown(context.Context) error { return nil }
+// Teardown drains the pending map. The REST calls themselves are detached
+// goroutines bounded by HTTPTimeout, so they cannot be cancelled here, but
+// closing out the map stops WaitForFinality callers blocking forever on a tx
+// whose goroutine outlived the run, and releases the channels.
+func (a *Adapter) Teardown(context.Context) error {
+	a.mu.Lock()
+	defer a.mu.Unlock()
+	for id := range a.pending {
+		delete(a.pending, id)
+	}
+	return nil
+}
 
 // Submit starts the (synchronous-to-finality) REST call in the background and
 // returns immediately. The returned TxID is a local correlation id; the real
@@ -152,12 +163,20 @@ func (a *Adapter) WaitForFinality(ctx context.Context, localID string, timeout t
 
 	select {
 	case m := <-ch:
-		if m.err != nil {
-			return nil, m.err
-		}
 		id := m.realTxID
 		if id == "" {
 			id = localID
+		}
+		// A refusal by the REST facade is a terminal platform outcome, so report
+		// it as an invalid tx rather than an adapter error - otherwise every
+		// rejection lands in the "errored" bucket and the failure-rate breakdown
+		// cannot distinguish "the platform said no" from "we could not reach it".
+		// Transport failures still surface as errors.
+		if m.err != nil {
+			if isRejected(m.err) {
+				return &adapters.FinalityResult{TxID: id, FinalityTime: m.at, Valid: false}, nil
+			}
+			return nil, m.err
 		}
 		return &adapters.FinalityResult{TxID: id, FinalityTime: m.at, Valid: m.valid}, nil
 	case <-time.After(timeout):
