@@ -48,6 +48,10 @@ head-to-head with the normalized bucket.
 
 ### Normalized set — `configs/normalized/` (the comparison)
 
+> What these configs actually hold equal today — and the known gaps (reads, state DB,
+> block cutting, crypto, NeuChain submit latency) that limit which results can be quoted
+> across platform families — is in [docs/architecture/normalization-status.md](docs/architecture/normalization-status.md).
+
 One file per mode. Every mode is *intended* to run on every platform (adr-010:
 run the workload everywhere and caveat it, never leave a blank cell). What
 differs is whether the platform can currently be brought up at all.
