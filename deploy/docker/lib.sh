@@ -104,8 +104,52 @@ fabric_samples_bootstrap() {
         | bash -s -- --fabric-version "$fver" --ca-version "$caver" docker ) >&2 || warn "image pull returned non-zero; continuing"
     echo "$fver" > "${samples}/bin/.fabricver"
   fi
+  pin_fabric_images "$fver" "$caver"
   # stdout: ONLY the samples path (callers do SAMPLES="$(fabric_samples_bootstrap ...)")
   printf '%s\n' "$samples"
+}
+
+# pin_fabric_images <fabric_version> <ca_version>
+#
+# The fabric-samples test-network starts `hyperledger/fabric-*:latest`, and the
+# peer builds chaincode with `fabric-ccenv:<major.minor>`. Those tags are only
+# re-pointed when install-fabric.sh runs, which the bootstrap above does only when
+# the *binary* version changes. Bringing up fabric-cft (2.5.x) after fabric-bft
+# (3.1.x), or after a partly failed pull, therefore left a mixed network - found
+# with peer, ccenv and baseos on 3.1.4 while the orderer and binaries were 2.5.16,
+# and the manifest reporting 2.5.16. Re-point every tag on every bring-up, from
+# images already present where possible, and verify inside the containers.
+pin_fabric_images() {
+  local fver="$1" caver="$2"
+  local mm="${fver%.*}" camm="${caver%.*}"
+  local repo ver src
+  for repo in peer orderer ccenv baseos ca; do
+    ver="$fver"; [ "$repo" = ca ] && ver="$caver"
+    src="hyperledger/fabric-${repo}:${ver}"
+    if ! docker image inspect "$src" >/dev/null 2>&1; then
+      if docker image inspect "ghcr.io/${src}" >/dev/null 2>&1; then
+        docker tag "ghcr.io/${src}" "$src"
+      else
+        log "pulling ${src}"
+        docker pull -q "$src" >/dev/null || docker pull -q "ghcr.io/${src}" >/dev/null \
+          || die "cannot obtain ${src}"
+        docker image inspect "$src" >/dev/null 2>&1 || docker tag "ghcr.io/${src}" "$src"
+      fi
+    fi
+    docker tag "$src" "hyperledger/fabric-${repo}:latest"
+    if [ "$repo" = ca ]; then
+      docker tag "$src" "hyperledger/fabric-ca:${camm}"
+    else
+      docker tag "$src" "hyperledger/fabric-${repo}:${mm}"
+    fi
+  done
+
+  local got
+  got="$(docker run --rm hyperledger/fabric-peer:latest peer version 2>/dev/null | sed -ne 's/^ *Version: v\{0,1\}//p' | head -1)"
+  [ "$got" = "$fver" ] || die "fabric-peer:latest reports ${got:-nothing}, wanted ${fver}"
+  got="$(docker run --rm hyperledger/fabric-orderer:latest orderer version 2>/dev/null | sed -ne 's/^ *Version: v\{0,1\}//p' | head -1)"
+  [ "$got" = "$fver" ] || die "fabric-orderer:latest reports ${got:-nothing}, wanted ${fver}"
+  log "fabric images pinned to ${fver} (ca ${caver}); peer and orderer verified"
 }
 
 # _resume_get <url> <dest> — download with resume + aggressive retry.
