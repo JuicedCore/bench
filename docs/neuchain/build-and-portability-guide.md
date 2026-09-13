@@ -61,7 +61,7 @@ free -h             # need >= 10 GB RAM actually available, not just "total"
 ## Phase 1 — build the three Docker images
 
 ```bash
-cd ~/bench
+cd bench    # the repository root
 bash deploy/docker/neuchain/build.sh
 ```
 

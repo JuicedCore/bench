@@ -1,134 +1,153 @@
 # Unified Blockchain Benchmark Harness
 
-Fair, platform-agnostic throughput/latency benchmarking across four permissioned
-blockchains with three different transaction models:
+Fair, platform-agnostic throughput and latency benchmarking of permissioned
+blockchains with different transaction models:
 
 | Platform | Model | Consensus |
 | -------- | ----- | --------- |
 | **Hyperledger Fabric** (`fabric-cft`, `fabric-bft`) | EOV + chaincode | Raft / SmartBFT |
 | **Drunix** (NPCI fork of Fabric 2.5.x) | EOV + chaincode | Raft (CFT only) |
-| **Fabric-X** | EOV, no chaincode (FSC + Token SDK) | Arma (sharded BFT) |
-| **NeuChain** | Ordering-free Execute-Validate | deterministic |
+| **Fabric-X** (`fabricx`) | EOV, namespace read/write sets | Arma (sharded BFT) |
+| **NeuChain** (`neuchain`) | Ordering-free execute-validate | deterministic |
 
 One adapter interface, one load generator, one metrics pipeline. Normalized
-workloads for the cross-platform comparison; platform-native workloads for
+workloads give the cross-platform comparison; platform-native workloads give
 ceilings. Every methodology decision is written down in [`docs/`](docs/README.md).
+
+It runs the same way on a Linux workstation and on GCP: the cloud VMs are
+provisioned by the same installer, run the same deploy scripts, and use the same
+configs and profiles.
 
 ## Status
 
-Full breakdown + why the two remaining items need heavy compute or GCP creds:
-**[docs/REMAINING-WORK.md](docs/REMAINING-WORK.md)**.
+| Platform | Live-verified | Notes |
+| -------- | ------------- | ----- |
+| `fabric-cft` | ✅ smoke + probe-sweep (2.5.16) | local-small: knee ~1000 TPS, hold 894 TPS |
+| `fabric-bft` | ✅ smoke + probe-sweep (3.1.5, 4 orderers) | local-small: knee ~500 TPS, hold 450 TPS |
+| `drunix` | ✅ smoke; probe-sweep to ~500 TPS | a Committing Peer exited under 2000 TPS on local-small (cause not yet captured); runs on YugabyteDB, so normalized runs carry a state-DB caveat |
+| `fabricx` | ⚠️ deploy and adapter written, never run live | [docs/REMAINING-WORK.md §4](docs/REMAINING-WORK.md) lists what the first bring-up must confirm |
+| `neuchain` | ⚠️ adapter unit-tested; server image not built | needs a 45–90 min C++ build (`deploy/docker/neuchain/build.sh`) |
+| GCP | ✅ Terraform validated, installer tested on 5 distros | not yet applied against a real project |
 
-| Platform | Adapter | Live-tested | Notes |
-| -------- | ------- | ----------- | ----- |
-| `fabric-cft` (Raft) | ✅ | ✅ smoke + probe-sweep (Fabric 2.5.16) | e2e p50 165–565 ms across the sweep |
-| `fabric-bft` (SmartBFT) | ✅ | ✅ smoke (Fabric 3.1.5, 4 orderers) | ≈ cft at low load once batching is pinned |
-| `drunix` (npci/drunix) | ✅ (wraps fabric; CP block-event finality) | deploy + lifecycle + write path verified live | write path **unblocked**: the cause was Drunix's YugabyteDB statedb rejecting non-JSON values, fixed client-side in `pkg/adapters/drunix/valuecodec.go`. The earlier sparse-block diagnosis was wrong ([docs/REMAINING-WORK.md §3](docs/REMAINING-WORK.md)). Runs on YugabyteDB, so normalized runs carry a state-DB caveat |
-| `fabricx` (native gRPC) | ✅ broadcast to Arma router + sidecar deliver stream; real submit ack | — | rebuilt on the native path ([adr-016](docs/decisions/adr-016-fabricx-native-grpc.md)); deploy builds Arma + committer from pinned source. Not yet live-verified |
-| `neuchain` (pure-Go ZMQ+protobuf+RSA) | ✅ unit-tested (sign, result-frame, tx-build, finality timestamping) | — | server binaries need a 45–90 min C++ build — **compute gated**, `deploy/docker/neuchain/build.sh`. Runs the full normalized mode set once built |
-| GCP campaign | `scripts/gcp-run.sh` + Terraform ready | — | **credential gated** — provide `-var project=…` |
+Details: [docs/REMAINING-WORK.md](docs/REMAINING-WORK.md).
 
-## Quick start on a fresh machine
+## On a Linux machine
 
-```
-git clone <this repo> && cd bench
-scripts/preflight.sh                 # can THIS host run it, and with which profile?
-scripts/setup.sh [profile]           # build + unit tests + monitoring stack
-./bin/benchrunner run --config configs/normalized/quick-smoke.yaml --platform mock   # no network needed
-```
-
-`preflight.sh` checks tooling, the Docker daemon, and — the part that actually
-bites — whether the host has the CPU/RAM/disk the profile budgets. A run on an
-over-committed host measures swap, not the platform. If `local` (16 GB) does not
-fit, it names one that does; pass that profile everywhere below.
-
-Then one platform end to end:
-
-```
-./bin/benchrunner setup --platform fabric-cft --profile local
-set -a; source deploy/docker/fabric-cft/connection.env; set +a
-./bin/benchrunner run --config configs/normalized/probe-sweep.yaml --platform fabric-cft
-./bin/benchrunner teardown --platform fabric-cft
+```bash
+git clone <this repo> bench && cd bench
+sudo scripts/install-deps.sh        # Docker + compose, Go (from go.mod), jq, PyYAML...
+newgrp docker                       # or log out and in, if you were just added to the group
+scripts/preflight.sh local          # can THIS host run the profile? names one that fits if not
+make all smoke                      # build, unit tests, a mock benchmark with no network
 ```
 
-Or the whole comparison, one platform at a time with full inter-run isolation —
-this is what produces the head-to-head table:
+`install-deps.sh` supports Debian, Ubuntu, Fedora, RHEL/Rocky/Alma and Arch, and
+is safe to re-run. `preflight.sh` checks tooling and whether the host has the
+CPU, RAM and disk the profile budgets: a run on an over-committed host measures
+swap, not the platform.
 
-```
-scripts/run-all.sh configs/normalized/probe-sweep.yaml local fabric-cft fabric-bft drunix
-# -> docs/reports/comparison.html
-```
+Run the comparison: each platform deployed fresh for each config, strictly one at
+a time, torn down after:
 
-Note the Fabric-family platforms (`fabric-cft`, `fabric-bft`, `drunix`) share
-ports and container names, so **only one can be up at a time**; `run-all.sh`
-sequences and isolates them for you.
-
-Bring up / tear down / wipe **everything** at once:
-
-```
-make up-all          # monitoring + one Fabric-family net + fabricx/neuchain (if built)
-make down-all        # stop + remove all platforms + monitoring
-make clean           # + caches, connection.env, results, generated reports  (prompts)
-make clean-images    # + the pulled platform images (~4-6 GB)
+```bash
+make bench PROFILE=local-small      # quick-smoke + probe-sweep on fabric-cft, fabric-bft, drunix
+# or
+scripts/run-all.sh configs/normalized/quick-smoke.yaml,configs/normalized/probe-sweep.yaml \
+    local-small fabric-cft fabric-bft drunix
 ```
 
-Full walkthrough: [docs/guides/quickstart.md](docs/guides/quickstart.md).
+Results land in `results/<platform>/<timestamp>/` (`summary.txt`, `result.json`,
+`manifest.json`, `phases.csv`, a per-run HTML report). The campaign log and a
+comparison of just that campaign's runs go to `results/_campaigns/<id>/`.
+
+One platform by hand:
+
+```bash
+bash deploy/docker/fabric-cft/up.sh local-small
+set -a; . deploy/docker/fabric-cft/connection.env; set +a
+./bin/benchrunner run --config configs/normalized/probe-sweep.yaml --platform fabric-cft --profile local-small
+bash deploy/docker/fabric-cft/down.sh local-small
+```
+
+The Fabric-family platforms share ports, so only one can be up at a time;
+`run-all.sh` sequences them. Walkthrough: [docs/guides/quickstart.md](docs/guides/quickstart.md).
+
+## On GCP
+
+```bash
+cp deploy/terraform/terraform.tfvars.example deploy/terraform/terraform.tfvars   # project, labels, ...
+cp deploy/terraform/backend.hcl.example      deploy/terraform/backend.hcl        # state bucket
+make gcp-plan GCP_PROFILE=gcp-full          # prints the plan, touches nothing
+make gcp      GCP_PROFILE=gcp-full          # runs it
+```
+
+Per platform, `scripts/gcp-run.sh` creates a platform VM and a separate
+load-generator VM (no public IPs, IAP-only SSH, Cloud NAT, OS Login, Shielded VM,
+dedicated least-privilege service account), deploys and runs every config, pulls
+the results back, and destroys the VMs, also on failure or Ctrl-C. Setup,
+required IAM roles, org-policy compatibility and cost:
+[docs/guides/gcp-deployment.md](docs/guides/gcp-deployment.md).
+
+## Profiles
+
+A profile (`deploy/profiles/`) is the resource budget the platform gets. Runs are
+comparable within a profile, never across profiles.
+
+| Profile | Where | Platform budget | Load generator |
+| ------- | ----- | --------------- | -------------- |
+| `local-small` | 13–14 GB workstation | 8 CPU / 8 GB | 2 CPU, same host |
+| `local` | 16 GB workstation | 11 CPU / 11 GB | same host |
+| `gcp-small` | `n2-standard-16` | 13 CPU / 52 GB | `n2-standard-8` VM |
+| `gcp-full` | `n2-standard-32` | 28 CPU / 112 GB | `n2-standard-16` VM |
+
+The budget is the same total for every platform. CPU is split evenly across a
+platform's containers; memory by one role-weight table shared by all platforms
+(`deploy/docker/lib.sh`), because an even split OOM-killed the busiest
+containers. The manifest records every container's limits.
+
+## What makes a result trustworthy
+
+- **T1/T2/T3**: submit entered / platform acknowledged / committed in a block.
+  Throughput counts T3; latency is T3 − *scheduled* send, so a backlog cannot
+  hide overload ([metrics-methodology](docs/architecture/metrics-methodology.md)).
+- **Probe and sweep**: floor latency, step up to saturation, hold at 90% of the
+  measured knee.
+- **Fairness by construction**: normalized runs share state DB, orderer batch
+  parameters, seed, windows and total hardware; native metrics are never compared
+  ([fairness-guarantees](docs/architecture/fairness-guarantees.md)).
+- **Failures are failures**: a container that exits or is OOM-killed stops the
+  run and excludes it from the comparison, and each phase records why its
+  transactions failed.
+- **Reproducible**: upstream sources are pinned by commit or tag, and every run
+  writes a manifest with every fairness lever, versions, the harness commit, and
+  caveats.
 
 ## Layout
 
 ```
 cmd/benchrunner/     CLI: run | suite | report | setup | teardown | list
-pkg/adapters/        PlatformAdapter interface + registry; fabric, drunix, fabricx, neuchain, mock
+pkg/adapters/        PlatformAdapter interface; fabric, drunix, fabricx, neuchain, mock
 pkg/workloads/       normalized workloads: kv-write, kv-read, kv-mixed, transfer
 pkg/loadgen/         key distributions + open/closed-loop generator (coordinated-omission safe)
-pkg/metrics/         per-tx T1/T2/T3 collector, HDR histograms, native scrape, docker-stats sampler
-pkg/harness/         run config, resource profile, engine, manifest, reporter
-chaincodes/kvstore/  Go chaincode for Fabric/Drunix normalized workloads
-deploy/docker/       per-platform Compose topologies + up.sh/down.sh, monitoring stack
-deploy/profiles/     resource budgets: local (16c/16GB host), gcp-small, gcp-full
-deploy/terraform/    GCP infra (main.tf) for the gcp-full campaign
-configs/             reusable run definitions
-scripts/             setup.sh, up-all.sh, down-all.sh, clean.sh, run-all.sh,
-                     gcp-run.sh, neuchain-proto-spike.sh, plot.py
-                     (NeuChain image build: deploy/docker/neuchain/build.sh)
-docs/                architecture, per-platform notes, workloads, 15 ADRs, guides,
-                     REMAINING-WORK.md
+pkg/metrics/         per-tx collector, HDR histograms, container sampler + failure detection
+pkg/harness/         run config, profiles, engine, manifest, reporter, comparison report
+chaincodes/kvstore/  Go chaincode for the Fabric-family normalized workloads
+configs/normalized/  the cross-platform run definitions
+deploy/docker/       per-platform up.sh/down.sh, shared lib.sh, monitoring stack
+deploy/profiles/     resource budgets (and GCP machine types)
+deploy/terraform/    GCP stack per platform run; shared/ for the results bucket
+scripts/             install-deps, preflight, run-all, gcp-run, setup, up/down-all, clean
+docs/                architecture, platforms, workloads, ADRs, guides, REMAINING-WORK
 ```
 
-## Core ideas
+## Development
 
-- **T1/T2/T3** — submit-entered / platform-acknowledged / committed-in-block.
-  Throughput uses **T3**; latency is **T3 − scheduled-send** (not T3 − actual
-  send, so a backlog cannot hide overload). See
-  [docs/architecture/metrics-methodology.md](docs/architecture/metrics-methodology.md).
-- **Probe-and-sweep** — floor latency, step to saturation, hold at 90% of the
-  knee.
-- **Fairness by construction** — identical config for normalized runs (LevelDB,
-  pinned orderer batch params, one seed); platform-native metrics are collected
-  but **never** used in cross-platform comparison. See
-  [docs/architecture/fairness-guarantees.md](docs/architecture/fairness-guarantees.md).
-- **Every run writes a manifest** capturing every fairness lever + versions +
-  git SHA + caveats, so two runs that disagree can be explained.
+```bash
+make all      # build + test + vet
+make lint     # shellcheck + terraform fmt/validate (falls back to their Docker images)
+make help     # every target
+```
 
-## Requirements
-
-Go 1.26+, Docker + compose plugin, `git`, `curl`, `jq`, `python3` (+ `matplotlib`
-for charts, `pyyaml` or `yq` for profile parsing). Drunix needs a source checkout
-(`BENCH_DRUNIX_REPO`). Run `scripts/preflight.sh` — it checks all of these plus
-host capacity and tells you what is missing.
-
-**Host sizing.** Profiles live in `deploy/profiles/`. `local` needs ~14 GB
-(11 GB platform + 2 GB load generator + 1 GB monitoring) on a 16 GB machine;
-`local-small` needs ~11 GB and fits a 13-14 GB host. Every fairness lever
-(orderer batch params, state DB, workload, seed, windows) is identical between
-them — only the resource envelope differs, and the manifest records it. Runs are
-comparable **within** a profile, never across profiles.
-
-Some platforms need more than this repo:
-
-| Platform | Extra requirement |
-| -------- | ----------------- |
-| `fabric-cft` / `fabric-bft` | none — images are pulled on first bring-up |
-| `drunix` | clones `github.com/npci/drunix`; pulls `npcioss/drunix-*` images |
-| `fabricx` | clones `fabric-x-committer` + `fabric-x-orderer` at pinned tags and builds one image serving four roles (~15-20 min, several GB) |
-| `neuchain` | a `bench/neuchain:ev` image from a 45-90 min C++ build (`deploy/docker/neuchain/build.sh`, ~25-30 GB disk, 6-10 GB RAM) |
+CI (`.github/workflows/ci.yml`) runs the Go checks, a mock benchmark, shellcheck,
+Terraform validation, and the installer in clean Debian, Ubuntu, Fedora, Rocky
+and Arch containers.

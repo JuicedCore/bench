@@ -10,7 +10,7 @@ conditions.
 One platform at a time, on identical hardware, with full inter-run isolation
 between platforms:
 
-- `docker compose down` the previous topology + `docker system prune -f`
+- `docker compose down` the previous topology + prune stopped containers and networks
 - drop the page cache (`echo 3 > /proc/sys/vm/drop_caches`)
 - recreate volumes; start from an empty ledger
 - fixed settle delay before load starts

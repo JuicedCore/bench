@@ -154,7 +154,7 @@ and the HTML report:
 ## Inter-run isolation
 
 `scripts/run-all.sh` between every platform run: down the previous topology,
-`docker system prune -f`, drop the page cache, recreate volumes, start from an
+prune stopped containers and networks, drop the page cache, recreate volumes, start from an
 empty ledger. Sequential execution on identical hardware
 ([adr-005](../decisions/adr-005-sequential-runs.md)).
 

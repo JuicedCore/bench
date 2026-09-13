@@ -1,22 +1,19 @@
 # Remaining work
 
-Everything that can be built and verified without a large compute build or
-external credentials is done. What is left is **compute-gated** (a long C++
-build) or **credential-gated** (GCP). Both are pluggable: run the named script or
-provide the named inputs and they proceed.
-
-Status of everything else:
+Status as of 2026-09-13. The harness, three platforms and the GCP tooling are
+done; what is left needs a live run, a long build, or cloud credentials.
 
 | Area | State |
 | ---- | ----- |
-| Core harness (`pkg/…`), CLI, workloads, load gen, metrics, manifest, reporter | done, `go test ./...` green, `go vet` clean |
-| Fabric adapter (`fabric-cft`, `fabric-bft`) | done + **benchmarked live** (2.5.16 Raft, 3.1.5 SmartBFT) |
-| Drunix adapter + deploy (`github.com/npci/drunix`) | done; live network verified end to end (see [§3](#3-drunix-live-run-last-mile)) |
-| Fabric-X adapter (token REST API) | done, matches the **verified** `fabric-x-samples/tokens` API, `httptest`-tested |
-| NeuChain adapter (pure-Go ZMQ + protobuf + RSA) | done, unit-tested (sign, result-frame, tx-build) |
-| Monitoring stack, profiles, configs, ADRs, guides, docs | done |
-| Integration tests (`//go:build integration`) for all four platforms | done (self-skip without a live network) |
-| `docs/reports/comparison.html` | generated from the live cft/bft runs |
+| Core harness (`pkg/…`), CLI, workloads, load gen, metrics, manifest, reporters | done; `go test ./...` green, `go vet` clean |
+| Platform-failure detection (container exit / OOM kill, per-phase errors, report exclusion) | done; verified live on Fabric and Drunix |
+| `fabric-cft`, `fabric-bft` | **benchmarked live** on local-small: smoke + probe-sweep, knee ~1000 / ~500 TPS |
+| `drunix` | smoke live; probe-sweep held to ~500 TPS, then a Committing Peer exited (see [§3](#3-drunix-committing-peer-exit-under-overload)) |
+| `fabricx` | deploy + native gRPC adapter written; **never run live** ([§4](#4-fabric-x--rebuilt-on-the-native-path-not-yet-live-verified)) |
+| `neuchain` | adapter unit-tested; server image **not built** ([§1](#1-neuchain-c-build--compute-gated)) |
+| Portability | `scripts/install-deps.sh` tested in clean Debian 12, Ubuntu 24.04, Fedora 42, Rocky 9, Arch; upstream sources pinned by commit/tag |
+| GCP | Terraform + `scripts/gcp-run.sh` written and validated; **not yet applied to a real project** ([§2](#2-gcp-campaign--credential-gated)) |
+| CI | `.github/workflows/ci.yml`; no git remote configured yet, so it has not run |
 
 ---
 
@@ -107,50 +104,58 @@ KTPS log over the same window (within ~10%). Confirm on a live node that
 
 ## 2. GCP campaign — CREDENTIAL-GATED
 
-### What is left
+### What exists
 
-Run the full benchmark matrix on real multi-VM hardware. Local numbers for
-Fabric-X and NeuChain are not comparable to their published ceilings (Arma and
-NeuChain are scale-out designs — [adr caveat C5](architecture/fairness-guarantees.md));
-`gcp-full` is the only profile that produces quotable figures for them.
+`scripts/gcp-run.sh` with the Terraform stack in `deploy/terraform/`: per platform
+a fresh platform VM and load-generator VM, private networking with IAP and Cloud
+NAT, OS Login, Shielded VM, a least-privilege service account, GCS state, remote
+Docker over mutual TLS, results pulled back and optionally archived to GCS, and
+destroy on exit. Setup and usage: [guides/gcp-deployment.md](guides/gcp-deployment.md).
 
-### The pluggable entry point
+Verified without a project: `terraform validate` on both stacks, `fmt` clean,
+provider lock for four OS/arch pairs, shellcheck clean, `--dry-run` plans, and
+the startup installer in five distro containers.
 
+### Unverified until the first real campaign
+
+- The startup script completing on the Debian 12 image under a real metadata
+  server, and the `/var/lib/bench/ready` wait.
+- `gcloud compute ssh --tunnel-through-iap` with OS Login and `usermod -aG docker`
+  taking effect on the next session.
+- The mutual-TLS Docker API: dockerd restarting with the drop-in, and
+  `docker stats` / `docker events` from the load generator.
+- Crypto material copied to the load generator, and the Fabric TLS server-name
+  override working against the platform VM's private IP.
+
+The first campaign should be one platform with quick-smoke only:
+
+```bash
+scripts/gcp-run.sh --project "$PROJECT" --profile gcp-small --platforms fabric-cft \
+  --configs configs/normalized/quick-smoke.yaml --local-state --keep
 ```
-# one platform at a time (adr-005 - sequential runs)
-scripts/gcp-run.sh fabric-cft configs/normalized/probe-sweep.yaml gcp-full -var project=YOUR_PROJECT
-```
 
-`scripts/gcp-run.sh` does the whole cycle: `terraform apply` (node VMs + a
-separate load-generator VM + a monitoring VM), rsync the repo + a
-linux/amd64 `benchrunner` to the load-gen VM, run `deploy/docker/<p>/up.sh` on
-node-0 over `gcloud compute ssh`, rewrite `connection.env` (`localhost` → node
-internal IP), run the benchmark from the load-gen VM, pull `results/` back, then
-`terraform destroy` (set `KEEP=1` to leave infra up between runs; `IAP=1` to
-tunnel SSH through Identity-Aware Proxy).
+### Known limit: one platform VM
 
-`deploy/terraform/main.tf` is complete: network, firewall, `n2-standard-8` node
-VMs, `n2-standard-4` load-gen VM, `e2-standard-4` monitoring VM (reusable via
-`-var keep_monitoring=true`), Docker startup script, outputs.
-
-### Why it cannot be done here
-
-- Needs a **GCP project with billing enabled**, `gcloud` authenticated, and
-  Compute Engine + IAP quota. None of that exists in this environment and it is
-  the user's to provide.
-- `gcp-full` provisions ~40 vCPU / 168 GB per platform run; a full campaign
-  (5 configs × several workloads, sequential) is hours of paid compute.
-- The Terraform + orchestration is written and syntax-checked; it just needs
-  `-var project=…` and credentials.
-
-### Before the first real run
-
-Tighten `google_compute_firewall.ssh.source_ranges` in `main.tf` from
-`0.0.0.0/0` to your IP (or set `IAP=1` and drop the public SSH rule).
+Each platform runs on one VM, because the deploy scripts are single-Docker-host.
+That is fair across platforms but understates scale-out designs (Fabric-X,
+NeuChain) relative to their published multi-host figures. Multi-host deploys need
+per-platform work: overlay networking, crypto distribution, and node placement.
 
 ---
 
-## 3. Drunix write path — BLOCKED ON DRUNIX UPSTREAM (a client SDK / CP fix)
+## 3. Drunix Committing Peer exit under overload
+
+On local-small (2026-09-13, `results/drunix/20260913-141848`) Drunix held 100–500
+TPS, failed 1000 and 2000, and `cp.org2` exited with code 2 during sweep-2000. The
+kernel logged no OOM kill, so it is not the memory limit; exit code 2 is typically
+a Go panic. The harness stopped the run as designed. Its logs were removed at
+teardown, so the cause is unknown.
+
+Next step: capture the last log lines of a failed container into `result.json`
+before teardown, then rerun the Drunix probe-sweep. On GCP, `--keep` leaves the
+VM up with the container for inspection.
+
+## 3a. Drunix write path — resolved (history)
 
 This is a **third category** — not compute, not GCP, but a genuine upstream
 gap in `github.com/npci/drunix`.
@@ -317,7 +322,7 @@ Unverified until that happens:
 - whether the exported namespace key is the one the committer validates against.
 
 A known-good reference deployment lives at
-`~/Projects/NeuChain/harness/fabric-x/` (~69 recorded runs,
+a separate NeuChain research harness (`harness/fabric-x/` in that repo; ~69 recorded runs,
 saturation knee around 1500 offered TPS on this host). Its workload is Blockbench
 SmallBank and it tunes blocks to 50 ms / 50 tx to match NeuChain, so its numbers
 are not ours — but it is the recipe this was rebuilt from and the place to check

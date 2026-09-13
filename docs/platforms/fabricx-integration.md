@@ -97,7 +97,7 @@ Two hard prerequisites that fail silently if missed:
 ## Known-good reference
 
 A complete working Fabric-X deployment exists at
-`~/Projects/NeuChain/harness/fabric-x/` (5 containers from one
+the NeuChain research harness (`harness/fabric-x/` in that repo; 5 containers from one
 image, ~69 recorded runs, saturation knee around 1500 offered TPS on this host).
 It is the recipe this integration is rebuilt from. Its workload is Blockbench
 SmallBank, not our normalized set, so its numbers are not directly comparable to
