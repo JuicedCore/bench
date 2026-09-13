@@ -1,0 +1,67 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  go:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+      - name: gofmt
+        run: test -z "$(gofmt -s -l $(git ls-files '*.go'))" || { gofmt -s -l $(git ls-files '*.go'); exit 1; }
+      - run: go vet ./...
+      - run: go test ./...
+      - name: mock benchmark end to end
+        run: make smoke
+
+  shell:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: shellcheck
+        run: shellcheck -S warning $(git ls-files '*.sh')
+      - name: install-deps default Go matches go.mod
+        # The GCP startup script runs install-deps.sh outside the checkout, where it
+        # falls back to its built-in default.
+        run: |
+          want="$(awk '/^go /{print $2; exit}' go.mod)"
+          have="$(sed -n 's/^GO_VERSION="\${GO_VERSION:-\(.*\)}"$/\1/p' scripts/install-deps.sh)"
+          [ "$want" = "$have" ] || { echo "install-deps.sh defaults to Go $have, go.mod wants $want"; exit 1; }
+
+  install-deps:
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        image: ["debian:12", "ubuntu:24.04", "fedora:42", "rockylinux:9", "archlinux:latest"]
+    steps:
+      - uses: actions/checkout@v4
+      - name: install into a clean ${{ matrix.image }}
+        run: |
+          docker run --rm -v "$PWD:/repo:ro" "${{ matrix.image }}" bash -c '
+            bash /repo/scripts/install-deps.sh --no-service &&
+            /usr/local/go/bin/go version &&
+            docker compose version &&
+            python3 -c "import yaml" && jq --version'
+
+  terraform:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.9.8"
+      - run: terraform -chdir=deploy/terraform fmt -check -recursive
+      - run: terraform -chdir=deploy/terraform init -backend=false -input=false
+      - run: terraform -chdir=deploy/terraform validate
+      - run: terraform -chdir=deploy/terraform/shared init -backend=false -input=false
+      - run: terraform -chdir=deploy/terraform/shared validate

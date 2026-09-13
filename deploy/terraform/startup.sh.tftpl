@@ -1,0 +1,15 @@
+#!/bin/bash
+# Rendered by Terraform into the VM's startup-script metadata. Runs on every boot;
+# install-deps.sh is idempotent, and --tune re-applies settings that do not
+# survive a reboot (transparent huge pages).
+set -euo pipefail
+mkdir -p /var/lib/bench
+rm -f /var/lib/bench/ready
+cat > /var/lib/bench/install-deps.sh <<'INSTALL_DEPS_EOF'
+${install_deps}
+INSTALL_DEPS_EOF
+if bash /var/lib/bench/install-deps.sh --tune > /var/log/bench-install.log 2>&1; then
+  date -u +%FT%TZ > /var/lib/bench/ready
+else
+  echo "install-deps failed; see /var/log/bench-install.log" > /var/lib/bench/failed
+fi

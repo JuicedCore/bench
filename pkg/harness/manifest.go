@@ -97,7 +97,11 @@ func (m *Manifest) Write(path string) error {
 }
 
 // harnessGitSHA returns the current commit of the harness repo, or "unknown".
+// BENCH_HARNESS_GIT_SHA wins: scripts/gcp-run.sh ships the tree without .git.
 func harnessGitSHA() string {
+	if v := strings.TrimSpace(os.Getenv("BENCH_HARNESS_GIT_SHA")); v != "" {
+		return v
+	}
 	out, err := exec.Command("git", "rev-parse", "--short", "HEAD").Output()
 	if err != nil {
 		return "unknown"

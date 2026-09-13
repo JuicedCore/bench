@@ -1,0 +1,8 @@
+# Copy to backend.hcl (gitignored) and run:
+#   terraform init -backend-config=backend.hcl
+#
+# The bucket must already exist. Recommended: versioning on, uniform access, in a
+# project the benchmark operators can read and the CI identity can write.
+# scripts/gcp-run.sh keeps one Terraform workspace per platform in this prefix.
+bucket = "my-org-terraform-state"
+prefix = "bench"

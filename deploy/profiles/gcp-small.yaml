@@ -1,11 +1,19 @@
-# Single-VM GCP profile: one n2-standard-16 (16 vCPU / 64 GB) per platform run,
-# load generator on a separate n2-standard-8, monitoring on an e2-standard-4.
-# Same topology as local but with real memory headroom.
+# GCP profile, mid-size: the platform on one n2-standard-16 (16 vCPU / 64 GB), the
+# load generator on its own n2-standard-8. Driven by scripts/gcp-run.sh, which
+# sizes the VMs from the `gcp:` block below so hardware and budget cannot drift.
+#
+# The budget leaves 3 vCPU / 12 GB of the platform VM for the OS, Docker and the
+# monitoring stack, so the platform's limits are never overcommitted.
 name: gcp-small
 budget:
   total_cpus: 13
   total_memory_gb: 52
   load_gen_cpus: 8
+
+gcp:
+  sut_machine_type: n2-standard-16
+  loadgen_machine_type: n2-standard-8
+  sut_disk_gb: 200
 
 _orderer_batch_normalized: &orderer_batch_normalized
   max_message_count: 100

@@ -11,3 +11,15 @@ __pycache__/
 /chaincodes/*/vendor/
 deploy/docker/.cache/
 /report.html
+
+# Terraform: state, local config and credentials never belong in git.
+# The provider lock files (.terraform.lock.hcl) DO - they pin provider builds.
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfplan
+crash.log
+deploy/terraform/backend.hcl
+deploy/terraform/*.tfvars
+!deploy/terraform/*.tfvars.example
+deploy/terraform/local_backend_override.tf

@@ -4,8 +4,17 @@ GO       ?= go
 BIN      := bin/benchrunner
 PKG      := ./...
 
+# Campaign settings, overridable: make bench PROFILE=local-small PLATFORMS="fabric-cft drunix"
+PROFILE   ?= local
+PLATFORMS ?= fabric-cft fabric-bft drunix
+CONFIGS   ?= configs/normalized/quick-smoke.yaml,configs/normalized/probe-sweep.yaml
+SINCE     ?= 24h
+PROJECT   ?=
+GCP_PROFILE ?= gcp-small
+
 .PHONY: all build test vet fmt tidy smoke clean clean-images monitoring-up monitoring-down \
-        chaincode integration up-all down-all help
+        chaincode integration up-all down-all help deps preflight bench report lint \
+        gcp-plan gcp
 
 all: build test vet ## build + test + vet
 
@@ -18,8 +27,8 @@ test: ## run unit tests
 vet: ## go vet
 	$(GO) vet $(PKG)
 
-fmt: ## gofmt -s -w
-	gofmt -s -w $(shell find . -name '*.go' -not -path './*/vendor/*')
+fmt: ## gofmt -s -w (tracked files only - never the upstream sources under .cache/)
+	gofmt -s -w $(shell git ls-files '*.go')
 
 tidy: ## go mod tidy (root + chaincode)
 	$(GO) mod tidy
@@ -34,6 +43,36 @@ smoke: build ## run a no-network mock benchmark
 	./$(BIN) run --config /tmp/bench-mock/run.yaml
 	@cat /tmp/bench-mock/results/mock/*/summary.txt
 
+deps: ## install Docker, Go, and tools on this Linux host (sudo)
+	sudo scripts/install-deps.sh
+
+preflight: ## check this host can run PROFILE
+	bash scripts/preflight.sh $(PROFILE)
+
+bench: ## deploy, run CONFIGS on PLATFORMS sequentially, report (PROFILE, PLATFORMS, CONFIGS)
+	bash scripts/run-all.sh $(CONFIGS) $(PROFILE) $(PLATFORMS)
+
+report: build ## comparison report of runs since SINCE (date, RFC3339, or duration)
+	./$(BIN) report --results-dir results --output docs/reports/comparison.html --since $(SINCE)
+	@echo "wrote docs/reports/comparison.html"
+
+lint: ## shellcheck + terraform fmt/validate (uses local tools, else their Docker images)
+	@if command -v shellcheck >/dev/null; then SC=shellcheck; else SC="docker run --rm -v $(CURDIR):/mnt -w /mnt koalaman/shellcheck:stable"; fi; \
+	  $$SC -S warning $$(git ls-files '*.sh')
+	@if command -v terraform >/dev/null; then \
+	  terraform -chdir=deploy/terraform fmt -check -recursive && \
+	  terraform -chdir=deploy/terraform init -backend=false -input=false >/dev/null && terraform -chdir=deploy/terraform validate; \
+	else \
+	  docker run --rm -u $$(id -u):$$(id -g) -e HOME=/tmp -v $(CURDIR):/repo -w /repo/deploy/terraform --entrypoint sh hashicorp/terraform:1.9 -c \
+	    'terraform fmt -check -recursive && terraform init -backend=false -input=false >/dev/null && terraform validate; rc=$$?; rm -rf .terraform; exit $$rc'; \
+	fi
+
+gcp-plan: ## print what a GCP campaign would do (PROJECT, GCP_PROFILE, PLATFORMS)
+	bash scripts/gcp-run.sh --dry-run --profile $(GCP_PROFILE) --platforms "$(PLATFORMS)" $(if $(PROJECT),--project $(PROJECT))
+
+gcp: ## run a GCP campaign: fresh VMs per platform, destroyed after (PROJECT, GCP_PROFILE, PLATFORMS)
+	bash scripts/gcp-run.sh --profile $(GCP_PROFILE) --platforms "$(PLATFORMS)" $(if $(PROJECT),--project $(PROJECT))
+
 integration: build ## run integration tests (needs BENCH_ADAPTER_* env from a live network)
 	$(GO) test -tags integration -run Integration -v ./pkg/adapters/...
 
@@ -44,10 +83,10 @@ monitoring-down:
 	bash deploy/docker/monitoring/down.sh
 
 up-all: build ## monitoring + one Fabric-family net + fabricx/neuchain if their images exist
-	bash scripts/up-all.sh local $(FABRIC)
+	bash scripts/up-all.sh $(PROFILE) $(FABRIC)
 
 down-all: ## stop + remove every platform + monitoring (keeps images/caches/results)
-	bash scripts/down-all.sh local
+	bash scripts/down-all.sh $(PROFILE)
 
 clean: ## FULL local wipe (containers, volumes, caches, connection.env, results); prompts
 	bash scripts/clean.sh

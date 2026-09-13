@@ -7,6 +7,7 @@ package harness
 import (
 	"fmt"
 	"os"
+	"strings"
 	"time"
 
 	"gopkg.in/yaml.v3"
@@ -183,6 +184,12 @@ func (c *RunConfig) applyDefaults() {
 	}
 	if c.System.SampleInterval == 0 {
 		c.System.SampleInterval = Duration(time.Second)
+	}
+	// When the load generator is not the platform host (scripts/gcp-run.sh runs
+	// benchrunner on a separate VM), Prometheus lives on the platform host. The
+	// environment names it there without editing the shared normalized configs.
+	if v := strings.TrimSpace(os.Getenv("BENCH_PROMETHEUS_URL")); v != "" {
+		c.System.PrometheusURL = v
 	}
 	if c.System.Enabled && c.System.PrometheusURL == "" {
 		c.System.PrometheusURL = "http://localhost:9090"

@@ -1,0 +1,24 @@
+# Copy to terraform.tfvars (gitignored). scripts/gcp-run.sh sets platform,
+# profile and the machine types from deploy/profiles/<profile>.yaml; set the
+# rest here.
+
+project = "my-gcp-project"
+region  = "us-central1"
+zone    = "us-central1-a"
+
+# Pin the CPU generation so campaigns months apart run on the same silicon.
+# min_cpu_platform = "Intel Ice Lake"
+
+labels = {
+  owner       = "platform-benchmarks"
+  cost-center = "research"
+}
+
+# --- Existing (Shared) VPC instead of a dedicated one ---------------------------
+# network    = "projects/host-project/global/networks/shared-vpc"
+# subnetwork = "projects/host-project/regions/us-central1/subnetworks/bench"
+# create_nat = false   # if the shared VPC already has egress
+
+# --- Existing service account and customer-managed encryption -------------------
+# service_account_email = "bench-vms@my-gcp-project.iam.gserviceaccount.com"
+# kms_key_self_link     = "projects/kms-project/locations/us-central1/keyRings/bench/cryptoKeys/disks"

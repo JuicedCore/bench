@@ -1,19 +1,29 @@
-# Multi-VM GCP profile: 4x n2-standard-8 node VMs (8 vCPU / 32 GB each) per
-# platform, 1x n2-standard-4 load generator, 1x e2-standard-4 monitoring.
-# Run platforms strictly sequentially on identical hardware
-# (docs/decisions/adr-005-sequential-runs.md). This is the profile for numbers
-# that can be quoted against published ceilings.
+# GCP profile, large: the platform on one n2-standard-32 (32 vCPU / 128 GB), the
+# load generator on its own n2-standard-16. Driven by scripts/gcp-run.sh, which
+# sizes the VMs from the `gcp:` block below so hardware and budget cannot drift.
+#
+# One VM, not several: the deploy scripts run each platform on a single Docker
+# host (docs/guides/gcp-deployment.md explains what that means for the scale-out
+# designs). The budget leaves 4 vCPU / 16 GB for the OS, Docker and monitoring.
+#
+# Block cutting is the same normalized anchor as every other profile (adr-011), so
+# the shape of a curve measured here can be compared with one measured locally.
 name: gcp-full
 budget:
-  total_cpus: 32
-  total_memory_gb: 128
-  load_gen_cpus: 4
+  total_cpus: 28
+  total_memory_gb: 112
+  load_gen_cpus: 16
+
+gcp:
+  sut_machine_type: n2-standard-32
+  loadgen_machine_type: n2-standard-16
+  sut_disk_gb: 300
 
 _orderer_batch_normalized: &orderer_batch_normalized
-  max_message_count: 500
-  absolute_max_bytes: "99 MB"
+  max_message_count: 100
+  absolute_max_bytes: "10 MB"
   preferred_max_bytes: "2 MB"
-  batch_timeout: "500ms"
+  batch_timeout: "1s"
 
 platforms:
   fabric-cft:
@@ -30,11 +40,9 @@ platforms:
     orderer_batch: *orderer_batch_normalized
   fabricx:
     nodes: {arma: 1, postgres: 1, pipeline: 1, committer: 1}
-    load_gen_cpus: 16
     state_db: leveldb
     orderer_batch: *orderer_batch_normalized
   neuchain:
     nodes: {block_server: 4, epoch_server: 1}
-    load_gen_cpus: 16
     state_db: leveldb
     orderer_batch: {}
