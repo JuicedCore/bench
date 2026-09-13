@@ -155,7 +155,17 @@ if [ "$NETWORK_SH_DB" = "leveldb" ]; then
   docker compose -f "$KEYDB_COMPOSE" up -d
   sleep 4
 fi
-./network.sh up createChannel -c "$CHANNEL" -s "$NETWORK_SH_DB"
+# network.sh starts YugabyteDB and the peers together, and a peer whose ledger
+# provider cannot reach YSQL (:5433) panics instead of waiting - seen as
+# "failed to connect to user=yugabyte ... connection refused" and every peer
+# Exited (2). Retry the bring-up rather than failing the whole run on that race.
+for attempt in 1 2 3; do
+  ./network.sh up createChannel -c "$CHANNEL" -s "$NETWORK_SH_DB" && break
+  [ "$attempt" = 3 ] && die "drunix network did not come up after 3 attempts"
+  warn "drunix bring-up attempt ${attempt} failed (peers racing YugabyteDB start-up?); retrying"
+  ./network.sh down || true
+  sleep 10
+done
 
 # Drunix's LP -> orderer -> CP -> stateless-VSCC path makes the first lifecycle
 # tx slower than stock Fabric. The peer CLI's commit-wait uses

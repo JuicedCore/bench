@@ -79,7 +79,7 @@ union `adapter:` block, whose irrelevant keys each adapter ignores.
 | World-state DB | LevelDB requested everywhere; the DB **actually used** is recorded | `PlatformTopo.EffectiveStateDB(true)` sets `state_db_requested`; deploy scripts export `BENCH_ACTUAL_STATE_DB` into `state_db`. When they differ the run carries an automatic caveat — see below |
 | Orderer batch params (Fabric family) | identical `max_message_count`, `batch_timeout`, `preferred/absolute_max_bytes` across fabric-cft, fabric-bft, drunix, fabricx | `deploy/profiles/*.yaml` `orderer_batch`; recorded in manifest |
 | Workload | same normalized workload, same key space, same distribution, same value size | `workloads.New` from the run config |
-| Resource budget | the profile's **total** CPU/memory, split evenly across the platform's real containers (no swap) | `lib.sh apply_budget` in every `up.sh`; manifest records containers, per-container and total; unreported budget is caveated |
+| Resource budget | the profile's **total** CPU/memory across the platform's real containers (no swap). CPU is split evenly; memory is split by role weight - peer 4, state DB 4, orderer 2, everything else 1 - from one table shared by every platform. An even memory split OOM-killed the Fabric gateway peer and Drunix's YugabyteDB while chaincode and KeyDB containers used a fraction of their share | `lib.sh apply_budget` in every `up.sh`; manifest records containers, CPU each, `resource_memory_by_container`, `resource_memory_weights` and totals; unreported budget is caveated |
 | RNG seed | one `seed` drives every KeyGen and the read/write chooser | manifest records it |
 | Warmup / cooldown | fixed 30 s / 15 s (configurable, but the same for every platform in a comparison) | `metrics.Window` |
 | Load mode + target | identical `load:` block | one shared config file per mode |
@@ -170,3 +170,10 @@ A run is invalid if any of:
   reading quoted as a saturation figure)
 - a probe-sweep's `saturation_tps` is the top of the ladder (the platform never
   saturated; that figure is a lower bound, not a knee)
+- the headline phase committed nothing. `invariant_ok` is accounting only and
+  still holds when every transaction failed, so a 0 TPS headline is a broken run,
+  not a measurement
+- `manifest.container_failures` is non-empty: a platform container exited or had
+  a process OOM-killed mid-run. The engine stops at the end of that phase, runs
+  nothing further, and records no headline; the per-phase `errors` in
+  `result.json` and the `summary.txt` say what failed

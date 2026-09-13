@@ -28,7 +28,7 @@ selects the adapter), so these values are literally the same bytes for everyone.
 | Measurement windows | 30 s warmup / 15 s cooldown; **quick-smoke is 5 s / 3 s** (a 30 s phase cannot carry a 30 s warmup) | `configs/normalized/*.yaml` |
 | Finality timeout | 60 s | `configs/normalized/*.yaml` |
 | Load generators | same count for every platform in a normalized run (generator *i* uses seed + *i*, so a different count would mean a different key sequence) | `generatorCount` in `pkg/harness/engine.go` |
-| Hardware | the profile's **total** budget (local-small: 8 CPU / 8 GB), split evenly across each platform's real containers, no swap | `apply_budget` in `deploy/docker/lib.sh`; recorded in the manifest |
+| Hardware | the profile's **total** budget (local-small: 8 CPU / 8 GB) across each platform's real containers, no swap: CPU split evenly, memory split by one role-weight table for every platform (peer 4, state DB 4, orderer 2, other 1) | `apply_budget` / `memory_role` in `deploy/docker/lib.sh`; per-container memory and weights recorded in the manifest |
 | Commit timestamp (T3) | when the block carrying the transaction is observed, never when a caller happens to ask | block-event listeners in each adapter |
 | Load generator scheduling | submission never waits on finality observation | `pkg/loadgen/generator.go` |
 
