@@ -68,6 +68,7 @@ while IFS= read -r p; do
   MOPTS+=("--go_opt=M${rel}=${GO_PKG}")
 done < <(cd "$DEST" && find . -name '*.proto')
 
+# shellcheck disable=SC2046  # one argument per .proto file is intended
 ( cd "$DEST" && protoc -I . \
     --go_out=. --go_opt=paths=source_relative "${MOPTS[@]}" \
     $(find . -name '*.proto') ) || {

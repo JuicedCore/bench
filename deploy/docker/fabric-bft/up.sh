@@ -8,7 +8,7 @@ HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 FABRIC_VERSION="${FABRIC_VERSION:-3.1.5}"
 FABRIC_CA_VERSION="${FABRIC_CA_VERSION:-1.5.22}"
-SAMPLES_REF="${SAMPLES_REF:-main}"
+SAMPLES_REF="${SAMPLES_REF:-134c582ac1c105965b3d554874a28fc80ec592f1}"  # fabric-samples main @ 2026-09-08; no per-version tags after v2.4.9
 CHANNEL="${CHANNEL:-mychannel}"
 CC_NAME="kvstore"
 CC_SRC="${REPO_ROOT}/chaincodes/kvstore"
@@ -45,7 +45,7 @@ open(path,'w').write(s)
 PY
 done
 
-cd "${SAMPLES}/test-network"
+cd "${SAMPLES}/test-network" || exit 1
 ./network.sh down || true
 drop_caches
 # -bft selects the SmartBFT ordering service (4 orderers).

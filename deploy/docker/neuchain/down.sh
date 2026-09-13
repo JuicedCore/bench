@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 source "$(dirname "${BASH_SOURCE[0]}")/../lib.sh"
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-cd "$HERE"
+cd "$HERE" || exit 1
 docker compose down "${@:2}" 2>/dev/null || true
 rm -f "${HERE}/connection.env"
 drop_caches

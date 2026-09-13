@@ -21,7 +21,8 @@ need docker; need git; need jq
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 DRUNIX_REPO="${BENCH_DRUNIX_REPO:-https://github.com/npci/drunix.git}"
-DRUNIX_REF="${BENCH_DRUNIX_REF:-main}"
+# Pinned by commit: Drunix publishes no release tags, and main moves.
+DRUNIX_REF="${BENCH_DRUNIX_REF:-ddc0eae778158d3f8a96605cfeda383ae5eafcfc}"
 CACHE="${HERE}/.cache"
 SRC="${CACHE}/drunix"
 CHANNEL="${CHANNEL:-mychannel}"
@@ -31,14 +32,13 @@ CC_SRC="${REPO_ROOT}/chaincodes/kvstore"
 mkdir -p "$CACHE"
 if [ -d "$DRUNIX_REPO/drunix-network" ]; then
   SRC="$DRUNIX_REPO"                                   # local checkout supplied
-elif [ ! -d "$SRC/.git" ]; then
-  log "cloning Drunix ${DRUNIX_REPO} @ ${DRUNIX_REF}"
-  git clone --depth 1 --branch "$DRUNIX_REF" "$DRUNIX_REPO" "$SRC"
+else
+  git_checkout_pinned "$DRUNIX_REPO" "$SRC" "$DRUNIX_REF"
 fi
 
 NET="${SRC}/drunix-network/test-network"
 [ -d "$NET" ] || die "expected ${NET} - check the Drunix repo layout"
-cd "$NET"
+cd "$NET" || exit 1
 
 STATE_DB="$(state_db drunix)"          # "leveldb" for normalized runs, else profile value
 log "drunix state_db=${STATE_DB}"
@@ -201,7 +201,7 @@ BENCH_ADAPTER_TLS_CA_CERT_PATH=${ORG1}/peers/peer0.org1.example.com/tls/ca.crt
 BENCH_ADAPTER_CHANNEL=${CHANNEL}
 BENCH_ADAPTER_CHAINCODE=${CC_NAME}
 BENCH_ADAPTER_METRICS_ENDPOINT=http://localhost:9444/metrics
-BENCH_PLATFORM_VERSION=drunix-${DRUNIX_REF}
+BENCH_PLATFORM_VERSION=drunix-${DRUNIX_REF:0:12}
 # The state DB this network ACTUALLY came up on. The harness records it as
 # manifest.state_db alongside the requested value, so a normalized run cannot
 # silently claim LevelDB parity it does not have.

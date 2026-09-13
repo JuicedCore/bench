@@ -76,7 +76,7 @@ type kv struct {
 	forceWrite bool
 }
 
-func (w *kv) Name() string       { return w.name }
+func (w *kv) Name() string        { return w.name }
 func (w *kv) KeyFor(i int) string { return fmt.Sprintf("key-%09d", i) }
 
 func (w *kv) Next(seq uint64) *adapters.Transaction {

@@ -56,6 +56,39 @@ platform_field() {
   yaml_get "$PROFILE_FILE" ".platforms.${platform}.${path}"
 }
 
+# git_checkout_pinned <url> <dir> <ref>
+#
+# Check out <ref> - a commit SHA, tag or branch - into <dir>, reusing an existing
+# checkout when it is already there. Pin upstream sources by SHA: a branch such as
+# `main` moves, so a clone made on another machine next month is a different
+# platform build than the one the recorded results came from. `git clone --branch`
+# cannot take a SHA, hence init + fetch.
+git_checkout_pinned() {
+  local url="$1" dir="$2" ref="$3" n
+  if [ -d "${dir}/.git" ]; then
+    local head want
+    head="$(git -C "$dir" rev-parse HEAD 2>/dev/null || true)"
+    want="$(git -C "$dir" rev-parse -q --verify "${ref}^{commit}" 2>/dev/null || true)"
+    if [ -n "$head" ] && [ "$head" = "$want" ]; then
+      return 0
+    fi
+    warn "$(basename "$dir") is at ${head:-nothing}, want ${ref} - refetching"
+  else
+    rm -rf "$dir"
+    mkdir -p "$dir"
+    git -C "$dir" init -q
+    git -C "$dir" remote add origin "$url"
+  fi
+  for n in 1 2 3; do
+    log "fetching $(basename "$dir") @ ${ref} (attempt ${n})"
+    if git -C "$dir" fetch -q --depth 1 origin "$ref"; then
+      git -C "$dir" checkout -q --force FETCH_HEAD && return 0
+    fi
+    sleep 5
+  done
+  die "could not fetch ${url} @ ${ref}"
+}
+
 # fabric_samples_bootstrap <fabric_version> <ca_version> [samples_ref]
 # Ensures a shared fabric-samples checkout at deploy/docker/.cache/fabric-samples
 # with the given Fabric binary/config version installed. Re-installs bin+config
@@ -64,28 +97,17 @@ platform_field() {
 # test-network scripts). Echoes the samples dir. Retries the clone on flaky
 # networks.
 fabric_samples_bootstrap() {
-  local fver="$1" caver="$2" ref="${3:-main}"
+  local fver="$1" caver="$2" ref="${3:?fabric-samples ref required}"
   local samples="${REPO_ROOT}/deploy/docker/.cache/fabric-samples"
   mkdir -p "${REPO_ROOT}/deploy/docker/.cache"
 
-  if [ ! -d "${samples}/.git" ]; then
-    local n
-    for n in 1 2 3; do
-      log "cloning fabric-samples @ ${ref} (attempt ${n})"
-      rm -rf "$samples"
-      if git clone --depth 1 --branch "$ref" https://github.com/hyperledger/fabric-samples.git "$samples"; then
-        break
-      fi
-      [ "$n" = 3 ] && die "fabric-samples clone failed after 3 attempts"
-      sleep 5
-    done
-  fi
+  git_checkout_pinned https://github.com/hyperledger/fabric-samples.git "$samples" "$ref" >&2
 
   local have=""
   [ -f "${samples}/bin/.fabricver" ] && have="$(cat "${samples}/bin/.fabricver")"
   if [ ! -x "${samples}/bin/peer" ] || [ ! -f "${samples}/config/core.yaml" ] || [ "$have" != "$fver" ]; then
     log "installing Fabric ${fver} binaries + config (had: ${have:-none})"
-    rm -rf "${samples}/bin" "${samples}/config" "${samples}/builders"
+    rm -rf "${samples:?}/bin" "${samples:?}/config" "${samples:?}/builders"
     mkdir -p "${samples}/bin" "${samples}/config"
     # Resumable, retrying downloads - install-fabric.sh's plain curl chokes on a
     # flaky link mid-tarball.
@@ -100,7 +122,7 @@ fabric_samples_bootstrap() {
     [ -f "${samples}/config/core.yaml" ] || die "fabric ${fver} tarball did not contain config/core.yaml"
     # Docker images (per-layer resume is robust); tolerate transient failure.
     log "pulling Fabric ${fver} docker images"
-    ( cd "$samples" && curl -sSL https://raw.githubusercontent.com/hyperledger/fabric/main/scripts/install-fabric.sh \
+    ( cd "$samples" && curl -sSL "https://raw.githubusercontent.com/hyperledger/fabric/v${fver}/scripts/install-fabric.sh" \
         | bash -s -- --fabric-version "$fver" --ca-version "$caver" docker ) >&2 || warn "image pull returned non-zero; continuing"
     echo "$fver" > "${samples}/bin/.fabricver"
   fi

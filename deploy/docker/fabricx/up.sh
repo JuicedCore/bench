@@ -62,7 +62,7 @@ docker build \
   --build-arg "BENCH_BATCH_MAX_MESSAGE_COUNT=${MMC}" \
   -t "$IMAGE" -f "${HERE}/image/Dockerfile" "$HERE"
 
-cd "$HERE"
+cd "$HERE" || exit 1
 docker compose down -v >/dev/null 2>&1 || true
 drop_caches
 

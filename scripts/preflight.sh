@@ -1,7 +1,10 @@
 #!/usr/bin/env bash
 # Preflight: is THIS machine able to run the benchmark, and with which profile?
 #
-#   scripts/preflight.sh [profile]        # default: local
+#   scripts/preflight.sh [--remote-loadgen] [profile]        # default: local
+#
+# --remote-loadgen: the load generator runs on another machine (scripts/gcp-run.sh
+# puts it on its own VM), so only the platform budget and monitoring must fit here.
 #
 # Checks tooling, the Docker daemon, and - the part that actually bites - whether
 # the host has the CPU/RAM/disk the chosen profile budgets. A benchmark run on an
@@ -12,7 +15,9 @@
 # suspect (over-committed or under-resourced); re-run with a smaller profile.
 set -uo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-cd "$ROOT"
+cd "$ROOT" || exit 1
+REMOTE_LOADGEN=0
+if [ "${1:-}" = "--remote-loadgen" ]; then REMOTE_LOADGEN=1; shift; fi
 PROFILE="${1:-local}"
 PROFILE_FILE="deploy/profiles/${PROFILE}.yaml"
 
@@ -57,8 +62,9 @@ docker info >/dev/null 2>&1 && ok "docker daemon reachable" \
 
 # Optional python deps. yaml has a yq fallback chain in deploy/docker/lib.sh, so
 # it is only a warning; matplotlib only affects charts inside the per-run report.
+# The capacity checks below read the profile with PyYAML.
 python3 -c 'import yaml' 2>/dev/null && ok "python3 yaml" \
-  || warn "python3 yaml missing (lib.sh falls back to yq, or downloads one)"
+  || fail "python3 yaml (PyYAML) missing - run: sudo scripts/install-deps.sh"
 python3 -c 'import matplotlib' 2>/dev/null && ok "python3 matplotlib" \
   || warn "python3 matplotlib missing - per-run reports render without charts"
 
@@ -69,6 +75,7 @@ sudo -n true 2>/dev/null && ok "passwordless sudo (page-cache drop between runs)
 echo
 echo "== host vs profile '${PROFILE}' =="
 [ -f "$PROFILE_FILE" ] || { fail "no such profile: $PROFILE_FILE"; echo; red "NOT READY"; exit 1; }
+python3 -c 'import yaml' 2>/dev/null || { echo; red "NOT READY - ${blockers} blocker(s)"; exit 1; }
 
 host_cores=$(nproc)
 host_mem_gb=$(awk '/MemTotal/{printf "%.1f", $2/1048576}' /proc/meminfo)
@@ -88,15 +95,17 @@ EOF
 # Monitoring (Prometheus/Grafana/cAdvisor/node_exporter) is ~1 core / 1 GB and
 # runs alongside every benchmark.
 mon_cpus=1; mon_mem=1
+lg_mem=2
+if [ "$REMOTE_LOADGEN" = 1 ]; then want_loadgen=0; lg_mem=0; fi
 need_cpus=$(python3 -c "print(f'{$want_cpus + $want_loadgen + $mon_cpus:.1f}')")
-need_mem=$(python3 -c "print(f'{$want_mem + $want_loadgen*0 + 2 + $mon_mem:.1f}')")
+need_mem=$(python3 -c "print(f'{$want_mem + $lg_mem + $mon_mem:.1f}')")
 
 printf '  host:    %s cores, %s GB RAM (%s GB available), %s GB disk free\n' \
   "$host_cores" "$host_mem_gb" "$host_avail_gb" "$disk_avail_gb"
 printf '  profile: %s cores + %s loadgen + %s monitoring = %s cores\n' \
   "$want_cpus" "$want_loadgen" "$mon_cpus" "$need_cpus"
-printf '           %s GB platform + 2 GB loadgen + %s GB monitoring = %s GB\n' \
-  "$want_mem" "$mon_mem" "$need_mem"
+printf '           %s GB platform + %s GB loadgen + %s GB monitoring = %s GB\n' \
+  "$want_mem" "$lg_mem" "$mon_mem" "$need_mem"
 
 awk -v h="$host_cores" -v n="$need_cpus" 'BEGIN{exit !(h+0 >= n+0)}' \
   && ok "cores sufficient" || warn "profile wants ${need_cpus} cores, host has ${host_cores}"
@@ -126,7 +135,7 @@ if [ "$blockers" -gt 0 ]; then
   fits=0
   for pf in deploy/profiles/*.yaml; do
     pn="$(basename "$pf" .yaml)"
-    read -r c m l <<EOF2
+    read -r _ m _ <<EOF2
 $(python3 - "$pf" <<'PY2'
 import sys, yaml
 b = (yaml.safe_load(open(sys.argv[1])) or {}).get('budget', {}) or {}

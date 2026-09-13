@@ -13,7 +13,7 @@
 source "$(dirname "${BASH_SOURCE[0]}")/../lib.sh"
 need docker
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-cd "$HERE"
+cd "$HERE" || exit 1
 
 NEUCHAIN_REF="${NEUCHAIN_REF:-ev}"
 

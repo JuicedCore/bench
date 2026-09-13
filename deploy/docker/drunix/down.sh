@@ -4,7 +4,7 @@ HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 for cand in "${BENCH_DRUNIX_REPO:-}" "${HERE}/.cache/drunix"; do
   NET="${cand}/drunix-network/test-network"
   if [ -d "$NET" ]; then
-    cd "$NET"
+    cd "$NET" || exit 1
     export PATH="${NET}/../bin:${NET}/bin:${PATH}"
     ./network.sh down || true
     [ -f "${NET}/scripts/keydb-only.bench.yaml" ] && \

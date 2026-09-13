@@ -9,7 +9,7 @@
 # PORT REALITY: fabric-cft, fabric-bft and drunix all bind peer :7051 /
 # orderer :7050 / operations :9443 - they are MUTUALLY EXCLUSIVE. Only one
 # Fabric-family network runs at a time; pass the one you want as arg 2.
-# fabricx (:9100/:9300/:9500/:9700) and neuchain (:5001/:7003/:18000) use
+# fabricx (:6022/:6023/:4001/:9643) and neuchain (:5001/:7003/:18000) use
 # distinct ports and come up alongside it when their images exist.
 #
 # For a fair cross-platform comparison you still run platforms SEQUENTIALLY with
@@ -34,12 +34,13 @@ bash deploy/docker/monitoring/up.sh || log "monitoring failed (non-fatal)"
 log "Fabric family: ${FABRIC_VARIANT} (profile ${PROFILE})"
 bash "deploy/docker/${FABRIC_VARIANT}/up.sh" "$PROFILE"
 
-# fabricx: only if the token stack / kvview image path is usable.
-if [ -f "$ROOT/deploy/docker/fabricx/.cache/fabric-x-samples/tokens/Makefile" ] || docker image inspect bench/fabricx-rest:latest >/dev/null 2>&1; then
+# fabricx: only if its image was built, since the first build compiles Arma and
+# the committer (15-20 min). FABRICX=1 builds it here.
+if docker image inspect bench/fabricx:local >/dev/null 2>&1 || [ "${FABRICX:-0}" = 1 ]; then
   log "fabricx"
   bash deploy/docker/fabricx/up.sh "$PROFILE" || log "fabricx up failed (non-fatal)"
 else
-  log "fabricx: skipped (run deploy/docker/fabricx/up.sh once to fetch fabric-x-samples)"
+  log "fabricx: skipped (image bench/fabricx:local not built - run with FABRICX=1, or deploy/docker/fabricx/up.sh)"
 fi
 
 # neuchain: only if the runtime image was built (deploy/docker/neuchain/build.sh).

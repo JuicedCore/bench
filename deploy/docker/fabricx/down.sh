@@ -8,7 +8,7 @@
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "${HERE}/../lib.sh"
 
-cd "$HERE"
+cd "$HERE" || exit 1
 # -v: Postgres and the ledger must start empty for the next run, or throughput is
 # measured against a pre-populated state store (adr-005, inter-run isolation).
 docker compose down -v --remove-orphans >/dev/null 2>&1 || true

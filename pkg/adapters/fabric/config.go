@@ -21,9 +21,9 @@ type Config struct {
 	// endorsing peer, e.g. "peer0.org1.example.com".
 	GatewayPeer string `yaml:"gateway_peer"`
 
-	MSPID        string `yaml:"msp_id"`
-	CertPath     string `yaml:"cert_path"`      // X509 signing cert (PEM)
-	KeyPath      string `yaml:"key_path"`       // private key (PEM), or a keystore dir
+	MSPID         string `yaml:"msp_id"`
+	CertPath      string `yaml:"cert_path"` // X509 signing cert (PEM)
+	KeyPath       string `yaml:"key_path"`  // private key (PEM), or a keystore dir
 	TLSCACertPath string `yaml:"tls_ca_cert_path"`
 
 	Channel   string `yaml:"channel"`

@@ -23,9 +23,9 @@ type Adapter struct {
 	rng   *rand.Rand
 
 	// mu guards state, pending and blockNum.
-	mu      sync.Mutex
-	state   map[string][]byte
-	pending map[string]*pendingTx
+	mu       sync.Mutex
+	state    map[string][]byte
+	pending  map[string]*pendingTx
 	blockNum uint64
 
 	submitBase time.Duration
