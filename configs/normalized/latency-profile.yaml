@@ -45,7 +45,10 @@ system_metrics:
   # anything on the platform under test are simply inert, which is what lets one
   # file serve all five.
   container_names:
-    - peer          # fabric-cft, fabric-bft, drunix
+    - peer          # fabric-cft, fabric-bft, drunix chaincode (dev-peer*)
+    - lp1.          # drunix Lite Peers
+    - cp.org        # drunix Committing Peers
+    - vs1.          # drunix validation services
     - orderer
     - fabric
     - drunix

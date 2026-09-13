@@ -2,6 +2,7 @@ package loadgen_test
 
 import (
 	"context"
+	"strings"
 	"sync/atomic"
 	"testing"
 	"time"
@@ -18,9 +19,9 @@ type fakeAdapter struct {
 	commit  time.Duration
 }
 
-func (f *fakeAdapter) Name() string                                  { return "fake" }
+func (f *fakeAdapter) Name() string                                        { return "fake" }
 func (f *fakeAdapter) Setup(context.Context, adapters.AdapterConfig) error { return nil }
-func (f *fakeAdapter) Teardown(context.Context) error                { return nil }
+func (f *fakeAdapter) Teardown(context.Context) error                      { return nil }
 func (f *fakeAdapter) Query(context.Context, string) (*adapters.QueryResult, error) {
 	return &adapters.QueryResult{}, nil
 }
@@ -166,5 +167,53 @@ func TestOpenLoopSlowFinalityDoesNotThrottleSubmission(t *testing.T) {
 	}
 	if !res.InvariantOK {
 		t.Errorf("invariant broken: submitted=%d committed=%d timedout=%d", res.Submitted, res.Committed, res.TimedOut)
+	}
+}
+
+// stuckAdapter accepts every submission and never finalizes one before the wait
+// expires - a platform whose commit path is dead.
+type stuckAdapter struct{ fakeAdapter }
+
+func (s *stuckAdapter) WaitForFinality(ctx context.Context, id string, wait time.Duration) (*adapters.FinalityResult, error) {
+	select {
+	case <-time.After(wait):
+	case <-ctx.Done():
+	}
+	return nil, context.DeadlineExceeded
+}
+
+// When the platform stops finalizing, the in-flight cap fills. The generator used
+// to block on it until the phase deadline, so the rest of the phase was never
+// offered and the phase recorded no transactions at all. The load must still be
+// offered on schedule, with the transactions that could not be sent counted as
+// failures.
+func TestOpenLoopFullInflightCapRecordsUnsentAsFailed(t *testing.T) {
+	sa := &stuckAdapter{}
+	col := metrics.NewCollector()
+	g := &loadgen.Generator{Adapter: sa, Source: &txSrc{}, Collector: col}
+
+	const target = 200
+	const dur = 2 * time.Second
+	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
+	defer cancel()
+	start := time.Now()
+	_ = g.Run(ctx, loadgen.LoadProfile{
+		Mode: loadgen.OpenLoop, TargetTPS: target, Duration: dur, FinalityWait: 3 * time.Second,
+		MaxInFlight: 50,
+	})
+
+	if got := sa.submits.Load(); got != 50 {
+		t.Errorf("adapter saw %d submits, want exactly the in-flight cap of 50", got)
+	}
+	// The second half of the phase is well past the point the cap filled.
+	res := col.Aggregate(metrics.Window{Start: start.Add(dur / 2), End: start.Add(dur)})
+	if want := int64(target * dur.Seconds() / 2); res.Submitted < want*85/100 {
+		t.Fatalf("second half recorded %d transactions, want ~%d: the schedule stalled on the full cap", res.Submitted, want)
+	}
+	if res.FailureRate != 1 {
+		t.Errorf("failure rate = %.3f, want 1", res.FailureRate)
+	}
+	if len(res.Errors) == 0 || !strings.Contains(res.Errors[0].Message, "not sent") {
+		t.Errorf("errors = %+v, want the unsent cause", res.Errors)
 	}
 }

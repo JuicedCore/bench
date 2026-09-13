@@ -63,8 +63,20 @@ func runProblems(rr RunResult) []string {
 		// back-pressure and Fabric T3 fixes; its absence dates the run before them.
 		p = append(p, "recorded before the measurement fixes (saturation rule, generator back-pressure, Fabric T3) - not comparable")
 	}
+	if len(m.ContainerFailures) > 0 {
+		var names []string
+		for _, e := range m.ContainerFailures {
+			names = append(names, e.String())
+		}
+		p = append(p, "platform failed mid-run: "+strings.Join(names, "; "))
+	}
 	if h == nil {
 		return append(p, "no headline result")
+	}
+	if h.Committed == 0 {
+		// Accounting can balance with every transaction failed, so this is not
+		// covered by the invariant: a zero headline is a broken run, not 0 TPS.
+		p = append(p, fmt.Sprintf("headline phase committed nothing (%d submitted, all failed)", h.Submitted))
 	}
 	if !h.InvariantOK {
 		p = append(p, "invariant broken: a submitted transaction never reached a terminal state")

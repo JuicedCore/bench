@@ -1,6 +1,7 @@
 package metrics
 
 import (
+	"regexp"
 	"sort"
 	"sync"
 	"time"
@@ -145,7 +146,34 @@ type Result struct {
 	SendGap Snapshot `json:"send_gap"`
 
 	// InvariantOK is false if submitted != committed+invalid+errored+timedout.
+	// It is an accounting check only: a phase that committed nothing, with every
+	// transaction failed, still balances.
 	InvariantOK bool `json:"invariant_ok"`
+
+	// Errors are the most frequent failure messages in the window, so a failed
+	// phase says why it failed rather than only how often.
+	Errors []ErrorCount `json:"errors,omitempty"`
+}
+
+// ErrorCount is one distinct failure message and how many transactions hit it.
+type ErrorCount struct {
+	Message string `json:"message"`
+	Count   int64  `json:"count"`
+}
+
+// maxErrorKinds caps Result.Errors.
+const maxErrorKinds = 5
+
+// volatile matches the per-transaction parts of an error message - tx ids,
+// hashes, sequence numbers, addresses - so one failure cause collapses into one
+// ErrorCount instead of one per transaction.
+var volatile = regexp.MustCompile(`[0-9a-fA-F]{16,}|\b\d+\b`)
+
+func errorKey(msg string) string {
+	if len(msg) > 300 {
+		msg = msg[:300]
+	}
+	return volatile.ReplaceAllString(msg, "N")
 }
 
 // Aggregate reduces the collected records over the given window.
@@ -161,6 +189,7 @@ func (c *Collector) Aggregate(w Window) Result {
 	res.WallClockSec = w.End.Sub(w.Start).Seconds()
 
 	var terminal int64
+	errs := map[string]int64{}
 	for _, r := range recs {
 		// Window on scheduled send time so warmup/cooldown cut the same
 		// absolute slice for every platform.
@@ -182,12 +211,15 @@ func (c *Collector) Aggregate(w Window) Result {
 		case OutcomeInvalid:
 			res.Invalid++
 			terminal++
+			errs[errorKey(orStr(r.Err, "committed invalid"))]++
 		case OutcomeError:
 			res.Errored++
 			terminal++
+			errs[errorKey(orStr(r.Err, "submit failed"))]++
 		case OutcomeTimeout:
 			res.TimedOut++
 			terminal++
+			errs[errorKey(orStr(r.Err, "finality timed out"))]++
 		case OutcomePending:
 			// still in flight at window close - not terminal, not counted
 		}
@@ -205,6 +237,31 @@ func (c *Collector) Aggregate(w Window) Result {
 	res.Commit = com.Snapshot()
 	res.SendGap = gap.Snapshot()
 	res.InvariantOK = terminal == res.Submitted
+	res.Errors = topErrors(errs, maxErrorKinds)
 
 	return res
+}
+
+func topErrors(m map[string]int64, n int) []ErrorCount {
+	out := make([]ErrorCount, 0, len(m))
+	for msg, c := range m {
+		out = append(out, ErrorCount{Message: msg, Count: c})
+	}
+	sort.Slice(out, func(i, j int) bool {
+		if out[i].Count != out[j].Count {
+			return out[i].Count > out[j].Count
+		}
+		return out[i].Message < out[j].Message
+	})
+	if len(out) > n {
+		out = out[:n]
+	}
+	return out
+}
+
+func orStr(s, def string) string {
+	if s == "" {
+		return def
+	}
+	return s
 }

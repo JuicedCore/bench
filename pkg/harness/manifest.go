@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/juicedcore/bench/pkg/adapters"
+	"github.com/juicedcore/bench/pkg/metrics"
 )
 
 // CryptoInfo is re-exported from the adapters package so callers of harness do
@@ -44,14 +45,19 @@ type Manifest struct {
 	OrdererBatch     OrdererBatch `json:"orderer_batch"`
 	Crypto           CryptoInfo   `json:"crypto"`
 	// Resources as actually applied by the deploy script (lib.sh apply_budget):
-	// the profile's total budget split evenly across the platform's real
-	// containers. Zero values mean the deploy did not report limits, which the
-	// engine caveats - see applyResourceEnv.
-	ResourceLimit      Limits         `json:"resource_limit_per_container"`
-	ResourceContainers int            `json:"resource_containers"`
-	ResourceCPUsTotal  float64        `json:"resource_cpus_total"`
-	ResourceMemTotalGB float64        `json:"resource_memory_total_gb"`
-	Nodes              map[string]int `json:"nodes"`
+	// the profile's total budget split across the platform's real containers -
+	// CPU evenly, memory by role weight. Zero values mean the deploy did not
+	// report limits, which the engine caveats - see applyResourceEnv.
+	// ResourceLimit.Memory is set only by deploys that split memory evenly.
+	ResourceLimit Limits `json:"resource_limit_per_container"`
+	// ResourceMemory is the memory limit applied to each container, and
+	// ResourceMemoryWeights the role weights that produced it.
+	ResourceMemory        map[string]string `json:"resource_memory_by_container,omitempty"`
+	ResourceMemoryWeights string            `json:"resource_memory_weights,omitempty"`
+	ResourceContainers    int               `json:"resource_containers"`
+	ResourceCPUsTotal     float64           `json:"resource_cpus_total"`
+	ResourceMemTotalGB    float64           `json:"resource_memory_total_gb"`
+	Nodes                 map[string]int    `json:"nodes"`
 
 	// Load determinism. Generators matters here too: generator i uses seed+i.
 	Generators      int     `json:"generators"`
@@ -70,6 +76,11 @@ type Manifest struct {
 	// never offered, so a truncated ladder is self-describing rather than
 	// looking like a shorter config.
 	SkippedSteps []int `json:"skipped_steps,omitempty"`
+
+	// ContainerFailures lists platform containers that exited or were OOM-killed
+	// during the run. Any entry means the run ended early on a platform failure
+	// and has no headline.
+	ContainerFailures []metrics.ContainerFailure `json:"container_failures,omitempty"`
 
 	// Free-form caveats surfaced in the report (e.g. "fabricx local: Arma
 	// starved, not comparable to published ceiling").

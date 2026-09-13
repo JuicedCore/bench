@@ -4,6 +4,7 @@ import (
 	"encoding/csv"
 	"fmt"
 	"os"
+	"sort"
 	"strconv"
 	"strings"
 
@@ -23,7 +24,18 @@ func writeSummaryText(path string, cfg *RunConfig, rr *RunResult) error {
 	} else {
 		fmt.Fprintf(&b, "profile:    %s   state_db=%s\n", cfg.Profile, rr.Manifest.StateDB)
 	}
-	if m := rr.Manifest; m.ResourceContainers > 0 {
+	if m := rr.Manifest; m.ResourceContainers > 0 && len(m.ResourceMemory) > 0 {
+		fmt.Fprintf(&b, "resources:  %.2g CPU / %.2g GB total over %d containers (%.2f CPU each; memory by role weight %s)\n",
+			m.ResourceCPUsTotal, m.ResourceMemTotalGB, m.ResourceContainers, m.ResourceLimit.CPUs, m.ResourceMemoryWeights)
+		names := make([]string, 0, len(m.ResourceMemory))
+		for n := range m.ResourceMemory {
+			names = append(names, n)
+		}
+		sort.Strings(names)
+		for _, n := range names {
+			fmt.Fprintf(&b, "              %-8s %s\n", m.ResourceMemory[n], n)
+		}
+	} else if m.ResourceContainers > 0 {
 		fmt.Fprintf(&b, "resources:  %.2g CPU / %.2g GB total over %d containers (%.2f CPU / %s each)\n",
 			m.ResourceCPUsTotal, m.ResourceMemTotalGB, m.ResourceContainers, m.ResourceLimit.CPUs, m.ResourceLimit.Memory)
 	} else {
@@ -49,6 +61,16 @@ func writeSummaryText(path string, cfg *RunConfig, rr *RunResult) error {
 			pctl(r.E2E, "p50"), pctl(r.E2E, "p99"), pctl(r.SendGap, "p99"), pctl(r.Commit, "p50"), ph.Verdict)
 	}
 	b.WriteString("\n")
+	// Why the failing phases failed. Without this a 100% failure rate reads the
+	// same whether the platform rejected the load or a node was dead.
+	for _, ph := range rr.Phases {
+		for _, e := range ph.Result.Errors {
+			fmt.Fprintf(&b, "errors %-12s %8d x %s\n", ph.Name, e.Count, e.Message)
+		}
+	}
+	for _, e := range rr.Manifest.ContainerFailures {
+		fmt.Fprintf(&b, "PLATFORM FAILURE  %s\n", e.String())
+	}
 	if len(rr.Manifest.SkippedSteps) > 0 {
 		fmt.Fprintf(&b, "sweep aborted early; steps never offered: %v\n", rr.Manifest.SkippedSteps)
 	}
@@ -61,10 +83,16 @@ func writeSummaryText(path string, cfg *RunConfig, rr *RunResult) error {
 		fmt.Fprintf(&b, "detected saturation: NONE - no sweep step held (see the verdict column);\n"+
 			"                     the headline below is a floor reading, not a saturation figure\n")
 	}
+	if rr.Headline == nil && len(rr.Phases) > 0 {
+		fmt.Fprintf(&b, "HEADLINE  none - the run did not complete a headline phase on a healthy platform\n")
+	}
 	if rr.Headline != nil {
 		h := rr.Headline
 		fmt.Fprintf(&b, "HEADLINE  confirmed_tps=%.1f  fail_rate=%.4f  e2e p50/p99=%.2f/%.2f ms  invariant_ok=%v\n",
 			h.ConfirmedTPS, h.FailureRate, pctl(h.E2E, "p50"), pctl(h.E2E, "p99"), h.InvariantOK)
+		if h.Committed == 0 {
+			fmt.Fprintf(&b, "WARNING   the headline phase committed nothing: this is a failed run, not a 0 TPS measurement\n")
+		}
 		if p99 := pctl(h.SendGap, "p99"); p99 > 50 {
 			fmt.Fprintf(&b, "WARNING   load-generator send-gap p99 = %.1f ms: generator may be the bottleneck; reject this run\n", p99)
 		}

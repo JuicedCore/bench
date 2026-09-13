@@ -13,6 +13,8 @@ func sweepDefaults() SweepConfig {
 
 func resultWith(confirmed, failRate, sendGapP99 float64) metrics.Result {
 	return metrics.Result{
+		// Non-zero so the empty-window rule does not pre-empt the rule under test.
+		Submitted:    1,
 		ConfirmedTPS: confirmed,
 		FailureRate:  failRate,
 		SendGap:      metrics.Snapshot{Percentiles: map[string]float64{"p99": sendGapP99}},
@@ -54,6 +56,9 @@ func TestStepVerdictRules(t *testing.T) {
 		// Throughput looked fine but the generator was behind schedule, so the
 		// step measured the generator rather than the platform.
 		{"generator fell behind", 1000, resultWith(1000, 0, 400), "send-gap"},
+		// An empty window passes every rate rule vacuously (0% failures). Drunix
+		// sweep steps recorded exactly this while its generator was stalled.
+		{"empty measurement window", 100, metrics.Result{}, "no transactions"},
 	}
 	for _, c := range cases {
 		got := stepVerdict(c.offered, c.r, s)
@@ -69,13 +74,33 @@ func TestStepVerdictRules(t *testing.T) {
 // A run whose deploy did not report the budget it applied must not look like a
 // resource-controlled run.
 func TestResourceBudgetUnreportedIsCaveated(t *testing.T) {
-	for _, k := range []string{"BENCH_RESOURCE_CONTAINERS", "BENCH_RESOURCE_CPUS_EACH", "BENCH_RESOURCE_MEMORY_EACH"} {
+	for _, k := range []string{"BENCH_RESOURCE_CONTAINERS", "BENCH_RESOURCE_CPUS_EACH", "BENCH_RESOURCE_MEMORY_EACH", "BENCH_RESOURCE_MEMORY_SPLIT"} {
 		t.Setenv(k, "")
 	}
 	var m Manifest
 	applyResourceEnv(&m)
 	if m.ResourceContainers != 0 || len(m.Caveats) != 1 || !strings.Contains(m.Caveats[0], "not reported") {
 		t.Errorf("unreported budget not caveated: containers=%d caveats=%v", m.ResourceContainers, m.Caveats)
+	}
+}
+
+// The deploy splits memory by role weight; the manifest must carry each
+// container's actual limit and the weights, or the budget is unverifiable.
+func TestResourceBudgetRecordsWeightedMemorySplit(t *testing.T) {
+	t.Setenv("BENCH_RESOURCE_CONTAINERS", "3")
+	t.Setenv("BENCH_RESOURCE_CPUS_EACH", "2.67")
+	t.Setenv("BENCH_RESOURCE_MEMORY_EACH", "")
+	t.Setenv("BENCH_RESOURCE_MEMORY_SPLIT", "orderer.example.com=1638m,peer0.org1.example.com=3276m,dev-peer0=819m")
+	t.Setenv("BENCH_RESOURCE_MEMORY_WEIGHTS", `"peer=4 statedb=4 orderer=2 other=1"`)
+	t.Setenv("BENCH_RESOURCE_CPUS_TOTAL", "8")
+	t.Setenv("BENCH_RESOURCE_MEMORY_TOTAL_GB", "8")
+	var m Manifest
+	applyResourceEnv(&m)
+	if m.ResourceMemory["peer0.org1.example.com"] != "3276m" || m.ResourceMemory["dev-peer0"] != "819m" || len(m.ResourceMemory) != 3 {
+		t.Errorf("memory split not recorded: %v", m.ResourceMemory)
+	}
+	if m.ResourceMemoryWeights != "peer=4 statedb=4 orderer=2 other=1" {
+		t.Errorf("weights = %q", m.ResourceMemoryWeights)
 	}
 }
 

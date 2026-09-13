@@ -17,7 +17,7 @@ func goodRun(platform, name string, normalized bool, confTPS float64) RunResult 
 			ResourceCPUsTotal: 8, ResourceMemTotalGB: 8, StartedAt: time.Now(),
 		},
 		Headline: &metrics.Result{
-			ConfirmedTPS: confTPS, InvariantOK: true,
+			ConfirmedTPS: confTPS, InvariantOK: true, Submitted: 1000, Committed: 1000,
 			E2E:     metrics.Snapshot{Percentiles: map[string]float64{"p50": 100, "p99": 300}},
 			SendGap: metrics.Snapshot{Percentiles: map[string]float64{"p99": 2}},
 		},
@@ -36,6 +36,15 @@ func TestRunProblemsExcludeWhatCannotBeCompared(t *testing.T) {
 		"invariant broken":             func(r *RunResult) { r.Headline.InvariantOK = false },
 		"fell behind":                  func(r *RunResult) { r.Headline.SendGap.Percentiles["p99"] = 400 },
 		"resource budget not reported": func(r *RunResult) { r.Manifest.ResourceContainers = 0 },
+		// The 2026-09-13 Fabric sweeps: a peer was OOM-killed at 2000 TPS and the
+		// hold phase headlined 0.0 TPS with every transaction failed, which the
+		// report then ranked as a comparable result.
+		"committed nothing": func(r *RunResult) {
+			r.Headline.Committed, r.Headline.ConfirmedTPS, r.Headline.FailureRate = 0, 0, 1
+		},
+		"platform failed mid-run": func(r *RunResult) {
+			r.Manifest.ContainerFailures = []metrics.ContainerFailure{{Name: "peer0.org1.example.com", OOMKilled: true, Exited: true, ExitCode: 137}}
+		},
 		"floor reading": func(r *RunResult) {
 			r.Phases = []PhaseResult{{Name: "sweep-100", OfferedTPS: 100}}
 			r.SaturationTPS = 0
@@ -82,7 +91,11 @@ func TestComparisonGroupsAndMedians(t *testing.T) {
 		// Same config name but native: must land in its own group.
 		rec(goodRun("fabric-cft", "quick-smoke", false, 500)),
 		// Different profile: not comparable with the rest.
-		func() runRecord { r := goodRun("fabric-cft", "quick-smoke", true, 70); r.Manifest.Profile = "local"; return rec(r) }(),
+		func() runRecord {
+			r := goodRun("fabric-cft", "quick-smoke", true, 70)
+			r.Manifest.Profile = "local"
+			return rec(r)
+		}(),
 	}
 	groups := buildComparison(recs)
 	if len(groups) != 3 {

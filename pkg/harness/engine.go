@@ -247,7 +247,7 @@ func (Engine) Run(ctx context.Context, cfg *RunConfig, opt Options) (*RunResult,
 	}
 	bestPassing, consecFailed := 0, 0
 
-	for _, ph := range phases {
+	for i, ph := range phases {
 		isSweepStep := strings.HasPrefix(ph.name, "sweep-")
 
 		// Early abort: once the platform has failed abort_after_failed_steps
@@ -274,15 +274,23 @@ func (Engine) Run(ctx context.Context, cfg *RunConfig, opt Options) (*RunResult,
 		if genErr != nil && ctx.Err() != nil {
 			break
 		}
-		phaseEnd := time.Now()
 
-		w := metrics.Window{Start: phaseStart.Add(warm), End: phaseEnd.Add(-cool)}
+		// The window is cut from the offered-load schedule, not from when the
+		// generators returned: they also drain in-flight finality waits, which on
+		// a platform that stops committing adds up to finality_wait. Ending the
+		// window at the drain instead slid it past the last scheduled send, so a
+		// 30s probe on such a platform measured 2 transactions.
+		loadEnd := phaseStart.Add(ph.profile.Duration)
+		if now := time.Now(); now.Before(loadEnd) {
+			loadEnd = now
+		}
+		w := metrics.Window{Start: phaseStart.Add(warm), End: loadEnd.Add(-cool)}
 		if ph.noWindowTrim {
-			w = metrics.Window{Start: phaseStart, End: phaseEnd}
+			w = metrics.Window{Start: phaseStart, End: loadEnd}
 		}
 		if !w.End.After(w.Start) {
 			// phase shorter than warmup+cooldown: measure the whole thing
-			w = metrics.Window{Start: phaseStart, End: phaseEnd}
+			w = metrics.Window{Start: phaseStart, End: loadEnd}
 		}
 		res := collector.Aggregate(w)
 		pr := PhaseResult{
@@ -309,6 +317,30 @@ func (Engine) Run(ctx context.Context, cfg *RunConfig, opt Options) (*RunResult,
 		if ph.name == "hold" || len(phases) == 1 {
 			cp := res
 			rr.Headline = &cp
+		}
+
+		// A platform container that failed mid-run (typically OOM-killed at its
+		// memory limit) leaves a broken network: every later phase would measure
+		// the failure, not the platform, and the hold phase would headline 0 TPS.
+		// Stop here, keep what was measured before, and say what died.
+		if failures := sampler.Failures(); len(failures) > 0 {
+			rr.Manifest.ContainerFailures = failures
+			var names []string
+			for _, e := range failures {
+				rr.Manifest.Caveats = append(rr.Manifest.Caveats, "platform container "+e.String())
+			}
+			for _, rest := range phases[i+1:] {
+				names = append(names, rest.name)
+			}
+			if len(names) > 0 {
+				rr.Manifest.Caveats = append(rr.Manifest.Caveats, fmt.Sprintf(
+					"run stopped during %s because a platform container failed; phases never run: %s",
+					ph.name, strings.Join(names, ", ")))
+			}
+			// The phase the container died in measured a half-dead network
+			// and cannot be a headline either.
+			rr.Headline = nil
+			break
 		}
 	}
 
@@ -522,6 +554,15 @@ func applyResourceEnv(man *Manifest) {
 	}
 	man.ResourceContainers = n
 	man.ResourceLimit = Limits{CPUs: envF("BENCH_RESOURCE_CPUS_EACH"), Memory: strings.TrimSpace(os.Getenv("BENCH_RESOURCE_MEMORY_EACH"))}
+	if split := strings.TrimSpace(os.Getenv("BENCH_RESOURCE_MEMORY_SPLIT")); split != "" {
+		man.ResourceMemory = map[string]string{}
+		for _, kv := range strings.Split(split, ",") {
+			if name, mem, ok := strings.Cut(kv, "="); ok {
+				man.ResourceMemory[name] = mem
+			}
+		}
+		man.ResourceMemoryWeights = strings.Trim(strings.TrimSpace(os.Getenv("BENCH_RESOURCE_MEMORY_WEIGHTS")), `"`)
+	}
 	man.ResourceCPUsTotal = envF("BENCH_RESOURCE_CPUS_TOTAL")
 	man.ResourceMemTotalGB = envF("BENCH_RESOURCE_MEMORY_TOTAL_GB")
 }
@@ -551,6 +592,10 @@ func actualStateDB(requested string) string {
 // to have been sent on schedule.
 func stepVerdict(offeredTPS int, r metrics.Result, s SweepConfig) string {
 	switch {
+	case r.Submitted == 0:
+		// Nothing scheduled in the window reached the collector. Every other rule
+		// passes vacuously on an empty window (0% failures), so this must come first.
+		return "no transactions in the measurement window"
 	case r.FailureRate > s.MaxFailRate:
 		return fmt.Sprintf("failure rate %.2f%% > %.2f%%", r.FailureRate*100, s.MaxFailRate*100)
 	case offeredTPS > 0 && r.ConfirmedTPS < s.GoodputRatio*float64(offeredTPS):

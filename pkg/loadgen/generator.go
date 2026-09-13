@@ -126,15 +126,27 @@ func (g *Generator) runOpen(ctx context.Context, p LoadProfile) error {
 			}
 		}
 		k++
-
-		select {
-		case inflight <- struct{}{}:
-		case <-ctx.Done():
+		if ctx.Err() != nil {
 			goto drain
 		}
 
 		seq := g.nextSeq()
 		tx := g.Source.Next(seq)
+
+		// A full in-flight cap means the platform has stopped finalizing. Blocking
+		// here used to stall the schedule until the phase deadline passed, so the
+		// rest of the step was never offered and the step reported submitted=0 -
+		// indistinguishable from a generator bug. The transaction was offered on
+		// schedule and the platform could not take it: record it as failed at its
+		// scheduled time and keep the schedule moving.
+		select {
+		case inflight <- struct{}{}:
+		default:
+			g.Collector.Add(tx.Seq, fmt.Sprintf("seq-%d-unsent", tx.Seq), scheduled, scheduled, scheduled,
+				fmt.Sprintf("not sent: %d transactions already in flight (platform is not finalizing)", cap(inflight)))
+			continue
+		}
+
 		wg.Add(1)
 		go func(tx *adapters.Transaction, scheduled time.Time) {
 			defer wg.Done()
@@ -153,7 +165,8 @@ drain:
 // maxInflight bounds outstanding (submitted, not yet terminal) transactions.
 // The default is 8 seconds of offered load: far beyond any latency a platform
 // could have and still be below its knee, so it never binds on a healthy run,
-// while still capping goroutines if a platform stops finalizing entirely.
+// while still capping goroutines if a platform stops finalizing entirely. Load
+// offered while the cap is full is recorded as failed, not queued.
 func maxInflight(p LoadProfile) int {
 	if p.MaxInFlight > 0 {
 		return p.MaxInFlight

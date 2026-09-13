@@ -59,10 +59,19 @@ Every run discards a fixed **warmup** (default 30 s) at the start and a fixed
 **cooldown** (default 15 s) at the end of each phase. Fixed absolute windows —
 not "first 10% / last 5%" — so a 2-minute run and a 10-minute run discard the
 same slice and stay comparable. Records are included when their **scheduled send
-time** falls in `[phaseStart + warmup, phaseEnd − cooldown)`.
+time** falls in `[phaseStart + warmup, loadEnd − cooldown)`, where `loadEnd` is
+`phaseStart + phase duration` — the end of the offered-load schedule, not when
+the generators return. Generators also drain in-flight finality waits, which on a
+platform that stops committing takes up to `finality_wait`; anchoring the window
+to the drain slid it past the last scheduled send.
 
 If a phase is shorter than warmup + cooldown (e.g. the probe), the whole phase is
 measured.
+
+In open loop, outstanding transactions are capped at 8 s of offered load. A
+transaction scheduled while the cap is full is recorded as failed at its scheduled
+time (`not sent: ... in flight`) rather than queued, so a platform that stops
+finalizing shows as failed load, not as a phase with no transactions.
 
 ## Latency aggregation — HDR histogram
 
