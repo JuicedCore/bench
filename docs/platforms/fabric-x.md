@@ -54,7 +54,7 @@ the decision.
 
 | | |
 | --- | --- |
-| Submit | broadcast a signed `common.Envelope` to the Arma router (`:6022`) |
+| Submit | broadcast a signed `common.Envelope` to the Arma router (`:6022`) and wait for its reply; a pool of streams, one unacknowledged envelope each |
 | Finality | sidecar deliver stream (`:4001`); per-transaction validation codes from the block's `TRANSACTIONS_FILTER` metadata |
 | Signing | ECDSA-P256 over the namespace's ASN.1 marshalling, sha256-digested — upstream's own encoding via `fabric-x-common` |
 | Config keys | `broadcast_endpoint`, `deliver_endpoint`, `channel_id`, `namespace`, `signing_key_path`, `metrics_endpoint` |
@@ -65,7 +65,8 @@ because the validator rejects read-only transactions (`MALFORMED_NO_WRITES`).
 That last one is disclosed in [../workloads/mismatches.md](../workloads/mismatches.md).
 
 Submit and commit are separate operations, so unlike the previous REST
-integration Fabric-X reports a genuine submit latency.
+integration Fabric-X reports a genuine submit latency: T2 is the Arma router's
+reply to each envelope, matched one-per-stream because replies carry no ID.
 
 ## Deployment
 

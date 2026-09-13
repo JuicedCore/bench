@@ -14,7 +14,11 @@ sidecar's deliver stream.
 
 The adapter speaks that path directly.
 
-- **Submit** broadcasts to the Arma router and returns on the router's ack.
+- **Submit** broadcasts to the Arma router and returns on the router's reply to
+  that envelope. Replies carry no transaction ID and the router sends them
+  asynchronously, possibly out of order, so the adapter keeps a pool of broadcast
+  streams and never lets one carry more than one unacknowledged envelope; a stream
+  whose reply times out is replaced, never reused.
 - **Finality** comes from the sidecar deliver stream, decoding each block's
   `TRANSACTIONS_FILTER` metadata for per-transaction validation codes.
 - **Transactions** are `applicationpb.Tx` read/write sets against a single

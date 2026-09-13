@@ -3,8 +3,9 @@
 // Transactions are submitted by broadcasting a signed envelope to an Arma
 // router over gRPC, and outcomes are read from the sidecar's deliver stream.
 // Those are separate operations on separate connections, so unlike the previous
-// REST-based integration this adapter observes a genuine submit ack (T2)
-// distinct from finality (T3).
+// REST-based integration this adapter observes the router's own acknowledgement
+// of each envelope (T2), distinct from finality (T3). See the broadcaster in
+// stream.go for how replies are matched to envelopes.
 //
 // Namespace bootstrap is NOT done here - it is a deploy-time concern handled by
 // deploy/docker/fabricx/up.sh, which registers the namespace's verification key
@@ -16,6 +17,7 @@ package fabricx
 
 import (
 	"fmt"
+	"strconv"
 	"time"
 )
 
@@ -45,6 +47,16 @@ type Config struct {
 
 	// DialTimeout bounds connection setup in Setup.
 	DialTimeout time.Duration `yaml:"dial_timeout"`
+
+	// BroadcastStreams is how many broadcast streams are kept open. Each carries
+	// at most one unacknowledged envelope, so this caps transactions awaiting the
+	// router's reply, not total throughput - an ack normally arrives in well under
+	// a millisecond after the router forwards to a batcher. If it ever binds, the
+	// load generator falls behind schedule and send-gap rejects the step, so it
+	// cannot silently cap a measurement.
+	BroadcastStreams int `yaml:"broadcast_streams"`
+	// AckTimeout bounds the wait for the router's reply to one envelope.
+	AckTimeout time.Duration `yaml:"ack_timeout"`
 }
 
 func (c *Config) applyDefaults() {
@@ -56,6 +68,12 @@ func (c *Config) applyDefaults() {
 	}
 	if c.DialTimeout == 0 {
 		c.DialTimeout = 10 * time.Second
+	}
+	if c.BroadcastStreams <= 0 {
+		c.BroadcastStreams = 256
+	}
+	if c.AckTimeout == 0 {
+		c.AckTimeout = 30 * time.Second
 	}
 }
 
@@ -89,6 +107,25 @@ func configFromExtra(extra map[string]any) (*Config, error) {
 		}
 		if s := str("namespace"); s != "" {
 			c.Namespace = s
+		}
+		switch v := extra["broadcast_streams"].(type) {
+		case int:
+			c.BroadcastStreams = v
+		case string:
+			if v != "" {
+				n, err := strconv.Atoi(v)
+				if err != nil {
+					return nil, fmt.Errorf("fabricx: bad broadcast_streams %q: %w", v, err)
+				}
+				c.BroadcastStreams = n
+			}
+		}
+		if s := str("ack_timeout"); s != "" {
+			d, err := time.ParseDuration(s)
+			if err != nil {
+				return nil, fmt.Errorf("fabricx: bad ack_timeout %q: %w", s, err)
+			}
+			c.AckTimeout = d
 		}
 		if s := str("dial_timeout"); s != "" {
 			d, err := time.ParseDuration(s)

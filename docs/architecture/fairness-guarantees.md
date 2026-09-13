@@ -11,7 +11,7 @@ Collected the same way for every platform, from the same code path:
 | ------ | ------ | ----- |
 | Confirmed TPS | `metrics.Collector`, T3 timestamps | all platforms |
 | End-to-end latency p50…p99.99 | `metrics.Collector`, T3 − scheduled | all platforms |
-| Submit latency | T2 − T1 | **NeuChain: N/A** — its ZeroMQ PUB is fire-and-forget, so `AckTime = now` measures a local call return, not a platform acknowledgement. Ignore its submit/commit split. Fabric-X reports a real ack: the Arma router accepts the envelope for ordering strictly before commit. |
+| Submit latency | T2 − T1 | **NeuChain: N/A** — its ZeroMQ PUB is fire-and-forget, so `AckTime = now` measures a local call return, not a platform acknowledgement. Ignore its submit/commit split. Fabric-X reports a real ack: T2 is the Arma router's reply to that envelope (it accepted it and forwarded it to a batcher, strictly before ordering and commit — the same point the Fabric gateway's Submit returns). |
 | Commit latency | T3 − T2 | same caveat for NeuChain |
 | Failure rate | invalid + errored + timed-out over submitted | all platforms, but see the breakdown caveat below |
 | Host CPU / memory / disk | node_exporter + cAdvisor, or the built-in `docker stats` sampler | all platforms |
@@ -19,6 +19,9 @@ Collected the same way for every platform, from the same code path:
 For NeuChain, compare **E2E latency and confirmed TPS only**; its T1/T2/T3
 breakdown is not meaningful. Fabric-X's is, since it moved to the native gRPC
 path ([adr-016](../decisions/adr-016-fabricx-native-grpc.md)).
+
+What is and is not normalized in practice, lever by lever:
+[normalization-status.md](normalization-status.md).
 
 ### Where T3 is stamped
 

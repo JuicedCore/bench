@@ -3,7 +3,6 @@ package fabricx
 import (
 	"context"
 	"fmt"
-	"sync"
 	"time"
 
 	"github.com/hyperledger/fabric-protos-go-apiv2/common"
@@ -24,17 +23,47 @@ type blockOutcome struct {
 	observedAt time.Time
 }
 
-// broadcaster submits envelopes to an Arma router.
+// broadcaster submits envelopes to an Arma router and returns the router's own
+// acknowledgement for each one. That acknowledgement is the adapter's T2.
 //
-// Broadcast returns an ack once the router has accepted the envelope for
-// ordering, which is strictly before commit - that ack is the adapter's T2.
+// Matching replies to envelopes is the whole difficulty. A BroadcastResponse
+// carries only a status and an info string - no transaction or request ID - and
+// the router answers asynchronously: it spreads requests across several
+// router-to-batcher streams by request-ID hash, each on its own goroutine, all
+// replying through one channel (fabric-x-orderer node/router/router.go Broadcast,
+// shard_router.go Forward). Replies on one client stream can therefore arrive in
+// a different order from the envelopes, so matching them by position would
+// silently attribute acks to the wrong transactions.
+//
+// So the broadcaster keeps a pool of streams and never lets a stream carry more
+// than one unacknowledged envelope. The next reply on a stream is then
+// unambiguously the reply to its envelope. A stream whose reply times out or
+// errors is discarded and replaced, because a late reply would otherwise be
+// read as the next envelope's.
+//
+// For an ordinary transaction SUCCESS means the router accepted the envelope and
+// forwarded it to a batcher - before ordering and commit. That is the same point
+// at which the Fabric gateway's Submit returns, which is why it is the
+// comparable T2.
 type broadcaster struct {
-	conn   *grpc.ClientConn
-	stream orderer.AtomicBroadcast_BroadcastClient
+	conn       *grpc.ClientConn
+	client     orderer.AtomicBroadcastClient
+	idle       chan *ackStream
+	ackTimeout time.Duration
+}
 
-	// sendMu serialises Send: a gRPC stream supports one concurrent sender, but
-	// the harness drives Submit from many goroutines.
-	sendMu sync.Mutex
+// ackStream is one broadcast stream with at most one envelope in flight.
+type ackStream struct {
+	stream  orderer.AtomicBroadcast_BroadcastClient
+	cancel  context.CancelFunc
+	replies chan ackReply
+}
+
+type ackReply struct {
+	status common.Status
+	info   string
+	at     time.Time
+	err    error
 }
 
 func dialInsecure(ctx context.Context, endpoint string) (*grpc.ClientConn, error) {
@@ -48,43 +77,120 @@ func dialInsecure(ctx context.Context, endpoint string) (*grpc.ClientConn, error
 	return conn, nil
 }
 
-func newBroadcaster(ctx context.Context, endpoint string) (*broadcaster, error) {
+func newBroadcaster(ctx context.Context, endpoint string, streams int, ackTimeout time.Duration) (*broadcaster, error) {
 	conn, err := dialInsecure(ctx, endpoint)
 	if err != nil {
 		return nil, err
 	}
-	stream, err := orderer.NewAtomicBroadcastClient(conn).Broadcast(context.Background())
-	if err != nil {
-		_ = conn.Close()
-		return nil, fmt.Errorf("fabricx: open broadcast stream to %s: %w", endpoint, err)
+	b := &broadcaster{
+		conn:       conn,
+		client:     orderer.NewAtomicBroadcastClient(conn),
+		idle:       make(chan *ackStream, streams),
+		ackTimeout: ackTimeout,
 	}
-	b := &broadcaster{conn: conn, stream: stream}
-	// Drain acks so the stream's flow control does not stall. A non-SUCCESS
-	// status means the router refused the envelope outright; the transaction
-	// will then simply never appear on the deliver stream and time out, which
-	// the run's failure breakdown reports.
+	for i := 0; i < streams; i++ {
+		s, err := b.openStream()
+		if err != nil {
+			b.close()
+			return nil, fmt.Errorf("fabricx: open broadcast stream %d/%d to %s: %w", i+1, streams, endpoint, err)
+		}
+		b.idle <- s
+	}
+	return b, nil
+}
+
+func (b *broadcaster) openStream() (*ackStream, error) {
+	ctx, cancel := context.WithCancel(context.Background())
+	stream, err := b.client.Broadcast(ctx)
+	if err != nil {
+		cancel()
+		return nil, err
+	}
+	s := &ackStream{stream: stream, cancel: cancel, replies: make(chan ackReply, 1)}
 	go func() {
 		for {
-			if _, err := stream.Recv(); err != nil {
+			resp, err := stream.Recv()
+			// Stamp on receipt, not when Submit gets round to reading it.
+			r := ackReply{at: time.Now(), err: err}
+			if err == nil {
+				r.status, r.info = resp.GetStatus(), resp.GetInfo()
+			}
+			select {
+			case s.replies <- r:
+			default:
+				// A reply with no envelope in flight: the router answered something
+				// this stream is no longer waiting for. Nothing to attribute it to.
+			}
+			if err != nil {
 				return
 			}
 		}
 	}()
-	return b, nil
+	return s, nil
 }
 
-func (b *broadcaster) send(env *common.Envelope) error {
-	b.sendMu.Lock()
-	defer b.sendMu.Unlock()
-	return b.stream.Send(env)
+// submit broadcasts one envelope and waits for the router's reply to it,
+// returning when the reply arrived. A non-SUCCESS reply is a rejection by the
+// router and comes back as an error.
+func (b *broadcaster) submit(ctx context.Context, env *common.Envelope) (time.Time, error) {
+	var s *ackStream
+	select {
+	case s = <-b.idle:
+	case <-ctx.Done():
+		return time.Time{}, ctx.Err()
+	}
+
+	if err := s.stream.Send(env); err != nil {
+		b.replace(s)
+		return time.Time{}, fmt.Errorf("fabricx: broadcast send: %w", err)
+	}
+
+	timer := time.NewTimer(b.ackTimeout)
+	defer timer.Stop()
+	select {
+	case r := <-s.replies:
+		if r.err != nil {
+			b.replace(s)
+			return time.Time{}, fmt.Errorf("fabricx: broadcast stream: %w", r.err)
+		}
+		b.idle <- s
+		if r.status != common.Status_SUCCESS {
+			return r.at, fmt.Errorf("fabricx: router rejected envelope: %s %s", r.status, r.info)
+		}
+		return r.at, nil
+	case <-timer.C:
+		b.replace(s)
+		return time.Time{}, fmt.Errorf("fabricx: no router acknowledgement within %s", b.ackTimeout)
+	case <-ctx.Done():
+		b.replace(s)
+		return time.Time{}, ctx.Err()
+	}
+}
+
+// replace discards a stream whose state is no longer known and puts a fresh one
+// in its place, so the pool never shrinks and no stale reply is misattributed.
+func (b *broadcaster) replace(old *ackStream) {
+	old.cancel()
+	if s, err := b.openStream(); err == nil {
+		b.idle <- s
+		return
+	}
+	// The router is unreachable. Return the dead stream so the pool keeps its
+	// size; the next submit on it fails fast and tries to replace it again.
+	b.idle <- old
 }
 
 func (b *broadcaster) close() {
-	if b.stream != nil {
-		_ = b.stream.CloseSend()
-	}
-	if b.conn != nil {
-		_ = b.conn.Close()
+	for {
+		select {
+		case s := <-b.idle:
+			s.cancel()
+		default:
+			if b.conn != nil {
+				_ = b.conn.Close()
+			}
+			return
+		}
 	}
 }
 

@@ -79,7 +79,7 @@ func (a *Adapter) Setup(ctx context.Context, ac adapters.AdapterConfig) error {
 	if a.dl, err = newDeliverer(cfg.DeliverEndpoint, cfg.ChannelID, a.onOutcomes); err != nil {
 		return err
 	}
-	if a.bc, err = newBroadcaster(dctx, cfg.BroadcastEndpoint); err != nil {
+	if a.bc, err = newBroadcaster(dctx, cfg.BroadcastEndpoint, cfg.BroadcastStreams, cfg.AckTimeout); err != nil {
 		a.dl.close()
 		a.dl = nil
 		return err
@@ -120,9 +120,11 @@ func (a *Adapter) onOutcomes(outs []blockOutcome) {
 	}
 }
 
-// Submit builds, signs and broadcasts one transaction. It returns as soon as the
-// router has taken the envelope - that is a real ack, so T2 is meaningful here.
-func (a *Adapter) Submit(_ context.Context, tx *adapters.Transaction) (*adapters.SubmitResult, error) {
+// Submit builds, signs and broadcasts one transaction, and returns once the Arma
+// router has acknowledged it. T2 is the moment that acknowledgement arrived: the
+// router accepted the envelope and forwarded it for ordering, strictly before
+// commit - the same point at which the Fabric gateway's Submit returns.
+func (a *Adapter) Submit(ctx context.Context, tx *adapters.Transaction) (*adapters.SubmitResult, error) {
 	if a.bc == nil {
 		return nil, fmt.Errorf("fabricx: adapter not set up")
 	}
@@ -141,13 +143,17 @@ func (a *Adapter) Submit(_ context.Context, tx *adapters.Transaction) (*adapters
 	}
 	a.mu.Unlock()
 
-	if err := a.bc.send(env); err != nil {
+	ackAt, err := a.bc.submit(ctx, env)
+	if err != nil {
+		// Not acknowledged, or refused by the router: it will not be ordered, so
+		// stop listening for it and report the submit as failed.
 		a.mu.Lock()
 		delete(a.waiters, txID)
+		delete(a.resolved, txID)
 		a.mu.Unlock()
 		return &adapters.SubmitResult{TxID: txID, SubmitTime: t1}, err
 	}
-	return &adapters.SubmitResult{TxID: txID, SubmitTime: t1, AckTime: time.Now()}, nil
+	return &adapters.SubmitResult{TxID: txID, SubmitTime: t1, AckTime: ackAt}, nil
 }
 
 func (a *Adapter) WaitForFinality(ctx context.Context, txID string, timeout time.Duration) (*adapters.FinalityResult, error) {

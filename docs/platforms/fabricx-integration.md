@@ -13,6 +13,13 @@ blocks from the **sidecar's deliver stream**. Submit and commit are separate
 operations on separate connections, so Fabric-X has a genuine submit ack — a real
 T2 — which the previous REST-based integration could not observe.
 
+Using it takes care: a `BroadcastResponse` carries only a status, no transaction
+or request ID, and the router answers asynchronously across several internal
+router-to-batcher streams (`node/router/router.go` `Broadcast`,
+`shard_router.go` `Forward`), so replies on one client stream can arrive out of
+send order. The adapter therefore never puts more than one unacknowledged
+envelope on a stream.
+
 ## What the first attempt got wrong
 
 It was built on `fabric-x-samples/tokens`, a Token-SDK/FSC **demo application**
