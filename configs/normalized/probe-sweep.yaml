@@ -97,7 +97,6 @@ adapter:
   query_endpoint: "${BENCH_ADAPTER_QUERY_ENDPOINT}"
   user_priv_key_path: "${BENCH_ADAPTER_USER_PRIV_KEY_PATH}"
   user_pub_key_path: "${BENCH_ADAPTER_USER_PUB_KEY_PATH}"
-  func_name: "${BENCH_ADAPTER_FUNC_NAME}"
   table_name: "${BENCH_ADAPTER_TABLE_NAME}"
   poll_interval: 50ms
   # all platforms

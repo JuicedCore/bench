@@ -43,6 +43,6 @@ platforms:
     state_db: leveldb
     orderer_batch: *orderer_batch_normalized
   neuchain:
-    nodes: {block_server: 4, epoch_server: 1}
+    nodes: {block_server: 4, epoch_server: 4}  # epoch servers co-located, one per block-server container
     state_db: leveldb
     orderer_batch: {}

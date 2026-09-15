@@ -2,7 +2,8 @@
 # Build the NeuChain images. SLOW and heavy: install_deps.sh compiles ~15 C++
 # libraries from source (protobuf 3.19.4 autotools + brpc + braft ...). Budget
 # ~1 hour, ~30 GB free disk, 16 GB+ RAM. Run this on a build host, not during a
-# benchmark.
+# benchmark. Full output is also logged to
+# deploy/docker/neuchain/.cache/build-<UTC timestamp>.log.
 #
 #   deploy/docker/neuchain/build.sh            # ref=ev
 #   NEUCHAIN_REF=ev BUILD_JOBS=8 deploy/docker/neuchain/build.sh
@@ -17,6 +18,8 @@ CACHE="${HERE}/.cache"
 SRC="${CACHE}/NeuChain"
 
 mkdir -p "$CACHE"
+# A 45-90 minute build that fails should leave its output on disk.
+exec > >(tee -a "${CACHE}/build-$(date -u +%Y%m%dT%H%M%SZ).log") 2>&1
 if [ ! -d "$SRC/.git" ]; then
   echo "== clone NeuChain @ $REF"
   git clone --branch "$REF" --depth 1 "$REPO" "$SRC"

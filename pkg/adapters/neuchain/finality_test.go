@@ -16,9 +16,8 @@ import (
 
 func newTestAdapter() *Adapter {
 	return &Adapter{
-		mu:       sync.Mutex{},
-		waiters:  map[string]chan observedFrame{},
-		resolved: map[string]observedFrame{},
+		mu:      sync.Mutex{},
+		waiters: map[string]chan observedFrame{},
 	}
 }
 
@@ -28,7 +27,8 @@ func TestFinalityTimeIsObservationNotWaitReturn(t *testing.T) {
 	a := newTestAdapter()
 
 	observed := time.Now()
-	a.resolved["deadbeef"] = observedFrame{
+	a.waiters["deadbeef"] = make(chan observedFrame, 1)
+	a.waiters["deadbeef"] <- observedFrame{
 		frame: resultFrame{TID: 1, Epoch: 7, Result: resCommit},
 		at:    observed,
 	}
@@ -83,7 +83,8 @@ func TestFinalityTimeFromWaiterUsesObservationInstant(t *testing.T) {
 // tell it apart from an unreachable platform.
 func TestAbortedFrameIsInvalidNotError(t *testing.T) {
 	a := newTestAdapter()
-	a.resolved["bad"] = observedFrame{
+	a.waiters["bad"] = make(chan observedFrame, 1)
+	a.waiters["bad"] <- observedFrame{
 		frame: resultFrame{TID: 3, Epoch: 1, Result: resAbort},
 		at:    time.Now(),
 	}
@@ -93,5 +94,52 @@ func TestAbortedFrameIsInvalidNotError(t *testing.T) {
 	}
 	if res.Valid {
 		t.Error("ABORT frame reported as valid")
+	}
+}
+
+func TestConfigRejectsBadDurationsAndListEntries(t *testing.T) {
+	base := func() map[string]any {
+		return map[string]any{"block_servers": "h:5001", "user_priv_key_path": "/k.pem"}
+	}
+	neg := base()
+	neg["poll_interval"] = "-1s" // used to panic time.NewTicker in the poller
+	if _, err := configFromExtra(neg); err == nil {
+		t.Error("negative poll_interval must be rejected")
+	}
+	list := base()
+	list["block_servers"] = []any{"h:5001", 5002}
+	if _, err := configFromExtra(list); err == nil {
+		t.Error("non-string block_servers entry must be rejected, not dropped")
+	}
+	sb := base()
+	sb["start_block"] = "42"
+	c, err := configFromExtra(sb)
+	if err != nil || c.StartBlock != 42 {
+		t.Errorf("quoted start_block should parse: %v %+v", err, c)
+	}
+}
+
+func TestPollerDownFailsWaitFast(t *testing.T) {
+	a := newTestAdapter()
+	a.pollErr = context.DeadlineExceeded
+	start := time.Now()
+	if _, err := a.WaitForFinality(context.Background(), "abc", 5*time.Second); err == nil {
+		t.Fatal("expected the poller error")
+	}
+	if time.Since(start) > time.Second {
+		t.Error("a down poller must fail the wait immediately, not after the timeout")
+	}
+}
+
+func TestTeardownBeforeSetupIsSafe(t *testing.T) {
+	a := &Adapter{}
+	if err := a.Teardown(context.Background()); err != nil {
+		t.Fatal(err)
+	}
+	if err := a.Teardown(context.Background()); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := a.Submit(context.Background(), nil); err == nil {
+		t.Error("Submit before Setup must return ErrNotSetUp, not panic")
 	}
 }

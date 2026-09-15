@@ -6,7 +6,7 @@ commit: 5180d5e85ff152eac9c8773378cce84a205080b2
 
 neuchain.proto is a hand-transcribed SUBSET of:
   include/proto/transaction.proto   TransactionPayload
-  include/proto/tpc-c.proto         YCSB_PAYLOAD
+  include/proto/tpc-c.proto         YCSB_PAYLOAD, YCSB_FOR_BLOCK_BENCH
   include/proto/comm.proto          UserRequest, UserQueryRequest, QueryResult, KVRead
   include/proto/block.proto         Block, BlockHeader, BlockData, BlockMetadata
 

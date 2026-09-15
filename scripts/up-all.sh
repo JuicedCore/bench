@@ -9,7 +9,7 @@
 # PORT REALITY: fabric-cft, fabric-bft and drunix all bind peer :7051 /
 # orderer :7050 / operations :9443 - they are MUTUALLY EXCLUSIVE. Only one
 # Fabric-family network runs at a time; pass the one you want as arg 2.
-# fabricx (:6022/:6023/:4001/:9643) and neuchain (:5001/:7003/:18000) use
+# fabricx (:6022/:6023/:4001/:9643) and neuchain (:5001-5031/:7003-7033) use
 # distinct ports and come up alongside it when their images exist.
 #
 # For a fair cross-platform comparison you still run platforms SEQUENTIALLY with
@@ -48,7 +48,7 @@ if docker image inspect bench/neuchain:ev >/dev/null 2>&1; then
   log "neuchain"
   bash deploy/docker/neuchain/up.sh "$PROFILE" || log "neuchain up failed (non-fatal)"
 else
-  log "neuchain: skipped (image bench/neuchain:ev not built - see deploy/docker/neuchain/build.sh)"
+  log "neuchain: skipped (image bench/neuchain:ev missing - make images-import, or see deploy/docker/neuchain/patched/README.md)"
 fi
 
 echo

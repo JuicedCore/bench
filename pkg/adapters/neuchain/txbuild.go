@@ -11,33 +11,40 @@ import (
 	pb "github.com/juicedcore/bench/pkg/adapters/neuchain/proto"
 )
 
-// buildInvoke mirrors NeuChain's DBUserBase::sendInvokeRequest +
-// Utils::getTransactionPayload + Utils::getUserInvokeRequest:
+// ycsbField is the single field every normalized write sets on a YCSB record.
+const ycsbField = "field0"
+
+// buildInvoke mirrors NeuChain's AriaYCSB_DB::Update / ::Read +
+// DBUserBase::sendInvokeRequest + Utils::getTransactionPayload:
 //
-//	YCSB_PAYLOAD{ table, reads, update }         (from the normalized tx)
-//	TransactionPayload{ header=funcName, payload=marshal(YCSB_PAYLOAD),
+//	YCSB_PAYLOAD{ table, reads = [key, marshal(YCSB_FOR_BLOCK_BENCH)] }
+//	TransactionPayload{ header = "write" | "read", payload = marshal(YCSB_PAYLOAD),
 //	                    nonce = rand64 | (seq<<32), digest="" }
 //	sig = RSA_PKCS1v15_SHA256(userPrivKey, marshal(TransactionPayload))
 //	UserRequest{ payload=marshal(TransactionPayload), digest=sig }
 //
+// The header selects the YCSB_Chaincode function; any other header makes
+// InvokeChaincode return 0 and the server aborts the tx (ABORT_NO_RETRY).
 // Returns the serialized UserRequest to publish and the signature (= tx id).
 func (a *Adapter) buildInvoke(tx *adapters.Transaction) (wire []byte, sig []byte, err error) {
-	reads, writes := mapKeys(tx)
-
-	yp := &pb.YCSB_PAYLOAD{Table: []byte(a.cfg.TableName)}
-	for _, r := range reads {
-		yp.Reads = append(yp.Reads, []byte(r))
+	funcName, record, err := ycsbCall(tx)
+	if err != nil {
+		return nil, nil, err
 	}
-	for _, w := range writes {
-		yp.Update = append(yp.Update, []byte(w))
+	recordRaw, err := proto.Marshal(record)
+	if err != nil {
+		return nil, nil, fmt.Errorf("marshal YCSB_FOR_BLOCK_BENCH: %w", err)
 	}
-	ypRaw, err := proto.Marshal(yp)
+	ypRaw, err := proto.Marshal(&pb.YCSB_PAYLOAD{
+		Table: []byte(a.cfg.TableName),
+		Reads: [][]byte{[]byte(tx.Key), recordRaw},
+	})
 	if err != nil {
 		return nil, nil, fmt.Errorf("marshal YCSB_PAYLOAD: %w", err)
 	}
 
 	payload := &pb.TransactionPayload{
-		Header:  []byte(a.cfg.FuncName),
+		Header:  []byte(funcName),
 		Payload: ypRaw,
 		Nonce:   nonce(tx.Seq),
 	}
@@ -59,16 +66,38 @@ func (a *Adapter) buildInvoke(tx *adapters.Transaction) (wire []byte, sig []byte
 	return wire, sig, nil
 }
 
-// mapKeys turns a normalized transaction into NeuChain read / update key lists.
-// Matches docs/platforms/neuchain-client-implementation.md §3.3.
-func mapKeys(tx *adapters.Transaction) (reads, writes []string) {
+// buildHeartbeat mirrors Utils::getEmptyPayloadRaw: header "empty", an empty
+// YCSB_PAYLOAD on test_table.
+func (a *Adapter) buildHeartbeat(seq uint64) ([]byte, error) {
+	ypRaw, err := proto.Marshal(&pb.YCSB_PAYLOAD{Table: []byte("test_table")})
+	if err != nil {
+		return nil, err
+	}
+	payloadRaw, err := proto.Marshal(&pb.TransactionPayload{Header: []byte("empty"), Payload: ypRaw, Nonce: nonce(seq)})
+	if err != nil {
+		return nil, err
+	}
+	sig, err := a.signer.sign(payloadRaw)
+	if err != nil {
+		return nil, err
+	}
+	return proto.Marshal(&pb.UserRequest{Payload: payloadRaw, Digest: sig})
+}
+
+// ycsbCall maps a normalized transaction onto a YCSB_Chaincode function and the
+// record argument it takes. A write merges field0=Value into the key's record;
+// a read passes an empty field filter (all fields). The YCSB chaincode touches
+// one key per call, so a two-account transfer has no faithful mapping.
+func ycsbCall(tx *adapters.Transaction) (string, *pb.YCSB_FOR_BLOCK_BENCH, error) {
 	switch tx.Kind {
 	case adapters.TxRead:
-		return []string{tx.Key}, nil
-	case adapters.TxTransfer:
-		return []string{tx.Key, tx.DestKey}, []string{tx.Key, tx.DestKey}
-	default: // TxWrite
-		return nil, []string{tx.Key}
+		return "read", &pb.YCSB_FOR_BLOCK_BENCH{}, nil
+	case adapters.TxWrite:
+		return "write", &pb.YCSB_FOR_BLOCK_BENCH{Values: []*pb.YCSB_FOR_BLOCK_BENCH_YCSB_FOR_BLOCK_BENCH_PAIR{
+			{Key: []byte(ycsbField), Value: tx.Value},
+		}}, nil
+	default:
+		return "", nil, fmt.Errorf("transaction kind %v is not supported by the NeuChain YCSB chaincode (one key per call; transfers need the small_bank chaincode)", tx.Kind)
 	}
 }
 

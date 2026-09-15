@@ -1,7 +1,7 @@
 // Faithful SUBSET of the NeuChain client-path protobuf messages, transcribed
 // from iDC-NEU/NeuChain @ ev (commit 5180d5e85ff152eac9c8773378cce84a205080b2):
 //   include/proto/transaction.proto  -> TransactionPayload
-//   include/proto/tpc-c.proto        -> YCSB_PAYLOAD
+//   include/proto/tpc-c.proto        -> YCSB_PAYLOAD, YCSB_FOR_BLOCK_BENCH
 //   include/proto/comm.proto         -> UserRequest, UserQueryRequest, QueryResult, KVRead
 //   include/proto/block.proto        -> Block, BlockHeader, BlockData, BlockMetadata
 //
@@ -26,6 +26,17 @@ message YCSB_PAYLOAD {
   repeated bytes reads  = 1;
   repeated bytes update = 2;
   bytes          table  = 3;
+}
+
+// tpc-c.proto - the YCSB chaincode's value record. The client sends one as
+// YCSB_PAYLOAD.reads[1]: the fields to merge for "write", a field filter for
+// "read" (empty = all fields).
+message YCSB_FOR_BLOCK_BENCH {
+  message YCSB_FOR_BLOCK_BENCH_PAIR {
+    bytes key   = 1;
+    bytes value = 2;
+  }
+  repeated YCSB_FOR_BLOCK_BENCH_PAIR values = 1;
 }
 
 // comm.proto

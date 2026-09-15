@@ -1,58 +1,107 @@
-# NeuChain topology - PHASE 4. 4 block servers + 1 epoch server (the local
-# profile). Resource limits here are placeholders: up.sh calls lib.sh apply_budget
-# after `compose up`, splitting the profile's total budget evenly across the
-# containers that are actually running.
+# NeuChain EV topology: 4 block servers, each co-located with an epoch server
+# (the epoch servers form a 4-node raft group, epoch_ips in conf/node*.yaml).
+# Same shape as NeuChain's own run scripts, one server per container.
 #
-# Ports, config-file layout and CLI flags below are PLACEHOLDERS - fill in from
-# the iDC-NEU/NeuChain@ev repo (its scripts/ or run guide) during Phase 4.
+# Fixed IPs because NeuChain configs address peers by IP (server_ips,
+# local_server_ip, server_data keys). Resource limits here are placeholders:
+# up.sh calls lib.sh apply_budget after `compose up`, splitting the profile's
+# total budget across the running containers.
+#
+# Image: bench/neuchain:ev, currently the PATCHED build (see patched/README.md).
 name: bench-neuchain
 
-x-limits: &limits
+x-node: &node
+  image: "${BENCH_NC_IMAGE:-bench/neuchain:ev}"
+  restart: "no"
+  entrypoint: ["/bin/bash", "/opt/bench/entrypoint-node.sh"]
+  environment:
+    RUN_EPOCH: "1"
+    EPOCH_DURATION: "${BENCH_NC_EPOCH_MS:-50}"
+    LD_LIBRARY_PATH: /usr/local/lib
+  ulimits:
+    nofile: {soft: 65535, hard: 65535}
   deploy:
     resources:
       limits:
-        cpus: "${BENCH_NC_CPUS:-1.2}"
-        memory: "${BENCH_NC_MEM:-1g}"
+        cpus: "2"
+        memory: "2g"
+        pids: 4096
 
 services:
-  epoch-server:
-    image: bench/neuchain:ev
-    <<: *limits
-    entrypoint: ["/usr/local/bin/epoch_server"]
-    command: ["--config", "/etc/neuchain/epoch.conf"]      # PLACEHOLDER
-    volumes: ["./conf:/etc/neuchain:ro"]
-    ports: ["18000:18000"]                                  # PLACEHOLDER (epoch server; no adapter route)
-    networks: [nc]
-
-  block-server-0: &bs
-    image: bench/neuchain:ev
-    <<: *limits
-    depends_on: [epoch-server]
-    entrypoint: ["/usr/local/bin/block_server_test_comm"]
-    command: ["--id", "0", "--config", "/etc/neuchain/block.conf"]   # PLACEHOLDER
-    volumes: ["./conf:/etc/neuchain:ro"]
-    # NeuChain block servers speak ZeroMQ on TWO sockets, not gRPC on one:
-    # :5001 is the SUB (submit) target the client PUBs to, :7003 is the REP
-    # (query) socket the finality poller uses for tip_query / block_query.
-    # Host ports follow 5001+10n / 7003+10n per server so they match the
-    # BENCH_ADAPTER_BLOCK_SERVERS / _QUERY_ENDPOINT that up.sh emits.
+  block-server-0:
+    <<: *node
+    container_name: bench-neuchain-block-server-0
+    hostname: node0
+    volumes:
+      - ./conf/node0.yaml:/data/config.yaml:ro
+      - ./.cache/crypto:/data/crypto:ro
+      - ./entrypoint-node.sh:/opt/bench/entrypoint-node.sh:ro
+    # NeuChain block servers speak ZeroMQ on two sockets: :5001 is the SUB
+    # (submit) target the client PUBs to, :7003 the REP (query) socket the
+    # finality poller uses for tip_query / block_query. Host ports follow
+    # 5001+10n / 7003+10n and match connection.env.
     ports: ["5001:5001", "7003:7003"]
-    networks: [nc]
+    networks: {nc: {ipv4_address: 172.30.7.10}}
 
   block-server-1:
-    <<: *bs
-    command: ["--id", "1", "--config", "/etc/neuchain/block.conf"]
+    <<: *node
+    container_name: bench-neuchain-block-server-1
+    hostname: node1
+    volumes:
+      - ./conf/node1.yaml:/data/config.yaml:ro
+      - ./.cache/crypto:/data/crypto:ro
+      - ./entrypoint-node.sh:/opt/bench/entrypoint-node.sh:ro
     ports: ["5011:5001", "7013:7003"]
+    networks: {nc: {ipv4_address: 172.30.7.11}}
 
   block-server-2:
-    <<: *bs
-    command: ["--id", "2", "--config", "/etc/neuchain/block.conf"]
+    <<: *node
+    container_name: bench-neuchain-block-server-2
+    hostname: node2
+    volumes:
+      - ./conf/node2.yaml:/data/config.yaml:ro
+      - ./.cache/crypto:/data/crypto:ro
+      - ./entrypoint-node.sh:/opt/bench/entrypoint-node.sh:ro
     ports: ["5021:5001", "7023:7003"]
+    networks: {nc: {ipv4_address: 172.30.7.12}}
 
   block-server-3:
-    <<: *bs
-    command: ["--id", "3", "--config", "/etc/neuchain/block.conf"]
+    <<: *node
+    container_name: bench-neuchain-block-server-3
+    hostname: node3
+    volumes:
+      - ./conf/node3.yaml:/data/config.yaml:ro
+      - ./.cache/crypto:/data/crypto:ro
+      - ./entrypoint-node.sh:/opt/bench/entrypoint-node.sh:ro
     ports: ["5031:5001", "7033:7003"]
+    networks: {nc: {ipv4_address: 172.30.7.13}}
+
+  # One-shot: generates every server/epoch/user RSA-1024 key with NeuChain's own
+  # `user` binary (init_crypto: true). up.sh runs it only when keys are absent.
+  crypto-init:
+    image: "${BENCH_NC_IMAGE:-bench/neuchain:ev}"
+    container_name: bench-neuchain-crypto-init
+    profiles: ["init"]
+    restart: "no"
+    working_dir: /data
+    entrypoint: ["/bin/bash", "-c"]
+    command:
+      - |
+        set -u
+        cp /opt/bench/config-crypto.yaml /data/config.yaml
+        mkdir -p /data/crypto
+        # `user -b` writes the keys first, then tries to benchmark against servers
+        # that are not up; the timeout ends that part.
+        timeout 25 /opt/neuchain/bin/user -b 1 1 1 || true
+        chown -R "${BENCH_UID:-0}:${BENCH_GID:-0}" /data/crypto
+        ls /data/crypto
+    volumes:
+      - ./conf/config-crypto.yaml:/opt/bench/config-crypto.yaml:ro
+      - ./.cache/crypto:/data/crypto
+    networks: {nc: {ipv4_address: 172.30.7.20}}
 
 networks:
-  nc: {}
+  nc:
+    ipam:
+      config:
+        - subnet: 172.30.7.0/24

@@ -169,7 +169,7 @@ func TestUnionAdapterBlockLoadsOnEveryPlatform(t *testing.T) {
 		for _, key := range []string{
 			"peer_endpoint", "channel", "chaincode", // fabric family
 			"broadcast_endpoint", "deliver_endpoint", "signing_key_path", // fabricx
-			"block_servers", "query_endpoint", "func_name", // neuchain
+			"block_servers", "query_endpoint", "table_name", // neuchain
 		} {
 			if _, ok := cfg.Adapter[key]; !ok {
 				t.Errorf("%s: union adapter block is missing %q", name, key)

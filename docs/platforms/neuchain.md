@@ -57,21 +57,29 @@ NeuChain is built for high core counts. On `local` (4 block servers + 1 epoch
 server in ≈6 cores) it runs well below its paper numbers. Every `local` NeuChain
 run carries an automatic manifest caveat; quotable numbers need `gcp-full`.
 
-## Deploy (Phase 4 — partial)
+## Deploy
 
-Scaffolding is in place; the adapter and the exact run flags are still TODO.
+```
+bash deploy/docker/neuchain/up.sh local-small
+set -a; source deploy/docker/neuchain/connection.env; set +a
+go test -tags integration -run Integration -v ./pkg/adapters/neuchain/
+./bin/benchrunner run --config configs/normalized/probe-sweep.yaml --platform neuchain --profile local-small
+bash deploy/docker/neuchain/down.sh local-small
+```
 
-- `deploy/docker/neuchain/Dockerfile.build` — Ubuntu 20.04 + cmake 3.16 + gcc 9.4
-  + gRPC from source; clones `iDC-NEU/NeuChain@ev`; applies an optional
-  `cmakelists.patch`; builds `block_server*` / `epoch_server` / `user`; stages
-  the `.proto` files and the commit SHA.
-- `deploy/docker/neuchain/Dockerfile.run` — slim runtime image with just the
-  binaries + shared libs.
-- `deploy/docker/neuchain/docker-compose.yml` — 4 block servers + 1 epoch
-  server, resource limits from the profile. **Ports / config paths / CLI flags
-  are placeholders** — fill them from the repo's own run scripts.
-- `deploy/docker/neuchain/up.sh` — builds both images if absent, brings the
-  topology up, emits `connection.env`.
+- **Image**: `bench/neuchain:ev`. Currently a **patched** build
+  ([patched/README.md](../../deploy/docker/neuchain/patched/README.md)); runs
+  record `platform_version: neuchain-ev-patched` and are provisional. The clean
+  upstream build (`deploy/docker/neuchain/build.sh`) is still pending.
+- **Topology**: 4 containers on a fixed subnet (`172.30.7.10-13`), each running a
+  block server and an epoch server (4-node raft groups for both), as NeuChain's own
+  run scripts do. Configs in `deploy/docker/neuchain/conf/`, `cc_type: ycsb`.
+- **State**: starts empty, like every other platform (no `db_init` preload);
+  `down.sh` removes the containers' volumes.
+- **Keys**: `up.sh` runs `crypto-init` once (NeuChain's `user -b 1 1 1` with
+  `init_crypto: true`) into `.cache/crypto/`, then copies server 0's user keypair
+  to servers 1-3 so one adapter key verifies everywhere.
+- **Ports**: submit `5001/5011/5021/5031`, query `7003/7013/7023/7033`.
 
 ### The proto spike (do this first — adr-002)
 

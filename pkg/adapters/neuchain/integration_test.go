@@ -12,6 +12,7 @@ package neuchain
 
 import (
 	"context"
+	"fmt"
 	"os"
 	"testing"
 	"time"
@@ -29,8 +30,7 @@ func TestIntegrationNeuChainSubmitFinality(t *testing.T) {
 		"block_servers":      os.Getenv("BENCH_ADAPTER_BLOCK_SERVERS"),
 		"query_endpoint":     os.Getenv("BENCH_ADAPTER_QUERY_ENDPOINT"),
 		"user_priv_key_path": os.Getenv("BENCH_ADAPTER_USER_PRIV_KEY_PATH"),
-		"func_name":          getenv("BENCH_ADAPTER_FUNC_NAME", "ycsb"),
-		"table_name":         getenv("BENCH_ADAPTER_TABLE_NAME", "test_table"),
+		"table_name":         getenv("BENCH_ADAPTER_TABLE_NAME", "ycsb"),
 		"poll_interval":      "50ms",
 	}})
 	if err != nil {
@@ -41,7 +41,7 @@ func TestIntegrationNeuChainSubmitFinality(t *testing.T) {
 	ids := make([]string, 0, 10)
 	for i := 0; i < 10; i++ {
 		sr, err := a.Submit(ctx, &adapters.Transaction{
-			Kind: adapters.TxWrite, Key: "itest-key", Value: []byte("v"), Seq: uint64(i),
+			Kind: adapters.TxWrite, Key: fmt.Sprintf("itest-key-%d", i), Value: []byte("v"), Seq: uint64(i),
 		})
 		if err != nil {
 			t.Fatalf("submit %d: %v", i, err)

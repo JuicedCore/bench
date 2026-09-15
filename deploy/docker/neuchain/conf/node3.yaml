@@ -1,0 +1,77 @@
+init_crypto: false
+reset_epoch: true
+local_server_ip: 172.30.7.13
+server_ips:
+  - 172.30.7.10
+  - 172.30.7.11
+  - 172.30.7.12
+  - 172.30.7.13
+epoch_ips:
+  - 172.30.7.10
+  - 172.30.7.11
+  - 172.30.7.12
+  - 172.30.7.13
+cc_type: ycsb
+cc_test_func_name: time
+send_to_all_client_proxy: true
+tr_manager_show_categorize_detail: true
+tr_manager_reuse_abort_transaction: false
+early_execution: false
+early_return: true
+async_block_gen: true
+aggregation:
+  enable: false
+  policy: 0
+  cluster_ips:
+    - 172.30.7.10
+    - 172.30.7.11
+heart_beat_config:
+  table_name: heart_beat_table
+  func_name: empty
+  reads: 0
+  writes: 0
+server_data:
+  172.30.7.10:
+    public_crt: crypto/server.0.public.key
+    private_crt: crypto/server.0.private.key
+    user_public_crt: crypto/server.0.public.user.key
+    user_private_crt: crypto/server.0.private.user.key
+  172.30.7.11:
+    public_crt: crypto/server.1.public.key
+    private_crt: crypto/server.1.private.key
+    user_public_crt: crypto/server.1.public.user.key
+    user_private_crt: crypto/server.1.private.user.key
+  172.30.7.12:
+    public_crt: crypto/server.2.public.key
+    private_crt: crypto/server.2.private.key
+    user_public_crt: crypto/server.2.public.user.key
+    user_private_crt: crypto/server.2.private.user.key
+  172.30.7.13:
+    public_crt: crypto/server.3.public.key
+    private_crt: crypto/server.3.private.key
+    user_public_crt: crypto/server.3.public.user.key
+    user_private_crt: crypto/server.3.private.user.key
+epoch_data:
+  public_crt: crypto/epoch.public.key
+  private_crt: crypto/epoch.private.key
+
+cc_config:
+  table_name: user_table
+  field_count: 10
+  field_length_distribution: constant
+  field_length: 100
+  max_scan_len: 1000
+  scan_len_distribution: uniform
+  insert_start: 0
+  zipfian_const: 0.99
+  ordered_inserts: false
+  record_count: 1000000
+  operation_count: 10000
+  read_all_fields: true
+  write_all_fields: false
+  read_proportion: 0.50
+  update_proportion: 0.50
+  insert_proportion: 0.00
+  scan_proportion: 0.00
+  read_modify_write_proportion: 0.0
+  request_distribution: zipfian

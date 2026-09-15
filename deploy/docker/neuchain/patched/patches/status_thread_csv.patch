@@ -1,0 +1,31 @@
+--- a/src/user/block_bench/db_user_base.cpp
++++ b/src/user/block_bench/db_user_base.cpp
+@@ -4,6 +4,7 @@
+ 
+ #include <thread>
+ #include "user/block_bench/db_user_base.h"
++#include <cstdio>
+ #include "common/payload/ycsb_payload.h"
+ #include "common/payload/mock_utils.h"
+ #include "common/zmq/zmq_client.h"
+@@ -171,11 +172,21 @@ void BlockBench::DBUserBase::StatusThread(std::unique_ptr<DBUserBase> db, std::atomic<bool> *finishSignal,
+                 if(txMap.count(tx.first)) { // in the map, emit by this user.
+                     if (tx.second) {     // true, commit
+                         txCountCommit++;
+                         latency += (tipStartTime - txMap[tx.first]);
+                     } else {    // false, abort
+                         txCountAbort++;
+                     }
++                    {
++                        FILE* latf = fopen("/results/latency_samples_raw.csv", "a");
++                        if (latf) {
++                            fprintf(latf, "%lld,%lld,%s\n",
++                                    (long long) tipStartTime,
++                                    (long long) (tipStartTime - txMap[tx.first]),
++                                    tx.second ? "commit" : "abort");
++                            fclose(latf);
++                        }
++                    }
+                     // pop this when we finished using tx, otherwise may cause mem leak!
+                     txMap.erase(tx.first);
+                 } else {    // unknown, not in the map

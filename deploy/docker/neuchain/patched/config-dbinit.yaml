@@ -1,0 +1,56 @@
+# Local single-process config for db_init (LevelDB under /data).
+init_crypto: false
+reset_epoch: true
+local_server_ip: 127.0.0.1
+server_ips:
+  - 127.0.0.1
+epoch_ips:
+  - 127.0.0.1
+cc_type: small_bank
+cc_test_func_name: time
+send_to_all_client_proxy: false
+tr_manager_show_categorize_detail: false
+tr_manager_reuse_abort_transaction: false
+early_execution: false
+early_return: true
+async_block_gen: true
+aggregation:
+  enable: false
+  policy: 0
+  cluster_ips:
+    - 127.0.0.1
+heart_beat_config:
+  table_name: heart_beat_table
+  func_name: empty
+  reads: 0
+  writes: 0
+server_data:
+  127.0.0.1:
+    public_crt: crypto/server.0.public.key
+    private_crt: crypto/server.0.private.key
+    user_public_crt: crypto/server.0.public.user.key
+    user_private_crt: crypto/server.0.private.user.key
+epoch_data:
+  public_crt: crypto/epoch.public.key
+  private_crt: crypto/epoch.private.key
+
+cc_config:
+  table_name: user_table
+  field_count: 10
+  field_length_distribution: constant
+  field_length: 100
+  max_scan_len: 1000
+  scan_len_distribution: uniform
+  insert_start: 0
+  zipfian_const: 0.99
+  ordered_inserts: false
+  record_count: 1000000
+  operation_count: 10000
+  read_all_fields: true
+  write_all_fields: false
+  read_proportion: 0.50
+  update_proportion: 0.50
+  insert_proportion: 0.00
+  scan_proportion: 0.00
+  read_modify_write_proportion: 0.0
+  request_distribution: zipfian

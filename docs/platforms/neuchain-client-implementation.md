@@ -54,15 +54,26 @@ for each.
 `src/user/block_bench/db_user_base.cpp` → `sendInvokeRequest`:
 
 1. `payloadRaw = TransactionPayload{ header = funcName, payload =
-   marshal(YCSB_PAYLOAD{ table, reads, update }), nonce = rand64 | (seq<<32) }`
+   marshal(YCSB_PAYLOAD{ table, reads = [key, marshal(YCSB_FOR_BLOCK_BENCH)] }),
+   nonce = rand64 | (seq<<32) }`
    serialized. `digest` field left empty (server fills).
 2. `sig = RSA_sign_PKCS1v15_SHA256(userPrivKey, payloadRaw)` — up to 128 bytes.
 3. `UserRequest{ payload = payloadRaw, digest = sig }` serialized.
 4. **`UserRequest.digest` (the signature) is the transaction id** the client uses
    for finality matching (`addPendingTransactionHandle(invokeRequest.digest())`).
-5. Send the serialized `UserRequest` on a ZeroMQ **PUB** socket to **every** block
-   server at `tcp://<ip>:5001` (deterministic execution — all nodes get all txs).
-   Single-node mode uses one plain socket to the local block server.
+5. Send the serialized `UserRequest` on a ZeroMQ **PUB** socket to one block
+   server at `tcp://<ip>:5001`, round-robin across servers (the server forwards
+   it through the epoch server to every node). The native client signs with the
+   target server's user key (`server.N.private.user.key`), because each server
+   verifies against its own `user_public_crt`; a bad signature is a
+   `CHECK(false)` crash on the server. The Bench deploy gives all four servers
+   one user keypair so the adapter signs once.
+6. **Heartbeat.** A block for epoch N is only emitted once later epochs carry
+   traffic, so the last transactions of a burst stay pending until more arrive.
+   NeuChain's own deployment runs `user` in low-cost mode (an `"empty"` tx every
+   100 ms, `Utils::getEmptyPayloadRaw`); the adapter does the same to every block
+   server (`adapter.heartbeat_interval`, default `100ms`, `0s` disables). The
+   chaincode aborts `"empty"` without touching state.
 
 > T2 (ack) for the harness = the moment the ZMQ `send` returns. NeuChain has no
 > submit acknowledgement; PUB is fire-and-forget.
@@ -83,20 +94,25 @@ block `n`, `block_query n`, then for every entry in `block.data.data` decode the
 
 ### 3.3 `YCSB_PAYLOAD` mapping for normalized workloads
 
-`tpc-c.proto`: `YCSB_PAYLOAD { repeated bytes reads = 1; repeated bytes update =
-2; bytes table = 3; }`. `getYCSBPayload` fills `reads` from `request.reads` and
-`update` from `request.writes`; `table` defaults to `"test_table"`.
+The deploy runs `cc_type: ycsb`. `YCSB_Chaincode::InvokeChaincode` dispatches on
+the header and reads `YCSB_PAYLOAD.reads` as `[key, record]`, where `record` is a
+serialized `YCSB_FOR_BLOCK_BENCH{ values: [{key, value}] }` (mirrors
+`AriaYCSB_DB::Update` / `::Read`). Any other header returns 0, which the executor
+turns into `ABORT_NO_RETRY`: a wrong header aborts every transaction.
 
-| Harness `TxKind` | `funcName` (header) | `reads` | `update` |
-| ---------------- | ------------------- | ------- | -------- |
-| `TxWrite` | from NeuChain cc config (e.g. `"ycsb"`) | — | `[key]` |
-| `TxRead` | same | `[key]` | — |
-| `TxTransfer` | same | `[src, dst]` | `[src, dst]` |
+| Harness `TxKind` | header | `reads` |
+| ---------------- | ------ | ------- |
+| `TxWrite` | `"write"` | `[key, {field0: Value}]` (merged into the record) |
+| `TxRead` | `"read"` | `[key, {}]` (empty filter = all fields) |
+| `TxTransfer` | not supported: the YCSB chaincode touches one key per call; transfers need `small_bank` | |
 
-The concrete `funcName` and table come from the deployed NeuChain chaincode
-config (`config-template.yaml` → `func_name`, `table_name`); the adapter takes
-them from the run config's `adapter:` block. This is the one place the normalized
-workload leans on NeuChain-side config — recorded as a manifest caveat.
+`table` is sent as `"ycsb"`; the chaincode ignores it and always uses table
+`ycsb`.
+
+User keys are PEM PKCS#1 written by `CryptoSign::generateKeyFiles` with OpenSSL
+legacy encryption (`DES-EDE3-OFB`) under an empty password. Go's
+`x509.DecryptPEMBlock` does not support OFB, so `sign.go` decrypts it
+(EVP_BytesToKey MD5, one iteration).
 
 ### 3.4 Block result frame (hand-rolled, NOT protobuf)
 

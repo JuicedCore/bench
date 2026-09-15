@@ -10,7 +10,8 @@
 # so "E2E latency" here is not comparable to the write modes:
 #   - Fabric / Drunix: chaincode Evaluate against one peer. WaitForFinality
 #     returns immediately with Valid=true; nothing reaches the ledger.
-#   - Fabric-X: the same synchronous POST as a write, through the FSC KV view.
+#   - Fabric-X: a full ordered + committed transaction carrying a unique dummy
+#     blind write (the validator rejects read-only transactions).
 #   - NeuChain: a real submitted transaction carrying a read set, not a point
 #     query - it goes through the full commit path.
 # The shape is consistent enough to compare read paths against each other; it is
@@ -97,7 +98,6 @@ adapter:
   query_endpoint: "${BENCH_ADAPTER_QUERY_ENDPOINT}"
   user_priv_key_path: "${BENCH_ADAPTER_USER_PRIV_KEY_PATH}"
   user_pub_key_path: "${BENCH_ADAPTER_USER_PUB_KEY_PATH}"
-  func_name: "${BENCH_ADAPTER_FUNC_NAME}"
   table_name: "${BENCH_ADAPTER_TABLE_NAME}"
   poll_interval: 50ms
   # all platforms

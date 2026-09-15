@@ -2,6 +2,7 @@ package neuchain
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"strconv"
 	"strings"
@@ -27,26 +28,40 @@ type zmqTransport struct {
 	qmu  sync.Mutex // REQ sockets are strict req/rep - serialise
 	req  zmq4.Socket
 	sign func([]byte) ([]byte, error)
+
+	queryEP string
+	pubEP   []string
 }
 
 func newTransport(parent context.Context, cfg *Config, sign func([]byte) ([]byte, error)) (*zmqTransport, error) {
 	ctx, cancel := context.WithCancel(parent)
 	t := &zmqTransport{ctx: ctx, cancel: cancel, sign: sign}
 
+	// Explicit timeouts and reconnect: zmq4's defaults are a 5 minute socket
+	// timeout and no reconnect, so a block-server restart would silently kill
+	// submits and block the finality poller for minutes at a time.
+	opts := []zmq4.Option{
+		zmq4.WithTimeout(cfg.SocketTimeout),
+		zmq4.WithDialerTimeout(cfg.DialTimeout),
+		zmq4.WithDialerRetry(250 * time.Millisecond),
+		zmq4.WithAutomaticReconnect(true),
+	}
 	for _, ep := range cfg.BlockServers {
-		s := zmq4.NewPub(ctx)
+		s := zmq4.NewPub(ctx, opts...)
 		if err := s.Dial(tcp(ep)); err != nil {
 			t.Close()
-			return nil, fmt.Errorf("neuchain: dial submit %s: %w", ep, err)
+			return nil, fmt.Errorf("neuchain: dial block server submit socket %s: %w (is the neuchain stack up? docker ps | grep block-server)", ep, err)
 		}
 		t.pub = append(t.pub, s)
+		t.pubEP = append(t.pubEP, ep)
 	}
 
-	t.req = zmq4.NewReq(ctx)
+	t.req = zmq4.NewReq(ctx, opts...)
 	if err := t.req.Dial(tcp(cfg.QueryEndpoint)); err != nil {
 		t.Close()
-		return nil, fmt.Errorf("neuchain: dial query %s: %w", cfg.QueryEndpoint, err)
+		return nil, fmt.Errorf("neuchain: dial query socket %s: %w (the block server's query port is normally 7003)", cfg.QueryEndpoint, err)
 	}
+	t.queryEP = cfg.QueryEndpoint
 
 	// PUB is a slow joiner: give the SUB side a moment to complete the
 	// subscription handshake before the first publish, or early txs are dropped.
@@ -73,19 +88,33 @@ func (t *zmqTransport) Close() {
 // NeuChain's deterministic execution means every server must ultimately see
 // every tx; a PUB fan-out to all SUBs on the far side achieves that, so sending
 // to one endpoint's PUB socket is sufficient per submit.
+//
+// PUB is fire-and-forget: a nil error means the message was queued, not that a
+// block server received it. A dropped message surfaces as a finality timeout.
 func (t *zmqTransport) publish(wire []byte) error {
 	if len(t.pub) == 0 {
 		return fmt.Errorf("neuchain: no submit sockets")
 	}
 	i := int(t.rr.Add(1)-1) % len(t.pub)
-	return t.pub[i].Send(zmq4.NewMsg(wire))
+	if err := t.pub[i].Send(zmq4.NewMsg(wire)); err != nil {
+		return fmt.Errorf("neuchain: publish to block server %s: %w", t.pubEP[i], err)
+	}
+	return nil
+}
+
+// publishTo sends to block server i, bypassing the round-robin.
+func (t *zmqTransport) publishTo(i int, wire []byte) error {
+	if err := t.pub[i].Send(zmq4.NewMsg(wire)); err != nil {
+		return fmt.Errorf("neuchain: publish to block server %s: %w", t.pubEP[i], err)
+	}
+	return nil
 }
 
 // query sends a signed UserQueryRequest and returns the raw reply frame.
 func (t *zmqTransport) query(qtype, payload string) ([]byte, error) {
 	sig, err := t.sign([]byte(payload))
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("neuchain: sign %s: %w", qtype, err)
 	}
 	reqRaw, err := proto.Marshal(&pb.UserQueryRequest{
 		Type: []byte(qtype), Payload: []byte(payload), Digest: sig,
@@ -96,14 +125,14 @@ func (t *zmqTransport) query(qtype, payload string) ([]byte, error) {
 	t.qmu.Lock()
 	defer t.qmu.Unlock()
 	if err := t.req.Send(zmq4.NewMsg(reqRaw)); err != nil {
-		return nil, fmt.Errorf("neuchain: query send: %w", err)
+		return nil, fmt.Errorf("neuchain: %s send to %s: %w", qtype, t.queryEP, err)
 	}
 	msg, err := t.req.Recv()
 	if err != nil {
-		return nil, fmt.Errorf("neuchain: query recv: %w", err)
+		return nil, fmt.Errorf("neuchain: %s reply from %s: %w", qtype, t.queryEP, err)
 	}
 	if len(msg.Frames) == 0 {
-		return nil, fmt.Errorf("neuchain: empty query reply")
+		return nil, fmt.Errorf("neuchain: empty %s reply from %s", qtype, t.queryEP)
 	}
 	return msg.Frames[0], nil
 }
@@ -132,18 +161,23 @@ func (t *zmqTransport) block(n uint64) ([]resultFrame, error) {
 		return nil, fmt.Errorf("neuchain: unmarshal block %d: %w", n, err)
 	}
 	if blk.GetData() == nil {
-		return nil, nil
+		// Either a genuinely empty block or one the server could not return yet;
+		// the poller retries, then skips it with a log line.
+		return nil, errEmptyBlock
 	}
 	frames := make([]resultFrame, 0, len(blk.GetData().GetData()))
 	for _, entry := range blk.GetData().GetData() {
 		f, err := decodeResultFrame(entry)
 		if err != nil {
-			return frames, err
+			return frames, fmt.Errorf("neuchain: block %d result frame %d: %w", n, len(frames), err)
 		}
 		frames = append(frames, f)
 	}
 	return frames, nil
 }
+
+// errEmptyBlock marks a block_query reply with no data section.
+var errEmptyBlock = errors.New("block has no data")
 
 func tcp(hostPort string) string {
 	if strings.Contains(hostPort, "://") {
