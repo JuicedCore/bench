@@ -1,0 +1,385 @@
+{
+  "manifest": {
+    "run_name": "quick-smoke",
+    "platform": "fabricx",
+    "workload": "kv-write",
+    "profile": "local-small",
+    "normalized": true,
+    "started_at": "2026-09-14T22:36:21.900412504+05:30",
+    "ended_at": "2026-09-14T22:37:04.13387398+05:30",
+    "harness_git_sha": "63ab885",
+    "platform_version": "fabricx-committer-v1.0.5-orderer-v1.0.6",
+    "state_db": "postgres",
+    "state_db_requested": "leveldb",
+    "orderer_batch": {
+      "MaxMessageCount": 100,
+      "AbsoluteMaxBytes": "10 MB",
+      "PreferredMaxBytes": "2 MB",
+      "BatchTimeout": "1s"
+    },
+    "crypto": {
+      "signature_alg": "ECDSA-P256",
+      "hash_alg": "SHA-256",
+      "per_tx_endorsement_verify": true,
+      "msp_note": "Fabric-X: client-signed ECDSA endorsement per namespace, verified by the committer against the namespace policy registered in _meta at deploy time. No peer endorsement round-trip."
+    },
+    "resource_limit_per_container": {
+      "CPUs": 2,
+      "Memory": ""
+    },
+    "resource_memory_by_container": {
+      "bench-fabricx-fabricx-arma-1": "2048m",
+      "bench-fabricx-fabricx-committer-1": "2048m",
+      "bench-fabricx-fabricx-db-1": "2048m",
+      "bench-fabricx-fabricx-pipeline-1": "2048m"
+    },
+    "resource_memory_weights": "peer=4 statedb=4 orderer=2 other=1",
+    "resource_containers": 4,
+    "resource_cpus_total": 8,
+    "resource_memory_total_gb": 8,
+    "nodes": {
+      "arma": 1,
+      "committer": 1,
+      "pipeline": 1,
+      "postgres": 1
+    },
+    "generators": 2,
+    "seed": 1,
+    "key_space": 5000,
+    "key_distribution": "uniform",
+    "zipfian_constant": 0,
+    "read_write_ratio": 0,
+    "value_size_bytes": 64,
+    "warmup_sec": 5,
+    "cooldown_sec": 3,
+    "caveats": [
+      "state-db parity not held: run requested leveldb, platform actually ran postgres",
+      "native metrics scrape of http://localhost:9643/metrics failed: scrape http://localhost:9643/metrics: parser panic: Invalid name validation scheme requested: unset (informational metrics only; harness numbers unaffected)"
+    ]
+  },
+  "phases": [
+    {
+      "name": "single",
+      "offered_tps": 50,
+      "window": {
+        "phase_start": "2026-09-14T22:36:21.908809268+05:30",
+        "win_start": "2026-09-14T22:36:26.908809268+05:30",
+        "win_end": "2026-09-14T22:36:48.908809268+05:30"
+      },
+      "result": {
+        "wall_clock_sec": 22,
+        "submitted": 1100,
+        "committed": 1100,
+        "invalid": 0,
+        "errored": 0,
+        "timed_out": 0,
+        "confirmed_tps": 50,
+        "offered_tps": 50,
+        "failure_rate": 0,
+        "e2e_latency": {
+          "name": "e2e",
+          "count": 1100,
+          "min_ms": 10330.11,
+          "max_ms": 14614.53,
+          "mean_ms": 12618.502516363638,
+          "stddev_ms": 844.7472167677893,
+          "percentiles_ms": {
+            "p1": 10543.1,
+            "p10": 11501.57,
+            "p25": 12017.66,
+            "p5": 11272.19,
+            "p50": 12656.64,
+            "p75": 13230.08,
+            "p90": 13672.45,
+            "p95": 14008.32,
+            "p99": 14409.73,
+            "p99.9": 14614.53,
+            "p99.99": 14614.53
+          }
+        },
+        "submit_latency": {
+          "name": "submit",
+          "count": 1100,
+          "min_ms": 0.17,
+          "max_ms": 1.47,
+          "mean_ms": 0.378102727272727,
+          "stddev_ms": 0.16076778112267223,
+          "percentiles_ms": {
+            "p1": 0.21,
+            "p10": 0.25,
+            "p25": 0.28,
+            "p5": 0.24,
+            "p50": 0.34,
+            "p75": 0.41,
+            "p90": 0.53,
+            "p95": 0.75,
+            "p99": 1,
+            "p99.9": 1.43,
+            "p99.99": 1.47
+          }
+        },
+        "commit_latency": {
+          "name": "commit",
+          "count": 1100,
+          "min_ms": 10330.11,
+          "max_ms": 14606.34,
+          "mean_ms": 12617.556712727273,
+          "stddev_ms": 844.7484030541646,
+          "percentiles_ms": {
+            "p1": 10534.91,
+            "p10": 11501.57,
+            "p25": 12017.66,
+            "p5": 11272.19,
+            "p50": 12656.64,
+            "p75": 13230.08,
+            "p90": 13672.45,
+            "p95": 14008.32,
+            "p99": 14409.73,
+            "p99.9": 14606.34,
+            "p99.99": 14606.34
+          }
+        },
+        "send_gap": {
+          "name": "send_gap",
+          "count": 1100,
+          "min_ms": 0,
+          "max_ms": 1.28,
+          "mean_ms": 0.5528518181818185,
+          "stddev_ms": 0.2947894670104931,
+          "percentiles_ms": {
+            "p1": 0.02,
+            "p10": 0.13,
+            "p25": 0.32,
+            "p5": 0.06,
+            "p50": 0.56,
+            "p75": 0.79,
+            "p90": 0.96,
+            "p95": 1.02,
+            "p99": 1.1,
+            "p99.9": 1.21,
+            "p99.99": 1.28
+          }
+        },
+        "invariant_ok": true
+      }
+    }
+  ],
+  "headline": {
+    "wall_clock_sec": 22,
+    "submitted": 1100,
+    "committed": 1100,
+    "invalid": 0,
+    "errored": 0,
+    "timed_out": 0,
+    "confirmed_tps": 50,
+    "offered_tps": 50,
+    "failure_rate": 0,
+    "e2e_latency": {
+      "name": "e2e",
+      "count": 1100,
+      "min_ms": 10330.11,
+      "max_ms": 14614.53,
+      "mean_ms": 12618.502516363638,
+      "stddev_ms": 844.7472167677893,
+      "percentiles_ms": {
+        "p1": 10543.1,
+        "p10": 11501.57,
+        "p25": 12017.66,
+        "p5": 11272.19,
+        "p50": 12656.64,
+        "p75": 13230.08,
+        "p90": 13672.45,
+        "p95": 14008.32,
+        "p99": 14409.73,
+        "p99.9": 14614.53,
+        "p99.99": 14614.53
+      }
+    },
+    "submit_latency": {
+      "name": "submit",
+      "count": 1100,
+      "min_ms": 0.17,
+      "max_ms": 1.47,
+      "mean_ms": 0.378102727272727,
+      "stddev_ms": 0.16076778112267223,
+      "percentiles_ms": {
+        "p1": 0.21,
+        "p10": 0.25,
+        "p25": 0.28,
+        "p5": 0.24,
+        "p50": 0.34,
+        "p75": 0.41,
+        "p90": 0.53,
+        "p95": 0.75,
+        "p99": 1,
+        "p99.9": 1.43,
+        "p99.99": 1.47
+      }
+    },
+    "commit_latency": {
+      "name": "commit",
+      "count": 1100,
+      "min_ms": 10330.11,
+      "max_ms": 14606.34,
+      "mean_ms": 12617.556712727273,
+      "stddev_ms": 844.7484030541646,
+      "percentiles_ms": {
+        "p1": 10534.91,
+        "p10": 11501.57,
+        "p25": 12017.66,
+        "p5": 11272.19,
+        "p50": 12656.64,
+        "p75": 13230.08,
+        "p90": 13672.45,
+        "p95": 14008.32,
+        "p99": 14409.73,
+        "p99.9": 14606.34,
+        "p99.99": 14606.34
+      }
+    },
+    "send_gap": {
+      "name": "send_gap",
+      "count": 1100,
+      "min_ms": 0,
+      "max_ms": 1.28,
+      "mean_ms": 0.5528518181818185,
+      "stddev_ms": 0.2947894670104931,
+      "percentiles_ms": {
+        "p1": 0.02,
+        "p10": 0.13,
+        "p25": 0.32,
+        "p5": 0.06,
+        "p50": 0.56,
+        "p75": 0.79,
+        "p90": 0.96,
+        "p95": 1.02,
+        "p99": 1.1,
+        "p99.9": 1.21,
+        "p99.99": 1.28
+      }
+    },
+    "invariant_ok": true
+  },
+  "system_samples": [
+    {
+      "t": "2026-09-14T22:36:24.938396631+05:30",
+      "cpu_percent": 9.97,
+      "mem_bytes": 584025374,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T22:36:26.946394229+05:30",
+      "cpu_percent": 10.26,
+      "mem_bytes": 581613648,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T22:36:28.957765199+05:30",
+      "cpu_percent": 9.84,
+      "mem_bytes": 581613648,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T22:36:30.966186124+05:30",
+      "cpu_percent": 9.629999999999999,
+      "mem_bytes": 579967384,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T22:36:32.975573052+05:30",
+      "cpu_percent": 9.82,
+      "mem_bytes": 580439243,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T22:36:34.985734059+05:30",
+      "cpu_percent": 9.62,
+      "mem_bytes": 582997769,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T22:36:36.997910556+05:30",
+      "cpu_percent": 15.86,
+      "mem_bytes": 586961386,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T22:36:39.006585252+05:30",
+      "cpu_percent": 10.46,
+      "mem_bytes": 593011669,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T22:36:41.014941178+05:30",
+      "cpu_percent": 12.590000000000002,
+      "mem_bytes": 615954511,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T22:36:43.023403627+05:30",
+      "cpu_percent": 15.75,
+      "mem_bytes": 626314443,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T22:36:45.033126817+05:30",
+      "cpu_percent": 10.24,
+      "mem_bytes": 636233971,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T22:36:47.042841532+05:30",
+      "cpu_percent": 15.64,
+      "mem_bytes": 655328541,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T22:36:49.053112644+05:30",
+      "cpu_percent": 16.27,
+      "mem_bytes": 666862877,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T22:36:51.062315735+05:30",
+      "cpu_percent": 14.73,
+      "mem_bytes": 671937985,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T22:36:53.071789881+05:30",
+      "cpu_percent": 9.19,
+      "mem_bytes": 671214467,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T22:36:55.081277514+05:30",
+      "cpu_percent": 13.4,
+      "mem_bytes": 673825423,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T22:36:57.090272797+05:30",
+      "cpu_percent": 8.9,
+      "mem_bytes": 677453494,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T22:36:59.098586079+05:30",
+      "cpu_percent": 15.66,
+      "mem_bytes": 687079421,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T22:37:01.108547224+05:30",
+      "cpu_percent": 7.890000000000001,
+      "mem_bytes": 690434865,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T22:37:03.116935601+05:30",
+      "cpu_percent": 7.54,
+      "mem_bytes": 691808500,
+      "containers": 4
+    }
+  ]
+}

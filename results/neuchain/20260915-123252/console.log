@@ -1,0 +1,747 @@
+time=2026-09-15T12:32:52.024+05:30 level=INFO msg="run starting" platform=neuchain run=probe-sweep workload=kv-write profile=local-small normalized=true out_dir=results/neuchain/20260915-123252
+time=2026-09-15T12:32:52.024+05:30 level=WARN msg=caveat platform=neuchain run=probe-sweep text="server image is a patched NeuChain ev build (deploy/docker/neuchain/patched/README.md); provisional until a clean upstream build is run"
+time=2026-09-15T12:32:52.024+05:30 level=INFO msg="adapter setup" platform=neuchain run=probe-sweep
+time=2026-09-15T12:32:52.229+05:30 level=INFO msg="setup complete" platform=neuchain run=probe-sweep component=adapter block_servers="[localhost:5001 localhost:5011 localhost:5021 localhost:5031]" query=localhost:7003 tip=777 start_block=778 poll_interval=50ms
+time=2026-09-15T12:32:52.229+05:30 level=INFO msg="phase start" platform=neuchain run=probe-sweep phase=probe offered_tps=10 workers=0 duration=30s
+[probe] 00:01/00:30  target 10 tps  offered 10 tps  confirmed 8 tps  p99 352.0ms  fail 0.00%
+[probe] 00:02/00:30  target 10 tps  offered 10 tps  confirmed 9 tps  p99 352.0ms  fail 0.00%
+[probe] 00:03/00:30  target 10 tps  offered 10 tps  confirmed 9 tps  p99 451.6ms  fail 0.00%
+[probe] 00:04/00:30  target 10 tps  offered 10 tps  confirmed 9 tps  p99 452.1ms  fail 0.00%
+[probe] 00:05/00:30  target 10 tps  offered 10 tps  confirmed 9 tps  p99 452.1ms  fail 0.00%
+[probe] 00:06/00:30  target 10 tps  offered 10 tps  confirmed 9 tps  p99 452.1ms  fail 0.00%
+[probe] 00:07/00:30  target 10 tps  offered 10 tps  confirmed 9 tps  p99 452.6ms  fail 0.00%
+[probe] 00:08/00:30  target 10 tps  offered 10 tps  confirmed 10 tps  p99 452.6ms  fail 0.00%
+[probe] 00:09/00:30  target 10 tps  offered 10 tps  confirmed 10 tps  p99 452.6ms  fail 0.00%
+[probe] 00:10/00:30  target 10 tps  offered 10 tps  confirmed 10 tps  p99 452.6ms  fail 0.00%
+[probe] 00:11/00:30  target 10 tps  offered 10 tps  confirmed 10 tps  p99 452.6ms  fail 0.00%
+[probe] 00:12/00:30  target 10 tps  offered 10 tps  confirmed 10 tps  p99 452.6ms  fail 0.00%
+[probe] 00:13/00:30  target 10 tps  offered 10 tps  confirmed 10 tps  p99 452.6ms  fail 0.00%
+[probe] 00:14/00:30  target 10 tps  offered 10 tps  confirmed 10 tps  p99 452.6ms  fail 0.00%
+[probe] 00:15/00:30  target 10 tps  offered 10 tps  confirmed 10 tps  p99 452.6ms  fail 0.00%
+[probe] 00:16/00:30  target 10 tps  offered 10 tps  confirmed 10 tps  p99 452.4ms  fail 0.00%
+[probe] 00:17/00:30  target 10 tps  offered 10 tps  confirmed 10 tps  p99 452.4ms  fail 0.00%
+[probe] 00:18/00:30  target 10 tps  offered 10 tps  confirmed 10 tps  p99 452.4ms  fail 0.00%
+[probe] 00:19/00:30  target 10 tps  offered 10 tps  confirmed 10 tps  p99 452.4ms  fail 0.00%
+[probe] 00:20/00:30  target 10 tps  offered 10 tps  confirmed 10 tps  p99 452.4ms  fail 0.00%
+[probe] 00:21/00:30  target 10 tps  offered 10 tps  confirmed 10 tps  p99 452.4ms  fail 0.00%
+[probe] 00:22/00:30  target 10 tps  offered 10 tps  confirmed 10 tps  p99 452.4ms  fail 0.00%
+[probe] 00:23/00:30  target 10 tps  offered 10 tps  confirmed 10 tps  p99 452.4ms  fail 0.00%
+[probe] 00:24/00:30  target 10 tps  offered 10 tps  confirmed 10 tps  p99 452.4ms  fail 0.00%
+[probe] 00:25/00:30  target 10 tps  offered 10 tps  confirmed 10 tps  p99 452.4ms  fail 0.00%
+[probe] 00:26/00:30  target 10 tps  offered 10 tps  confirmed 10 tps  p99 452.4ms  fail 0.00%
+[probe] 00:27/00:30  target 10 tps  offered 10 tps  confirmed 10 tps  p99 452.4ms  fail 0.00%
+[probe] 00:28/00:30  target 10 tps  offered 10 tps  confirmed 10 tps  p99 452.4ms  fail 0.00%
+[probe] 00:29/00:30  target 10 tps  offered 10 tps  confirmed 10 tps  p99 452.6ms  fail 0.00%
+[probe] 00:30/00:30  target 10 tps  offered 10 tps  confirmed 10 tps  p99 452.9ms  fail 0.00%
+time=2026-09-15T12:33:22.582+05:30 level=INFO msg="phase end" platform=neuchain run=probe-sweep phase=probe submitted=300 committed=300 confirmed_tps=10.0 fail_rate=0.0000 e2e_p99_ms=452.86
+time=2026-09-15T12:33:22.582+05:30 level=INFO msg="phase start" platform=neuchain run=probe-sweep phase=sweep-100 offered_tps=100 workers=0 duration=1m0s
+[sweep-100] 00:01/01:00  target 100 tps  offered 100 tps  confirmed 86 tps  p99 228.7ms  fail 0.00%
+[sweep-100] 00:02/01:00  target 100 tps  offered 100 tps  confirmed 93 tps  p99 238.3ms  fail 0.00%
+[sweep-100] 00:03/01:00  target 100 tps  offered 100 tps  confirmed 94 tps  p99 238.5ms  fail 0.00%
+[sweep-100] 00:04/01:00  target 100 tps  offered 100 tps  confirmed 95 tps  p99 238.5ms  fail 0.00%
+[sweep-100] 00:05/01:00  target 100 tps  offered 100 tps  confirmed 98 tps  p99 238.5ms  fail 0.00%
+[sweep-100] 00:06/01:00  target 100 tps  offered 100 tps  confirmed 97 tps  p99 238.5ms  fail 0.00%
+[sweep-100] 00:07/01:00  target 100 tps  offered 100 tps  confirmed 98 tps  p99 238.5ms  fail 0.00%
+[sweep-100] 00:08/01:00  target 100 tps  offered 100 tps  confirmed 98 tps  p99 238.5ms  fail 0.00%
+[sweep-100] 00:09/01:00  target 100 tps  offered 100 tps  confirmed 98 tps  p99 238.5ms  fail 0.00%
+[sweep-100] 00:10/01:00  target 100 tps  offered 100 tps  confirmed 99 tps  p99 238.5ms  fail 0.00%
+[sweep-100] 00:11/01:00  target 100 tps  offered 100 tps  confirmed 99 tps  p99 238.5ms  fail 0.00%
+[sweep-100] 00:12/01:00  target 100 tps  offered 100 tps  confirmed 99 tps  p99 238.5ms  fail 0.00%
+[sweep-100] 00:13/01:00  target 100 tps  offered 100 tps  confirmed 99 tps  p99 238.5ms  fail 0.00%
+[sweep-100] 00:14/01:00  target 100 tps  offered 100 tps  confirmed 99 tps  p99 238.5ms  fail 0.00%
+[sweep-100] 00:15/01:00  target 100 tps  offered 100 tps  confirmed 99 tps  p99 238.5ms  fail 0.00%
+[sweep-100] 00:16/01:00  target 100 tps  offered 100 tps  confirmed 99 tps  p99 238.5ms  fail 0.00%
+[sweep-100] 00:17/01:00  target 100 tps  offered 100 tps  confirmed 99 tps  p99 238.5ms  fail 0.00%
+[sweep-100] 00:18/01:00  target 100 tps  offered 100 tps  confirmed 99 tps  p99 238.5ms  fail 0.00%
+[sweep-100] 00:19/01:00  target 100 tps  offered 100 tps  confirmed 99 tps  p99 238.5ms  fail 0.00%
+[sweep-100] 00:20/01:00  target 100 tps  offered 100 tps  confirmed 99 tps  p99 238.5ms  fail 0.00%
+[sweep-100] 00:21/01:00  target 100 tps  offered 100 tps  confirmed 100 tps  p99 238.5ms  fail 0.00%
+[sweep-100] 00:22/01:00  target 100 tps  offered 100 tps  confirmed 99 tps  p99 238.5ms  fail 0.00%
+[sweep-100] 00:23/01:00  target 100 tps  offered 100 tps  confirmed 100 tps  p99 238.5ms  fail 0.00%
+[sweep-100] 00:24/01:00  target 100 tps  offered 100 tps  confirmed 100 tps  p99 238.5ms  fail 0.00%
+[sweep-100] 00:25/01:00  target 100 tps  offered 100 tps  confirmed 99 tps  p99 238.5ms  fail 0.00%
+[sweep-100] 00:26/01:00  target 100 tps  offered 100 tps  confirmed 99 tps  p99 238.5ms  fail 0.00%
+[sweep-100] 00:27/01:00  target 100 tps  offered 100 tps  confirmed 99 tps  p99 238.5ms  fail 0.00%
+[sweep-100] 00:28/01:00  target 100 tps  offered 100 tps  confirmed 99 tps  p99 238.5ms  fail 0.00%
+[sweep-100] 00:29/01:00  target 100 tps  offered 100 tps  confirmed 100 tps  p99 238.5ms  fail 0.00%
+[sweep-100] 00:30/01:00  target 100 tps  offered 100 tps  confirmed 100 tps  p99 238.5ms  fail 0.00%
+[sweep-100] 00:31/01:00  target 100 tps  offered 100 tps  confirmed 100 tps  p99 238.5ms  fail 0.00%
+[sweep-100] 00:32/01:00  target 100 tps  offered 100 tps  confirmed 100 tps  p99 238.5ms  fail 0.00%
+[sweep-100] 00:33/01:00  target 100 tps  offered 100 tps  confirmed 100 tps  p99 238.5ms  fail 0.00%
+[sweep-100] 00:34/01:00  target 100 tps  offered 100 tps  confirmed 99 tps  p99 238.5ms  fail 0.00%
+[sweep-100] 00:35/01:00  target 100 tps  offered 100 tps  confirmed 100 tps  p99 238.5ms  fail 0.00%
+[sweep-100] 00:36/01:00  target 100 tps  offered 100 tps  confirmed 100 tps  p99 238.5ms  fail 0.00%
+[sweep-100] 00:37/01:00  target 100 tps  offered 100 tps  confirmed 100 tps  p99 238.5ms  fail 0.00%
+[sweep-100] 00:38/01:00  target 100 tps  offered 100 tps  confirmed 100 tps  p99 238.5ms  fail 0.00%
+[sweep-100] 00:39/01:00  target 100 tps  offered 100 tps  confirmed 100 tps  p99 238.5ms  fail 0.00%
+[sweep-100] 00:40/01:00  target 100 tps  offered 100 tps  confirmed 100 tps  p99 238.5ms  fail 0.00%
+[sweep-100] 00:41/01:00  target 100 tps  offered 100 tps  confirmed 100 tps  p99 238.5ms  fail 0.00%
+[sweep-100] 00:42/01:00  target 100 tps  offered 100 tps  confirmed 100 tps  p99 238.6ms  fail 0.00%
+[sweep-100] 00:43/01:00  target 100 tps  offered 100 tps  confirmed 100 tps  p99 238.6ms  fail 0.00%
+[sweep-100] 00:44/01:00  target 100 tps  offered 100 tps  confirmed 100 tps  p99 238.6ms  fail 0.00%
+[sweep-100] 00:45/01:00  target 100 tps  offered 100 tps  confirmed 100 tps  p99 238.6ms  fail 0.00%
+[sweep-100] 00:46/01:00  target 100 tps  offered 100 tps  confirmed 100 tps  p99 238.6ms  fail 0.00%
+[sweep-100] 00:47/01:00  target 100 tps  offered 100 tps  confirmed 100 tps  p99 238.6ms  fail 0.00%
+[sweep-100] 00:48/01:00  target 100 tps  offered 100 tps  confirmed 100 tps  p99 238.6ms  fail 0.00%
+[sweep-100] 00:49/01:00  target 100 tps  offered 100 tps  confirmed 100 tps  p99 238.6ms  fail 0.00%
+[sweep-100] 00:50/01:00  target 100 tps  offered 100 tps  confirmed 100 tps  p99 238.6ms  fail 0.00%
+[sweep-100] 00:51/01:00  target 100 tps  offered 100 tps  confirmed 100 tps  p99 238.6ms  fail 0.00%
+[sweep-100] 00:52/01:00  target 100 tps  offered 100 tps  confirmed 100 tps  p99 238.6ms  fail 0.00%
+[sweep-100] 00:53/01:00  target 100 tps  offered 100 tps  confirmed 100 tps  p99 238.6ms  fail 0.00%
+[sweep-100] 00:54/01:00  target 100 tps  offered 100 tps  confirmed 100 tps  p99 238.6ms  fail 0.00%
+[sweep-100] 00:55/01:00  target 100 tps  offered 100 tps  confirmed 100 tps  p99 238.6ms  fail 0.00%
+[sweep-100] 00:56/01:00  target 100 tps  offered 100 tps  confirmed 100 tps  p99 238.6ms  fail 0.00%
+[sweep-100] 00:57/01:00  target 100 tps  offered 100 tps  confirmed 100 tps  p99 238.6ms  fail 0.00%
+[sweep-100] 00:58/01:00  target 100 tps  offered 100 tps  confirmed 100 tps  p99 238.6ms  fail 0.00%
+[sweep-100] 00:59/01:00  target 100 tps  offered 100 tps  confirmed 100 tps  p99 238.6ms  fail 0.00%
+[sweep-100] 01:00/01:00  target 100 tps  offered 100 tps  confirmed 100 tps  p99 238.6ms  fail 0.00%
+time=2026-09-15T12:34:23.085+05:30 level=INFO msg="phase end" platform=neuchain run=probe-sweep phase=sweep-100 submitted=1500 committed=1500 confirmed_tps=100.0 fail_rate=0.0000 e2e_p99_ms=238.72
+time=2026-09-15T12:34:23.085+05:30 level=INFO msg="phase start" platform=neuchain run=probe-sweep phase=sweep-250 offered_tps=250 workers=0 duration=1m0s
+[sweep-250] 00:01/01:00  target 250 tps  offered 250 tps  confirmed 227 tps  p99 187.8ms  fail 0.00%
+[sweep-250] 00:02/01:00  target 250 tps  offered 250 tps  confirmed 234 tps  p99 187.5ms  fail 0.00%
+[sweep-250] 00:03/01:00  target 250 tps  offered 250 tps  confirmed 242 tps  p99 189.7ms  fail 0.00%
+[sweep-250] 00:04/01:00  target 250 tps  offered 250 tps  confirmed 243 tps  p99 190.3ms  fail 0.00%
+[sweep-250] 00:05/01:00  target 250 tps  offered 250 tps  confirmed 246 tps  p99 190.3ms  fail 0.00%
+[sweep-250] 00:06/01:00  target 250 tps  offered 250 tps  confirmed 246 tps  p99 190.3ms  fail 0.00%
+[sweep-250] 00:07/01:00  target 250 tps  offered 250 tps  confirmed 246 tps  p99 190.3ms  fail 0.00%
+[sweep-250] 00:08/01:00  target 250 tps  offered 250 tps  confirmed 246 tps  p99 190.3ms  fail 0.00%
+[sweep-250] 00:09/01:00  target 250 tps  offered 250 tps  confirmed 247 tps  p99 192.3ms  fail 0.00%
+[sweep-250] 00:10/01:00  target 250 tps  offered 250 tps  confirmed 247 tps  p99 193.4ms  fail 0.00%
+[sweep-250] 00:11/01:00  target 250 tps  offered 250 tps  confirmed 247 tps  p99 193.8ms  fail 0.00%
+[sweep-250] 00:12/01:00  target 250 tps  offered 250 tps  confirmed 247 tps  p99 193.4ms  fail 0.00%
+[sweep-250] 00:13/01:00  target 250 tps  offered 250 tps  confirmed 248 tps  p99 193.4ms  fail 0.00%
+[sweep-250] 00:14/01:00  target 250 tps  offered 250 tps  confirmed 247 tps  p99 193.5ms  fail 0.00%
+[sweep-250] 00:15/01:00  target 250 tps  offered 250 tps  confirmed 248 tps  p99 193.4ms  fail 0.00%
+[sweep-250] 00:16/01:00  target 250 tps  offered 250 tps  confirmed 248 tps  p99 193.2ms  fail 0.00%
+[sweep-250] 00:17/01:00  target 250 tps  offered 250 tps  confirmed 248 tps  p99 192.4ms  fail 0.00%
+[sweep-250] 00:18/01:00  target 250 tps  offered 250 tps  confirmed 248 tps  p99 193.4ms  fail 0.00%
+[sweep-250] 00:19/01:00  target 250 tps  offered 250 tps  confirmed 249 tps  p99 193.2ms  fail 0.00%
+[sweep-250] 00:20/01:00  target 250 tps  offered 250 tps  confirmed 248 tps  p99 192.4ms  fail 0.00%
+[sweep-250] 00:21/01:00  target 250 tps  offered 250 tps  confirmed 248 tps  p99 192.4ms  fail 0.00%
+[sweep-250] 00:22/01:00  target 250 tps  offered 250 tps  confirmed 248 tps  p99 192.4ms  fail 0.00%
+[sweep-250] 00:23/01:00  target 250 tps  offered 250 tps  confirmed 249 tps  p99 193.4ms  fail 0.00%
+[sweep-250] 00:24/01:00  target 250 tps  offered 250 tps  confirmed 249 tps  p99 193.4ms  fail 0.00%
+[sweep-250] 00:25/01:00  target 250 tps  offered 250 tps  confirmed 249 tps  p99 193.4ms  fail 0.00%
+[sweep-250] 00:26/01:00  target 250 tps  offered 250 tps  confirmed 249 tps  p99 193.4ms  fail 0.00%
+[sweep-250] 00:27/01:00  target 250 tps  offered 250 tps  confirmed 249 tps  p99 193.2ms  fail 0.00%
+[sweep-250] 00:28/01:00  target 250 tps  offered 250 tps  confirmed 249 tps  p99 193.2ms  fail 0.00%
+[sweep-250] 00:29/01:00  target 250 tps  offered 250 tps  confirmed 249 tps  p99 192.5ms  fail 0.00%
+[sweep-250] 00:30/01:00  target 250 tps  offered 250 tps  confirmed 249 tps  p99 192.5ms  fail 0.00%
+[sweep-250] 00:31/01:00  target 250 tps  offered 250 tps  confirmed 249 tps  p99 192.4ms  fail 0.00%
+[sweep-250] 00:32/01:00  target 250 tps  offered 250 tps  confirmed 249 tps  p99 192.4ms  fail 0.00%
+[sweep-250] 00:33/01:00  target 250 tps  offered 250 tps  confirmed 249 tps  p99 192.3ms  fail 0.00%
+[sweep-250] 00:34/01:00  target 250 tps  offered 250 tps  confirmed 249 tps  p99 192.4ms  fail 0.00%
+[sweep-250] 00:35/01:00  target 250 tps  offered 250 tps  confirmed 249 tps  p99 192.4ms  fail 0.00%
+[sweep-250] 00:36/01:00  target 250 tps  offered 250 tps  confirmed 249 tps  p99 193.4ms  fail 0.00%
+[sweep-250] 00:37/01:00  target 250 tps  offered 250 tps  confirmed 249 tps  p99 193.4ms  fail 0.00%
+[sweep-250] 00:38/01:00  target 250 tps  offered 250 tps  confirmed 249 tps  p99 193.3ms  fail 0.00%
+[sweep-250] 00:39/01:00  target 250 tps  offered 250 tps  confirmed 249 tps  p99 193.2ms  fail 0.00%
+[sweep-250] 00:40/01:00  target 250 tps  offered 250 tps  confirmed 249 tps  p99 193.3ms  fail 0.00%
+[sweep-250] 00:41/01:00  target 250 tps  offered 250 tps  confirmed 249 tps  p99 193.3ms  fail 0.00%
+[sweep-250] 00:42/01:00  target 250 tps  offered 250 tps  confirmed 249 tps  p99 193.2ms  fail 0.00%
+[sweep-250] 00:43/01:00  target 250 tps  offered 250 tps  confirmed 249 tps  p99 192.5ms  fail 0.00%
+[sweep-250] 00:44/01:00  target 250 tps  offered 250 tps  confirmed 249 tps  p99 192.4ms  fail 0.00%
+[sweep-250] 00:45/01:00  target 250 tps  offered 250 tps  confirmed 249 tps  p99 192.4ms  fail 0.00%
+[sweep-250] 00:46/01:00  target 250 tps  offered 250 tps  confirmed 249 tps  p99 192.5ms  fail 0.00%
+[sweep-250] 00:47/01:00  target 250 tps  offered 250 tps  confirmed 250 tps  p99 192.5ms  fail 0.00%
+[sweep-250] 00:48/01:00  target 250 tps  offered 250 tps  confirmed 249 tps  p99 192.4ms  fail 0.00%
+[sweep-250] 00:49/01:00  target 250 tps  offered 250 tps  confirmed 249 tps  p99 193.3ms  fail 0.00%
+[sweep-250] 00:50/01:00  target 250 tps  offered 250 tps  confirmed 249 tps  p99 193.4ms  fail 0.00%
+[sweep-250] 00:51/01:00  target 250 tps  offered 250 tps  confirmed 249 tps  p99 193.5ms  fail 0.00%
+[sweep-250] 00:52/01:00  target 250 tps  offered 250 tps  confirmed 249 tps  p99 193.4ms  fail 0.00%
+[sweep-250] 00:53/01:00  target 250 tps  offered 250 tps  confirmed 249 tps  p99 193.5ms  fail 0.00%
+[sweep-250] 00:54/01:00  target 250 tps  offered 250 tps  confirmed 249 tps  p99 193.5ms  fail 0.00%
+[sweep-250] 00:55/01:00  target 250 tps  offered 250 tps  confirmed 249 tps  p99 193.5ms  fail 0.00%
+[sweep-250] 00:56/01:00  target 250 tps  offered 250 tps  confirmed 250 tps  p99 193.5ms  fail 0.00%
+[sweep-250] 00:57/01:00  target 250 tps  offered 250 tps  confirmed 249 tps  p99 193.5ms  fail 0.00%
+[sweep-250] 00:58/01:00  target 250 tps  offered 250 tps  confirmed 249 tps  p99 193.7ms  fail 0.00%
+[sweep-250] 00:59/01:00  target 250 tps  offered 250 tps  confirmed 249 tps  p99 193.7ms  fail 0.00%
+[sweep-250] 01:00/01:00  target 250 tps  offered 250 tps  confirmed 249 tps  p99 193.7ms  fail 0.00%
+time=2026-09-15T12:35:23.386+05:30 level=INFO msg="phase end" platform=neuchain run=probe-sweep phase=sweep-250 submitted=3750 committed=3750 confirmed_tps=250.0 fail_rate=0.0000 e2e_p99_ms=192.26
+time=2026-09-15T12:35:23.386+05:30 level=INFO msg="phase start" platform=neuchain run=probe-sweep phase=sweep-500 offered_tps=500 workers=0 duration=1m0s
+[sweep-500] 00:01/01:00  target 500 tps  offered 500 tps  confirmed 457 tps  p99 176.8ms  fail 0.00%
+[sweep-500] 00:02/01:00  target 500 tps  offered 500 tps  confirmed 469 tps  p99 182.1ms  fail 0.00%
+[sweep-500] 00:03/01:00  target 500 tps  offered 500 tps  confirmed 485 tps  p99 180.9ms  fail 0.00%
+[sweep-500] 00:04/01:00  target 500 tps  offered 500 tps  confirmed 484 tps  p99 184.4ms  fail 0.00%
+[sweep-500] 00:05/01:00  target 500 tps  offered 500 tps  confirmed 486 tps  p99 185.0ms  fail 0.00%
+[sweep-500] 00:06/01:00  target 500 tps  offered 500 tps  confirmed 488 tps  p99 185.5ms  fail 0.00%
+[sweep-500] 00:07/01:00  target 500 tps  offered 500 tps  confirmed 493 tps  p99 186.2ms  fail 0.00%
+[sweep-500] 00:08/01:00  target 500 tps  offered 500 tps  confirmed 495 tps  p99 186.2ms  fail 0.00%
+[sweep-500] 00:09/01:00  target 500 tps  offered 500 tps  confirmed 492 tps  p99 185.5ms  fail 0.00%
+[sweep-500] 00:10/01:00  target 500 tps  offered 500 tps  confirmed 494 tps  p99 185.2ms  fail 0.00%
+[sweep-500] 00:11/01:00  target 500 tps  offered 500 tps  confirmed 496 tps  p99 185.0ms  fail 0.00%
+[sweep-500] 00:12/01:00  target 500 tps  offered 500 tps  confirmed 495 tps  p99 185.1ms  fail 0.00%
+[sweep-500] 00:13/01:00  target 500 tps  offered 500 tps  confirmed 497 tps  p99 185.0ms  fail 0.00%
+[sweep-500] 00:14/01:00  target 500 tps  offered 500 tps  confirmed 496 tps  p99 185.0ms  fail 0.00%
+[sweep-500] 00:15/01:00  target 500 tps  offered 500 tps  confirmed 497 tps  p99 185.0ms  fail 0.00%
+[sweep-500] 00:16/01:00  target 500 tps  offered 500 tps  confirmed 496 tps  p99 185.0ms  fail 0.00%
+[sweep-500] 00:17/01:00  target 500 tps  offered 500 tps  confirmed 497 tps  p99 184.8ms  fail 0.00%
+[sweep-500] 00:18/01:00  target 500 tps  offered 500 tps  confirmed 497 tps  p99 184.7ms  fail 0.00%
+[sweep-500] 00:19/01:00  target 500 tps  offered 500 tps  confirmed 497 tps  p99 184.7ms  fail 0.00%
+[sweep-500] 00:20/01:00  target 500 tps  offered 500 tps  confirmed 497 tps  p99 184.8ms  fail 0.00%
+[sweep-500] 00:21/01:00  target 500 tps  offered 500 tps  confirmed 497 tps  p99 185.0ms  fail 0.00%
+[sweep-500] 00:22/01:00  target 500 tps  offered 500 tps  confirmed 498 tps  p99 184.8ms  fail 0.00%
+[sweep-500] 00:23/01:00  target 500 tps  offered 500 tps  confirmed 497 tps  p99 185.1ms  fail 0.00%
+[sweep-500] 00:24/01:00  target 500 tps  offered 500 tps  confirmed 498 tps  p99 185.0ms  fail 0.00%
+[sweep-500] 00:25/01:00  target 500 tps  offered 500 tps  confirmed 497 tps  p99 185.0ms  fail 0.00%
+[sweep-500] 00:26/01:00  target 500 tps  offered 500 tps  confirmed 498 tps  p99 185.0ms  fail 0.00%
+[sweep-500] 00:27/01:00  target 500 tps  offered 500 tps  confirmed 498 tps  p99 184.7ms  fail 0.00%
+[sweep-500] 00:28/01:00  target 500 tps  offered 500 tps  confirmed 498 tps  p99 184.7ms  fail 0.00%
+[sweep-500] 00:29/01:00  target 500 tps  offered 500 tps  confirmed 499 tps  p99 184.6ms  fail 0.00%
+[sweep-500] 00:30/01:00  target 500 tps  offered 500 tps  confirmed 498 tps  p99 183.9ms  fail 0.00%
+[sweep-500] 00:31/01:00  target 500 tps  offered 500 tps  confirmed 498 tps  p99 183.9ms  fail 0.00%
+[sweep-500] 00:32/01:00  target 500 tps  offered 500 tps  confirmed 498 tps  p99 183.9ms  fail 0.00%
+[sweep-500] 00:33/01:00  target 500 tps  offered 500 tps  confirmed 499 tps  p99 183.9ms  fail 0.00%
+[sweep-500] 00:34/01:00  target 500 tps  offered 500 tps  confirmed 498 tps  p99 184.4ms  fail 0.00%
+[sweep-500] 00:35/01:00  target 500 tps  offered 500 tps  confirmed 499 tps  p99 183.9ms  fail 0.00%
+[sweep-500] 00:36/01:00  target 500 tps  offered 500 tps  confirmed 498 tps  p99 183.9ms  fail 0.00%
+[sweep-500] 00:37/01:00  target 500 tps  offered 500 tps  confirmed 499 tps  p99 183.9ms  fail 0.00%
+[sweep-500] 00:38/01:00  target 500 tps  offered 500 tps  confirmed 498 tps  p99 182.9ms  fail 0.00%
+[sweep-500] 00:39/01:00  target 500 tps  offered 500 tps  confirmed 498 tps  p99 184.6ms  fail 0.00%
+[sweep-500] 00:40/01:00  target 500 tps  offered 500 tps  confirmed 499 tps  p99 184.7ms  fail 0.00%
+[sweep-500] 00:41/01:00  target 500 tps  offered 500 tps  confirmed 498 tps  p99 184.7ms  fail 0.00%
+[sweep-500] 00:42/01:00  target 500 tps  offered 500 tps  confirmed 499 tps  p99 184.7ms  fail 0.00%
+[sweep-500] 00:43/01:00  target 500 tps  offered 500 tps  confirmed 499 tps  p99 184.8ms  fail 0.00%
+[sweep-500] 00:44/01:00  target 500 tps  offered 500 tps  confirmed 498 tps  p99 185.0ms  fail 0.00%
+[sweep-500] 00:45/01:00  target 500 tps  offered 500 tps  confirmed 499 tps  p99 185.0ms  fail 0.00%
+[sweep-500] 00:46/01:00  target 500 tps  offered 500 tps  confirmed 499 tps  p99 185.0ms  fail 0.00%
+[sweep-500] 00:47/01:00  target 500 tps  offered 500 tps  confirmed 499 tps  p99 185.1ms  fail 0.00%
+[sweep-500] 00:48/01:00  target 500 tps  offered 500 tps  confirmed 499 tps  p99 185.1ms  fail 0.00%
+[sweep-500] 00:49/01:00  target 500 tps  offered 500 tps  confirmed 499 tps  p99 185.1ms  fail 0.00%
+[sweep-500] 00:50/01:00  target 500 tps  offered 500 tps  confirmed 499 tps  p99 185.0ms  fail 0.00%
+[sweep-500] 00:51/01:00  target 500 tps  offered 500 tps  confirmed 499 tps  p99 185.0ms  fail 0.00%
+[sweep-500] 00:52/01:00  target 500 tps  offered 500 tps  confirmed 499 tps  p99 185.0ms  fail 0.00%
+[sweep-500] 00:53/01:00  target 500 tps  offered 500 tps  confirmed 499 tps  p99 184.8ms  fail 0.00%
+[sweep-500] 00:54/01:00  target 500 tps  offered 500 tps  confirmed 499 tps  p99 184.8ms  fail 0.00%
+[sweep-500] 00:55/01:00  target 500 tps  offered 500 tps  confirmed 499 tps  p99 184.8ms  fail 0.00%
+[sweep-500] 00:56/01:00  target 500 tps  offered 500 tps  confirmed 499 tps  p99 184.8ms  fail 0.00%
+[sweep-500] 00:57/01:00  target 500 tps  offered 500 tps  confirmed 499 tps  p99 184.8ms  fail 0.00%
+[sweep-500] 00:58/01:00  target 500 tps  offered 500 tps  confirmed 499 tps  p99 184.8ms  fail 0.00%
+[sweep-500] 00:59/01:00  target 500 tps  offered 500 tps  confirmed 499 tps  p99 184.8ms  fail 0.00%
+[sweep-500] 01:00/01:00  target 500 tps  offered 500 tps  confirmed 499 tps  p99 184.8ms  fail 0.00%
+time=2026-09-15T12:36:23.794+05:30 level=INFO msg="phase end" platform=neuchain run=probe-sweep phase=sweep-500 submitted=7500 committed=7500 confirmed_tps=500.0 fail_rate=0.0000 e2e_p99_ms=185.34
+time=2026-09-15T12:36:23.794+05:30 level=INFO msg="phase start" platform=neuchain run=probe-sweep phase=sweep-1000 offered_tps=1000 workers=0 duration=1m0s
+[sweep-1000] 00:01/01:00  target 1000 tps  offered 1000 tps  confirmed 912 tps  p99 181.9ms  fail 0.00%
+[sweep-1000] 00:02/01:00  target 1000 tps  offered 1000 tps  confirmed 937 tps  p99 182.3ms  fail 0.05%
+[sweep-1000] 00:03/01:00  target 1000 tps  offered 1000 tps  confirmed 967 tps  p99 183.8ms  fail 0.03%
+[sweep-1000] 00:04/01:00  target 1000 tps  offered 1000 tps  confirmed 967 tps  p99 182.3ms  fail 0.03%
+[sweep-1000] 00:05/01:00  target 1000 tps  offered 1000 tps  confirmed 979 tps  p99 181.9ms  fail 0.02%
+[sweep-1000] 00:06/01:00  target 1000 tps  offered 1000 tps  confirmed 978 tps  p99 181.9ms  fail 0.03%
+[sweep-1000] 00:07/01:00  target 1000 tps  offered 1000 tps  confirmed 985 tps  p99 182.3ms  fail 0.03%
+[sweep-1000] 00:08/01:00  target 1000 tps  offered 1000 tps  confirmed 984 tps  p99 182.3ms  fail 0.03%
+[sweep-1000] 00:09/01:00  target 1000 tps  offered 1000 tps  confirmed 988 tps  p99 182.3ms  fail 0.02%
+[sweep-1000] 00:10/01:00  target 1000 tps  offered 1000 tps  confirmed 986 tps  p99 182.5ms  fail 0.03%
+[sweep-1000] 00:11/01:00  target 1000 tps  offered 1000 tps  confirmed 991 tps  p99 183.9ms  fail 0.03%
+[sweep-1000] 00:12/01:00  target 1000 tps  offered 1000 tps  confirmed 989 tps  p99 183.8ms  fail 0.03%
+[sweep-1000] 00:13/01:00  target 1000 tps  offered 1000 tps  confirmed 991 tps  p99 183.8ms  fail 0.02%
+[sweep-1000] 00:14/01:00  target 1000 tps  offered 1000 tps  confirmed 990 tps  p99 182.9ms  fail 0.03%
+[sweep-1000] 00:15/01:00  target 1000 tps  offered 1000 tps  confirmed 990 tps  p99 183.7ms  fail 0.04%
+[sweep-1000] 00:16/01:00  target 1000 tps  offered 1000 tps  confirmed 992 tps  p99 182.5ms  fail 0.04%
+[sweep-1000] 00:17/01:00  target 1000 tps  offered 1000 tps  confirmed 991 tps  p99 183.6ms  fail 0.04%
+[sweep-1000] 00:18/01:00  target 1000 tps  offered 1000 tps  confirmed 994 tps  p99 183.8ms  fail 0.03%
+[sweep-1000] 00:19/01:00  target 1000 tps  offered 1000 tps  confirmed 992 tps  p99 183.9ms  fail 0.03%
+[sweep-1000] 00:20/01:00  target 1000 tps  offered 1000 tps  confirmed 992 tps  p99 184.4ms  fail 0.03%
+[sweep-1000] 00:21/01:00  target 1000 tps  offered 1000 tps  confirmed 994 tps  p99 184.4ms  fail 0.03%
+[sweep-1000] 00:22/01:00  target 1000 tps  offered 1000 tps  confirmed 993 tps  p99 184.3ms  fail 0.03%
+[sweep-1000] 00:23/01:00  target 1000 tps  offered 1000 tps  confirmed 995 tps  p99 184.3ms  fail 0.03%
+[sweep-1000] 00:24/01:00  target 1000 tps  offered 1000 tps  confirmed 994 tps  p99 184.3ms  fail 0.03%
+[sweep-1000] 00:25/01:00  target 1000 tps  offered 1000 tps  confirmed 994 tps  p99 184.6ms  fail 0.03%
+[sweep-1000] 00:26/01:00  target 1000 tps  offered 1000 tps  confirmed 995 tps  p99 184.3ms  fail 0.03%
+[sweep-1000] 00:27/01:00  target 1000 tps  offered 1000 tps  confirmed 994 tps  p99 184.4ms  fail 0.03%
+[sweep-1000] 00:28/01:00  target 1000 tps  offered 1000 tps  confirmed 995 tps  p99 185.6ms  fail 0.03%
+[sweep-1000] 00:29/01:00  target 1000 tps  offered 1000 tps  confirmed 996 tps  p99 185.5ms  fail 0.02%
+[sweep-1000] 00:30/01:00  target 1000 tps  offered 1000 tps  confirmed 996 tps  p99 185.7ms  fail 0.03%
+[sweep-1000] 00:31/01:00  target 1000 tps  offered 1000 tps  confirmed 995 tps  p99 185.5ms  fail 0.03%
+[sweep-1000] 00:32/01:00  target 1000 tps  offered 1000 tps  confirmed 996 tps  p99 185.6ms  fail 0.03%
+[sweep-1000] 00:33/01:00  target 1000 tps  offered 1000 tps  confirmed 996 tps  p99 184.8ms  fail 0.03%
+[sweep-1000] 00:34/01:00  target 1000 tps  offered 1000 tps  confirmed 995 tps  p99 185.5ms  fail 0.03%
+[sweep-1000] 00:35/01:00  target 1000 tps  offered 1000 tps  confirmed 995 tps  p99 185.9ms  fail 0.03%
+[sweep-1000] 00:36/01:00  target 1000 tps  offered 1000 tps  confirmed 997 tps  p99 185.9ms  fail 0.03%
+[sweep-1000] 00:37/01:00  target 1000 tps  offered 1000 tps  confirmed 996 tps  p99 185.9ms  fail 0.02%
+[sweep-1000] 00:38/01:00  target 1000 tps  offered 1000 tps  confirmed 997 tps  p99 185.9ms  fail 0.02%
+[sweep-1000] 00:39/01:00  target 1000 tps  offered 1000 tps  confirmed 996 tps  p99 185.9ms  fail 0.03%
+[sweep-1000] 00:40/01:00  target 1000 tps  offered 1000 tps  confirmed 997 tps  p99 185.9ms  fail 0.03%
+[sweep-1000] 00:41/01:00  target 1000 tps  offered 1000 tps  confirmed 997 tps  p99 185.7ms  fail 0.03%
+[sweep-1000] 00:42/01:00  target 1000 tps  offered 1000 tps  confirmed 997 tps  p99 185.7ms  fail 0.03%
+[sweep-1000] 00:43/01:00  target 1000 tps  offered 1000 tps  confirmed 996 tps  p99 185.7ms  fail 0.03%
+[sweep-1000] 00:44/01:00  target 1000 tps  offered 1000 tps  confirmed 997 tps  p99 186.1ms  fail 0.03%
+[sweep-1000] 00:45/01:00  target 1000 tps  offered 1000 tps  confirmed 997 tps  p99 186.1ms  fail 0.02%
+[sweep-1000] 00:46/01:00  target 1000 tps  offered 1000 tps  confirmed 998 tps  p99 186.1ms  fail 0.02%
+[sweep-1000] 00:47/01:00  target 1000 tps  offered 1000 tps  confirmed 997 tps  p99 186.1ms  fail 0.02%
+[sweep-1000] 00:48/01:00  target 1000 tps  offered 1000 tps  confirmed 997 tps  p99 186.1ms  fail 0.02%
+[sweep-1000] 00:49/01:00  target 1000 tps  offered 1000 tps  confirmed 998 tps  p99 186.1ms  fail 0.02%
+[sweep-1000] 00:50/01:00  target 1000 tps  offered 1000 tps  confirmed 998 tps  p99 186.1ms  fail 0.02%
+[sweep-1000] 00:51/01:00  target 1000 tps  offered 1000 tps  confirmed 997 tps  p99 186.0ms  fail 0.02%
+[sweep-1000] 00:52/01:00  target 1000 tps  offered 1000 tps  confirmed 998 tps  p99 186.0ms  fail 0.02%
+[sweep-1000] 00:53/01:00  target 1000 tps  offered 1000 tps  confirmed 997 tps  p99 186.0ms  fail 0.02%
+[sweep-1000] 00:54/01:00  target 1000 tps  offered 1000 tps  confirmed 998 tps  p99 186.0ms  fail 0.02%
+[sweep-1000] 00:55/01:00  target 1000 tps  offered 1000 tps  confirmed 997 tps  p99 186.0ms  fail 0.02%
+[sweep-1000] 00:56/01:00  target 1000 tps  offered 1000 tps  confirmed 997 tps  p99 186.2ms  fail 0.02%
+[sweep-1000] 00:57/01:00  target 1000 tps  offered 1000 tps  confirmed 997 tps  p99 186.2ms  fail 0.02%
+[sweep-1000] 00:58/01:00  target 1000 tps  offered 1000 tps  confirmed 998 tps  p99 186.1ms  fail 0.02%
+[sweep-1000] 00:59/01:00  target 1000 tps  offered 1000 tps  confirmed 998 tps  p99 186.1ms  fail 0.02%
+[sweep-1000] 01:00/01:00  target 1000 tps  offered 1000 tps  confirmed 998 tps  p99 186.0ms  fail 0.02%
+time=2026-09-15T12:37:24.213+05:30 level=INFO msg="phase end" platform=neuchain run=probe-sweep phase=sweep-1000 submitted=15000 committed=14998 confirmed_tps=999.9 fail_rate=0.0001 e2e_p99_ms=187.78
+time=2026-09-15T12:37:24.214+05:30 level=WARN msg="phase errors" platform=neuchain run=probe-sweep phase=sweep-1000 count=2 message="committed invalid"
+time=2026-09-15T12:37:24.214+05:30 level=INFO msg="phase start" platform=neuchain run=probe-sweep phase=sweep-2000 offered_tps=2000 workers=0 duration=1m0s
+[sweep-2000] 00:01/01:00  target 2000 tps  offered 2000 tps  confirmed 1685 tps  p99 176.3ms  fail 0.10%
+[sweep-2000] 00:02/01:00  target 2000 tps  offered 2000 tps  confirmed 1868 tps  p99 185.3ms  fail 0.07%
+[sweep-2000] 00:03/01:00  target 2000 tps  offered 2000 tps  confirmed 1888 tps  p99 183.7ms  fail 0.05%
+[sweep-2000] 00:04/01:00  target 2000 tps  offered 2000 tps  confirmed 1929 tps  p99 184.3ms  fail 0.05%
+[sweep-2000] 00:05/01:00  target 2000 tps  offered 2000 tps  confirmed 1929 tps  p99 184.3ms  fail 0.05%
+[sweep-2000] 00:06/01:00  target 2000 tps  offered 2000 tps  confirmed 1954 tps  p99 183.8ms  fail 0.04%
+[sweep-2000] 00:07/01:00  target 2000 tps  offered 2000 tps  confirmed 1955 tps  p99 186.2ms  fail 0.06%
+[sweep-2000] 00:08/01:00  target 2000 tps  offered 2000 tps  confirmed 1953 tps  p99 185.6ms  fail 0.05%
+[sweep-2000] 00:09/01:00  target 2000 tps  offered 2000 tps  confirmed 1966 tps  p99 186.2ms  fail 0.06%
+[sweep-2000] 00:10/01:00  target 2000 tps  offered 2000 tps  confirmed 1973 tps  p99 185.7ms  fail 0.06%
+[sweep-2000] 00:11/01:00  target 2000 tps  offered 2000 tps  confirmed 1971 tps  p99 187.4ms  fail 0.05%
+[sweep-2000] 00:12/01:00  target 2000 tps  offered 2000 tps  confirmed 1978 tps  p99 187.0ms  fail 0.05%
+[sweep-2000] 00:13/01:00  target 2000 tps  offered 2000 tps  confirmed 1973 tps  p99 186.6ms  fail 0.05%
+[sweep-2000] 00:14/01:00  target 2000 tps  offered 2000 tps  confirmed 1978 tps  p99 186.2ms  fail 0.05%
+[sweep-2000] 00:15/01:00  target 2000 tps  offered 2000 tps  confirmed 1976 tps  p99 185.7ms  fail 0.04%
+[sweep-2000] 00:16/01:00  target 2000 tps  offered 2000 tps  confirmed 1981 tps  p99 185.6ms  fail 0.04%
+[sweep-2000] 00:17/01:00  target 2000 tps  offered 2000 tps  confirmed 1981 tps  p99 185.7ms  fail 0.04%
+[sweep-2000] 00:18/01:00  target 2000 tps  offered 2000 tps  confirmed 1984 tps  p99 185.7ms  fail 0.04%
+[sweep-2000] 00:19/01:00  target 2000 tps  offered 2000 tps  confirmed 1981 tps  p99 185.6ms  fail 0.05%
+[sweep-2000] 00:20/01:00  target 2000 tps  offered 2000 tps  confirmed 1985 tps  p99 185.3ms  fail 0.04%
+[sweep-2000] 00:21/01:00  target 2000 tps  offered 2000 tps  confirmed 1983 tps  p99 185.1ms  fail 0.04%
+[sweep-2000] 00:22/01:00  target 2000 tps  offered 2000 tps  confirmed 1987 tps  p99 184.8ms  fail 0.04%
+[sweep-2000] 00:23/01:00  target 2000 tps  offered 2000 tps  confirmed 1985 tps  p99 184.7ms  fail 0.04%
+[sweep-2000] 00:24/01:00  target 2000 tps  offered 2000 tps  confirmed 1988 tps  p99 184.6ms  fail 0.04%
+[sweep-2000] 00:25/01:00  target 2000 tps  offered 2000 tps  confirmed 1988 tps  p99 185.3ms  fail 0.04%
+[sweep-2000] 00:26/01:00  target 2000 tps  offered 2000 tps  confirmed 1990 tps  p99 185.1ms  fail 0.04%
+[sweep-2000] 00:27/01:00  target 2000 tps  offered 2000 tps  confirmed 1988 tps  p99 185.1ms  fail 0.04%
+[sweep-2000] 00:28/01:00  target 2000 tps  offered 2000 tps  confirmed 1990 tps  p99 185.1ms  fail 0.04%
+[sweep-2000] 00:29/01:00  target 2000 tps  offered 2000 tps  confirmed 1992 tps  p99 185.0ms  fail 0.04%
+[sweep-2000] 00:30/01:00  target 2000 tps  offered 2000 tps  confirmed 1992 tps  p99 184.7ms  fail 0.04%
+[sweep-2000] 00:31/01:00  target 2000 tps  offered 2000 tps  confirmed 1990 tps  p99 184.7ms  fail 0.04%
+[sweep-2000] 00:32/01:00  target 2000 tps  offered 2000 tps  confirmed 1989 tps  p99 184.6ms  fail 0.04%
+[sweep-2000] 00:33/01:00  target 2000 tps  offered 2000 tps  confirmed 1991 tps  p99 184.4ms  fail 0.04%
+[sweep-2000] 00:34/01:00  target 2000 tps  offered 2000 tps  confirmed 1989 tps  p99 184.4ms  fail 0.04%
+[sweep-2000] 00:35/01:00  target 2000 tps  offered 2000 tps  confirmed 1991 tps  p99 184.6ms  fail 0.03%
+[sweep-2000] 00:36/01:00  target 2000 tps  offered 2000 tps  confirmed 1991 tps  p99 184.6ms  fail 0.03%
+[sweep-2000] 00:37/01:00  target 2000 tps  offered 2000 tps  confirmed 1992 tps  p99 185.0ms  fail 0.03%
+[sweep-2000] 00:38/01:00  target 2000 tps  offered 2000 tps  confirmed 1992 tps  p99 185.2ms  fail 0.03%
+[sweep-2000] 00:39/01:00  target 2000 tps  offered 2000 tps  confirmed 1993 tps  p99 185.3ms  fail 0.03%
+[sweep-2000] 00:40/01:00  target 2000 tps  offered 2000 tps  confirmed 1991 tps  p99 185.6ms  fail 0.03%
+[sweep-2000] 00:41/01:00  target 2000 tps  offered 2000 tps  confirmed 1993 tps  p99 185.5ms  fail 0.03%
+[sweep-2000] 00:42/01:00  target 2000 tps  offered 2000 tps  confirmed 1992 tps  p99 185.3ms  fail 0.03%
+[sweep-2000] 00:43/01:00  target 2000 tps  offered 2000 tps  confirmed 1993 tps  p99 185.3ms  fail 0.03%
+[sweep-2000] 00:44/01:00  target 2000 tps  offered 2000 tps  confirmed 1993 tps  p99 185.1ms  fail 0.03%
+[sweep-2000] 00:45/01:00  target 2000 tps  offered 2000 tps  confirmed 1993 tps  p99 185.1ms  fail 0.04%
+[sweep-2000] 00:46/01:00  target 2000 tps  offered 2000 tps  confirmed 1994 tps  p99 185.2ms  fail 0.03%
+[sweep-2000] 00:47/01:00  target 2000 tps  offered 2000 tps  confirmed 1993 tps  p99 185.1ms  fail 0.04%
+[sweep-2000] 00:48/01:00  target 2000 tps  offered 2000 tps  confirmed 1992 tps  p99 185.3ms  fail 0.04%
+[sweep-2000] 00:49/01:00  target 2000 tps  offered 2000 tps  confirmed 1994 tps  p99 185.2ms  fail 0.04%
+[sweep-2000] 00:50/01:00  target 2000 tps  offered 2000 tps  confirmed 1994 tps  p99 185.2ms  fail 0.04%
+[sweep-2000] 00:51/01:00  target 2000 tps  offered 2000 tps  confirmed 1993 tps  p99 185.1ms  fail 0.04%
+[sweep-2000] 00:52/01:00  target 2000 tps  offered 2000 tps  confirmed 1994 tps  p99 185.3ms  fail 0.04%
+[sweep-2000] 00:53/01:00  target 2000 tps  offered 2000 tps  confirmed 1993 tps  p99 185.3ms  fail 0.04%
+[sweep-2000] 00:54/01:00  target 2000 tps  offered 2000 tps  confirmed 1994 tps  p99 185.3ms  fail 0.04%
+[sweep-2000] 00:55/01:00  target 2000 tps  offered 2000 tps  confirmed 1993 tps  p99 185.3ms  fail 0.04%
+[sweep-2000] 00:56/01:00  target 2000 tps  offered 2000 tps  confirmed 1995 tps  p99 185.3ms  fail 0.04%
+[sweep-2000] 00:57/01:00  target 2000 tps  offered 2000 tps  confirmed 1994 tps  p99 185.3ms  fail 0.04%
+[sweep-2000] 00:58/01:00  target 2000 tps  offered 2000 tps  confirmed 1995 tps  p99 185.3ms  fail 0.04%
+[sweep-2000] 00:59/01:00  target 2000 tps  offered 2000 tps  confirmed 1994 tps  p99 185.3ms  fail 0.04%
+[sweep-2000] 01:00/01:00  target 2000 tps  offered 2000 tps  confirmed 1994 tps  p99 185.5ms  fail 0.03%
+time=2026-09-15T12:38:24.675+05:30 level=INFO msg="phase end" platform=neuchain run=probe-sweep phase=sweep-2000 submitted=30000 committed=29990 confirmed_tps=1999.3 fail_rate=0.0003 e2e_p99_ms=185.73
+time=2026-09-15T12:38:24.675+05:30 level=WARN msg="phase errors" platform=neuchain run=probe-sweep phase=sweep-2000 count=10 message="committed invalid"
+time=2026-09-15T12:38:24.675+05:30 level=INFO msg="phase start" platform=neuchain run=probe-sweep phase=sweep-3500 offered_tps=3500 workers=0 duration=1m0s
+[sweep-3500] 00:01/01:00  target 3500 tps  offered 3500 tps  confirmed 2945 tps  p99 181.0ms  fail 0.09%
+[sweep-3500] 00:02/01:00  target 3500 tps  offered 3500 tps  confirmed 3219 tps  p99 182.1ms  fail 0.09%
+[sweep-3500] 00:03/01:00  target 3500 tps  offered 3500 tps  confirmed 3298 tps  p99 181.1ms  fail 0.09%
+[sweep-3500] 00:04/01:00  target 3500 tps  offered 3500 tps  confirmed 3344 tps  p99 181.2ms  fail 0.08%
+[sweep-3500] 00:05/01:00  target 3500 tps  offered 3500 tps  confirmed 3398 tps  p99 181.2ms  fail 0.07%
+[sweep-3500] 00:06/01:00  target 3500 tps  offered 3500 tps  confirmed 3406 tps  p99 183.4ms  fail 0.06%
+[sweep-3500] 00:07/01:00  target 3500 tps  offered 3500 tps  confirmed 3431 tps  p99 182.9ms  fail 0.05%
+[sweep-3500] 00:08/01:00  target 3500 tps  offered 3500 tps  confirmed 3423 tps  p99 182.7ms  fail 0.05%
+[sweep-3500] 00:09/01:00  target 3500 tps  offered 3500 tps  confirmed 3444 tps  p99 182.7ms  fail 0.06%
+[sweep-3500] 00:10/01:00  target 3500 tps  offered 3500 tps  confirmed 3438 tps  p99 182.3ms  fail 0.05%
+[sweep-3500] 00:11/01:00  target 3500 tps  offered 3500 tps  confirmed 3452 tps  p99 183.8ms  fail 0.06%
+[sweep-3500] 00:12/01:00  target 3500 tps  offered 3500 tps  confirmed 3444 tps  p99 184.3ms  fail 0.05%
+[sweep-3500] 00:13/01:00  target 3500 tps  offered 3500 tps  confirmed 3455 tps  p99 185.2ms  fail 0.05%
+[sweep-3500] 00:14/01:00  target 3500 tps  offered 3500 tps  confirmed 3465 tps  p99 184.8ms  fail 0.05%
+[sweep-3500] 00:15/01:00  target 3500 tps  offered 3500 tps  confirmed 3459 tps  p99 185.3ms  fail 0.05%
+[sweep-3500] 00:16/01:00  target 3500 tps  offered 3500 tps  confirmed 3467 tps  p99 185.5ms  fail 0.05%
+[sweep-3500] 00:17/01:00  target 3500 tps  offered 3500 tps  confirmed 3467 tps  p99 188.5ms  fail 0.05%
+[sweep-3500] 00:18/01:00  target 3500 tps  offered 3500 tps  confirmed 3467 tps  p99 188.5ms  fail 0.05%
+[sweep-3500] 00:19/01:00  target 3500 tps  offered 3500 tps  confirmed 3472 tps  p99 188.0ms  fail 0.05%
+[sweep-3500] 00:20/01:00  target 3500 tps  offered 3500 tps  confirmed 3476 tps  p99 187.8ms  fail 0.05%
+[sweep-3500] 00:21/01:00  target 3500 tps  offered 3500 tps  confirmed 3474 tps  p99 187.5ms  fail 0.05%
+[sweep-3500] 00:22/01:00  target 3500 tps  offered 3500 tps  confirmed 3470 tps  p99 187.4ms  fail 0.05%
+[sweep-3500] 00:23/01:00  target 3500 tps  offered 3500 tps  confirmed 3477 tps  p99 187.3ms  fail 0.05%
+[sweep-3500] 00:24/01:00  target 3500 tps  offered 3500 tps  confirmed 3477 tps  p99 186.9ms  fail 0.05%
+[sweep-3500] 00:25/01:00  target 3500 tps  offered 3500 tps  confirmed 3478 tps  p99 186.8ms  fail 0.05%
+[sweep-3500] 00:26/01:00  target 3500 tps  offered 3500 tps  confirmed 3474 tps  p99 186.5ms  fail 0.05%
+[sweep-3500] 00:27/01:00  target 3500 tps  offered 3500 tps  confirmed 3480 tps  p99 186.4ms  fail 0.06%
+[sweep-3500] 00:28/01:00  target 3500 tps  offered 3500 tps  confirmed 3481 tps  p99 186.1ms  fail 0.06%
+[sweep-3500] 00:29/01:00  target 3500 tps  offered 3500 tps  confirmed 3482 tps  p99 186.0ms  fail 0.06%
+[sweep-3500] 00:30/01:00  target 3500 tps  offered 3500 tps  confirmed 3477 tps  p99 186.2ms  fail 0.06%
+[sweep-3500] 00:31/01:00  target 3500 tps  offered 3500 tps  confirmed 3479 tps  p99 186.2ms  fail 0.06%
+[sweep-3500] 00:32/01:00  target 3500 tps  offered 3500 tps  confirmed 3483 tps  p99 186.4ms  fail 0.06%
+[sweep-3500] 00:33/01:00  target 3500 tps  offered 3500 tps  confirmed 3485 tps  p99 186.1ms  fail 0.06%
+[sweep-3500] 00:34/01:00  target 3500 tps  offered 3500 tps  confirmed 3481 tps  p99 186.0ms  fail 0.06%
+[sweep-3500] 00:35/01:00  target 3500 tps  offered 3500 tps  confirmed 3485 tps  p99 186.0ms  fail 0.06%
+[sweep-3500] 00:36/01:00  target 3500 tps  offered 3500 tps  confirmed 3485 tps  p99 186.0ms  fail 0.06%
+[sweep-3500] 00:37/01:00  target 3500 tps  offered 3500 tps  confirmed 3485 tps  p99 186.2ms  fail 0.06%
+[sweep-3500] 00:38/01:00  target 3500 tps  offered 3500 tps  confirmed 3484 tps  p99 186.1ms  fail 0.06%
+[sweep-3500] 00:39/01:00  target 3500 tps  offered 3500 tps  confirmed 3483 tps  p99 186.0ms  fail 0.06%
+[sweep-3500] 00:40/01:00  target 3500 tps  offered 3500 tps  confirmed 3485 tps  p99 186.1ms  fail 0.06%
+[sweep-3500] 00:41/01:00  target 3500 tps  offered 3500 tps  confirmed 3485 tps  p99 186.0ms  fail 0.06%
+[sweep-3500] 00:42/01:00  target 3500 tps  offered 3500 tps  confirmed 3486 tps  p99 186.1ms  fail 0.06%
+[sweep-3500] 00:43/01:00  target 3500 tps  offered 3500 tps  confirmed 3487 tps  p99 186.2ms  fail 0.06%
+[sweep-3500] 00:44/01:00  target 3500 tps  offered 3500 tps  confirmed 3485 tps  p99 186.1ms  fail 0.06%
+[sweep-3500] 00:45/01:00  target 3500 tps  offered 3500 tps  confirmed 3487 tps  p99 185.9ms  fail 0.06%
+[sweep-3500] 00:46/01:00  target 3500 tps  offered 3500 tps  confirmed 3488 tps  p99 186.0ms  fail 0.06%
+[sweep-3500] 00:47/01:00  target 3500 tps  offered 3500 tps  confirmed 3489 tps  p99 185.9ms  fail 0.06%
+[sweep-3500] 00:48/01:00  target 3500 tps  offered 3500 tps  confirmed 3487 tps  p99 185.7ms  fail 0.06%
+[sweep-3500] 00:49/01:00  target 3500 tps  offered 3500 tps  confirmed 3485 tps  p99 185.9ms  fail 0.06%
+[sweep-3500] 00:50/01:00  target 3500 tps  offered 3500 tps  confirmed 3488 tps  p99 185.9ms  fail 0.06%
+[sweep-3500] 00:51/01:00  target 3500 tps  offered 3500 tps  confirmed 3486 tps  p99 185.7ms  fail 0.06%
+[sweep-3500] 00:52/01:00  target 3500 tps  offered 3500 tps  confirmed 3489 tps  p99 185.6ms  fail 0.06%
+[sweep-3500] 00:53/01:00  target 3500 tps  offered 3500 tps  confirmed 3489 tps  p99 185.6ms  fail 0.06%
+[sweep-3500] 00:54/01:00  target 3500 tps  offered 3500 tps  confirmed 3490 tps  p99 185.5ms  fail 0.06%
+[sweep-3500] 00:55/01:00  target 3500 tps  offered 3500 tps  confirmed 3488 tps  p99 185.6ms  fail 0.06%
+[sweep-3500] 00:56/01:00  target 3500 tps  offered 3500 tps  confirmed 3490 tps  p99 185.5ms  fail 0.06%
+[sweep-3500] 00:57/01:00  target 3500 tps  offered 3500 tps  confirmed 3489 tps  p99 186.4ms  fail 0.06%
+[sweep-3500] 00:58/01:00  target 3500 tps  offered 3500 tps  confirmed 3490 tps  p99 186.4ms  fail 0.06%
+[sweep-3500] 00:59/01:00  target 3500 tps  offered 3500 tps  confirmed 3489 tps  p99 186.5ms  fail 0.06%
+[sweep-3500] 01:00/01:00  target 3500 tps  offered 3500 tps  confirmed 3490 tps  p99 186.4ms  fail 0.06%
+time=2026-09-15T12:39:25.180+05:30 level=INFO msg="phase end" platform=neuchain run=probe-sweep phase=sweep-3500 submitted=52500 committed=52462 confirmed_tps=3497.5 fail_rate=0.0007 e2e_p99_ms=185.22
+time=2026-09-15T12:39:25.180+05:30 level=WARN msg="phase errors" platform=neuchain run=probe-sweep phase=sweep-3500 count=38 message="committed invalid"
+time=2026-09-15T12:39:25.180+05:30 level=INFO msg="phase start" platform=neuchain run=probe-sweep phase=sweep-5000 offered_tps=5000 workers=0 duration=1m0s
+[sweep-5000] 00:01/01:00  target 5000 tps  offered 5000 tps  confirmed 4171 tps  p99 184.7ms  fail 0.06%
+[sweep-5000] 00:02/01:00  target 5000 tps  offered 4999 tps  confirmed 4557 tps  p99 186.8ms  fail 0.04%
+[sweep-5000] 00:03/01:00  target 5000 tps  offered 5000 tps  confirmed 4747 tps  p99 186.0ms  fail 0.04%
+[sweep-5000] 00:04/01:00  target 5000 tps  offered 5000 tps  confirmed 4768 tps  p99 185.6ms  fail 0.05%
+[sweep-5000] 00:05/01:00  target 5000 tps  offered 5000 tps  confirmed 4840 tps  p99 184.3ms  fail 0.05%
+[sweep-5000] 00:06/01:00  target 5000 tps  offered 5000 tps  confirmed 4826 tps  p99 195.6ms  fail 0.06%
+[sweep-5000] 00:07/01:00  target 5000 tps  offered 5000 tps  confirmed 4879 tps  p99 195.7ms  fail 0.06%
+[sweep-5000] 00:08/01:00  target 5000 tps  offered 5000 tps  confirmed 4879 tps  p99 193.8ms  fail 0.06%
+[sweep-5000] 00:09/01:00  target 5000 tps  offered 5000 tps  confirmed 4895 tps  p99 192.3ms  fail 0.06%
+[sweep-5000] 00:10/01:00  target 5000 tps  offered 5000 tps  confirmed 4921 tps  p99 191.0ms  fail 0.06%
+[sweep-5000] 00:11/01:00  target 5000 tps  offered 5000 tps  confirmed 4938 tps  p99 190.1ms  fail 0.06%
+[sweep-5000] 00:12/01:00  target 5000 tps  offered 5000 tps  confirmed 4941 tps  p99 189.8ms  fail 0.07%
+[sweep-5000] 00:13/01:00  target 5000 tps  offered 5000 tps  confirmed 4932 tps  p99 189.2ms  fail 0.07%
+[sweep-5000] 00:14/01:00  target 5000 tps  offered 5000 tps  confirmed 4950 tps  p99 188.7ms  fail 0.07%
+[sweep-5000] 00:15/01:00  target 5000 tps  offered 5000 tps  confirmed 4942 tps  p99 188.2ms  fail 0.06%
+[sweep-5000] 00:16/01:00  target 5000 tps  offered 5000 tps  confirmed 4957 tps  p99 189.2ms  fail 0.06%
+[sweep-5000] 00:17/01:00  target 5000 tps  offered 5000 tps  confirmed 4946 tps  p99 188.5ms  fail 0.07%
+[sweep-5000] 00:18/01:00  target 5000 tps  offered 5000 tps  confirmed 4957 tps  p99 188.4ms  fail 0.07%
+[sweep-5000] 00:19/01:00  target 5000 tps  offered 5000 tps  confirmed 4954 tps  p99 187.9ms  fail 0.07%
+[sweep-5000] 00:20/01:00  target 5000 tps  offered 5000 tps  confirmed 4961 tps  p99 188.2ms  fail 0.07%
+[sweep-5000] 00:21/01:00  target 5000 tps  offered 5000 tps  confirmed 4953 tps  p99 188.2ms  fail 0.07%
+[sweep-5000] 00:22/01:00  target 5000 tps  offered 5000 tps  confirmed 4968 tps  p99 188.0ms  fail 0.07%
+[sweep-5000] 00:23/01:00  target 5000 tps  offered 5000 tps  confirmed 4960 tps  p99 187.9ms  fail 0.07%
+[sweep-5000] 00:24/01:00  target 5000 tps  offered 5000 tps  confirmed 4965 tps  p99 188.0ms  fail 0.07%
+[sweep-5000] 00:25/01:00  target 5000 tps  offered 5000 tps  confirmed 4960 tps  p99 188.5ms  fail 0.07%
+[sweep-5000] 00:26/01:00  target 5000 tps  offered 5000 tps  confirmed 4966 tps  p99 188.5ms  fail 0.06%
+[sweep-5000] 00:27/01:00  target 5000 tps  offered 5000 tps  confirmed 4972 tps  p99 194.6ms  fail 0.07%
+[sweep-5000] 00:28/01:00  target 5000 tps  offered 5000 tps  confirmed 4969 tps  p99 194.1ms  fail 0.07%
+[sweep-5000] 00:29/01:00  target 5000 tps  offered 5000 tps  confirmed 4965 tps  p99 193.5ms  fail 0.06%
+[sweep-5000] 00:30/01:00  target 5000 tps  offered 5000 tps  confirmed 4970 tps  p99 193.0ms  fail 0.07%
+[sweep-5000] 00:31/01:00  target 5000 tps  offered 5000 tps  confirmed 4970 tps  p99 192.9ms  fail 0.06%
+[sweep-5000] 00:32/01:00  target 5000 tps  offered 5000 tps  confirmed 4967 tps  p99 192.5ms  fail 0.07%
+[sweep-5000] 00:33/01:00  target 5000 tps  offered 5000 tps  confirmed 4974 tps  p99 192.1ms  fail 0.06%
+[sweep-5000] 00:34/01:00  target 5000 tps  offered 5000 tps  confirmed 4970 tps  p99 192.0ms  fail 0.06%
+[sweep-5000] 00:35/01:00  target 5000 tps  offered 5000 tps  confirmed 4970 tps  p99 191.6ms  fail 0.06%
+[sweep-5000] 00:36/01:00  target 5000 tps  offered 5000 tps  confirmed 4973 tps  p99 192.0ms  fail 0.06%
+[sweep-5000] 00:37/01:00  target 5000 tps  offered 5000 tps  confirmed 4975 tps  p99 192.0ms  fail 0.06%
+[sweep-5000] 00:38/01:00  target 5000 tps  offered 5000 tps  confirmed 4978 tps  p99 192.0ms  fail 0.06%
+[sweep-5000] 00:39/01:00  target 5000 tps  offered 5000 tps  confirmed 4976 tps  p99 191.9ms  fail 0.06%
+[sweep-5000] 00:40/01:00  target 5000 tps  offered 5000 tps  confirmed 4974 tps  p99 191.6ms  fail 0.06%
+[sweep-5000] 00:41/01:00  target 5000 tps  offered 5000 tps  confirmed 4977 tps  p99 191.4ms  fail 0.06%
+[sweep-5000] 00:42/01:00  target 5000 tps  offered 5000 tps  confirmed 4974 tps  p99 191.1ms  fail 0.06%
+[sweep-5000] 00:43/01:00  target 5000 tps  offered 5000 tps  confirmed 4978 tps  p99 191.9ms  fail 0.06%
+[sweep-5000] 00:44/01:00  target 5000 tps  offered 5000 tps  confirmed 4977 tps  p99 191.6ms  fail 0.06%
+[sweep-5000] 00:45/01:00  target 5000 tps  offered 5000 tps  confirmed 4975 tps  p99 191.5ms  fail 0.06%
+[sweep-5000] 00:46/01:00  target 5000 tps  offered 5000 tps  confirmed 4980 tps  p99 191.4ms  fail 0.06%
+[sweep-5000] 00:47/01:00  target 5000 tps  offered 5000 tps  confirmed 4982 tps  p99 192.9ms  fail 0.06%
+[sweep-5000] 00:48/01:00  target 5000 tps  offered 5000 tps  confirmed 4980 tps  p99 192.6ms  fail 0.06%
+[sweep-5000] 00:49/01:00  target 5000 tps  offered 5000 tps  confirmed 4978 tps  p99 192.5ms  fail 0.06%
+[sweep-5000] 00:50/01:00  target 5000 tps  offered 5000 tps  confirmed 4979 tps  p99 192.5ms  fail 0.06%
+[sweep-5000] 00:51/01:00  target 5000 tps  offered 5000 tps  confirmed 4982 tps  p99 192.3ms  fail 0.06%
+[sweep-5000] 00:52/01:00  target 5000 tps  offered 5000 tps  confirmed 4980 tps  p99 192.1ms  fail 0.06%
+[sweep-5000] 00:53/01:00  target 5000 tps  offered 5000 tps  confirmed 4985 tps  p99 192.3ms  fail 0.06%
+[sweep-5000] 00:54/01:00  target 5000 tps  offered 5000 tps  confirmed 4981 tps  p99 192.6ms  fail 0.06%
+[sweep-5000] 00:55/01:00  target 5000 tps  offered 5000 tps  confirmed 4982 tps  p99 192.5ms  fail 0.07%
+[sweep-5000] 00:56/01:00  target 5000 tps  offered 5000 tps  confirmed 4984 tps  p99 192.4ms  fail 0.06%
+[sweep-5000] 00:57/01:00  target 5000 tps  offered 5000 tps  confirmed 4983 tps  p99 192.1ms  fail 0.07%
+[sweep-5000] 00:58/01:00  target 5000 tps  offered 5000 tps  confirmed 4982 tps  p99 192.0ms  fail 0.07%
+[sweep-5000] 00:59/01:00  target 5000 tps  offered 5000 tps  confirmed 4984 tps  p99 191.9ms  fail 0.07%
+[sweep-5000] 01:00/01:00  target 5000 tps  offered 5000 tps  confirmed 4984 tps  p99 192.4ms  fail 0.07%
+time=2026-09-15T12:40:25.917+05:30 level=INFO msg="phase end" platform=neuchain run=probe-sweep phase=sweep-5000 submitted=75000 committed=74954 confirmed_tps=4996.9 fail_rate=0.0006 e2e_p99_ms=189.57
+time=2026-09-15T12:40:25.917+05:30 level=WARN msg="phase errors" platform=neuchain run=probe-sweep phase=sweep-5000 count=46 message="committed invalid"
+time=2026-09-15T12:40:25.917+05:30 level=INFO msg="phase start" platform=neuchain run=probe-sweep phase=sweep-7500 offered_tps=7500 workers=0 duration=1m0s
+[sweep-7500] 00:01/01:00  target 7500 tps  offered 7499 tps  confirmed 6337 tps  p99 199.7ms  fail 0.15%
+[sweep-7500] 00:02/01:00  target 7500 tps  offered 7499 tps  confirmed 6807 tps  p99 198.1ms  fail 0.15%
+[sweep-7500] 00:03/01:00  target 7500 tps  offered 7500 tps  confirmed 7158 tps  p99 195.6ms  fail 0.13%
+[sweep-7500] 00:04/01:00  target 7500 tps  offered 7499 tps  confirmed 7217 tps  p99 194.8ms  fail 0.13%
+[sweep-7500] 00:05/01:00  target 7500 tps  offered 7500 tps  confirmed 7261 tps  p99 196.0ms  fail 0.12%
+[sweep-7500] 00:06/01:00  target 7500 tps  offered 7500 tps  confirmed 7342 tps  p99 196.5ms  fail 0.12%
+[sweep-7500] 00:07/01:00  target 7500 tps  offered 7500 tps  confirmed 7347 tps  p99 195.7ms  fail 0.12%
+[sweep-7500] 00:08/01:00  target 7500 tps  offered 7500 tps  confirmed 7344 tps  p99 194.8ms  fail 0.13%
+[sweep-7500] 00:09/01:00  target 7500 tps  offered 7500 tps  confirmed 7384 tps  p99 194.3ms  fail 0.13%
+[sweep-7500] 00:10/01:00  target 7500 tps  offered 7500 tps  confirmed 7334 tps  p99 196.5ms  fail 0.13%
+[sweep-7500] 00:11/01:00  target 7500 tps  offered 7500 tps  confirmed 7398 tps  p99 197.9ms  fail 0.14%
+[sweep-7500] 00:12/01:00  target 7500 tps  offered 7500 tps  confirmed 7387 tps  p99 197.2ms  fail 0.14%
+[sweep-7500] 00:13/01:00  target 7500 tps  offered 7500 tps  confirmed 7394 tps  p99 196.6ms  fail 0.14%
+[sweep-7500] 00:14/01:00  target 7500 tps  offered 7500 tps  confirmed 7415 tps  p99 196.6ms  fail 0.14%
+[sweep-7500] 00:15/01:00  target 7500 tps  offered 7500 tps  confirmed 7406 tps  p99 196.1ms  fail 0.13%
+[sweep-7500] 00:16/01:00  target 7500 tps  offered 7500 tps  confirmed 7419 tps  p99 200.8ms  fail 0.13%
+[sweep-7500] 00:17/01:00  target 7500 tps  offered 7500 tps  confirmed 7432 tps  p99 200.2ms  fail 0.13%
+[sweep-7500] 00:18/01:00  target 7500 tps  offered 7500 tps  confirmed 7425 tps  p99 201.3ms  fail 0.13%
+[sweep-7500] 00:19/01:00  target 7500 tps  offered 7500 tps  confirmed 7445 tps  p99 201.1ms  fail 0.12%
+[sweep-7500] 00:20/01:00  target 7500 tps  offered 7500 tps  confirmed 7434 tps  p99 209.2ms  fail 0.12%
+[sweep-7500] 00:21/01:00  target 7500 tps  offered 7500 tps  confirmed 7449 tps  p99 208.0ms  fail 0.12%
+[sweep-7500] 00:22/01:00  target 7500 tps  offered 7500 tps  confirmed 7447 tps  p99 207.1ms  fail 0.12%
+[sweep-7500] 00:23/01:00  target 7500 tps  offered 7500 tps  confirmed 7433 tps  p99 210.3ms  fail 0.12%
+[sweep-7500] 00:24/01:00  target 7500 tps  offered 7500 tps  confirmed 7451 tps  p99 209.4ms  fail 0.12%
+[sweep-7500] 00:25/01:00  target 7500 tps  offered 7500 tps  confirmed 7446 tps  p99 209.0ms  fail 0.12%
+[sweep-7500] 00:26/01:00  target 7500 tps  offered 7500 tps  confirmed 7442 tps  p99 208.4ms  fail 0.12%
+[sweep-7500] 00:27/01:00  target 7500 tps  offered 7500 tps  confirmed 7456 tps  p99 207.7ms  fail 0.12%
+[sweep-7500] 00:28/01:00  target 7500 tps  offered 7500 tps  confirmed 7449 tps  p99 207.1ms  fail 0.12%
+[sweep-7500] 00:29/01:00  target 7500 tps  offered 7500 tps  confirmed 7453 tps  p99 208.3ms  fail 0.12%
+[sweep-7500] 00:30/01:00  target 7500 tps  offered 7500 tps  confirmed 7452 tps  p99 207.6ms  fail 0.12%
+[sweep-7500] 00:31/01:00  target 7500 tps  offered 7500 tps  confirmed 7453 tps  p99 207.1ms  fail 0.12%
+[sweep-7500] 00:32/01:00  target 7500 tps  offered 7500 tps  confirmed 7454 tps  p99 206.5ms  fail 0.12%
+[sweep-7500] 00:33/01:00  target 7500 tps  offered 7500 tps  confirmed 7455 tps  p99 205.9ms  fail 0.11%
+[sweep-7500] 00:34/01:00  target 7500 tps  offered 7500 tps  confirmed 7459 tps  p99 205.4ms  fail 0.11%
+[sweep-7500] 00:35/01:00  target 7500 tps  offered 7500 tps  confirmed 7462 tps  p99 204.9ms  fail 0.11%
+[sweep-7500] 00:36/01:00  target 7500 tps  offered 7500 tps  confirmed 7456 tps  p99 204.5ms  fail 0.11%
+[sweep-7500] 00:37/01:00  target 7500 tps  offered 7500 tps  confirmed 7458 tps  p99 204.4ms  fail 0.11%
+[sweep-7500] 00:38/01:00  target 7500 tps  offered 7500 tps  confirmed 7467 tps  p99 204.0ms  fail 0.11%
+[sweep-7500] 00:39/01:00  target 7500 tps  offered 7500 tps  confirmed 7463 tps  p99 203.8ms  fail 0.11%
+[sweep-7500] 00:40/01:00  target 7500 tps  offered 7500 tps  confirmed 7463 tps  p99 203.7ms  fail 0.11%
+[sweep-7500] 00:41/01:00  target 7500 tps  offered 7500 tps  confirmed 7461 tps  p99 203.3ms  fail 0.11%
+[sweep-7500] 00:42/01:00  target 7500 tps  offered 7500 tps  confirmed 7469 tps  p99 203.1ms  fail 0.11%
+[sweep-7500] 00:43/01:00  target 7500 tps  offered 7500 tps  confirmed 7472 tps  p99 202.8ms  fail 0.11%
+[sweep-7500] 00:44/01:00  target 7500 tps  offered 7500 tps  confirmed 7472 tps  p99 202.5ms  fail 0.11%
+[sweep-7500] 00:45/01:00  target 7500 tps  offered 7500 tps  confirmed 7471 tps  p99 202.1ms  fail 0.11%
+[sweep-7500] 00:46/01:00  target 7500 tps  offered 7500 tps  confirmed 7471 tps  p99 201.9ms  fail 0.11%
+[sweep-7500] 00:47/01:00  target 7500 tps  offered 7500 tps  confirmed 7466 tps  p99 201.6ms  fail 0.11%
+[sweep-7500] 00:48/01:00  target 7500 tps  offered 7500 tps  confirmed 7471 tps  p99 201.3ms  fail 0.11%
+[sweep-7500] 00:49/01:00  target 7500 tps  offered 7500 tps  confirmed 7469 tps  p99 201.9ms  fail 0.11%
+[sweep-7500] 00:50/01:00  target 7500 tps  offered 7500 tps  confirmed 7472 tps  p99 204.2ms  fail 0.11%
+[sweep-7500] 00:51/01:00  target 7500 tps  offered 7500 tps  confirmed 7468 tps  p99 203.9ms  fail 0.11%
+[sweep-7500] 00:52/01:00  target 7500 tps  offered 7500 tps  confirmed 7472 tps  p99 203.7ms  fail 0.11%
+[sweep-7500] 00:53/01:00  target 7500 tps  offered 7500 tps  confirmed 7469 tps  p99 203.4ms  fail 0.11%
+[sweep-7500] 00:54/01:00  target 7500 tps  offered 7500 tps  confirmed 7470 tps  p99 203.3ms  fail 0.11%
+[sweep-7500] 00:55/01:00  target 7500 tps  offered 7500 tps  confirmed 7466 tps  p99 203.3ms  fail 0.11%
+[sweep-7500] 00:56/01:00  target 7500 tps  offered 7500 tps  confirmed 7474 tps  p99 203.0ms  fail 0.12%
+[sweep-7500] 00:57/01:00  target 7500 tps  offered 7500 tps  confirmed 7467 tps  p99 203.3ms  fail 0.12%
+[sweep-7500] 00:58/01:00  target 7500 tps  offered 7500 tps  confirmed 7473 tps  p99 203.3ms  fail 0.12%
+[sweep-7500] 00:59/01:00  target 7500 tps  offered 7500 tps  confirmed 7471 tps  p99 203.0ms  fail 0.12%
+[sweep-7500] 01:00/01:00  target 7500 tps  offered 7500 tps  confirmed 7470 tps  p99 203.5ms  fail 0.12%
+time=2026-09-15T12:41:27.009+05:30 level=INFO msg="phase end" platform=neuchain run=probe-sweep phase=sweep-7500 submitted=112500 committed=112388 confirmed_tps=7492.5 fail_rate=0.0010 e2e_p99_ms=193.41
+time=2026-09-15T12:41:27.009+05:30 level=WARN msg="phase errors" platform=neuchain run=probe-sweep phase=sweep-7500 count=112 message="committed invalid"
+time=2026-09-15T12:41:27.009+05:30 level=INFO msg="phase start" platform=neuchain run=probe-sweep phase=sweep-10000 offered_tps=10000 workers=0 duration=1m0s
+[sweep-10000] 00:01/01:00  target 10000 tps  offered 9998 tps  confirmed 8197 tps  p99 196.9ms  fail 0.09%
+[sweep-10000] 00:02/01:00  target 10000 tps  offered 10000 tps  confirmed 9643 tps  p99 215.7ms  fail 0.13%
+[sweep-10000] 00:03/01:00  target 10000 tps  offered 10000 tps  confirmed 9986 tps  p99 226.1ms  fail 0.15%
+[sweep-10000] 00:04/01:00  target 10000 tps  offered 10000 tps  confirmed 9831 tps  p99 223.1ms  fail 0.14%
+[sweep-10000] 00:05/01:00  target 10000 tps  offered 10000 tps  confirmed 9985 tps  p99 234.8ms  fail 0.15%
+[sweep-10000] 00:06/01:00  target 10000 tps  offered 10000 tps  confirmed 9985 tps  p99 232.2ms  fail 0.15%
+[sweep-10000] 00:07/01:00  target 10000 tps  offered 9975 tps  confirmed 9769 tps  p99 277.2ms  fail 0.15%
+[sweep-10000] 00:08/01:00  target 10000 tps  offered 10000 tps  confirmed 9984 tps  p99 294.9ms  fail 0.16%
+[sweep-10000] 00:09/01:00  target 10000 tps  offered 10000 tps  confirmed 9790 tps  p99 287.5ms  fail 0.16%
+[sweep-10000] 00:10/01:00  target 10000 tps  offered 10000 tps  confirmed 9983 tps  p99 282.1ms  fail 0.17%
+[sweep-10000] 00:11/01:00  target 10000 tps  offered 10000 tps  confirmed 9913 tps  p99 277.5ms  fail 0.16%
+[sweep-10000] 00:12/01:00  target 10000 tps  offered 10000 tps  confirmed 9983 tps  p99 272.4ms  fail 0.16%
+[sweep-10000] 00:13/01:00  target 10000 tps  offered 10000 tps  confirmed 9984 tps  p99 268.8ms  fail 0.17%
+[sweep-10000] 00:14/01:00  target 10000 tps  offered 10000 tps  confirmed 9984 tps  p99 265.7ms  fail 0.16%
+[sweep-10000] 00:15/01:00  target 10000 tps  offered 10000 tps  confirmed 9983 tps  p99 262.9ms  fail 0.16%
+[sweep-10000] 00:16/01:00  target 10000 tps  offered 10000 tps  confirmed 9984 tps  p99 277.2ms  fail 0.16%
+[sweep-10000] 00:17/01:00  target 10000 tps  offered 10000 tps  confirmed 9984 tps  p99 274.4ms  fail 0.16%
+[sweep-10000] 00:18/01:00  target 10000 tps  offered 10000 tps  confirmed 9984 tps  p99 272.1ms  fail 0.16%
+[sweep-10000] 00:19/01:00  target 10000 tps  offered 10000 tps  confirmed 9984 tps  p99 269.6ms  fail 0.16%
+[sweep-10000] 00:21/01:00  target 10000 tps  offered 10000 tps  confirmed 9948 tps  p99 265.7ms  fail 0.16%
+[sweep-10000] 00:22/01:00  target 10000 tps  offered 10000 tps  confirmed 9984 tps  p99 263.7ms  fail 0.16%
+[sweep-10000] 00:23/01:00  target 10000 tps  offered 10000 tps  confirmed 9983 tps  p99 261.6ms  fail 0.17%
+[sweep-10000] 00:24/01:00  target 10000 tps  offered 10000 tps  confirmed 9983 tps  p99 260.1ms  fail 0.17%
+[sweep-10000] 00:25/01:00  target 10000 tps  offered 10000 tps  confirmed 9983 tps  p99 258.8ms  fail 0.17%
+[sweep-10000] 00:26/01:00  target 10000 tps  offered 10000 tps  confirmed 9983 tps  p99 259.7ms  fail 0.17%
+[sweep-10000] 00:28/01:00  target 10000 tps  offered 10000 tps  confirmed 9983 tps  p99 267.5ms  fail 0.17%
+[sweep-10000] 00:29/01:00  target 10000 tps  offered 10000 tps  confirmed 9983 tps  p99 266.5ms  fail 0.17%
+[sweep-10000] 00:30/01:00  target 10000 tps  offered 10000 tps  confirmed 9983 tps  p99 268.8ms  fail 0.17%
+[sweep-10000] 00:31/01:00  target 10000 tps  offered 10000 tps  confirmed 9983 tps  p99 267.8ms  fail 0.17%
+[sweep-10000] 00:33/01:00  target 10000 tps  offered 10000 tps  confirmed 9983 tps  p99 294.1ms  fail 0.17%
+[sweep-10000] 00:34/01:00  target 10000 tps  offered 10000 tps  confirmed 9983 tps  p99 292.6ms  fail 0.17%
+[sweep-10000] 00:36/01:00  target 10000 tps  offered 10000 tps  confirmed 9983 tps  p99 294.7ms  fail 0.17%
+[sweep-10000] 00:37/01:00  target 10000 tps  offered 9995 tps  confirmed 9940 tps  p99 293.9ms  fail 0.17%
+[sweep-10000] 00:38/01:00  target 10000 tps  offered 10000 tps  confirmed 9983 tps  p99 307.2ms  fail 0.17%
+[sweep-10000] 00:40/01:00  target 10000 tps  offered 9996 tps  confirmed 9947 tps  p99 305.1ms  fail 0.17%
+[sweep-10000] 00:41/01:00  target 10000 tps  offered 10000 tps  confirmed 9983 tps  p99 319.2ms  fail 0.17%
+[sweep-10000] 00:43/01:00  target 10000 tps  offered 10000 tps  confirmed 9983 tps  p99 316.7ms  fail 0.17%
+[sweep-10000] 00:44/01:00  target 10000 tps  offered 10000 tps  confirmed 9983 tps  p99 315.4ms  fail 0.17%
+[sweep-10000] 00:46/01:00  target 10000 tps  offered 10000 tps  confirmed 9983 tps  p99 313.3ms  fail 0.17%
+[sweep-10000] 00:47/01:00  target 10000 tps  offered 10000 tps  confirmed 9983 tps  p99 331.5ms  fail 0.17%
+[sweep-10000] 00:49/01:00  target 10000 tps  offered 10000 tps  confirmed 9983 tps  p99 329.0ms  fail 0.17%
+[sweep-10000] 00:51/01:00  target 10000 tps  offered 10000 tps  confirmed 9983 tps  p99 326.7ms  fail 0.17%
+[sweep-10000] 00:52/01:00  target 10000 tps  offered 9996 tps  confirmed 9916 tps  p99 325.6ms  fail 0.17%
+[sweep-10000] 00:54/01:00  target 10000 tps  offered 10000 tps  confirmed 9983 tps  p99 366.3ms  fail 0.17%
+[sweep-10000] 00:55/01:00  target 10000 tps  offered 10000 tps  confirmed 9983 tps  p99 365.1ms  fail 0.17%
+[sweep-10000] 00:57/01:00  target 10000 tps  offered 10000 tps  confirmed 9983 tps  p99 362.8ms  fail 0.17%
+[sweep-10000] 00:58/01:00  target 10000 tps  offered 10000 tps  confirmed 9983 tps  p99 361.5ms  fail 0.17%
+[sweep-10000] 01:00/01:00  target 10000 tps  offered 10000 tps  confirmed 9983 tps  p99 359.4ms  fail 0.17%
+[sweep-10000] 01:01/01:00  target 10000 tps  offered 9836 tps  confirmed 9819 tps  p99 359.4ms  fail 0.17%
+time=2026-09-15T12:42:30.701+05:30 level=INFO msg="phase end" platform=neuchain run=probe-sweep phase=sweep-10000 submitted=150000 committed=149732 confirmed_tps=9982.1 fail_rate=0.0018 e2e_p99_ms=366.08
+time=2026-09-15T12:42:30.701+05:30 level=WARN msg="phase errors" platform=neuchain run=probe-sweep phase=sweep-10000 count=268 message="committed invalid"
+time=2026-09-15T12:42:30.701+05:30 level=INFO msg="phase start" platform=neuchain run=probe-sweep phase=hold offered_tps=6750 workers=0 duration=5m0s
+[hold] 00:01/05:00  target 6750 tps  offered 6750 tps  confirmed 6012 tps  p99 220.4ms  fail 0.16%
+[hold] 00:02/05:00  target 6750 tps  offered 6750 tps  confirmed 6197 tps  p99 210.9ms  fail 0.16%
+[hold] 00:03/05:00  target 6750 tps  offered 6750 tps  confirmed 6741 tps  p99 213.4ms  fail 0.13%
+[hold] 00:04/05:00  target 6750 tps  offered 6750 tps  confirmed 6742 tps  p99 208.4ms  fail 0.13%
+[hold] 00:05/05:00  target 6750 tps  offered 6750 tps  confirmed 6743 tps  p99 212.7ms  fail 0.11%
+[hold] 00:06/05:00  target 6750 tps  offered 6750 tps  confirmed 6743 tps  p99 209.4ms  fail 0.11%
+[hold] 00:08/05:00  target 6750 tps  offered 6750 tps  confirmed 6743 tps  p99 206.1ms  fail 0.11%
+[hold] 00:09/05:00  target 6750 tps  offered 6750 tps  confirmed 6743 tps  p99 204.8ms  fail 0.10%
+[hold] 00:10/05:00  target 6750 tps  offered 6750 tps  confirmed 6743 tps  p99 206.6ms  fail 0.10%
+[hold] 00:12/05:00  target 6750 tps  offered 6750 tps  confirmed 6743 tps  p99 205.4ms  fail 0.10%
+[hold] 00:13/05:00  target 6750 tps  offered 6750 tps  confirmed 6744 tps  p99 205.1ms  fail 0.10%
+[hold] 00:14/05:00  target 6750 tps  offered 6750 tps  confirmed 6744 tps  p99 204.3ms  fail 0.10%
+[hold] 00:15/05:00  target 6750 tps  offered 6750 tps  confirmed 6743 tps  p99 203.7ms  fail 0.10%
+[hold] 00:17/05:00  target 6750 tps  offered 6750 tps  confirmed 6743 tps  p99 203.4ms  fail 0.10%
+time=2026-09-15T12:43:06.248+05:30 level=WARN msg="tip query failed; finality is not being observed while this lasts" platform=neuchain run=probe-sweep component=adapter component=finality-poller query=localhost:7003 err="neuchain: tip_query reply from localhost:7003: EOF" consecutive=1
+[hold] 00:18/05:00  target 6750 tps  offered 6746 tps  confirmed 6620 tps  p99 203.0ms  fail 0.10%
+time=2026-09-15T12:43:11.141+05:30 level=WARN msg="tip query failed; finality is not being observed while this lasts" platform=neuchain run=probe-sweep component=adapter component=finality-poller query=localhost:7003 err="neuchain: tip_query send to localhost:7003: zmq4: no connections available: %!w(<nil>)" consecutive=100
+[hold] 00:20/05:00  target 6750 tps  offered 6750 tps  confirmed 5987 tps  p99 203.0ms  fail 0.09%
+[hold] 00:37/05:00  target 6750 tps  offered 4840 tps  confirmed 3236 tps  p99 203.0ms  fail 2.97%
+[hold] 00:42/05:00  target 6750 tps  offered 4810 tps  confirmed 2851 tps  p99 203.0ms  fail 13.99%
+time=2026-09-15T12:43:16.130+05:30 level=WARN msg="tip query failed; finality is not being observed while this lasts" platform=neuchain run=probe-sweep component=adapter component=finality-poller query=localhost:7003 err="neuchain: tip_query send to localhost:7003: zmq4: no connections available: %!w(<nil>)" consecutive=200
+[hold] 00:43/05:00  target 6750 tps  offered 6750 tps  confirmed 2785 tps  p99 203.0ms  fail 40.14%
+[hold] 00:45/05:00  target 6750 tps  offered 6750 tps  confirmed 2661 tps  p99 203.0ms  fail 42.80%
+[hold] 00:46/05:00  target 6750 tps  offered 6750 tps  confirmed 2603 tps  p99 203.0ms  fail 44.04%
+[hold] 00:47/05:00  target 6750 tps  offered 6750 tps  confirmed 2548 tps  p99 203.0ms  fail 45.23%
+time=2026-09-15T12:43:21.130+05:30 level=WARN msg="tip query failed; finality is not being observed while this lasts" platform=neuchain run=probe-sweep component=adapter component=finality-poller query=localhost:7003 err="neuchain: tip_query send to localhost:7003: zmq4: no connections available: %!w(<nil>)" consecutive=300
+[hold] 00:49/05:00  target 6750 tps  offered 6750 tps  confirmed 2444 tps  p99 203.0ms  fail 47.47%
+[hold] 00:50/05:00  target 6750 tps  offered 6750 tps  confirmed 2395 tps  p99 203.0ms  fail 48.52%
+[hold] 00:51/05:00  target 6750 tps  offered 6750 tps  confirmed 2348 tps  p99 203.0ms  fail 49.53%
+[hold] 00:53/05:00  target 6750 tps  offered 6750 tps  confirmed 2259 tps  p99 203.0ms  fail 51.43%
+time=2026-09-15T12:43:26.130+05:30 level=WARN msg="tip query failed; finality is not being observed while this lasts" platform=neuchain run=probe-sweep component=adapter component=finality-poller query=localhost:7003 err="neuchain: tip_query send to localhost:7003: zmq4: no connections available: %!w(<nil>)" consecutive=400
+[hold] 00:54/05:00  target 6750 tps  offered 6750 tps  confirmed 2218 tps  p99 203.0ms  fail 52.33%
+[hold] 00:56/05:00  target 6750 tps  offered 6750 tps  confirmed 2138 tps  p99 203.0ms  fail 54.04%
+[hold] 00:57/05:00  target 6750 tps  offered 6750 tps  confirmed 2101 tps  p99 203.0ms  fail 54.84%
+time=2026-09-15T12:43:31.130+05:30 level=WARN msg="tip query failed; finality is not being observed while this lasts" platform=neuchain run=probe-sweep component=adapter component=finality-poller query=localhost:7003 err="neuchain: tip_query send to localhost:7003: zmq4: no connections available: %!w(<nil>)" consecutive=500
+[hold] 00:59/05:00  target 6750 tps  offered 6750 tps  confirmed 2030 tps  p99 203.0ms  fail 56.37%
+[hold] 01:00/05:00  target 6750 tps  offered 6750 tps  confirmed 1996 tps  p99 203.0ms  fail 57.10%
+[hold] 01:01/05:00  target 6750 tps  offered 6750 tps  confirmed 1963 tps  p99 203.0ms  fail 57.80%
+time=2026-09-15T12:43:36.129+05:30 level=WARN msg="tip query failed; finality is not being observed while this lasts" platform=neuchain run=probe-sweep component=adapter component=finality-poller query=localhost:7003 err="neuchain: tip_query send to localhost:7003: zmq4: no connections available: %!w(<nil>)" consecutive=600
+time=2026-09-15T12:43:36.279+05:30 level=ERROR msg="finality poller is down" platform=neuchain run=probe-sweep component=adapter component=finality-poller query=localhost:7003 err="neuchain: finality stream down: tip_query to localhost:7003 has failed for 30s: neuchain: tip_query send to localhost:7003: zmq4: no connections available: %!w(<nil>)"
+[hold] 01:03/05:00  target 6750 tps  offered 6750 tps  confirmed 1901 tps  p99 203.0ms  fail 59.14%
+[hold] 01:05/05:00  target 6750 tps  offered 6750 tps  confirmed 1842 tps  p99 203.0ms  fail 60.40%
+[hold] 01:06/05:00  target 6750 tps  offered 6750 tps  confirmed 1814 tps  p99 203.0ms  fail 61.00%
+time=2026-09-15T12:43:41.129+05:30 level=WARN msg="tip query failed; finality is not being observed while this lasts" platform=neuchain run=probe-sweep component=adapter component=finality-poller query=localhost:7003 err="neuchain: tip_query send to localhost:7003: zmq4: no connections available: %!w(<nil>)" consecutive=700
+[hold] 01:08/05:00  target 6750 tps  offered 6750 tps  confirmed 1761 tps  p99 203.0ms  fail 62.15%
+[hold] 01:10/05:00  target 6750 tps  offered 6750 tps  confirmed 1711 tps  p99 203.0ms  fail 63.23%
+[hold] 01:12/05:00  target 6750 tps  offered 6750 tps  confirmed 1663 tps  p99 203.0ms  fail 64.25%
+time=2026-09-15T12:43:46.130+05:30 level=WARN msg="tip query failed; finality is not being observed while this lasts" platform=neuchain run=probe-sweep component=adapter component=finality-poller query=localhost:7003 err="neuchain: tip_query send to localhost:7003: zmq4: no connections available: %!w(<nil>)" consecutive=800
+[hold] 01:13/05:00  target 6750 tps  offered 6750 tps  confirmed 1640 tps  p99 203.0ms  fail 64.74%
+[hold] 01:15/05:00  target 6750 tps  offered 6750 tps  confirmed 1597 tps  p99 203.0ms  fail 65.68%
+time=2026-09-15T12:43:51.129+05:30 level=WARN msg="tip query failed; finality is not being observed while this lasts" platform=neuchain run=probe-sweep component=adapter component=finality-poller query=localhost:7003 err="neuchain: tip_query send to localhost:7003: zmq4: no connections available: %!w(<nil>)" consecutive=900
+[hold] 01:17/05:00  target 6750 tps  offered 6750 tps  confirmed 1555 tps  p99 203.0ms  fail 66.57%
+[hold] 01:19/05:00  target 6750 tps  offered 6750 tps  confirmed 1516 tps  p99 203.0ms  fail 67.44%
+[hold] 01:21/05:00  target 6750 tps  offered 6750 tps  confirmed 1478 tps  p99 203.0ms  fail 68.26%
+time=2026-09-15T12:43:56.130+05:30 level=WARN msg="tip query failed; finality is not being observed while this lasts" platform=neuchain run=probe-sweep component=adapter component=finality-poller query=localhost:7003 err="neuchain: tip_query send to localhost:7003: zmq4: no connections available: %!w(<nil>)" consecutive=1000
+[hold] 01:23/05:00  target 6750 tps  offered 6750 tps  confirmed 1443 tps  p99 203.0ms  fail 69.03%
+[hold] 01:25/05:00  target 6750 tps  offered 6750 tps  confirmed 1409 tps  p99 203.0ms  fail 69.83%
+time=2026-09-15T12:44:01.129+05:30 level=WARN msg="tip query failed; finality is not being observed while this lasts" platform=neuchain run=probe-sweep component=adapter component=finality-poller query=localhost:7003 err="neuchain: tip_query send to localhost:7003: zmq4: no connections available: %!w(<nil>)" consecutive=1100
+[hold] 01:27/05:00  target 6750 tps  offered 6750 tps  confirmed 1376 tps  p99 203.0ms  fail 72.02%
+[hold] 01:30/05:00  target 6750 tps  offered 6750 tps  confirmed 1331 tps  p99 203.0ms  fail 72.96%
+time=2026-09-15T12:44:06.129+05:30 level=WARN msg="tip query failed; finality is not being observed while this lasts" platform=neuchain run=probe-sweep component=adapter component=finality-poller query=localhost:7003 err="neuchain: tip_query send to localhost:7003: zmq4: no connections available: %!w(<nil>)" consecutive=1200
+[hold] 01:32/05:00  target 6750 tps  offered 6750 tps  confirmed 1302 tps  p99 203.0ms  fail 73.55%
+time=2026-09-15T12:44:11.179+05:30 level=WARN msg="tip query failed; finality is not being observed while this lasts" platform=neuchain run=probe-sweep component=adapter component=finality-poller query=localhost:7003 err="neuchain: tip_query send to localhost:7003: zmq4: no connections available: %!w(<nil>)" consecutive=1300
+[hold] 01:35/05:00  target 6750 tps  offered 6750 tps  confirmed 1261 tps  p99 203.0ms  fail 75.92%
+[hold] 01:38/05:00  target 6750 tps  offered 6750 tps  confirmed 1222 tps  p99 203.0ms  fail 81.81%
+time=2026-09-15T12:44:16.179+05:30 level=WARN msg="tip query failed; finality is not being observed while this lasts" platform=neuchain run=probe-sweep component=adapter component=finality-poller query=localhost:7003 err="neuchain: tip_query send to localhost:7003: zmq4: no connections available: %!w(<nil>)" consecutive=1400
+[hold] 01:41/05:00  target 6750 tps  offered 6750 tps  confirmed 1186 tps  p99 203.0ms  fail 82.44%
+[hold] 01:44/05:00  target 6750 tps  offered 6750 tps  confirmed 1151 tps  p99 203.0ms  fail 82.94%
+time=2026-09-15T12:44:21.179+05:30 level=WARN msg="tip query failed; finality is not being observed while this lasts" platform=neuchain run=probe-sweep component=adapter component=finality-poller query=localhost:7003 err="neuchain: tip_query send to localhost:7003: zmq4: no connections available: %!w(<nil>)" consecutive=1500
+[hold] 01:47/05:00  target 6750 tps  offered 6750 tps  confirmed 1119 tps  p99 203.0ms  fail 83.42%
+time=2026-09-15T12:44:26.179+05:30 level=WARN msg="tip query failed; finality is not being observed while this lasts" platform=neuchain run=probe-sweep component=adapter component=finality-poller query=localhost:7003 err="neuchain: tip_query send to localhost:7003: zmq4: no connections available: %!w(<nil>)" consecutive=1600
+[hold] 01:51/05:00  target 6750 tps  offered 6750 tps  confirmed 1079 tps  p99 203.0ms  fail 84.02%
+time=2026-09-15T12:44:31.179+05:30 level=WARN msg="tip query failed; finality is not being observed while this lasts" platform=neuchain run=probe-sweep component=adapter component=finality-poller query=localhost:7003 err="neuchain: tip_query send to localhost:7003: zmq4: no connections available: %!w(<nil>)" consecutive=1700
+[hold] 01:54/05:00  target 6750 tps  offered 6750 tps  confirmed 1050 tps  p99 203.0ms  fail 84.44%
+[hold] 01:58/05:00  target 6750 tps  offered 6750 tps  confirmed 1015 tps  p99 203.0ms  fail 84.97%
+time=2026-09-15T12:44:36.179+05:30 level=WARN msg="tip query failed; finality is not being observed while this lasts" platform=neuchain run=probe-sweep component=adapter component=finality-poller query=localhost:7003 err="neuchain: tip_query send to localhost:7003: zmq4: no connections available: %!w(<nil>)" consecutive=1800
+[hold] 02:02/05:00  target 6750 tps  offered 6750 tps  confirmed 982 tps  p99 203.0ms  fail 85.46%
+time=2026-09-15T12:44:41.179+05:30 level=WARN msg="tip query failed; finality is not being observed while this lasts" platform=neuchain run=probe-sweep component=adapter component=finality-poller query=localhost:7003 err="neuchain: tip_query send to localhost:7003: zmq4: no connections available: %!w(<nil>)" consecutive=1900
+[hold] 02:06/05:00  target 6750 tps  offered 6750 tps  confirmed 950 tps  p99 203.0ms  fail 85.92%
+time=2026-09-15T12:44:46.186+05:30 level=WARN msg="tip query failed; finality is not being observed while this lasts" platform=neuchain run=probe-sweep component=adapter component=finality-poller query=localhost:7003 err="neuchain: tip_query send to localhost:7003: zmq4: no connections available: %!w(<nil>)" consecutive=2000
+[hold] 02:10/05:00  target 6750 tps  offered 6750 tps  confirmed 921 tps  p99 203.0ms  fail 86.35%
+time=2026-09-15T12:44:51.179+05:30 level=WARN msg="tip query failed; finality is not being observed while this lasts" platform=neuchain run=probe-sweep component=adapter component=finality-poller query=localhost:7003 err="neuchain: tip_query send to localhost:7003: zmq4: no connections available: %!w(<nil>)" consecutive=2100
+[hold] 02:14/05:00  target 6750 tps  offered 6750 tps  confirmed 894 tps  p99 203.0ms  fail 86.76%
+time=2026-09-15T12:44:56.179+05:30 level=WARN msg="tip query failed; finality is not being observed while this lasts" platform=neuchain run=probe-sweep component=adapter component=finality-poller query=localhost:7003 err="neuchain: tip_query send to localhost:7003: zmq4: no connections available: %!w(<nil>)" consecutive=2200
+[hold] 02:18/05:00  target 6750 tps  offered 6750 tps  confirmed 868 tps  p99 203.0ms  fail 87.14%
+time=2026-09-15T12:45:01.180+05:30 level=WARN msg="tip query failed; finality is not being observed while this lasts" platform=neuchain run=probe-sweep component=adapter component=finality-poller query=localhost:7003 err="neuchain: tip_query send to localhost:7003: zmq4: no connections available: %!w(<nil>)" consecutive=2300
+[hold] 02:22/05:00  target 6750 tps  offered 6750 tps  confirmed 843 tps  p99 203.0ms  fail 87.51%
+time=2026-09-15T12:45:06.179+05:30 level=WARN msg="tip query failed; finality is not being observed while this lasts" platform=neuchain run=probe-sweep component=adapter component=finality-poller query=localhost:7003 err="neuchain: tip_query send to localhost:7003: zmq4: no connections available: %!w(<nil>)" consecutive=2400
+[hold] 02:27/05:00  target 6750 tps  offered 6750 tps  confirmed 815 tps  p99 203.0ms  fail 87.93%
+time=2026-09-15T12:45:11.180+05:30 level=WARN msg="tip query failed; finality is not being observed while this lasts" platform=neuchain run=probe-sweep component=adapter component=finality-poller query=localhost:7003 err="neuchain: tip_query send to localhost:7003: zmq4: no connections available: %!w(<nil>)" consecutive=2500
+[hold] 02:31/05:00  target 6750 tps  offered 6750 tps  confirmed 793 tps  p99 203.0ms  fail 88.25%
+time=2026-09-15T12:45:16.179+05:30 level=WARN msg="tip query failed; finality is not being observed while this lasts" platform=neuchain run=probe-sweep component=adapter component=finality-poller query=localhost:7003 err="neuchain: tip_query send to localhost:7003: zmq4: no connections available: %!w(<nil>)" consecutive=2600
+[hold] 02:36/05:00  target 6750 tps  offered 6750 tps  confirmed 768 tps  p99 203.0ms  fail 88.63%
+time=2026-09-15T12:45:21.179+05:30 level=WARN msg="tip query failed; finality is not being observed while this lasts" platform=neuchain run=probe-sweep component=adapter component=finality-poller query=localhost:7003 err="neuchain: tip_query send to localhost:7003: zmq4: no connections available: %!w(<nil>)" consecutive=2700
+[hold] 02:41/05:00  target 6750 tps  offered 6750 tps  confirmed 744 tps  p99 203.0ms  fail 88.98%
+time=2026-09-15T12:45:26.179+05:30 level=WARN msg="tip query failed; finality is not being observed while this lasts" platform=neuchain run=probe-sweep component=adapter component=finality-poller query=localhost:7003 err="neuchain: tip_query send to localhost:7003: zmq4: no connections available: %!w(<nil>)" consecutive=2800
+[hold] 02:46/05:00  target 6750 tps  offered 6750 tps  confirmed 721 tps  p99 203.0ms  fail 89.31%
+time=2026-09-15T12:45:31.185+05:30 level=WARN msg="tip query failed; finality is not being observed while this lasts" platform=neuchain run=probe-sweep component=adapter component=finality-poller query=localhost:7003 err="neuchain: tip_query send to localhost:7003: zmq4: no connections available: %!w(<nil>)" consecutive=2900
+[hold] 02:52/05:00  target 6750 tps  offered 6750 tps  confirmed 696 tps  p99 203.0ms  fail 89.69%
+time=2026-09-15T12:45:36.197+05:30 level=WARN msg="tip query failed; finality is not being observed while this lasts" platform=neuchain run=probe-sweep component=adapter component=finality-poller query=localhost:7003 err="neuchain: tip_query send to localhost:7003: zmq4: no connections available: %!w(<nil>)" consecutive=3000
+[hold] 02:58/05:00  target 6750 tps  offered 6750 tps  confirmed 673 tps  p99 203.0ms  fail 90.03%
+time=2026-09-15T12:45:41.179+05:30 level=WARN msg="tip query failed; finality is not being observed while this lasts" platform=neuchain run=probe-sweep component=adapter component=finality-poller query=localhost:7003 err="neuchain: tip_query send to localhost:7003: zmq4: no connections available: %!w(<nil>)" consecutive=3100
+[hold] 03:03/05:00  target 6750 tps  offered 6750 tps  confirmed 654 tps  p99 203.0ms  fail 90.31%
+time=2026-09-15T12:45:46.179+05:30 level=WARN msg="tip query failed; finality is not being observed while this lasts" platform=neuchain run=probe-sweep component=adapter component=finality-poller query=localhost:7003 err="neuchain: tip_query send to localhost:7003: zmq4: no connections available: %!w(<nil>)" consecutive=3200
+time=2026-09-15T12:45:51.179+05:30 level=WARN msg="tip query failed; finality is not being observed while this lasts" platform=neuchain run=probe-sweep component=adapter component=finality-poller query=localhost:7003 err="neuchain: tip_query send to localhost:7003: zmq4: no connections available: %!w(<nil>)" consecutive=3300
+[hold] 03:09/05:00  target 6750 tps  offered 6750 tps  confirmed 634 tps  p99 203.0ms  fail 90.61%
+time=2026-09-15T12:45:56.180+05:30 level=WARN msg="tip query failed; finality is not being observed while this lasts" platform=neuchain run=probe-sweep component=adapter component=finality-poller query=localhost:7003 err="neuchain: tip_query send to localhost:7003: zmq4: no connections available: %!w(<nil>)" consecutive=3400
+[hold] 03:16/05:00  target 6750 tps  offered 6750 tps  confirmed 611 tps  p99 203.0ms  fail 90.95%
+time=2026-09-15T12:46:01.179+05:30 level=WARN msg="tip query failed; finality is not being observed while this lasts" platform=neuchain run=probe-sweep component=adapter component=finality-poller query=localhost:7003 err="neuchain: tip_query send to localhost:7003: zmq4: no connections available: %!w(<nil>)" consecutive=3500
+time=2026-09-15T12:46:06.179+05:30 level=WARN msg="tip query failed; finality is not being observed while this lasts" platform=neuchain run=probe-sweep component=adapter component=finality-poller query=localhost:7003 err="neuchain: tip_query send to localhost:7003: zmq4: no connections available: %!w(<nil>)" consecutive=3600
+[hold] 03:22/05:00  target 6750 tps  offered 6750 tps  confirmed 593 tps  p99 203.0ms  fail 91.22%
+time=2026-09-15T12:46:11.179+05:30 level=WARN msg="tip query failed; finality is not being observed while this lasts" platform=neuchain run=probe-sweep component=adapter component=finality-poller query=localhost:7003 err="neuchain: tip_query send to localhost:7003: zmq4: no connections available: %!w(<nil>)" consecutive=3700
+[hold] 03:29/05:00  target 6750 tps  offered 6750 tps  confirmed 573 tps  p99 203.0ms  fail 91.51%
+time=2026-09-15T12:46:16.179+05:30 level=WARN msg="tip query failed; finality is not being observed while this lasts" platform=neuchain run=probe-sweep component=adapter component=finality-poller query=localhost:7003 err="neuchain: tip_query send to localhost:7003: zmq4: no connections available: %!w(<nil>)" consecutive=3800
+time=2026-09-15T12:46:21.179+05:30 level=WARN msg="tip query failed; finality is not being observed while this lasts" platform=neuchain run=probe-sweep component=adapter component=finality-poller query=localhost:7003 err="neuchain: tip_query send to localhost:7003: zmq4: no connections available: %!w(<nil>)" consecutive=3900
+[hold] 03:36/05:00  target 6750 tps  offered 6750 tps  confirmed 554 tps  p99 203.0ms  fail 91.79%
+time=2026-09-15T12:46:26.179+05:30 level=WARN msg="tip query failed; finality is not being observed while this lasts" platform=neuchain run=probe-sweep component=adapter component=finality-poller query=localhost:7003 err="neuchain: tip_query send to localhost:7003: zmq4: no connections available: %!w(<nil>)" consecutive=4000
+[hold] 03:44/05:00  target 6750 tps  offered 6750 tps  confirmed 535 tps  p99 203.0ms  fail 92.08%
+time=2026-09-15T12:46:31.179+05:30 level=WARN msg="tip query failed; finality is not being observed while this lasts" platform=neuchain run=probe-sweep component=adapter component=finality-poller query=localhost:7003 err="neuchain: tip_query send to localhost:7003: zmq4: no connections available: %!w(<nil>)" consecutive=4100
+time=2026-09-15T12:46:36.180+05:30 level=WARN msg="tip query failed; finality is not being observed while this lasts" platform=neuchain run=probe-sweep component=adapter component=finality-poller query=localhost:7003 err="neuchain: tip_query send to localhost:7003: zmq4: no connections available: %!w(<nil>)" consecutive=4200
+[hold] 03:52/05:00  target 6750 tps  offered 6750 tps  confirmed 516 tps  p99 203.0ms  fail 92.35%
+time=2026-09-15T12:46:41.179+05:30 level=WARN msg="tip query failed; finality is not being observed while this lasts" platform=neuchain run=probe-sweep component=adapter component=finality-poller query=localhost:7003 err="neuchain: tip_query send to localhost:7003: zmq4: no connections available: %!w(<nil>)" consecutive=4300
+time=2026-09-15T12:46:46.181+05:30 level=WARN msg="tip query failed; finality is not being observed while this lasts" platform=neuchain run=probe-sweep component=adapter component=finality-poller query=localhost:7003 err="neuchain: tip_query send to localhost:7003: zmq4: no connections available: %!w(<nil>)" consecutive=4400
+[hold] 03:59/05:00  target 6750 tps  offered 6750 tps  confirmed 501 tps  p99 203.0ms  fail 92.58%
+time=2026-09-15T12:46:51.179+05:30 level=WARN msg="tip query failed; finality is not being observed while this lasts" platform=neuchain run=probe-sweep component=adapter component=finality-poller query=localhost:7003 err="neuchain: tip_query send to localhost:7003: zmq4: no connections available: %!w(<nil>)" consecutive=4500
+[hold] 04:08/05:00  target 6750 tps  offered 6750 tps  confirmed 483 tps  p99 203.0ms  fail 92.85%
+time=2026-09-15T12:46:56.179+05:30 level=WARN msg="tip query failed; finality is not being observed while this lasts" platform=neuchain run=probe-sweep component=adapter component=finality-poller query=localhost:7003 err="neuchain: tip_query send to localhost:7003: zmq4: no connections available: %!w(<nil>)" consecutive=4600
+time=2026-09-15T12:47:01.179+05:30 level=WARN msg="tip query failed; finality is not being observed while this lasts" platform=neuchain run=probe-sweep component=adapter component=finality-poller query=localhost:7003 err="neuchain: tip_query send to localhost:7003: zmq4: no connections available: %!w(<nil>)" consecutive=4700
+time=2026-09-15T12:47:06.179+05:30 level=WARN msg="tip query failed; finality is not being observed while this lasts" platform=neuchain run=probe-sweep component=adapter component=finality-poller query=localhost:7003 err="neuchain: tip_query send to localhost:7003: zmq4: no connections available: %!w(<nil>)" consecutive=4800
+[hold] 04:17/05:00  target 6750 tps  offered 6750 tps  confirmed 466 tps  p99 203.0ms  fail 93.10%
+time=2026-09-15T12:47:11.179+05:30 level=WARN msg="tip query failed; finality is not being observed while this lasts" platform=neuchain run=probe-sweep component=adapter component=finality-poller query=localhost:7003 err="neuchain: tip_query send to localhost:7003: zmq4: no connections available: %!w(<nil>)" consecutive=4900
+time=2026-09-15T12:47:16.179+05:30 level=WARN msg="tip query failed; finality is not being observed while this lasts" platform=neuchain run=probe-sweep component=adapter component=finality-poller query=localhost:7003 err="neuchain: tip_query send to localhost:7003: zmq4: no connections available: %!w(<nil>)" consecutive=5000
+[hold] 04:26/05:00  target 6750 tps  offered 6750 tps  confirmed 450 tps  p99 203.0ms  fail 93.33%
+time=2026-09-15T12:47:21.179+05:30 level=WARN msg="tip query failed; finality is not being observed while this lasts" platform=neuchain run=probe-sweep component=adapter component=finality-poller query=localhost:7003 err="neuchain: tip_query send to localhost:7003: zmq4: no connections available: %!w(<nil>)" consecutive=5100
+time=2026-09-15T12:47:26.179+05:30 level=WARN msg="tip query failed; finality is not being observed while this lasts" platform=neuchain run=probe-sweep component=adapter component=finality-poller query=localhost:7003 err="neuchain: tip_query send to localhost:7003: zmq4: no connections available: %!w(<nil>)" consecutive=5200
+[hold] 04:38/05:00  target 6750 tps  offered 6750 tps  confirmed 431 tps  p99 203.0ms  fail 93.62%
+time=2026-09-15T12:47:31.179+05:30 level=WARN msg="tip query failed; finality is not being observed while this lasts" platform=neuchain run=probe-sweep component=adapter component=finality-poller query=localhost:7003 err="neuchain: tip_query send to localhost:7003: zmq4: no connections available: %!w(<nil>)" consecutive=5300
+time=2026-09-15T12:47:36.180+05:30 level=WARN msg="tip query failed; finality is not being observed while this lasts" platform=neuchain run=probe-sweep component=adapter component=finality-poller query=localhost:7003 err="neuchain: tip_query send to localhost:7003: zmq4: no connections available: %!w(<nil>)" consecutive=5400
+[hold] 04:48/05:00  target 6750 tps  offered 6750 tps  confirmed 416 tps  p99 203.0ms  fail 93.84%
+time=2026-09-15T12:47:41.180+05:30 level=WARN msg="tip query failed; finality is not being observed while this lasts" platform=neuchain run=probe-sweep component=adapter component=finality-poller query=localhost:7003 err="neuchain: tip_query send to localhost:7003: zmq4: no connections available: %!w(<nil>)" consecutive=5500
+time=2026-09-15T12:47:46.180+05:30 level=WARN msg="tip query failed; finality is not being observed while this lasts" platform=neuchain run=probe-sweep component=adapter component=finality-poller query=localhost:7003 err="neuchain: tip_query send to localhost:7003: zmq4: no connections available: %!w(<nil>)" consecutive=5600
+time=2026-09-15T12:47:47.864+05:30 level=INFO msg="phase end" platform=neuchain run=probe-sweep phase=hold submitted=1721250 committed=0 confirmed_tps=0.0 fail_rate=1.0000 e2e_p99_ms=0.00
+time=2026-09-15T12:47:47.864+05:30 level=WARN msg="phase errors" platform=neuchain run=probe-sweep phase=hold count=1366930 message="neuchain: finality stream down: tip_query to localhost:7003 has failed for 30s: neuchain: tip_query send to localhost:7003: zmq4: no connections available: %!w(<nil>)"
+time=2026-09-15T12:47:47.864+05:30 level=WARN msg="phase errors" platform=neuchain run=probe-sweep phase=hold count=354320 message="not sent: N transactions already in flight (platform is not finalizing)"
+time=2026-09-15T12:47:47.869+05:30 level=WARN msg=caveat platform=neuchain run=probe-sweep text="platform container bench-neuchain-block-server-0 exited (after 12:43:00, status exited, exit code 139)"
+time=2026-09-15T12:47:47.985+05:30 level=INFO msg="captured container log" platform=neuchain run=probe-sweep container=bench-neuchain-block-server-0 path=results/neuchain/20260915-123252/container-logs/bench-neuchain-block-server-0.log
+time=2026-09-15T12:47:47.985+05:30 level=WARN msg=caveat platform=neuchain run=probe-sweep text="platform container bench-neuchain-block-server-1 exited (after 12:43:00, status exited, exit code 139)"
+time=2026-09-15T12:47:48.067+05:30 level=INFO msg="captured container log" platform=neuchain run=probe-sweep container=bench-neuchain-block-server-1 path=results/neuchain/20260915-123252/container-logs/bench-neuchain-block-server-1.log
+time=2026-09-15T12:47:48.067+05:30 level=WARN msg=caveat platform=neuchain run=probe-sweep text="platform container bench-neuchain-block-server-2 exited (after 12:43:00, status exited, exit code 139)"
+time=2026-09-15T12:47:48.121+05:30 level=INFO msg="captured container log" platform=neuchain run=probe-sweep container=bench-neuchain-block-server-2 path=results/neuchain/20260915-123252/container-logs/bench-neuchain-block-server-2.log
+time=2026-09-15T12:47:48.121+05:30 level=WARN msg=caveat platform=neuchain run=probe-sweep text="platform container bench-neuchain-block-server-3 exited (after 12:43:00, status exited, exit code 139)"
+time=2026-09-15T12:47:48.176+05:30 level=INFO msg="captured container log" platform=neuchain run=probe-sweep container=bench-neuchain-block-server-3 path=results/neuchain/20260915-123252/container-logs/bench-neuchain-block-server-3.log
+time=2026-09-15T12:47:48.608+05:30 level=WARN msg="run has no headline: it did not complete a headline phase on a healthy platform; see caveats in summary.txt" platform=neuchain run=probe-sweep dir=results/neuchain/20260915-123252
+time=2026-09-15T12:47:48.608+05:30 level=INFO msg="run finished" platform=neuchain run=probe-sweep out_dir=results/neuchain/20260915-123252 caveats=5
+results written to results/neuchain/20260915-123252
+monitoring report: results/neuchain/20260915-123252/monitoring-report.html
+error: platform container failed during the run: bench-neuchain-block-server-0 exited (after 12:43:00, status exited, exit code 139); bench-neuchain-block-server-1 exited (after 12:43:00, status exited, exit code 139); bench-neuchain-block-server-2 exited (after 12:43:00, status exited, exit code 139); bench-neuchain-block-server-3 exited (after 12:43:00, status exited, exit code 139) (results written to results/neuchain/20260915-123252)

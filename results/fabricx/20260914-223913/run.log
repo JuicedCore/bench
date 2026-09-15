@@ -1,0 +1,8 @@
+time=2026-09-14T22:39:13.589+05:30 level=INFO msg="run starting" workload=kv-write profile=local-small normalized=true out_dir=results/fabricx/20260914-223913
+time=2026-09-14T22:39:13.589+05:30 level=WARN msg=caveat text="state-db parity not held: run requested leveldb, platform actually ran postgres"
+time=2026-09-14T22:39:13.589+05:30 level=INFO msg="adapter setup"
+time=2026-09-14T22:39:13.597+05:30 level=INFO msg="setup complete" component=adapter router=localhost:6022 deliver=localhost:4001 channel=arma namespace=0 broadcast_streams=256
+time=2026-09-14T22:39:13.597+05:30 level=INFO msg="phase start" phase=single offered_tps=50 workers=0 duration=30s
+time=2026-09-14T22:39:56.357+05:30 level=INFO msg="phase end" phase=single submitted=1100 committed=1100 confirmed_tps=50.0 fail_rate=0.0000 e2e_p99_ms=14663.68
+time=2026-09-14T22:39:56.361+05:30 level=WARN msg=caveat text="native metrics scrape of http://localhost:9643/metrics failed: scrape http://localhost:9643/metrics: parser panic: Invalid name validation scheme requested: unset (informational metrics only; harness numbers unaffected)"
+time=2026-09-14T22:39:56.361+05:30 level=INFO msg="run finished" out_dir=results/fabricx/20260914-223913 caveats=2

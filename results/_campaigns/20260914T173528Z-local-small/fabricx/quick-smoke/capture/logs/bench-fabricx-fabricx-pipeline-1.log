@@ -1,0 +1,111 @@
+2026-09-14T17:44:51.122566585Z Starting Verifier
+2026-09-14T17:44:51.122720106Z Starting Sidecar
+2026-09-14T17:44:51.123048840Z Starting Coordinator
+2026-09-14T17:44:51.128762037Z [34m2026-09-14 17:44:51.128 UTC [serve] Listener -> INFO[0m Listening on: tcp://:5001
+2026-09-14T17:44:51.128793607Z [34m2026-09-14 17:44:51.128 UTC [serve] Listener -> INFO[0m Listening on: tcp://:2115
+2026-09-14T17:44:51.128903526Z [34m2026-09-14 17:44:51.128 UTC [serve] func2 -> INFO[0m Serving HTTP on [::]:2115...
+2026-09-14T17:44:51.128936258Z [34m2026-09-14 17:44:51.128 UTC [serve] func1 -> INFO[0m Serving gRPC on [::]:5001...
+2026-09-14T17:44:51.129357868Z [34m2026-09-14 17:44:51.129 UTC [sidecar] New -> INFO[0m Initializing new sidecar
+2026-09-14T17:44:51.200490757Z [34m2026-09-14 17:44:51.200 UTC [dependencygraph] newLocalDependencyConstructor -> INFO[0m Initializing new localDependencyConstructor
+2026-09-14T17:44:51.200512098Z [34m2026-09-14 17:44:51.200 UTC [dependencygraph] newGlobalDependencyManager -> INFO[0m Initializing newGlobalDependencyManager
+2026-09-14T17:44:51.200517608Z [34m2026-09-14 17:44:51.200 UTC [coordinator] newSignatureVerifierManager -> INFO[0m Initializing newSignatureVerifierManager
+2026-09-14T17:44:51.200522518Z [34m2026-09-14 17:44:51.200 UTC [coordinator] newValidatorCommitterManager -> INFO[0m Initializing new ValidatorCommitterManager
+2026-09-14T17:44:51.200785988Z [34m2026-09-14 17:44:51.200 UTC [coordinator] func3 -> INFO[0m Starting validator committer manager
+2026-09-14T17:44:51.200798091Z [34m2026-09-14 17:44:51.200 UTC [coordinator] run -> INFO[0m Connections to 1 vc's will be opened from vc manager
+2026-09-14T17:44:51.200946853Z [34m2026-09-14 17:44:51.200 UTC [coordinator] run -> INFO[0m Client [0] successfully created and connected to vc at dns:///172.29.0.13:6001
+2026-09-14T17:44:51.200992129Z [34m2026-09-14 17:44:51.200 UTC [coordinator] func1 -> INFO[0m Starting dependency graph manager
+2026-09-14T17:44:51.201025573Z [34m2026-09-14 17:44:51.200 UTC [coordinator] func2 -> INFO[0m Starting signature verifier manager
+2026-09-14T17:44:51.201031724Z [34m2026-09-14 17:44:51.201 UTC [coordinator] run -> INFO[0m Connections to 1 sv's will be opened from sv manager
+2026-09-14T17:44:51.201108921Z [34m2026-09-14 17:44:51.201 UTC [coordinator] newSignatureVerifier -> INFO[0m Initializing new SignatureVerifier
+2026-09-14T17:44:51.201116034Z [34m2026-09-14 17:44:51.201 UTC [coordinator] run -> INFO[0m Client [0] successfully created and connected to sv at dns:///127.0.0.1:5001
+2026-09-14T17:44:51.201168594Z [34m2026-09-14 17:44:51.201 UTC [dependencygraph] run -> INFO[0m Starting localDependencyConstructor with 1 workers
+2026-09-14T17:44:51.201841141Z [34m2026-09-14 17:44:51.201 UTC [sidecar] newRelay -> INFO[0m Initializing new relay
+2026-09-14T17:44:51.201905693Z [34m2026-09-14 17:44:51.201 UTC [sidecar] newBlockStore -> INFO[0m Create block store under /data/ledger
+2026-09-14T17:44:51.202454586Z [34m2026-09-14 17:44:51.202 UTC [verifier] newVerifier -> INFO[0m Initializing new verifier
+2026-09-14T17:44:51.272095953Z [34m2026-09-14 17:44:51.271 UTC [leveldbhelper] openDBAndCheckFormat -> INFO[0m DB is empty Setting db format as 2.0
+2026-09-14T17:44:51.281443720Z [34m2026-09-14 17:44:51.281 UTC [blkstorage] NewProvider -> INFO[0m Creating new file ledger directory at /data/ledger/chains
+2026-09-14T17:44:51.291228046Z [34m2026-09-14 17:44:51.291 UTC [blkstorage] newBlockfileMgr -> INFO[0m Getting block information from block storage
+2026-09-14T17:44:51.305969894Z [34m2026-09-14 17:44:51.305 UTC [sidecar] Run -> INFO[0m Create coordinator client and connect to 127.0.0.1:9001
+2026-09-14T17:44:51.306042101Z [34m2026-09-14 17:44:51.305 UTC [serve] newGRPCServer -> INFO[0m Stream concurrency limit enabled: 10 max concurrent streams
+2026-09-14T17:44:51.306187778Z [34m2026-09-14 17:44:51.306 UTC [sidecar] Run -> INFO[0m sidecar connected to coordinator at 127.0.0.1:9001
+2026-09-14T17:44:51.306204780Z [34m2026-09-14 17:44:51.306 UTC [serve] Listener -> INFO[0m Listening on: tcp://:4001
+2026-09-14T17:44:51.306213456Z [34m2026-09-14 17:44:51.306 UTC [sidecar] recover -> INFO[0m recovering sidecar
+2026-09-14T17:44:51.306225279Z [34m2026-09-14 17:44:51.306 UTC [serve] Listener -> INFO[0m Listening on: tcp://:2114
+2026-09-14T17:44:51.306310130Z [34m2026-09-14 17:44:51.306 UTC [serve] func2 -> INFO[0m Serving HTTP on [::]:2114...
+2026-09-14T17:44:51.306331400Z [34m2026-09-14 17:44:51.306 UTC [serve] func1 -> INFO[0m Serving gRPC on [::]:4001...
+2026-09-14T17:44:52.643061689Z [34m2026-09-14 17:44:52.642 UTC [serve] Listener -> INFO[0m Listening on: tcp://:9001
+2026-09-14T17:44:52.643082689Z [34m2026-09-14 17:44:52.642 UTC [serve] Listener -> INFO[0m Listening on: tcp://:2119
+2026-09-14T17:44:52.643116653Z [34m2026-09-14 17:44:52.643 UTC [serve] func2 -> INFO[0m Serving HTTP on [::]:2119...
+2026-09-14T17:44:52.643129969Z [34m2026-09-14 17:44:52.643 UTC [serve] func1 -> INFO[0m Serving gRPC on [::]:9001...
+2026-09-14T17:44:53.852565367Z [34m2026-09-14 17:44:53.852 UTC [sidecar] Deliver -> INFO[0m Starting new deliver loop for 172.29.0.10:54110
+2026-09-14T17:44:53.852589724Z [34m2026-09-14 17:44:53.852 UTC [sidecar] Deliver -> INFO[0m Attempting to read seek info message from 172.29.0.10:54110
+2026-09-14T17:44:53.852596006Z [34m2026-09-14 17:44:53.852 UTC [sidecar] Deliver -> INFO[0m Received seek info message from 172.29.0.10:54110
+2026-09-14T17:44:53.852708219Z [33m2026-09-14 17:44:53.852 UTC [retry] deliverBlocks -> WARN[0m condition not satisfied
+2026-09-14T17:44:54.000032249Z [33m2026-09-14 17:44:53.999 UTC [retry] deliverBlocks -> WARN[0m condition not satisfied
+2026-09-14T17:44:54.171703913Z [33m2026-09-14 17:44:54.171 UTC [retry] deliverBlocks -> WARN[0m condition not satisfied
+2026-09-14T17:44:54.287968585Z [33m2026-09-14 17:44:54.287 UTC [retry] deliverBlocks -> WARN[0m condition not satisfied
+2026-09-14T17:44:54.590462620Z [33m2026-09-14 17:44:54.590 UTC [retry] deliverBlocks -> WARN[0m condition not satisfied
+2026-09-14T17:44:54.844846747Z [33m2026-09-14 17:44:54.844 UTC [retry] deliverBlocks -> WARN[0m condition not satisfied
+2026-09-14T17:44:55.233328080Z [33m2026-09-14 17:44:55.233 UTC [retry] deliverBlocks -> WARN[0m condition not satisfied
+2026-09-14T17:44:55.810620487Z [34m2026-09-14 17:44:55.810 UTC [sidecar] recover -> INFO[0m Next expected block number by coordinator is 0
+2026-09-14T17:44:55.810639293Z [34m2026-09-14 17:44:55.810 UTC [sidecar] func3 -> INFO[0m Relay the blocks to committer (from the session input queue) and receive the transaction status.
+2026-09-14T17:44:55.810646887Z [34m2026-09-14 17:44:55.810 UTC [sidecar] run -> INFO[0m Starting coordinator sender and receiver
+2026-09-14T17:44:55.810652558Z [34m2026-09-14 17:44:55.810 UTC [sidecar] startDelivery -> INFO[0m Staring delivery from block [0]
+2026-09-14T17:44:55.810725546Z [34m2026-09-14 17:44:55.810 UTC [coordinator] BlockProcessing -> INFO[0m Start validate and commit stream
+2026-09-14T17:44:55.810749682Z [34m2026-09-14 17:44:55.810 UTC [coordinator] func2 -> INFO[0m Started a goroutine to receive transaction status from validator committer manager and forward the status to client
+2026-09-14T17:44:55.810770632Z [34m2026-09-14 17:44:55.810 UTC [coordinator] func1 -> INFO[0m Started a goroutine to receive block and forward it to the dependency graph manager
+2026-09-14T17:44:55.816536919Z [34m2026-09-14 17:44:55.816 UTC [deliverorderer] initStreams -> INFO[0m Using party ID [1] as the data block source
+2026-09-14T17:44:55.817368208Z [34m2026-09-14 17:44:55.817 UTC [deliver] toQueueWithoutReconnect -> INFO[0m Deliver connected to 172.29.0.10:6023
+2026-09-14T17:44:55.817390039Z [34m2026-09-14 17:44:55.817 UTC [deliver] toQueueWithoutReconnect -> INFO[0m Sending seek request from block 0 on channel arma.
+2026-09-14T17:44:55.817401741Z [34m2026-09-14 17:44:55.817 UTC [deliver] toQueueWithoutReconnect -> INFO[0m Deliver connected to 172.29.0.10:6123
+2026-09-14T17:44:55.817408133Z [34m2026-09-14 17:44:55.817 UTC [deliver] toQueueWithoutReconnect -> INFO[0m Sending seek request from block 0 on channel arma.
+2026-09-14T17:44:55.817430696Z [34m2026-09-14 17:44:55.817 UTC [deliver] toQueueWithoutReconnect -> INFO[0m Deliver connected to 172.29.0.10:6323
+2026-09-14T17:44:55.817447268Z [34m2026-09-14 17:44:55.817 UTC [deliver] toQueueWithoutReconnect -> INFO[0m Sending seek request from block 0 on channel arma.
+2026-09-14T17:44:55.817455614Z [34m2026-09-14 17:44:55.817 UTC [deliver] toQueueWithoutReconnect -> INFO[0m Deliver connected to 172.29.0.10:6223
+2026-09-14T17:44:55.817463498Z [34m2026-09-14 17:44:55.817 UTC [deliver] toQueueWithoutReconnect -> INFO[0m Sending seek request from block 0 on channel arma.
+2026-09-14T17:44:55.841656920Z [34m2026-09-14 17:44:55.841 UTC [sidecar] updateDynamicTLS -> INFO[0m Updated dynamic TLS with 4 CA certificates
+2026-09-14T17:44:56.223035258Z [34m2026-09-14 17:44:56.222 UTC [sidecar] deliverBlocks -> INFO[0m Successfully sent block [0] (size: 1) to client.
+2026-09-14T17:45:01.387115733Z [34m2026-09-14 17:45:01.387 UTC [verifier] updatePolicies -> INFO[0m New verification policies for namespaces [_meta _snapshot _checkpoint]
+2026-09-14T17:45:01.420833036Z [34m2026-09-14 17:45:01.420 UTC [sidecar] deliverBlocks -> INFO[0m Successfully sent block [1] (size: 1) to client.
+2026-09-14T17:45:01.856951941Z [31m2026-09-14 17:45:01.856 UTC [common.ledger.blockledger.file] Next -> ERRO[0m context canceled
+2026-09-14T17:45:01.856967119Z [34m2026-09-14 17:45:01.856 UTC [sidecar] Deliver -> INFO[0m Done delivering to 172.29.0.10:54110
+2026-09-14T17:45:01.856986977Z [34m2026-09-14 17:45:01.856 UTC [sidecar] Deliver -> INFO[0m Error sending to 172.29.0.10:54110: rpc error: code = Canceled desc = context canceled
+2026-09-14T17:45:02.123563284Z [34m2026-09-14 17:45:02.123 UTC [sidecar] Deliver -> INFO[0m Starting new deliver loop for 172.29.0.1:55362
+2026-09-14T17:45:02.123580296Z [34m2026-09-14 17:45:02.123 UTC [sidecar] Deliver -> INFO[0m Attempting to read seek info message from 172.29.0.1:55362
+2026-09-14T17:45:02.123660198Z [34m2026-09-14 17:45:02.123 UTC [sidecar] Deliver -> INFO[0m Received seek info message from 172.29.0.1:55362
+2026-09-14T17:45:02.123722286Z [34m2026-09-14 17:45:02.123 UTC [sidecar] deliverBlocks -> INFO[0m Successfully sent block [1] (size: 1) to client.
+2026-09-14T17:45:02.426982396Z [34m2026-09-14 17:45:02.426 UTC [verifier] updatePolicies -> INFO[0m New verification policies for namespaces [1 0]
+2026-09-14T17:45:02.439390673Z [34m2026-09-14 17:45:02.439 UTC [sidecar] deliverBlocks -> INFO[0m Successfully sent block [2] (size: 2) to client.
+2026-09-14T17:45:03.482870231Z [34m2026-09-14 17:45:03.482 UTC [sidecar] deliverBlocks -> INFO[0m Successfully sent block [3] (size: 50) to client.
+2026-09-14T17:45:04.507231410Z [34m2026-09-14 17:45:04.507 UTC [sidecar] deliverBlocks -> INFO[0m Successfully sent block [4] (size: 50) to client.
+2026-09-14T17:45:05.560514442Z [34m2026-09-14 17:45:05.560 UTC [sidecar] deliverBlocks -> INFO[0m Successfully sent block [5] (size: 52) to client.
+2026-09-14T17:45:06.596031562Z [34m2026-09-14 17:45:06.595 UTC [sidecar] deliverBlocks -> INFO[0m Successfully sent block [6] (size: 50) to client.
+2026-09-14T17:45:07.645301288Z [34m2026-09-14 17:45:07.645 UTC [sidecar] deliverBlocks -> INFO[0m Successfully sent block [7] (size: 50) to client.
+2026-09-14T17:45:08.696854024Z [34m2026-09-14 17:45:08.696 UTC [sidecar] deliverBlocks -> INFO[0m Successfully sent block [8] (size: 52) to client.
+2026-09-14T17:45:09.740708500Z [34m2026-09-14 17:45:09.740 UTC [sidecar] deliverBlocks -> INFO[0m Successfully sent block [9] (size: 50) to client.
+2026-09-14T17:45:10.774656887Z [34m2026-09-14 17:45:10.774 UTC [sidecar] deliverBlocks -> INFO[0m Successfully sent block [10] (size: 50) to client.
+2026-09-14T17:45:11.828562417Z [34m2026-09-14 17:45:11.828 UTC [sidecar] deliverBlocks -> INFO[0m Successfully sent block [11] (size: 52) to client.
+2026-09-14T17:45:12.866155075Z [34m2026-09-14 17:45:12.866 UTC [sidecar] deliverBlocks -> INFO[0m Successfully sent block [12] (size: 50) to client.
+2026-09-14T17:45:13.406403668Z [34m2026-09-14 17:45:13.406 UTC [sidecar] deliverBlocks -> INFO[0m Successfully sent block [13] (size: 50) to client.
+2026-09-14T17:45:14.456090861Z [34m2026-09-14 17:45:14.456 UTC [sidecar] deliverBlocks -> INFO[0m Successfully sent block [14] (size: 52) to client.
+2026-09-14T17:45:15.490640421Z [34m2026-09-14 17:45:15.490 UTC [sidecar] deliverBlocks -> INFO[0m Successfully sent block [15] (size: 50) to client.
+2026-09-14T17:45:16.523304368Z [34m2026-09-14 17:45:16.523 UTC [sidecar] deliverBlocks -> INFO[0m Successfully sent block [16] (size: 50) to client.
+2026-09-14T17:45:17.573678974Z [34m2026-09-14 17:45:17.573 UTC [sidecar] deliverBlocks -> INFO[0m Successfully sent block [17] (size: 52) to client.
+2026-09-14T17:45:18.605596647Z [34m2026-09-14 17:45:18.605 UTC [sidecar] deliverBlocks -> INFO[0m Successfully sent block [18] (size: 50) to client.
+2026-09-14T17:45:19.649119538Z [34m2026-09-14 17:45:19.649 UTC [sidecar] deliverBlocks -> INFO[0m Successfully sent block [19] (size: 50) to client.
+2026-09-14T17:45:20.692349459Z [34m2026-09-14 17:45:20.692 UTC [sidecar] deliverBlocks -> INFO[0m Successfully sent block [20] (size: 52) to client.
+2026-09-14T17:45:21.734263738Z [34m2026-09-14 17:45:21.734 UTC [sidecar] deliverBlocks -> INFO[0m Successfully sent block [21] (size: 50) to client.
+2026-09-14T17:45:22.775329674Z [34m2026-09-14 17:45:22.775 UTC [sidecar] deliverBlocks -> INFO[0m Successfully sent block [22] (size: 50) to client.
+2026-09-14T17:45:23.821725113Z [34m2026-09-14 17:45:23.821 UTC [sidecar] deliverBlocks -> INFO[0m Successfully sent block [23] (size: 52) to client.
+2026-09-14T17:45:24.861433413Z [34m2026-09-14 17:45:24.861 UTC [sidecar] deliverBlocks -> INFO[0m Successfully sent block [24] (size: 50) to client.
+2026-09-14T17:45:25.891511117Z [34m2026-09-14 17:45:25.891 UTC [sidecar] deliverBlocks -> INFO[0m Successfully sent block [25] (size: 50) to client.
+2026-09-14T17:45:26.953489759Z [34m2026-09-14 17:45:26.953 UTC [sidecar] deliverBlocks -> INFO[0m Successfully sent block [26] (size: 52) to client.
+2026-09-14T17:45:27.980620240Z [34m2026-09-14 17:45:27.980 UTC [sidecar] deliverBlocks -> INFO[0m Successfully sent block [27] (size: 50) to client.
+2026-09-14T17:45:29.021932159Z [34m2026-09-14 17:45:29.021 UTC [sidecar] deliverBlocks -> INFO[0m Successfully sent block [28] (size: 50) to client.
+2026-09-14T17:45:30.081263123Z [34m2026-09-14 17:45:30.081 UTC [sidecar] deliverBlocks -> INFO[0m Successfully sent block [29] (size: 52) to client.
+2026-09-14T17:45:31.181824394Z [34m2026-09-14 17:45:31.181 UTC [sidecar] deliverBlocks -> INFO[0m Successfully sent block [30] (size: 50) to client.
+2026-09-14T17:45:31.706242541Z [34m2026-09-14 17:45:31.706 UTC [sidecar] deliverBlocks -> INFO[0m Successfully sent block [31] (size: 50) to client.
+2026-09-14T17:45:32.758717540Z [34m2026-09-14 17:45:32.758 UTC [sidecar] deliverBlocks -> INFO[0m Successfully sent block [32] (size: 32) to client.
+2026-09-14T17:45:32.765812760Z [31m2026-09-14 17:45:32.765 UTC [common.ledger.blockledger.file] Next -> ERRO[0m context canceled
+2026-09-14T17:45:32.765832367Z [34m2026-09-14 17:45:32.765 UTC [sidecar] Deliver -> INFO[0m Done delivering to 172.29.0.1:55362
+2026-09-14T17:45:32.765836976Z [34m2026-09-14 17:45:32.765 UTC [sidecar] Deliver -> INFO[0m Error sending to 172.29.0.1:55362: rpc error: code = Unavailable desc = transport is closing

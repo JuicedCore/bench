@@ -1,0 +1,41 @@
+{
+  "run_name": "probe-sweep",
+  "platform": "neuchain",
+  "workload": "kv-write",
+  "profile": "local-small",
+  "normalized": true,
+  "started_at": "2026-09-12T18:11:55.744585701+05:30",
+  "ended_at": "2026-09-12T18:11:55.746588141+05:30",
+  "harness_git_sha": "b0e2f51",
+  "platform_version": "neuchain",
+  "state_db": "leveldb",
+  "state_db_requested": "leveldb",
+  "orderer_batch": {
+    "MaxMessageCount": 0,
+    "AbsoluteMaxBytes": "",
+    "PreferredMaxBytes": "",
+    "BatchTimeout": ""
+  },
+  "crypto": {
+    "signature_alg": "RSA-1024-PKCS1v15",
+    "hash_alg": "SHA-256",
+    "per_tx_endorsement_verify": false,
+    "msp_note": "NeuChain EV: RSA-1024 user signature over the serialized TransactionPayload; no endorsement phase, ordering implicit via deterministic execution"
+  },
+  "resource_limit_per_container": {
+    "CPUs": 1,
+    "Memory": "1400m"
+  },
+  "nodes": {
+    "block_server": 4,
+    "epoch_server": 1
+  },
+  "seed": 1,
+  "key_space": 200000,
+  "key_distribution": "uniform",
+  "zipfian_constant": 0,
+  "read_write_ratio": 0,
+  "value_size_bytes": 64,
+  "warmup_sec": 30,
+  "cooldown_sec": 15
+}

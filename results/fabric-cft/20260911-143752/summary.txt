@@ -1,0 +1,23 @@
+run:        probe-sweep
+platform:   fabric-cft  (version 2.5.16)
+workload:   kv-write   normalized=true
+profile:    local   state_db=leveldb
+batch:      msgcount=100 timeout=1s preferred=2 MB
+crypto:     sig=ECDSA-P256 hash=SHA-256 per_tx_endorse_verify=true
+
+phase           offered     conf_tps    fail_rate    e2e_p50    e2e_p99    sub_p50    com_p50
+probe                10         10.1       0.0000     582.14    1081.34       4.21     578.05
+sweep-100           100        100.0       0.0000     582.66    1074.18       3.16     579.07
+sweep-250           250        250.0       0.0000     291.07     487.94       2.93     287.49
+sweep-500           500        500.0       0.0000     192.38     293.63       2.85     181.76
+sweep-1000         1000       1000.0       0.0000     183.42     261.89      20.27     170.62
+sweep-2000         2000       1753.5       0.0000   10436.61   14884.86      48.29    5324.80
+sweep-3500         3500       1125.4       0.0000   31588.35   39157.76      50.62    9256.96
+sweep-5000         5000        617.7       0.0000   45613.06   50724.86      47.55   12902.40
+sweep-7500         7500         36.1       0.0000   60948.48   61210.62      50.24   16605.18
+sweep-10000       10000          0.0       0.0000       0.00       0.00       0.00       0.00
+hold               9000       1105.5       0.0000  179306.50  268042.24      50.40   24788.99
+
+detected saturation: ~10000 offered TPS
+HEADLINE  confirmed_tps=1105.5  fail_rate=0.0000  e2e p50/p99=179306.50/268042.24 ms  invariant_ok=true
+WARNING   load-generator send-gap p99 = 246939.6 ms: generator may be the bottleneck; reject this run

@@ -1,0 +1,4 @@
+time=2026-09-14T11:41:05.041+05:30 level=INFO msg="run starting" workload=kv-write profile=local normalized=true out_dir=results/fabric-cft/20260914-114105
+time=2026-09-14T11:41:05.041+05:30 level=WARN msg=caveat text="resource budget not reported by the deploy script (BENCH_RESOURCE_CONTAINERS unset - was connection.env sourced?): container limits are unverified, so this run's hardware share is unknown"
+time=2026-09-14T11:41:05.041+05:30 level=INFO msg="adapter setup"
+time=2026-09-14T11:41:05.041+05:30 level=ERROR msg="adapter setup failed" err="fabric: peer_endpoint (or endorse_endpoint) is required" error_file=results/fabric-cft/20260914-114105/error.txt

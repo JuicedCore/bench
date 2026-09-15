@@ -1,0 +1,21 @@
+run:        quick-smoke
+platform:   fabricx  (version fabricx-committer-v1.0.5-orderer-v1.0.6)
+workload:   kv-write   normalized=true
+profile:    local-small   state_db=postgres (requested leveldb - PARITY NOT HELD)
+resources:  8 CPU / 8 GB total over 4 containers (2.00 CPU each; memory by role weight peer=4 statedb=4 orderer=2 other=1)
+              2048m    bench-fabricx-fabricx-arma-1
+              2048m    bench-fabricx-fabricx-committer-1
+              2048m    bench-fabricx-fabricx-db-1
+              2048m    bench-fabricx-fabricx-pipeline-1
+batch:      msgcount=100 timeout=1s preferred=2 MB
+crypto:     sig=ECDSA-P256 hash=SHA-256 per_tx_endorse_verify=true
+caveats:
+  - state-db parity not held: run requested leveldb, platform actually ran postgres
+  - run interrupted (signal or cancelled context) during phase single after 11s: that phase is partial and not a headline; phases never run: none
+  - native metrics scrape of http://localhost:9643/metrics failed: scrape http://localhost:9643/metrics: parser panic: Invalid name validation scheme requested: unset (informational metrics only; harness numbers unaffected)
+
+phase           offered     conf_tps  goodput  fail_rate    e2e_p50    e2e_p99    gap_p99    com_p50  verdict
+single               50          0.0       0%     1.0000       0.00       0.00       0.00       0.00  interrupted
+
+errors single            164 x context canceled
+HEADLINE  none - the run did not complete a headline phase on a healthy platform

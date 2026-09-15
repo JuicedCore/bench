@@ -1,0 +1,39 @@
+{
+  "run_name": "probe-sweep",
+  "platform": "mock",
+  "workload": "kv-write",
+  "profile": "local-small",
+  "normalized": true,
+  "started_at": "2026-09-12T20:21:50.852801445+05:30",
+  "ended_at": "2026-09-12T20:21:50.854476241+05:30",
+  "harness_git_sha": "d197634",
+  "platform_version": "mock-0",
+  "state_db": "leveldb",
+  "state_db_requested": "leveldb",
+  "orderer_batch": {
+    "MaxMessageCount": 100,
+    "AbsoluteMaxBytes": "10 MB",
+    "PreferredMaxBytes": "2 MB",
+    "BatchTimeout": "1s"
+  },
+  "crypto": {
+    "signature_alg": "",
+    "hash_alg": "",
+    "per_tx_endorsement_verify": false
+  },
+  "resource_limit_per_container": {
+    "CPUs": 1,
+    "Memory": "1g"
+  },
+  "nodes": {
+    "node": 1
+  },
+  "seed": 1,
+  "key_space": 200000,
+  "key_distribution": "uniform",
+  "zipfian_constant": 0,
+  "read_write_ratio": 0,
+  "value_size_bytes": 64,
+  "warmup_sec": 30,
+  "cooldown_sec": 15
+}

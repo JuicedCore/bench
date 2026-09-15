@@ -1,0 +1,5 @@
+2026-09-14T18:14:31.823236888Z panic: start kvstore chaincode: receive failed: rpc error: code = Unavailable desc = error reading from server: read tcp 172.18.0.14:41180->172.18.0.9:7052: read: connection reset by peer
+2026-09-14T18:14:31.823277495Z 
+2026-09-14T18:14:31.823297823Z goroutine 1 [running]:
+2026-09-14T18:14:31.823302613Z main.main()
+2026-09-14T18:14:31.823307241Z 	/chaincode/input/src/kvstore.go:126 +0xac

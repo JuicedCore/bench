@@ -1,7 +1,9 @@
 /bin/
 /chaincodes/kvstore/kvstore
-/results/*
-!/results/.gitkeep
+# results/ and Final_runs/ are committed so a clone carries every run.
+results/**/connection.env
+# docker save output from scripts/images.sh - hundreds of MB, copy it separately.
+/images/
 /docs/reports/*
 !/docs/reports/.gitkeep
 deploy/docker/*/.cache/

@@ -1,0 +1,550 @@
+2026-09-14T17:41:54.422567011Z [34m2026-09-14 17:41:54.422 UTC 0001 INFO[0m [nodeCmd] [34;1mserve[0m -> Starting peer:
+2026-09-14T17:41:54.422598330Z  Version: 1.0.0
+2026-09-14T17:41:54.422611605Z  Commit SHA: 0176a5d
+2026-09-14T17:41:54.422616274Z  Go version: go1.26.1
+2026-09-14T17:41:54.422620182Z  OS/Arch: linux/amd64
+2026-09-14T17:41:54.422624249Z  Chaincode:
+2026-09-14T17:41:54.422628557Z   Base Docker Label: org.npcioss.drunix
+2026-09-14T17:41:54.422632044Z   Docker Namespace: npcioss
+2026-09-14T17:41:54.423465594Z [34m2026-09-14 17:41:54.423 UTC 0002 INFO[0m [nodeCmd] [34;1mserve[0m -> Peer config with combined core.yaml settings and environment variable overrides:
+2026-09-14T17:41:54.423479751Z chaincode:
+2026-09-14T17:41:54.423483217Z   builder: $(DOCKER_NS)/drunix-ccenv:$(TWO_DIGIT_VERSION)
+2026-09-14T17:41:54.423486173Z   executetimeout: 30s
+2026-09-14T17:41:54.423489058Z   externalbuilders:
+2026-09-14T17:41:54.423491823Z   - name: ccaas_builder
+2026-09-14T17:41:54.423494559Z     path: /opt/hyperledger/ccaas_builder
+2026-09-14T17:41:54.423497344Z     propagateEnvironment:
+2026-09-14T17:41:54.423500330Z     - CHAINCODE_AS_A_SERVICE_BUILDER_CONFIG
+2026-09-14T17:41:54.423503125Z   golang:
+2026-09-14T17:41:54.423505890Z     dynamiclink: false
+2026-09-14T17:41:54.423508746Z     runtime: $(DOCKER_NS)/drunix-baseos:$(TWO_DIGIT_VERSION)
+2026-09-14T17:41:54.423511521Z   installtimeout: 300s
+2026-09-14T17:41:54.423514256Z   java:
+2026-09-14T17:41:54.423516971Z     runtime: $(DOCKER_NS)/fabric-javaenv:2.5
+2026-09-14T17:41:54.423519726Z   keepalive: 0
+2026-09-14T17:41:54.423522462Z   logging:
+2026-09-14T17:41:54.423525207Z     format: '%{color}%{time:2006-01-02 15:04:05.000 MST} [%{module}] %{shortfunc}
+2026-09-14T17:41:54.423528022Z       -> %{level:.4s} %{id:03x}%{color:reset} %{message}'
+2026-09-14T17:41:54.423531168Z     level: info
+2026-09-14T17:41:54.423534094Z     shim: warning
+2026-09-14T17:41:54.423536939Z   mode: net
+2026-09-14T17:41:54.423539654Z   node:
+2026-09-14T17:41:54.423542379Z     runtime: $(DOCKER_NS)/fabric-nodeenv:2.5
+2026-09-14T17:41:54.423545114Z   pull: false
+2026-09-14T17:41:54.423548411Z   startuptimeout: 300s
+2026-09-14T17:41:54.423551176Z   system:
+2026-09-14T17:41:54.423553891Z     _lifecycle: enable
+2026-09-14T17:41:54.423556626Z     cscc: enable
+2026-09-14T17:41:54.423559351Z     lscc: enable
+2026-09-14T17:41:54.423562067Z     qscc: enable
+2026-09-14T17:41:54.423564792Z ledger:
+2026-09-14T17:41:54.423567497Z   history:
+2026-09-14T17:41:54.423576855Z     enablehistorydatabase: true
+2026-09-14T17:41:54.423584489Z   pvtdatastore:
+2026-09-14T17:41:54.423587445Z     collelgprocdbbatchesinterval: 1000
+2026-09-14T17:41:54.423590370Z     collelgprocmaxdbbatchsize: 5000
+2026-09-14T17:41:54.423593216Z     deprioritizeddatareconcilerinterval: 60m
+2026-09-14T17:41:54.423596031Z   snapshots:
+2026-09-14T17:41:54.423598816Z     rootdir: /var/hyperledger/production/snapshots
+2026-09-14T17:41:54.423601812Z   state:
+2026-09-14T17:41:54.423604657Z     couchdbconfig:
+2026-09-14T17:41:54.423607743Z       cachesize: 64
+2026-09-14T17:41:54.423610709Z       couchdbaddress: 127.0.0.1:5984
+2026-09-14T17:41:54.423613725Z       createglobalchangesdb: false
+2026-09-14T17:41:54.423616540Z       internalquerylimit: 1000
+2026-09-14T17:41:54.423619636Z       maxbatchupdatesize: 1000
+2026-09-14T17:41:54.423622421Z       maxretries: 3
+2026-09-14T17:41:54.423625377Z       maxretriesonstartup: 10
+2026-09-14T17:41:54.423628352Z       requesttimeout: 35s
+2026-09-14T17:41:54.423631148Z     statedatabase: sqldb
+2026-09-14T17:41:54.423634033Z     totalquerylimit: 100000
+2026-09-14T17:41:54.423636808Z logging_level: ""
+2026-09-14T17:41:54.423639704Z metrics:
+2026-09-14T17:41:54.423642499Z   provider: prometheus
+2026-09-14T17:41:54.423645294Z   statsd:
+2026-09-14T17:41:54.423648170Z     address: 127.0.0.1:8125
+2026-09-14T17:41:54.423651135Z     network: udp
+2026-09-14T17:41:54.423654061Z     writeinterval: 10s
+2026-09-14T17:41:54.423656886Z operations:
+2026-09-14T17:41:54.423659652Z   listenaddress: 127.0.0.1:9443
+2026-09-14T17:41:54.423662447Z   tls:
+2026-09-14T17:41:54.423665232Z     clientauthrequired: false
+2026-09-14T17:41:54.423668098Z     clientrootcas:
+2026-09-14T17:41:54.423671113Z       files: []
+2026-09-14T17:41:54.423673979Z     enabled: false
+2026-09-14T17:41:54.423676904Z peer:
+2026-09-14T17:41:54.423679820Z   address: peer2.org1.example.com:7071
+2026-09-14T17:41:54.423682675Z   addressautodetect: false
+2026-09-14T17:41:54.423685481Z   authentication:
+2026-09-14T17:41:54.423688266Z     timewindow: 15m
+2026-09-14T17:41:54.423691061Z   bccsp:
+2026-09-14T17:41:54.423693856Z     default: SW
+2026-09-14T17:41:54.423696642Z     sw:
+2026-09-14T17:41:54.423699447Z       hash: SHA2
+2026-09-14T17:41:54.423702262Z       security: 256
+2026-09-14T17:41:54.423705048Z   client:
+2026-09-14T17:41:54.423711159Z     conntimeout: 3s
+2026-09-14T17:41:54.423715287Z   deliveryclient:
+2026-09-14T17:41:54.423718122Z     blockgossipenabled: true
+2026-09-14T17:41:54.423721278Z     conntimeout: 3s
+2026-09-14T17:41:54.423724114Z     reconnectbackoffthreshold: 3600s
+2026-09-14T17:41:54.423726929Z     reconnecttotaltimethreshold: 3600s
+2026-09-14T17:41:54.423729764Z   discovery:
+2026-09-14T17:41:54.423732550Z     authcacheenabled: true
+2026-09-14T17:41:54.423735355Z     authcachemaxsize: 1000
+2026-09-14T17:41:54.423740264Z     authcachepurgeretentionratio: 0.75
+2026-09-14T17:41:54.423743911Z     enabled: true
+2026-09-14T17:41:54.423746767Z     orgmembersallowedaccess: false
+2026-09-14T17:41:54.423762767Z   filesystempath: /var/hyperledger/production
+2026-09-14T17:41:54.423766173Z   gateway:
+2026-09-14T17:41:54.423768939Z     dialtimeout: 2m
+2026-09-14T17:41:54.423771954Z     enabled: true
+2026-09-14T17:41:54.423774840Z     endorsementtimeout: 30s
+2026-09-14T17:41:54.423777745Z   gossip:
+2026-09-14T17:41:54.423780601Z     aliveexpirationtimeout: 25s
+2026-09-14T17:41:54.423783576Z     alivetimeinterval: 5s
+2026-09-14T17:41:54.423786712Z     bootstrap: 127.0.0.1:7051
+2026-09-14T17:41:54.423789608Z     conntimeout: 2s
+2026-09-14T17:41:54.423792363Z     dialtimeout: 3s
+2026-09-14T17:41:54.423795128Z     digestwaittime: 1s
+2026-09-14T17:41:54.423798134Z     election:
+2026-09-14T17:41:54.423800919Z       leaderalivethreshold: 10s
+2026-09-14T17:41:54.423803865Z       leaderelectionduration: 5s
+2026-09-14T17:41:54.423806770Z       membershipsampleinterval: 1s
+2026-09-14T17:41:54.423809836Z       startupgraceperiod: 15s
+2026-09-14T17:41:54.423816008Z     maxblockcounttostore: 10
+2026-09-14T17:41:54.423818903Z     maxconnectionattempts: 120
+2026-09-14T17:41:54.423821869Z     maxpropagationburstlatency: 10ms
+2026-09-14T17:41:54.423824985Z     maxpropagationburstsize: 10
+2026-09-14T17:41:54.423827910Z     membershiptrackerinterval: 5s
+2026-09-14T17:41:54.423830806Z     msgexpirationfactor: 20
+2026-09-14T17:41:54.423833822Z     orgleader: true
+2026-09-14T17:41:54.423836707Z     propagateiterations: 1
+2026-09-14T17:41:54.423839613Z     propagatepeernum: 3
+2026-09-14T17:41:54.423842488Z     publishcertperiod: 10s
+2026-09-14T17:41:54.423845333Z     publishstateinfointerval: 4s
+2026-09-14T17:41:54.423848499Z     pullinterval: 4s
+2026-09-14T17:41:54.423851335Z     pullpeernum: 3
+2026-09-14T17:41:54.423854150Z     pvtdata:
+2026-09-14T17:41:54.423860352Z       btlpullmargin: 10
+2026-09-14T17:41:54.423864600Z       implicitcollectiondisseminationpolicy:
+2026-09-14T17:41:54.423867485Z         maxpeercount: 1
+2026-09-14T17:41:54.423870471Z         requiredpeercount: 0
+2026-09-14T17:41:54.423873246Z       pullretrythreshold: 60s
+2026-09-14T17:41:54.423875992Z       pushacktimeout: 3s
+2026-09-14T17:41:54.423878757Z       reconcilebatchsize: 10
+2026-09-14T17:41:54.423881532Z       reconcilesleepinterval: 1m
+2026-09-14T17:41:54.423884317Z       reconciliationenabled: true
+2026-09-14T17:41:54.423887103Z       skippullinginvalidtransactionsduringcommit: false
+2026-09-14T17:41:54.423890018Z       transientstoremaxblockretention: 1000
+2026-09-14T17:41:54.423892813Z     reconnectinterval: 25s
+2026-09-14T17:41:54.423895579Z     recvbuffsize: 20
+2026-09-14T17:41:54.423898524Z     requeststateinfointerval: 4s
+2026-09-14T17:41:54.423901330Z     requestwaittime: 1500ms
+2026-09-14T17:41:54.423905327Z     responsewaittime: 2s
+2026-09-14T17:41:54.423908313Z     sendbuffsize: 200
+2026-09-14T17:41:54.423911309Z     skipblockverification: false
+2026-09-14T17:41:54.423914194Z     state:
+2026-09-14T17:41:54.423917049Z       batchsize: 10
+2026-09-14T17:41:54.423920015Z       blockbuffersize: 20
+2026-09-14T17:41:54.423922870Z       checkinterval: 10s
+2026-09-14T17:41:54.423925736Z       enabled: false
+2026-09-14T17:41:54.423928521Z       maxretries: 3
+2026-09-14T17:41:54.423931577Z       responsetimeout: 3s
+2026-09-14T17:41:54.423934332Z     useleaderelection: false
+2026-09-14T17:41:54.423937117Z   handlers:
+2026-09-14T17:41:54.423940243Z     authfilters:
+2026-09-14T17:41:54.423943990Z     - name: DefaultAuth
+2026-09-14T17:41:54.423947627Z     - name: ExpirationCheck
+2026-09-14T17:41:54.423951405Z     decorators:
+2026-09-14T17:41:54.423955422Z     - name: DefaultDecorator
+2026-09-14T17:41:54.423959069Z     endorsers:
+2026-09-14T17:41:54.423962616Z       escc:
+2026-09-14T17:41:54.423966443Z         name: DefaultEndorsement
+2026-09-14T17:41:54.423970150Z     validators:
+2026-09-14T17:41:54.423973767Z       vscc:
+2026-09-14T17:41:54.423977334Z         name: DefaultValidation
+2026-09-14T17:41:54.423981962Z   id: peer1.org1.example.com
+2026-09-14T17:41:54.423985990Z   keepalive:
+2026-09-14T17:41:54.423989597Z     client:
+2026-09-14T17:41:54.423992522Z       interval: 60s
+2026-09-14T17:41:54.423995308Z       timeout: 20s
+2026-09-14T17:41:54.424001530Z     deliveryclient:
+2026-09-14T17:41:54.424006509Z       interval: 60s
+2026-09-14T17:41:54.424009545Z       timeout: 20s
+2026-09-14T17:41:54.424012711Z     interval: 7200s
+2026-09-14T17:41:54.424015476Z     mininterval: 60s
+2026-09-14T17:41:54.424018301Z     timeout: 20s
+2026-09-14T17:41:54.424021257Z   limits:
+2026-09-14T17:41:54.424024052Z     concurrency:
+2026-09-14T17:41:54.424027479Z       deliverservice: 2500
+2026-09-14T17:41:54.424031456Z       endorserservice: 2500
+2026-09-14T17:41:54.424035203Z   listenaddress: peer2.org1.example.com:7071
+2026-09-14T17:41:54.424039471Z   localmspid: Org1MSP
+2026-09-14T17:41:54.424042798Z   localmsptype: bccsp
+2026-09-14T17:41:54.424045613Z   maxrecvmsgsize: 104857600
+2026-09-14T17:41:54.424048589Z   maxsendmsgsize: 104857600
+2026-09-14T17:41:54.424051484Z   mspconfigpath: /etc/hyperledger/fabric/msp
+2026-09-14T17:41:54.424054340Z   networkid: dev
+2026-09-14T17:41:54.424057255Z   profile:
+2026-09-14T17:41:54.424060912Z     enabled: "false"
+2026-09-14T17:41:54.424064940Z     listenaddress: 0.0.0.0:6060
+2026-09-14T17:41:54.424068837Z   tls:
+2026-09-14T17:41:54.424072825Z     cert:
+2026-09-14T17:41:54.424076421Z       file: /etc/hyperledger/fabric/tls/server.crt
+2026-09-14T17:41:54.424079267Z     clientauthrequired: false
+2026-09-14T17:41:54.424082052Z     clientrootcas:
+2026-09-14T17:41:54.424084807Z       files:
+2026-09-14T17:41:54.424087763Z       - tls/ca.crt
+2026-09-14T17:41:54.424090789Z     enabled: "true"
+2026-09-14T17:41:54.424094155Z     key:
+2026-09-14T17:41:54.424096930Z       file: /etc/hyperledger/fabric/tls/server.key
+2026-09-14T17:41:54.424100497Z     rootcert:
+2026-09-14T17:41:54.424103312Z       file: /etc/hyperledger/fabric/tls/ca.crt
+2026-09-14T17:41:54.424106308Z   validatorpoolsize: "128"
+2026-09-14T17:41:54.424109324Z vm:
+2026-09-14T17:41:54.424112099Z   docker:
+2026-09-14T17:41:54.424114844Z     attachstdout: false
+2026-09-14T17:41:54.424117610Z     hostconfig:
+2026-09-14T17:41:54.424120405Z       logconfig:
+2026-09-14T17:41:54.424123160Z         config:
+2026-09-14T17:41:54.424126005Z           max-file: "5"
+2026-09-14T17:41:54.424128811Z           max-size: 50m
+2026-09-14T17:41:54.424131566Z         type: json-file
+2026-09-14T17:41:54.424134301Z       memory: 2147483648
+2026-09-14T17:41:54.424137056Z       networkmode: drunix_test
+2026-09-14T17:41:54.424143078Z     tls:
+2026-09-14T17:41:54.424146955Z       ca:
+2026-09-14T17:41:54.424149770Z         file: docker/ca.crt
+2026-09-14T17:41:54.424152586Z       cert:
+2026-09-14T17:41:54.424155351Z         file: docker/tls.crt
+2026-09-14T17:41:54.424158146Z       enabled: false
+2026-09-14T17:41:54.424160962Z       key:
+2026-09-14T17:41:54.424163927Z         file: docker/tls.key
+2026-09-14T17:41:54.424166773Z   endpoint: unix:///host/var/run/docker.sock
+2026-09-14T17:41:54.424177062Z [34m2026-09-14 17:41:54.423 UTC 0003 INFO[0m [peer] [34;1mgetLocalAddress[0m -> Auto-detected peer address: 172.18.0.6:7071
+2026-09-14T17:41:54.424180338Z [34m2026-09-14 17:41:54.423 UTC 0004 INFO[0m [peer] [34;1mgetLocalAddress[0m -> Returning peer2.org1.example.com:7071
+2026-09-14T17:41:54.424561070Z [34m2026-09-14 17:41:54.424 UTC 0005 INFO[0m [nodeCmd] [34;1minitGrpcSemaphores[0m -> concurrency limit for endorser service is 2500
+2026-09-14T17:41:54.424586939Z [34m2026-09-14 17:41:54.424 UTC 0006 INFO[0m [nodeCmd] [34;1minitGrpcSemaphores[0m -> concurrency limit for deliver service is 2500
+2026-09-14T17:41:54.424592960Z [34m2026-09-14 17:41:54.424 UTC 0007 INFO[0m [nodeCmd] [34;1mserve[0m -> Starting peer with TLS enabled
+2026-09-14T17:41:54.432390749Z [34m2026-09-14 17:41:54.432 UTC 0008 INFO[0m [keyvaluedb] [34;1mNewKeyValueDBConnection[0m -> the key-value store ping: PONG
+2026-09-14T17:41:54.434174730Z [34m2026-09-14 17:41:54.432 UTC 0009 INFO[0m [keyvaluedb] [34;1mNewKeyValueDBConnection[0m -> the replica key-value store ping: PONG
+2026-09-14T17:41:54.562427396Z [34m2026-09-14 17:41:54.562 UTC 000a INFO[0m [certmonitor] [34;1mtrackCertExpiration[0m -> The enrollment certificate will expire on 2036-09-11 17:35:00 +0000 UTC
+2026-09-14T17:41:54.562444669Z [34m2026-09-14 17:41:54.562 UTC 000b INFO[0m [certmonitor] [34;1mtrackCertExpiration[0m -> The server TLS certificate will expire on 2036-09-11 17:35:00 +0000 UTC
+2026-09-14T17:41:54.562997466Z [34m2026-09-14 17:41:54.562 UTC 000c INFO[0m [nodeCmd] [34;1mserve[0m -> Starting peer with ID=[peer1.org1.example.com], network ID=[dev], address=[peer2.org1.example.com:7071]
+2026-09-14T17:41:54.563006954Z [34m2026-09-14 17:41:54.562 UTC 000d INFO[0m [nodeCmd] [34;1mserve[0m -> Started peer with ID=[peer1.org1.example.com], network ID=[dev], address=[peer2.org1.example.com:7071]
+2026-09-14T17:41:54.563086886Z [34m2026-09-14 17:41:54.563 UTC 000e INFO[0m [sqldb] [34;1mNewVersionedDBProvider[0m -> NewVersionedDBProvider : STATE SQL DB
+2026-09-14T17:42:43.761207935Z [34m2026-09-14 17:42:43.761 UTC 000f INFO[0m [vscc.validator] [34;1mInitializeTxValidator[0m -> InitializeTxValidator: mychannel
+2026-09-14T17:42:43.981097268Z [34m2026-09-14 17:42:43.981 UTC 0010 INFO[0m [sqldb] [34;1mNewSqlBatcher[0m -> NewSqlBatcher Initialised
+2026-09-14T17:42:43.981120282Z [34m2026-09-14 17:42:43.981 UTC 0011 INFO[0m [sqldb] [34;1mGet[0m -> Key d CHANNEL_CONFIG_ENV_BYTES not found in cache
+2026-09-14T17:42:43.982838709Z [34m2026-09-14 17:42:43.982 UTC 0012 INFO[0m [sqldb] [34;1mGet[0m -> Key d CHANNEL_CONFIG_ENV_BYTES stored in cache
+2026-09-14T17:42:43.984558138Z [34m2026-09-14 17:42:43.984 UTC 0013 INFO[0m [core.comm] [34;1mInitializeChannel[0m -> Lean Format Enabled : false server=PeerServer
+2026-09-14T17:42:43.985963391Z [34m2026-09-14 17:42:43.985 UTC 0014 INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:42:48.76Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=224.806143ms
+2026-09-14T17:43:06.277706608Z [34m2026-09-14 17:43:06.277 UTC 0015 INFO[0m [vscc.validator] [34;1mInitializeTxValidator[0m -> InitializeTxValidator: mychannel
+2026-09-14T17:43:06.277717879Z [34m2026-09-14 17:43:06.277 UTC 0016 INFO[0m [sqldb] [34;1mGet[0m -> Key d CHANNEL_CONFIG_ENV_BYTES not found in cache
+2026-09-14T17:43:06.278180616Z [34m2026-09-14 17:43:06.278 UTC 0017 INFO[0m [sqldb] [34;1mGet[0m -> Key d CHANNEL_CONFIG_ENV_BYTES stored in cache
+2026-09-14T17:43:06.279464069Z [34m2026-09-14 17:43:06.279 UTC 0018 INFO[0m [core.comm] [34;1mInitializeChannel[0m -> Lean Format Enabled : false server=PeerServer
+2026-09-14T17:43:06.280151833Z [34m2026-09-14 17:43:06.280 UTC 0019 INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:43:11.276Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=3.281209ms
+2026-09-14T17:43:28.469489949Z [34m2026-09-14 17:43:28.469 UTC 001a INFO[0m [vscc.validator] [34;1mInitializeTxValidator[0m -> InitializeTxValidator: mychannel
+2026-09-14T17:43:28.469501731Z [34m2026-09-14 17:43:28.469 UTC 001b INFO[0m [sqldb] [34;1mGet[0m -> Key d CHANNEL_CONFIG_ENV_BYTES not found in cache
+2026-09-14T17:43:28.469991038Z [34m2026-09-14 17:43:28.469 UTC 001c INFO[0m [sqldb] [34;1mGet[0m -> Key d CHANNEL_CONFIG_ENV_BYTES stored in cache
+2026-09-14T17:43:28.471284079Z [34m2026-09-14 17:43:28.471 UTC 001d INFO[0m [core.comm] [34;1mInitializeChannel[0m -> Lean Format Enabled : false server=PeerServer
+2026-09-14T17:43:28.472380337Z [34m2026-09-14 17:43:28.472 UTC 001e INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:43:33.468Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=3.742393ms
+2026-09-14T17:43:52.535145886Z [34m2026-09-14 17:43:52.535 UTC 001f INFO[0m [vscc.validator] [34;1mInitializeTxValidator[0m -> InitializeTxValidator: mychannel
+2026-09-14T17:43:52.535161836Z [34m2026-09-14 17:43:52.535 UTC 0020 INFO[0m [sqldb] [34;1mGet[0m -> Key d CHANNEL_CONFIG_ENV_BYTES not found in cache
+2026-09-14T17:43:52.535701960Z [34m2026-09-14 17:43:52.535 UTC 0021 INFO[0m [sqldb] [34;1mGet[0m -> Key d CHANNEL_CONFIG_ENV_BYTES stored in cache
+2026-09-14T17:43:52.537166465Z [34m2026-09-14 17:43:52.537 UTC 0022 INFO[0m [core.comm] [34;1mInitializeChannel[0m -> Lean Format Enabled : false server=PeerServer
+2026-09-14T17:43:52.537524494Z [34m2026-09-14 17:43:52.537 UTC 0023 INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle namespaces/metadata/kvstore not found in cache
+2026-09-14T17:43:52.537533661Z [34m2026-09-14 17:43:52.537 UTC 0024 INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle namespaces/metadata/kvstore not found in cache
+2026-09-14T17:43:52.537653308Z [34m2026-09-14 17:43:52.537 UTC 0025 INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle namespaces/metadata/kvstore not found in cache
+2026-09-14T17:43:52.537809925Z [34m2026-09-14 17:43:52.537 UTC 0026 INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle namespaces/metadata/kvstore not found in cache
+2026-09-14T17:43:52.537829492Z [34m2026-09-14 17:43:52.537 UTC 0027 INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle namespaces/metadata/kvstore not found in cache
+2026-09-14T17:43:52.538060019Z [34m2026-09-14 17:43:52.538 UTC 0028 INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle namespaces/metadata/kvstore not found in cache
+2026-09-14T17:43:52.538200485Z [34m2026-09-14 17:43:52.538 UTC 0029 INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle namespaces/metadata/kvstore stored in cache
+2026-09-14T17:43:52.538252604Z [34m2026-09-14 17:43:52.538 UTC 002a INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle namespaces/fields/kvstore/Sequence not found in cache
+2026-09-14T17:43:52.538302489Z [34m2026-09-14 17:43:52.538 UTC 002b INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle namespaces/fields/kvstore/Sequence not found in cache
+2026-09-14T17:43:52.538340461Z [34m2026-09-14 17:43:52.538 UTC 002c INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle namespaces/fields/kvstore/Sequence not found in cache
+2026-09-14T17:43:52.538524399Z [34m2026-09-14 17:43:52.538 UTC 002d INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle namespaces/fields/kvstore/Sequence not found in cache
+2026-09-14T17:43:52.538577991Z [34m2026-09-14 17:43:52.538 UTC 002e INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle namespaces/fields/kvstore/Sequence not found in cache
+2026-09-14T17:43:52.538682229Z [34m2026-09-14 17:43:52.538 UTC 002f INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle namespaces/fields/kvstore/Sequence not found in cache
+2026-09-14T17:43:52.538826642Z [34m2026-09-14 17:43:52.538 UTC 0030 INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle namespaces/fields/kvstore/Sequence not found in cache
+2026-09-14T17:43:52.538902747Z [34m2026-09-14 17:43:52.538 UTC 0031 INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle namespaces/fields/kvstore/Sequence not found in cache
+2026-09-14T17:43:52.539026181Z [34m2026-09-14 17:43:52.538 UTC 0032 INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle namespaces/fields/kvstore/Sequence not found in cache
+2026-09-14T17:43:52.539112875Z [34m2026-09-14 17:43:52.539 UTC 0033 INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle namespaces/fields/kvstore/Sequence not found in cache
+2026-09-14T17:43:52.539237190Z [34m2026-09-14 17:43:52.539 UTC 0034 INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle namespaces/fields/kvstore/Sequence not found in cache
+2026-09-14T17:43:52.539292465Z [34m2026-09-14 17:43:52.539 UTC 0035 INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle namespaces/fields/kvstore/Sequence not found in cache
+2026-09-14T17:43:52.539427822Z [34m2026-09-14 17:43:52.539 UTC 0036 INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle namespaces/fields/kvstore/Sequence not found in cache
+2026-09-14T17:43:52.539500269Z [34m2026-09-14 17:43:52.539 UTC 0037 INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle namespaces/fields/kvstore/Sequence not found in cache
+2026-09-14T17:43:52.539624955Z [34m2026-09-14 17:43:52.539 UTC 0038 INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle namespaces/fields/kvstore/Sequence not found in cache
+2026-09-14T17:43:52.539861123Z [34m2026-09-14 17:43:52.539 UTC 0039 INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle namespaces/fields/kvstore/Sequence not found in cache
+2026-09-14T17:43:52.541680321Z [34m2026-09-14 17:43:52.540 UTC 003a INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle namespaces/fields/kvstore/Sequence not found in cache
+2026-09-14T17:43:52.541692735Z [34m2026-09-14 17:43:52.540 UTC 003b INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle namespaces/fields/kvstore/Sequence not found in cache
+2026-09-14T17:43:52.541697394Z [34m2026-09-14 17:43:52.540 UTC 003c INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle namespaces/fields/kvstore/Sequence stored in cache
+2026-09-14T17:43:52.541701852Z [34m2026-09-14 17:43:52.540 UTC 003d INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle namespaces/fields/kvstore/EndorsementInfo not found in cache
+2026-09-14T17:43:52.541706190Z [34m2026-09-14 17:43:52.540 UTC 003e INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle namespaces/fields/kvstore/EndorsementInfo not found in cache
+2026-09-14T17:43:52.541710238Z [34m2026-09-14 17:43:52.540 UTC 003f INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle namespaces/fields/kvstore/EndorsementInfo not found in cache
+2026-09-14T17:43:52.541714516Z [34m2026-09-14 17:43:52.541 UTC 0040 INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle namespaces/fields/kvstore/EndorsementInfo not found in cache
+2026-09-14T17:43:52.541718604Z [34m2026-09-14 17:43:52.541 UTC 0041 INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle namespaces/fields/kvstore/EndorsementInfo not found in cache
+2026-09-14T17:43:52.541722611Z [34m2026-09-14 17:43:52.541 UTC 0042 INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle namespaces/fields/kvstore/EndorsementInfo stored in cache
+2026-09-14T17:43:52.541805779Z [34m2026-09-14 17:43:52.541 UTC 0043 INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle namespaces/fields/kvstore/ValidationInfo not found in cache
+2026-09-14T17:43:52.541821188Z [34m2026-09-14 17:43:52.541 UTC 0044 INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle namespaces/fields/kvstore/ValidationInfo not found in cache
+2026-09-14T17:43:52.542084427Z [34m2026-09-14 17:43:52.542 UTC 0045 INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle namespaces/fields/kvstore/ValidationInfo not found in cache
+2026-09-14T17:43:52.542249721Z [34m2026-09-14 17:43:52.542 UTC 0046 INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle namespaces/fields/kvstore/ValidationInfo not found in cache
+2026-09-14T17:43:52.542325334Z [34m2026-09-14 17:43:52.542 UTC 0047 INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle namespaces/fields/kvstore/ValidationInfo not found in cache
+2026-09-14T17:43:52.542800284Z [34m2026-09-14 17:43:52.542 UTC 0048 INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle namespaces/fields/kvstore/ValidationInfo not found in cache
+2026-09-14T17:43:52.542820983Z [34m2026-09-14 17:43:52.542 UTC 0049 INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle namespaces/fields/kvstore/ValidationInfo not found in cache
+2026-09-14T17:43:52.542882660Z [34m2026-09-14 17:43:52.542 UTC 004a INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle namespaces/fields/kvstore/ValidationInfo not found in cache
+2026-09-14T17:43:52.542896406Z [34m2026-09-14 17:43:52.542 UTC 004b INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle namespaces/fields/kvstore/ValidationInfo not found in cache
+2026-09-14T17:43:52.543042002Z [34m2026-09-14 17:43:52.542 UTC 004c INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle namespaces/fields/kvstore/ValidationInfo not found in cache
+2026-09-14T17:43:52.543620659Z [34m2026-09-14 17:43:52.543 UTC 004d INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle namespaces/fields/kvstore/ValidationInfo not found in cache
+2026-09-14T17:43:52.543634245Z [34m2026-09-14 17:43:52.543 UTC 004e INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle namespaces/fields/kvstore/ValidationInfo not found in cache
+2026-09-14T17:43:52.543639916Z [34m2026-09-14 17:43:52.543 UTC 004f INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle namespaces/fields/kvstore/ValidationInfo not found in cache
+2026-09-14T17:43:52.543645486Z [34m2026-09-14 17:43:52.543 UTC 0050 INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle namespaces/fields/kvstore/ValidationInfo not found in cache
+2026-09-14T17:43:52.544088065Z [34m2026-09-14 17:43:52.544 UTC 0051 INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle namespaces/fields/kvstore/ValidationInfo not found in cache
+2026-09-14T17:43:52.544340424Z [34m2026-09-14 17:43:52.544 UTC 0052 INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle namespaces/fields/kvstore/ValidationInfo not found in cache
+2026-09-14T17:43:52.544589015Z [34m2026-09-14 17:43:52.544 UTC 0053 INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle namespaces/fields/kvstore/ValidationInfo not found in cache
+2026-09-14T17:43:52.544610215Z [34m2026-09-14 17:43:52.544 UTC 0054 INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle namespaces/fields/kvstore/ValidationInfo stored in cache
+2026-09-14T17:43:52.544654649Z [34m2026-09-14 17:43:52.544 UTC 0055 INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle namespaces/fields/kvstore/Collections not found in cache
+2026-09-14T17:43:52.545057733Z [34m2026-09-14 17:43:52.545 UTC 0056 INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle namespaces/fields/kvstore/Collections not found in cache
+2026-09-14T17:43:52.545311254Z [34m2026-09-14 17:43:52.545 UTC 0057 INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle namespaces/fields/kvstore/Collections not found in cache
+2026-09-14T17:43:52.545576867Z [34m2026-09-14 17:43:52.545 UTC 0058 INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle namespaces/fields/kvstore/Collections not found in cache
+2026-09-14T17:43:52.545840316Z [34m2026-09-14 17:43:52.545 UTC 0059 INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle namespaces/fields/kvstore/Collections not found in cache
+2026-09-14T17:43:52.546099979Z [34m2026-09-14 17:43:52.546 UTC 005a INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle namespaces/fields/kvstore/Collections not found in cache
+2026-09-14T17:43:52.546870078Z [34m2026-09-14 17:43:52.546 UTC 005b INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle namespaces/fields/kvstore/ValidationInfo stored in cache
+2026-09-14T17:43:52.546883754Z [34m2026-09-14 17:43:52.546 UTC 005c INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle namespaces/fields/kvstore/Collections not found in cache
+2026-09-14T17:43:52.546892872Z [34m2026-09-14 17:43:52.546 UTC 005d INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle namespaces/fields/kvstore/Collections not found in cache
+2026-09-14T17:43:52.546897961Z [34m2026-09-14 17:43:52.546 UTC 005e INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle namespaces/fields/kvstore/Collections not found in cache
+2026-09-14T17:43:52.546902700Z [34m2026-09-14 17:43:52.546 UTC 005f INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle namespaces/fields/kvstore/Collections not found in cache
+2026-09-14T17:43:52.546907930Z [34m2026-09-14 17:43:52.546 UTC 0060 INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle namespaces/fields/kvstore/Collections not found in cache
+2026-09-14T17:43:52.547054438Z [34m2026-09-14 17:43:52.547 UTC 0061 INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle namespaces/fields/kvstore/Collections not found in cache
+2026-09-14T17:43:52.547067974Z [34m2026-09-14 17:43:52.547 UTC 0062 INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle namespaces/fields/kvstore/Collections not found in cache
+2026-09-14T17:43:52.547275487Z [34m2026-09-14 17:43:52.547 UTC 0063 INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle namespaces/fields/kvstore/Collections not found in cache
+2026-09-14T17:43:52.547300073Z [34m2026-09-14 17:43:52.547 UTC 0064 INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle namespaces/fields/kvstore/Collections not found in cache
+2026-09-14T17:43:52.547454426Z [34m2026-09-14 17:43:52.547 UTC 0065 INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle namespaces/fields/kvstore/Collections not found in cache
+2026-09-14T17:43:52.547540249Z [34m2026-09-14 17:43:52.547 UTC 0066 INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle namespaces/fields/kvstore/Collections not found in cache
+2026-09-14T17:43:52.547642543Z [34m2026-09-14 17:43:52.547 UTC 0067 INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle namespaces/fields/kvstore/Collections not found in cache
+2026-09-14T17:43:52.547761268Z [34m2026-09-14 17:43:52.547 UTC 0068 INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle namespaces/fields/kvstore/Collections not found in cache
+2026-09-14T17:43:52.547935498Z [34m2026-09-14 17:43:52.547 UTC 0069 INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle namespaces/fields/kvstore/Collections not found in cache
+2026-09-14T17:43:52.548092776Z [34m2026-09-14 17:43:52.548 UTC 006a INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle namespaces/fields/kvstore/Collections not found in cache
+2026-09-14T17:43:52.548240055Z [34m2026-09-14 17:43:52.548 UTC 006b INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle namespaces/fields/kvstore/Collections not found in cache
+2026-09-14T17:43:52.548448951Z [34m2026-09-14 17:43:52.548 UTC 006c INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle namespaces/fields/kvstore/Collections stored in cache
+2026-09-14T17:43:52.550823322Z [34m2026-09-14 17:43:52.550 UTC 006d INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle namespaces/fields/kvstore/Collections stored in cache
+2026-09-14T17:43:52.557437839Z [34m2026-09-14 17:43:52.557 UTC 006e INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle namespaces/fields/kvstore/Collections stored in cache
+2026-09-14T17:43:52.558137676Z [34m2026-09-14 17:43:52.557 UTC 006f INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:43:57.533Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=22.832879ms
+2026-09-14T17:43:52.561943029Z [34m2026-09-14 17:43:52.561 UTC 0070 INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle namespaces/fields/kvstore/Collections stored in cache
+2026-09-14T17:43:52.562518901Z [34m2026-09-14 17:43:52.562 UTC 0071 INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:43:57.53Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=27.252156ms
+2026-09-14T17:43:52.563828884Z [34m2026-09-14 17:43:52.563 UTC 0072 INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:43:57.533Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=28.570394ms
+2026-09-14T17:43:52.645021423Z [34m2026-09-14 17:43:52.644 UTC 0073 INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle namespaces/fields/kvstore/Collections stored in cache
+2026-09-14T17:43:52.645597565Z [34m2026-09-14 17:43:52.645 UTC 0074 INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:43:57.533Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=110.356118ms
+2026-09-14T17:43:52.645703566Z [34m2026-09-14 17:43:52.645 UTC 0075 INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle namespaces/fields/kvstore/Collections stored in cache
+2026-09-14T17:43:52.646492060Z [34m2026-09-14 17:43:52.646 UTC 0076 INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle namespaces/fields/kvstore/Collections stored in cache
+2026-09-14T17:43:52.647377789Z [34m2026-09-14 17:43:52.647 UTC 0077 INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle namespaces/fields/kvstore/Collections stored in cache
+2026-09-14T17:43:52.647920428Z [34m2026-09-14 17:43:52.647 UTC 0078 INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle namespaces/fields/kvstore/Collections stored in cache
+2026-09-14T17:43:52.649025072Z [34m2026-09-14 17:43:52.648 UTC 0079 INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle namespaces/fields/kvstore/Collections stored in cache
+2026-09-14T17:43:52.649815610Z [34m2026-09-14 17:43:52.649 UTC 007a INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle namespaces/fields/kvstore/Collections stored in cache
+2026-09-14T17:43:52.650212963Z [34m2026-09-14 17:43:52.650 UTC 007b INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle namespaces/fields/kvstore/Collections stored in cache
+2026-09-14T17:43:52.650780669Z [34m2026-09-14 17:43:52.650 UTC 007c INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle namespaces/fields/kvstore/Collections stored in cache
+2026-09-14T17:43:52.651392098Z [34m2026-09-14 17:43:52.651 UTC 007d INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle namespaces/fields/kvstore/Collections stored in cache
+2026-09-14T17:43:55.347405757Z [34m2026-09-14 17:43:55.347 UTC 007e INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle namespaces/metadata/kvstore stored in cache
+2026-09-14T17:43:55.453535134Z [34m2026-09-14 17:43:55.453 UTC 007f INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle namespaces/fields/kvstore/Sequence stored in cache
+2026-09-14T17:43:55.547361080Z [34m2026-09-14 17:43:55.547 UTC 0080 INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle namespaces/metadata/kvstore stored in cache
+2026-09-14T17:43:55.549055922Z [34m2026-09-14 17:43:55.548 UTC 0081 INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle namespaces/metadata/kvstore stored in cache
+2026-09-14T17:43:55.556388932Z [34m2026-09-14 17:43:55.556 UTC 0082 INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle namespaces/fields/kvstore/EndorsementInfo stored in cache
+2026-09-14T17:43:55.645238515Z [34m2026-09-14 17:43:55.644 UTC 0083 INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle namespaces/fields/kvstore/Sequence stored in cache
+2026-09-14T17:43:55.647792546Z [34m2026-09-14 17:43:55.647 UTC 0084 INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle namespaces/fields/kvstore/Sequence stored in cache
+2026-09-14T17:43:55.647843633Z [34m2026-09-14 17:43:55.647 UTC 0085 INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle namespaces/metadata/kvstore stored in cache
+2026-09-14T17:43:55.648830865Z [34m2026-09-14 17:43:55.648 UTC 0086 INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle namespaces/fields/kvstore/ValidationInfo stored in cache
+2026-09-14T17:43:55.654784049Z [34m2026-09-14 17:43:55.654 UTC 0087 INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle namespaces/fields/kvstore/Sequence stored in cache
+2026-09-14T17:43:55.655341906Z [34m2026-09-14 17:43:55.655 UTC 0088 INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle namespaces/fields/kvstore/ValidationInfo stored in cache
+2026-09-14T17:43:55.744558986Z [34m2026-09-14 17:43:55.744 UTC 0089 INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle namespaces/fields/kvstore/EndorsementInfo stored in cache
+2026-09-14T17:43:55.746763294Z [34m2026-09-14 17:43:55.746 UTC 008a INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle namespaces/fields/kvstore/Sequence stored in cache
+2026-09-14T17:43:55.747923454Z [34m2026-09-14 17:43:55.747 UTC 008b INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle namespaces/fields/kvstore/Collections stored in cache
+2026-09-14T17:43:55.747950976Z [34m2026-09-14 17:43:55.747 UTC 008c INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle namespaces/fields/kvstore/Sequence stored in cache
+2026-09-14T17:43:55.748342117Z [34m2026-09-14 17:43:55.748 UTC 008d INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle namespaces/fields/kvstore/Sequence stored in cache
+2026-09-14T17:43:55.748471953Z [34m2026-09-14 17:43:55.748 UTC 008e INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle namespaces/fields/kvstore/ValidationInfo stored in cache
+2026-09-14T17:43:55.748955420Z [34m2026-09-14 17:43:55.748 UTC 008f INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle namespaces/metadata/kvstore stored in cache
+2026-09-14T17:43:55.749001567Z [34m2026-09-14 17:43:55.748 UTC 0090 INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle namespaces/fields/kvstore/Sequence stored in cache
+2026-09-14T17:43:55.749371088Z [34m2026-09-14 17:43:55.749 UTC 0091 INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle namespaces/fields/kvstore/ValidationInfo stored in cache
+2026-09-14T17:43:55.749393159Z [34m2026-09-14 17:43:55.749 UTC 0092 INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle namespaces/fields/kvstore/ValidationInfo stored in cache
+2026-09-14T17:43:55.749626482Z [34m2026-09-14 17:43:55.749 UTC 0093 INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle namespaces/fields/kvstore/Sequence stored in cache
+2026-09-14T17:43:55.749846549Z [34m2026-09-14 17:43:55.749 UTC 0094 INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle namespaces/fields/kvstore/Sequence stored in cache
+2026-09-14T17:43:55.844994711Z [34m2026-09-14 17:43:55.844 UTC 0095 INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle namespaces/fields/kvstore/ValidationInfo stored in cache
+2026-09-14T17:43:55.846725853Z [34m2026-09-14 17:43:55.845 UTC 0096 INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle namespaces/fields/kvstore/Sequence stored in cache
+2026-09-14T17:43:55.846767582Z [34m2026-09-14 17:43:55.846 UTC 0098 INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle namespaces/fields/kvstore/Sequence stored in cache
+2026-09-14T17:43:55.846774294Z [34m2026-09-14 17:43:55.845 UTC 0097 INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle namespaces/fields/kvstore/ValidationInfo stored in cache
+2026-09-14T17:43:55.846812076Z [34m2026-09-14 17:43:55.846 UTC 0099 INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle namespaces/fields/kvstore/Sequence stored in cache
+2026-09-14T17:43:55.847267790Z [34m2026-09-14 17:43:55.847 UTC 009a INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle namespaces/fields/kvstore/Collections stored in cache
+2026-09-14T17:43:55.847348783Z [34m2026-09-14 17:43:55.847 UTC 009b INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle namespaces/fields/kvstore/ValidationInfo stored in cache
+2026-09-14T17:43:55.847763369Z [34m2026-09-14 17:43:55.847 UTC 009c INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle namespaces/fields/kvstore/Collections stored in cache
+2026-09-14T17:43:55.847779450Z [34m2026-09-14 17:43:55.847 UTC 009d INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle namespaces/fields/kvstore/EndorsementInfo stored in cache
+2026-09-14T17:43:55.848490257Z [34m2026-09-14 17:43:55.848 UTC 009e INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle namespaces/fields/kvstore/ValidationInfo stored in cache
+2026-09-14T17:43:55.848981148Z [34m2026-09-14 17:43:55.848 UTC 009f INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle namespaces/fields/kvstore/EndorsementInfo stored in cache
+2026-09-14T17:43:55.849161620Z [34m2026-09-14 17:43:55.849 UTC 00a0 INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle namespaces/fields/kvstore/Sequence stored in cache
+2026-09-14T17:43:55.849466958Z [34m2026-09-14 17:43:55.849 UTC 00a1 INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle namespaces/fields/kvstore/Sequence stored in cache
+2026-09-14T17:43:55.849598398Z [34m2026-09-14 17:43:55.849 UTC 00a2 INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle namespaces/fields/kvstore/Sequence stored in cache
+2026-09-14T17:43:55.849921600Z [34m2026-09-14 17:43:55.849 UTC 00a3 INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle namespaces/fields/kvstore/Collections stored in cache
+2026-09-14T17:43:55.849933052Z [34m2026-09-14 17:43:55.849 UTC 00a4 INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:43:57.533Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=3.31581272s
+2026-09-14T17:43:55.850058670Z [34m2026-09-14 17:43:55.850 UTC 00a5 INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle namespaces/fields/kvstore/ValidationInfo stored in cache
+2026-09-14T17:43:55.850276693Z [34m2026-09-14 17:43:55.850 UTC 00a6 INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:43:57.532Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=3.316942241s
+2026-09-14T17:43:55.850783875Z [34m2026-09-14 17:43:55.850 UTC 00a7 INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle namespaces/fields/kvstore/Collections stored in cache
+2026-09-14T17:43:55.851092860Z [34m2026-09-14 17:43:55.851 UTC 00a8 INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:43:57.533Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=3.315983294s
+2026-09-14T17:43:55.945508073Z [34m2026-09-14 17:43:55.944 UTC 00a9 INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle namespaces/fields/kvstore/ValidationInfo stored in cache
+2026-09-14T17:43:55.945638270Z [34m2026-09-14 17:43:55.945 UTC 00aa INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle namespaces/fields/kvstore/Sequence stored in cache
+2026-09-14T17:43:55.946263736Z [34m2026-09-14 17:43:55.946 UTC 00ab INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:43:57.533Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=3.411279977s
+2026-09-14T17:43:55.947585792Z [34m2026-09-14 17:43:55.947 UTC 00ac INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle namespaces/fields/kvstore/ValidationInfo stored in cache
+2026-09-14T17:43:55.947621960Z [34m2026-09-14 17:43:55.947 UTC 00ad INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle namespaces/fields/kvstore/ValidationInfo stored in cache
+2026-09-14T17:43:55.948020616Z [34m2026-09-14 17:43:55.947 UTC 00ae INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle namespaces/fields/kvstore/ValidationInfo stored in cache
+2026-09-14T17:43:55.948051965Z [34m2026-09-14 17:43:55.948 UTC 00af INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle namespaces/fields/kvstore/Collections stored in cache
+2026-09-14T17:43:55.948325674Z [34m2026-09-14 17:43:55.948 UTC 00b0 INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:43:57.533Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=3.413389907s
+2026-09-14T17:43:55.948396819Z [34m2026-09-14 17:43:55.948 UTC 00b1 INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle namespaces/fields/kvstore/ValidationInfo stored in cache
+2026-09-14T17:43:55.948414252Z [34m2026-09-14 17:43:55.948 UTC 00b2 INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle namespaces/fields/kvstore/Collections stored in cache
+2026-09-14T17:43:55.948694643Z [34m2026-09-14 17:43:55.948 UTC 00b3 INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:43:57.533Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=3.413658055s
+2026-09-14T17:43:55.948746241Z [34m2026-09-14 17:43:55.948 UTC 00b4 INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle namespaces/fields/kvstore/Collections stored in cache
+2026-09-14T17:43:55.949043495Z [34m2026-09-14 17:43:55.949 UTC 00b5 INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:43:57.533Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=3.413972842s
+2026-09-14T17:43:56.155703547Z [34m2026-09-14 17:43:56.155 UTC 00b6 INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:44:01.153Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=1.886396ms
+2026-09-14T17:43:56.158765982Z [34m2026-09-14 17:43:56.158 UTC 00b7 INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:44:01.153Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=4.594349ms
+2026-09-14T17:43:56.159024702Z [34m2026-09-14 17:43:56.158 UTC 00b8 INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:44:01.153Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=4.876012ms
+2026-09-14T17:43:56.161921613Z [34m2026-09-14 17:43:56.161 UTC 00b9 INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:44:01.153Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=7.722208ms
+2026-09-14T17:43:56.162299660Z [34m2026-09-14 17:43:56.162 UTC 00ba INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:44:01.153Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=8.06663ms
+2026-09-14T17:43:56.163958194Z [34m2026-09-14 17:43:56.163 UTC 00bb INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:44:01.153Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=9.70169ms
+2026-09-14T17:43:56.167068199Z [34m2026-09-14 17:43:56.167 UTC 00bc INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:44:01.153Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=12.695284ms
+2026-09-14T17:43:56.167346396Z [34m2026-09-14 17:43:56.167 UTC 00bd INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:44:01.153Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=13.047432ms
+2026-09-14T17:43:56.169089670Z [34m2026-09-14 17:43:56.169 UTC 00be INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:44:01.153Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=14.689113ms
+2026-09-14T17:43:56.172267905Z [34m2026-09-14 17:43:56.172 UTC 00bf INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:44:01.153Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=17.830337ms
+2026-09-14T17:43:56.172380618Z [34m2026-09-14 17:43:56.172 UTC 00c0 INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:44:01.153Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=17.952239ms
+2026-09-14T17:43:56.610942559Z [34m2026-09-14 17:43:56.610 UTC 00c1 INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:44:01.604Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=5.008855ms
+2026-09-14T17:43:56.611336966Z [34m2026-09-14 17:43:56.611 UTC 00c2 INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:44:01.605Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=5.10201ms
+2026-09-14T17:43:56.613064040Z [34m2026-09-14 17:43:56.613 UTC 00c3 INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:44:01.605Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=6.738373ms
+2026-09-14T17:43:56.616230773Z [34m2026-09-14 17:43:56.616 UTC 00c4 INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:44:01.605Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=9.816537ms
+2026-09-14T17:43:56.616316014Z [34m2026-09-14 17:43:56.616 UTC 00c5 INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:44:01.605Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=9.866542ms
+2026-09-14T17:43:56.619514236Z [34m2026-09-14 17:43:56.619 UTC 00c6 INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:44:01.604Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=13.006684ms
+2026-09-14T17:43:56.620333980Z [34m2026-09-14 17:43:56.620 UTC 00c7 INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:44:01.605Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=13.700139ms
+2026-09-14T17:43:56.622436876Z [34m2026-09-14 17:43:56.622 UTC 00c8 INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:44:01.605Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=15.782836ms
+2026-09-14T17:43:56.624417911Z [34m2026-09-14 17:43:56.624 UTC 00c9 INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:44:01.605Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=17.661878ms
+2026-09-14T17:43:56.627202439Z [34m2026-09-14 17:43:56.627 UTC 00ca INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:44:01.605Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=20.45878ms
+2026-09-14T17:43:58.614229648Z [34m2026-09-14 17:43:58.614 UTC 00cb INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:44:03.607Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=5.167545ms
+2026-09-14T17:43:58.614650014Z [34m2026-09-14 17:43:58.614 UTC 00cc INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:44:03.608Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=5.328651ms
+2026-09-14T17:43:58.618114571Z [34m2026-09-14 17:43:58.618 UTC 00cd INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:44:03.608Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=8.502827ms
+2026-09-14T17:43:58.618236863Z [34m2026-09-14 17:43:58.618 UTC 00ce INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:44:03.608Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=8.513347ms
+2026-09-14T17:43:58.622079156Z [34m2026-09-14 17:43:58.622 UTC 00cf INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:44:03.608Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=12.289545ms
+2026-09-14T17:43:58.622334060Z [34m2026-09-14 17:43:58.622 UTC 00d0 INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:44:03.608Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=12.24463ms
+2026-09-14T17:43:58.624292953Z [34m2026-09-14 17:43:58.624 UTC 00d1 INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:44:03.61Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=14.091681ms
+2026-09-14T17:43:58.626107312Z [34m2026-09-14 17:43:58.626 UTC 00d2 INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:44:03.609Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=15.846748ms
+2026-09-14T17:43:58.626440263Z [34m2026-09-14 17:43:58.626 UTC 00d3 INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:44:03.608Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=16.210096ms
+2026-09-14T17:43:58.628152418Z [34m2026-09-14 17:43:58.628 UTC 00d4 INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:44:03.609Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=17.866146ms
+2026-09-14T17:43:58.629489563Z [34m2026-09-14 17:43:58.629 UTC 00d5 INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:44:03.609Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=19.202559ms
+2026-09-14T17:44:00.655021214Z [34m2026-09-14 17:44:00.654 UTC 00d6 INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:44:05.649Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=4.783547ms
+2026-09-14T17:44:00.655380775Z [34m2026-09-14 17:44:00.655 UTC 00d7 INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:44:05.65Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=5.013263ms
+2026-09-14T17:44:00.658474279Z [34m2026-09-14 17:44:00.658 UTC 00d8 INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:44:05.649Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=8.017568ms
+2026-09-14T17:44:00.662188369Z [34m2026-09-14 17:44:00.662 UTC 00d9 INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:44:05.649Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=11.704355ms
+2026-09-14T17:44:00.662502044Z [34m2026-09-14 17:44:00.662 UTC 00da INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:44:05.649Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=11.999385ms
+2026-09-14T17:44:00.662555475Z [34m2026-09-14 17:44:00.662 UTC 00db INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:44:05.649Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=12.095807ms
+2026-09-14T17:44:00.665614433Z [34m2026-09-14 17:44:00.665 UTC 00dc INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:44:05.649Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=15.087108ms
+2026-09-14T17:44:00.665970768Z [34m2026-09-14 17:44:00.665 UTC 00dd INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:44:05.649Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=15.413696ms
+2026-09-14T17:44:00.667636336Z [34m2026-09-14 17:44:00.667 UTC 00de INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:44:05.649Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=17.062502ms
+2026-09-14T17:44:00.669030418Z [34m2026-09-14 17:44:00.668 UTC 00df INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:44:05.649Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=18.41729ms
+2026-09-14T17:44:02.654793126Z [34m2026-09-14 17:44:02.654 UTC 00e0 INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:44:07.65Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=3.464767ms
+2026-09-14T17:44:02.656829476Z [34m2026-09-14 17:44:02.656 UTC 00e1 INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:44:07.65Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=5.516407ms
+2026-09-14T17:44:02.656857960Z [34m2026-09-14 17:44:02.656 UTC 00e2 INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:44:07.649Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=6.544796ms
+2026-09-14T17:44:02.661657648Z [34m2026-09-14 17:44:02.661 UTC 00e3 INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:44:07.65Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=10.228509ms
+2026-09-14T17:44:02.664679105Z [34m2026-09-14 17:44:02.664 UTC 00e4 INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:44:07.65Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=13.24184ms
+2026-09-14T17:44:02.668171314Z [34m2026-09-14 17:44:02.668 UTC 00e5 INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:44:07.65Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=16.670659ms
+2026-09-14T17:44:02.668658418Z [34m2026-09-14 17:44:02.668 UTC 00e6 INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:44:07.649Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=17.12515ms
+2026-09-14T17:44:02.668702201Z [34m2026-09-14 17:44:02.668 UTC 00e7 INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:44:07.65Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=17.227054ms
+2026-09-14T17:44:02.671482471Z [34m2026-09-14 17:44:02.671 UTC 00e8 INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:44:07.65Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=19.919137ms
+2026-09-14T17:44:02.671503410Z [34m2026-09-14 17:44:02.671 UTC 00e9 INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:44:07.65Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=20.162819ms
+2026-09-14T17:44:02.671822876Z [34m2026-09-14 17:44:02.671 UTC 00ea INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:44:07.65Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=20.205229ms
+2026-09-14T17:44:04.693671483Z [34m2026-09-14 17:44:04.693 UTC 00eb INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:44:09.689Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=3.314984ms
+2026-09-14T17:44:04.696255691Z [34m2026-09-14 17:44:04.696 UTC 00ec INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:44:09.689Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=5.81384ms
+2026-09-14T17:44:04.696995684Z [34m2026-09-14 17:44:04.696 UTC 00ed INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:44:09.689Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=6.467299ms
+2026-09-14T17:44:04.698557955Z [34m2026-09-14 17:44:04.698 UTC 00ee INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:44:09.689Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=7.944328ms
+2026-09-14T17:44:04.700653978Z [34m2026-09-14 17:44:04.700 UTC 00ef INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:44:09.689Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=9.977042ms
+2026-09-14T17:44:04.704358831Z [34m2026-09-14 17:44:04.704 UTC 00f0 INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:44:09.689Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=13.64825ms
+2026-09-14T17:44:04.704415688Z [34m2026-09-14 17:44:04.704 UTC 00f1 INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:44:09.69Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=13.751927ms
+2026-09-14T17:44:04.706130419Z [34m2026-09-14 17:44:04.706 UTC 00f2 INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:44:09.69Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=15.424888ms
+2026-09-14T17:44:04.708123507Z [34m2026-09-14 17:44:04.708 UTC 00f3 INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:44:09.689Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=17.392638ms
+2026-09-14T17:44:04.709363297Z [34m2026-09-14 17:44:04.709 UTC 00f4 INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:44:09.69Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=18.629091ms
+2026-09-14T17:44:06.694456482Z [34m2026-09-14 17:44:06.694 UTC 00f5 INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:44:11.689Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=4.331841ms
+2026-09-14T17:44:06.697064265Z [34m2026-09-14 17:44:06.697 UTC 00f6 INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:44:11.689Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=6.655335ms
+2026-09-14T17:44:06.697090625Z [34m2026-09-14 17:44:06.697 UTC 00f7 INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:44:11.689Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=6.833132ms
+2026-09-14T17:44:06.699248355Z [34m2026-09-14 17:44:06.699 UTC 00f8 INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:44:11.689Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=8.74145ms
+2026-09-14T17:44:06.702685159Z [34m2026-09-14 17:44:06.702 UTC 00f9 INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:44:11.689Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=11.94397ms
+2026-09-14T17:44:06.703004775Z [34m2026-09-14 17:44:06.702 UTC 00fa INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:44:11.689Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=12.385306ms
+2026-09-14T17:44:06.704703405Z [34m2026-09-14 17:44:06.704 UTC 00fb INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:44:11.69Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=13.873347ms
+2026-09-14T17:44:06.709215838Z [34m2026-09-14 17:44:06.709 UTC 00fc INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:44:11.69Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=18.30628ms
+2026-09-14T17:44:06.709815224Z [34m2026-09-14 17:44:06.709 UTC 00fd INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:44:11.69Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=18.973895ms
+2026-09-14T17:44:06.711401832Z [34m2026-09-14 17:44:06.711 UTC 00fe INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:44:11.69Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=20.442059ms
+2026-09-14T17:44:08.697759772Z [34m2026-09-14 17:44:08.697 UTC 00ff INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:44:13.69Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=6.455998ms
+2026-09-14T17:44:08.698545160Z [34m2026-09-14 17:44:08.698 UTC 0100 INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:44:13.69Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=6.977786ms
+2026-09-14T17:44:08.700296240Z [34m2026-09-14 17:44:08.700 UTC 0101 INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:44:13.69Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=8.674823ms
+2026-09-14T17:44:08.702051006Z [34m2026-09-14 17:44:08.701 UTC 0102 INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:44:13.69Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=10.396096ms
+2026-09-14T17:44:08.705125063Z [34m2026-09-14 17:44:08.705 UTC 0103 INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:44:13.69Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=13.41606ms
+2026-09-14T17:44:08.705301167Z [34m2026-09-14 17:44:08.705 UTC 0104 INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:44:13.69Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=13.595751ms
+2026-09-14T17:44:08.708290252Z [34m2026-09-14 17:44:08.708 UTC 0105 INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:44:13.69Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=16.542096ms
+2026-09-14T17:44:08.709011900Z [34m2026-09-14 17:44:08.708 UTC 0106 INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:44:13.69Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=17.253905ms
+2026-09-14T17:44:08.710471778Z [34m2026-09-14 17:44:08.710 UTC 0107 INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:44:13.69Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=18.646024ms
+2026-09-14T17:44:08.712058716Z [34m2026-09-14 17:44:08.712 UTC 0108 INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:44:13.69Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=20.21621ms
+2026-09-14T17:44:08.712150520Z [34m2026-09-14 17:44:08.712 UTC 0109 INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:44:13.689Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=20.271004ms
+2026-09-14T17:44:10.743591052Z [34m2026-09-14 17:44:10.743 UTC 010a INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:44:15.736Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=6.16728ms
+2026-09-14T17:44:10.744018673Z [34m2026-09-14 17:44:10.743 UTC 010b INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:44:15.736Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=6.321162ms
+2026-09-14T17:44:10.747271769Z [34m2026-09-14 17:44:10.747 UTC 010c INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:44:15.736Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=9.350604ms
+2026-09-14T17:44:10.747436922Z [34m2026-09-14 17:44:10.747 UTC 010d INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:44:15.736Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=9.421789ms
+2026-09-14T17:44:10.750412643Z [34m2026-09-14 17:44:10.750 UTC 010e INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:44:15.737Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=12.37676ms
+2026-09-14T17:44:10.751143829Z [34m2026-09-14 17:44:10.751 UTC 010f INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:44:15.736Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=13.050787ms
+2026-09-14T17:44:10.752685681Z [34m2026-09-14 17:44:10.752 UTC 0110 INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:44:15.736Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=14.56593ms
+2026-09-14T17:44:10.752867165Z [34m2026-09-14 17:44:10.752 UTC 0111 INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:44:15.735Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=14.741813ms
+2026-09-14T17:44:10.755994403Z [34m2026-09-14 17:44:10.755 UTC 0112 INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:44:15.738Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=17.532563ms
+2026-09-14T17:44:10.756181738Z [34m2026-09-14 17:44:10.756 UTC 0113 INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:44:15.737Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=17.823975ms
+2026-09-14T17:44:10.757814763Z [34m2026-09-14 17:44:10.757 UTC 0114 INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:44:15.738Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=19.271019ms
+2026-09-14T17:44:12.772911364Z [34m2026-09-14 17:44:12.772 UTC 0115 INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:44:17.769Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=2.16269ms
+2026-09-14T17:44:12.779130162Z [34m2026-09-14 17:44:12.779 UTC 0116 INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:44:17.769Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=8.642051ms
+2026-09-14T17:44:12.779168114Z [34m2026-09-14 17:44:12.779 UTC 0117 INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:44:17.77Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=8.335911ms
+2026-09-14T17:44:12.779862941Z [34m2026-09-14 17:44:12.779 UTC 0118 INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:44:17.77Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=9.02691ms
+2026-09-14T17:44:12.781701266Z [34m2026-09-14 17:44:12.781 UTC 0119 INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:44:17.769Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=10.751309ms
+2026-09-14T17:44:12.785196260Z [34m2026-09-14 17:44:12.785 UTC 011a INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:44:17.77Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=14.184437ms
+2026-09-14T17:44:12.786498809Z [34m2026-09-14 17:44:12.786 UTC 011b INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:44:17.77Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=15.565435ms
+2026-09-14T17:44:12.786800541Z [34m2026-09-14 17:44:12.786 UTC 011c INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:44:17.77Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=15.80042ms
+2026-09-14T17:44:12.788483532Z [34m2026-09-14 17:44:12.788 UTC 011d INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:44:17.77Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=17.438154ms
+2026-09-14T17:44:12.791556687Z [34m2026-09-14 17:44:12.791 UTC 011e INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:44:17.77Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=20.475932ms
+2026-09-14T17:44:12.791580031Z [34m2026-09-14 17:44:12.791 UTC 011f INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:44:17.77Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=20.466996ms
+2026-09-14T17:44:14.820744996Z [34m2026-09-14 17:44:14.820 UTC 0120 INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:44:19.809Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=9.735003ms
+2026-09-14T17:44:14.820794319Z [34m2026-09-14 17:44:14.820 UTC 0121 INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:44:19.809Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=9.742407ms
+2026-09-14T17:44:14.820821782Z [34m2026-09-14 17:44:14.820 UTC 0122 INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:44:19.809Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=9.729793ms
+2026-09-14T17:44:14.820836449Z [34m2026-09-14 17:44:14.820 UTC 0123 INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:44:19.809Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=10.196157ms
+2026-09-14T17:44:14.820862579Z [34m2026-09-14 17:44:14.820 UTC 0124 INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:44:19.81Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=9.824212ms
+2026-09-14T17:44:14.823096313Z [34m2026-09-14 17:44:14.823 UTC 0125 INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:44:19.81Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=11.989306ms
+2026-09-14T17:44:14.826345422Z [34m2026-09-14 17:44:14.826 UTC 0126 INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:44:19.809Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=15.207125ms
+2026-09-14T17:44:14.829875944Z [34m2026-09-14 17:44:14.829 UTC 0127 INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:44:19.81Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=18.714824ms
+2026-09-14T17:44:14.830789907Z [34m2026-09-14 17:44:14.830 UTC 0128 INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:44:19.81Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=19.578261ms
+2026-09-14T17:44:14.830842186Z [34m2026-09-14 17:44:14.830 UTC 0129 INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:44:19.81Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=19.597077ms
+2026-09-14T17:44:14.832194599Z [34m2026-09-14 17:44:14.832 UTC 012a INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:44:19.81Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=20.914574ms
+2026-09-14T17:44:16.854181807Z [34m2026-09-14 17:44:16.854 UTC 012b INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:44:21.847Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=5.579736ms
+2026-09-14T17:44:16.854625798Z [34m2026-09-14 17:44:16.854 UTC 012c INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:44:21.847Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=6.043525ms
+2026-09-14T17:44:16.857681280Z [34m2026-09-14 17:44:16.857 UTC 012d INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:44:21.847Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=8.89465ms
+2026-09-14T17:44:16.858466078Z [34m2026-09-14 17:44:16.858 UTC 012e INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:44:21.848Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=9.361925ms
+2026-09-14T17:44:16.860218640Z [34m2026-09-14 17:44:16.860 UTC 012f INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:44:21.847Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=11.035668ms
+2026-09-14T17:44:16.865790311Z [34m2026-09-14 17:44:16.865 UTC 0130 INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:44:21.848Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=16.579226ms
+2026-09-14T17:44:16.867313588Z [34m2026-09-14 17:44:16.867 UTC 0131 INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:44:21.849Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=17.916391ms
+2026-09-14T17:44:16.867984791Z [34m2026-09-14 17:44:16.867 UTC 0132 INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:44:21.848Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=18.624934ms
+2026-09-14T17:44:16.869257443Z [34m2026-09-14 17:44:16.869 UTC 0133 INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:44:21.849Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=19.651239ms
+2026-09-14T17:44:16.870322792Z [34m2026-09-14 17:44:16.870 UTC 0134 INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:44:21.849Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=20.554331ms
+2026-09-14T17:44:18.852899134Z [34m2026-09-14 17:44:18.852 UTC 0135 INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:44:23.848Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=3.608931ms
+2026-09-14T17:44:18.855150261Z [34m2026-09-14 17:44:18.855 UTC 0136 INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:44:23.849Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=4.992874ms
+2026-09-14T17:44:18.855645089Z [34m2026-09-14 17:44:18.855 UTC 0137 INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:44:23.848Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=5.385498ms
+2026-09-14T17:44:18.858894277Z [34m2026-09-14 17:44:18.858 UTC 0138 INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:44:23.849Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=8.360789ms
+2026-09-14T17:44:18.859179538Z [34m2026-09-14 17:44:18.859 UTC 0139 INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:44:23.85Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=8.677748ms
+2026-09-14T17:44:18.861003205Z [34m2026-09-14 17:44:18.860 UTC 013a INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:44:23.85Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=10.35023ms
+2026-09-14T17:44:18.864175148Z [34m2026-09-14 17:44:18.864 UTC 013b INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:44:23.849Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=13.493147ms
+2026-09-14T17:44:18.864526734Z [34m2026-09-14 17:44:18.864 UTC 013c INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:44:23.849Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=13.810629ms
+2026-09-14T17:44:18.867472117Z [34m2026-09-14 17:44:18.867 UTC 013d INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:44:23.849Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=16.707991ms
+2026-09-14T17:44:18.867778798Z [34m2026-09-14 17:44:18.867 UTC 013e INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:44:23.849Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=16.940471ms
+2026-09-14T17:44:18.869183892Z [34m2026-09-14 17:44:18.869 UTC 013f INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:44:23.849Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=18.299708ms
+2026-09-14T17:44:20.901861700Z [34m2026-09-14 17:44:20.901 UTC 0140 INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:44:25.895Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=6.348805ms
+2026-09-14T17:44:20.905347117Z [34m2026-09-14 17:44:20.905 UTC 0141 INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:44:25.895Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=8.904859ms
+2026-09-14T17:44:20.905461554Z [34m2026-09-14 17:44:20.905 UTC 0142 INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:44:25.895Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=9.275993ms
+2026-09-14T17:44:20.907350013Z [34m2026-09-14 17:44:20.907 UTC 0143 INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:44:25.895Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=10.889161ms
+2026-09-14T17:44:20.911003048Z [34m2026-09-14 17:44:20.910 UTC 0144 INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:44:25.895Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=14.218833ms
+2026-09-14T17:44:20.911124818Z [34m2026-09-14 17:44:20.911 UTC 0145 INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:44:25.895Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=14.395538ms
+2026-09-14T17:44:20.912982620Z [34m2026-09-14 17:44:20.912 UTC 0146 INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:44:25.896Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=16.181202ms
+2026-09-14T17:44:20.916227641Z [34m2026-09-14 17:44:20.916 UTC 0147 INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:44:25.896Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=19.26605ms
+2026-09-14T17:44:20.916457457Z [34m2026-09-14 17:44:20.916 UTC 0148 INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=common.VsccService grpc.method=ProcessVscc grpc.request_deadline=2026-09-14T17:44:25.896Z grpc.peer_address=172.18.0.12:51006 grpc.code=OK grpc.call_duration=19.466159ms

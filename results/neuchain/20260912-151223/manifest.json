@@ -1,0 +1,44 @@
+{
+  "run_name": "read-profile",
+  "platform": "neuchain",
+  "workload": "kv-read",
+  "profile": "local",
+  "normalized": true,
+  "started_at": "2026-09-12T15:12:23.799467544+05:30",
+  "ended_at": "2026-09-12T15:12:23.80148056+05:30",
+  "harness_git_sha": "4e4cc55",
+  "platform_version": "neuchain",
+  "state_db": "leveldb",
+  "state_db_requested": "leveldb",
+  "orderer_batch": {
+    "MaxMessageCount": 0,
+    "AbsoluteMaxBytes": "",
+    "PreferredMaxBytes": "",
+    "BatchTimeout": ""
+  },
+  "crypto": {
+    "signature_alg": "RSA-1024-PKCS1v15",
+    "hash_alg": "SHA-256",
+    "per_tx_endorsement_verify": false,
+    "msp_note": "NeuChain EV: RSA-1024 user signature over the serialized TransactionPayload; no endorsement phase, ordering implicit via deterministic execution"
+  },
+  "resource_limit_per_container": {
+    "CPUs": 1.2,
+    "Memory": "1g"
+  },
+  "nodes": {
+    "block_server": 4,
+    "epoch_server": 1
+  },
+  "seed": 1,
+  "key_space": 500000,
+  "key_distribution": "uniform",
+  "zipfian_constant": 0,
+  "read_write_ratio": 0,
+  "value_size_bytes": 64,
+  "warmup_sec": 30,
+  "cooldown_sec": 15,
+  "caveats": [
+    "neuchain on the local profile is resource-constrained; absolute throughput is NOT comparable to its published scale-out ceiling"
+  ]
+}

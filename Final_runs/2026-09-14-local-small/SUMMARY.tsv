@@ -1,0 +1,9 @@
+platform	config	stage	status	reason	dir
+fabric-cft	quick-smoke	run	ok		fabric-cft/quick-smoke
+fabric-bft	quick-smoke	run	ok		fabric-bft/quick-smoke
+drunix	quick-smoke	run	ok		drunix/quick-smoke
+fabricx	quick-smoke	run	ok		fabricx/quick-smoke
+fabric-cft	probe-sweep	run	container-failed	error: platform container failed during the run: dev-peer0.org2.example.com-kvstore_1.0-2ea7b22cef577b6fa4ca655d0dab5283b6734bee9c35f654d050c69a24ed4de2 exited (after 23:23:14, status exited, exit code 2); peer0.org2.example.com exited (after 23:23:14, status exited, exit code 2) (results written to	fabric-cft/probe-sweep
+fabric-bft	probe-sweep	run	ok		fabric-bft/probe-sweep
+drunix	probe-sweep	run	container-failed	error: platform container failed during the run: lp1.org1 was OOM-killed at its memory limit and exited (after 23:44:31, exit code 137); dev-peer0.org1.example.com-kvstore_1.0-2ea7b22cef577b6fa4ca655d0dab5283b6734bee9c35f654d050c69a24ed4de2 exited (after 23:44:31, status exited, exit code 2) (result	drunix/probe-sweep
+fabricx	probe-sweep	run	container-failed	error: platform container failed during the run: bench-fabricx-fabricx-arma-1 was OOM-killed at its memory limit and exited (after 23:55:08, exit code 137) (results written to results/fabricx/20260914-234608)	fabricx/probe-sweep

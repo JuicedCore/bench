@@ -1,0 +1,34 @@
+run:        probe-sweep
+platform:   fabricx  (version fabricx-committer-v1.0.5-orderer-v1.0.6)
+workload:   kv-write   normalized=true
+profile:    local-small   state_db=postgres (requested leveldb - PARITY NOT HELD)
+resources:  8 CPU / 8 GB total over 4 containers (2.00 CPU each; memory by role weight peer=4 statedb=4 orderer=2 other=1)
+              2048m    bench-fabricx-fabricx-arma-1
+              2048m    bench-fabricx-fabricx-committer-1
+              2048m    bench-fabricx-fabricx-db-1
+              2048m    bench-fabricx-fabricx-pipeline-1
+batch:      msgcount=100 timeout=1s preferred=2 MB
+crypto:     sig=ECDSA-P256 hash=SHA-256 per_tx_endorse_verify=true
+caveats:
+  - state-db parity not held: run requested leveldb, platform actually ran postgres
+  - platform container bench-fabricx-fabricx-arma-1 was OOM-killed at its memory limit and exited (after 23:55:08, exit code 137)
+  - run stopped during sweep-7500 because a platform container failed; phases never run: sweep-10000, hold
+  - native metrics scrape of http://localhost:9643/metrics failed: scrape http://localhost:9643/metrics: parser panic: Invalid name validation scheme requested: unset (informational metrics only; harness numbers unaffected)
+
+phase           offered     conf_tps  goodput  fail_rate    e2e_p50    e2e_p99    gap_p99    com_p50  verdict
+probe                10         10.0     100%     0.0000     887.30    1509.38       1.12     886.27  
+sweep-100           100        100.0     100%     0.0000     866.30    1496.06       1.16     865.79  held
+sweep-250           250        250.0     100%     0.0000     597.50    1002.50       1.11     596.48  held
+sweep-500           500        500.0     100%     0.0000     500.74     819.20       1.12     499.71  held
+sweep-1000         1000       1000.0     100%     0.0000     494.08     737.79       1.08     493.31  held
+sweep-2000         2000       2000.0     100%     0.0000     545.79     722.43       1.13     544.77  held
+sweep-3500         3500       3500.0     100%     0.0000    5410.82    6385.66       2.14    5402.62  held
+sweep-5000         5000       2403.5      48%     0.5193   19283.97   22167.55       2.22   19267.58  failure rate 51.93% > 2.00%
+sweep-7500         7500          0.0       0%     1.0000       0.00       0.00       0.00       0.00  failure rate 100.00% > 2.00%
+
+errors sweep-5000      38948 x not sent: N transactions already in flight (platform is not finalizing)
+errors sweep-7500     107934 x not sent: N transactions already in flight (platform is not finalizing)
+errors sweep-7500       4566 x fabricx: finality timeout: tx N not seen on the deliver stream from localhost:4001 within 1m0s
+PLATFORM FAILURE  bench-fabricx-fabricx-arma-1 was OOM-killed at its memory limit and exited (after 23:55:08, exit code 137)
+detected saturation: ~3500 offered TPS
+HEADLINE  none - the run did not complete a headline phase on a healthy platform

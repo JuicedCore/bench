@@ -1,0 +1,2733 @@
+{
+  "manifest": {
+    "run_name": "probe-sweep",
+    "platform": "fabricx",
+    "workload": "kv-write",
+    "profile": "local-small",
+    "normalized": true,
+    "started_at": "2026-09-14T23:46:08.090580085+05:30",
+    "ended_at": "2026-09-14T23:55:37.127934945+05:30",
+    "harness_git_sha": "63ab885",
+    "platform_version": "fabricx-committer-v1.0.5-orderer-v1.0.6",
+    "state_db": "postgres",
+    "state_db_requested": "leveldb",
+    "orderer_batch": {
+      "MaxMessageCount": 100,
+      "AbsoluteMaxBytes": "10 MB",
+      "PreferredMaxBytes": "2 MB",
+      "BatchTimeout": "1s"
+    },
+    "crypto": {
+      "signature_alg": "ECDSA-P256",
+      "hash_alg": "SHA-256",
+      "per_tx_endorsement_verify": true,
+      "msp_note": "Fabric-X: client-signed ECDSA endorsement per namespace, verified by the committer against the namespace policy registered in _meta at deploy time. No peer endorsement round-trip."
+    },
+    "resource_limit_per_container": {
+      "CPUs": 2,
+      "Memory": ""
+    },
+    "resource_memory_by_container": {
+      "bench-fabricx-fabricx-arma-1": "2048m",
+      "bench-fabricx-fabricx-committer-1": "2048m",
+      "bench-fabricx-fabricx-db-1": "2048m",
+      "bench-fabricx-fabricx-pipeline-1": "2048m"
+    },
+    "resource_memory_weights": "peer=4 statedb=4 orderer=2 other=1",
+    "resource_containers": 4,
+    "resource_cpus_total": 8,
+    "resource_memory_total_gb": 8,
+    "nodes": {
+      "arma": 1,
+      "committer": 1,
+      "pipeline": 1,
+      "postgres": 1
+    },
+    "generators": 2,
+    "seed": 1,
+    "key_space": 200000,
+    "key_distribution": "uniform",
+    "zipfian_constant": 0,
+    "read_write_ratio": 0,
+    "value_size_bytes": 64,
+    "warmup_sec": 30,
+    "cooldown_sec": 15,
+    "container_failures": [
+      {
+        "name": "bench-fabricx-fabricx-arma-1",
+        "at": "2026-09-14T23:55:08.460599036+05:30",
+        "oom_killed": true,
+        "exited": true,
+        "exit_code": 137,
+        "status": "exited"
+      }
+    ],
+    "caveats": [
+      "state-db parity not held: run requested leveldb, platform actually ran postgres",
+      "platform container bench-fabricx-fabricx-arma-1 was OOM-killed at its memory limit and exited (after 23:55:08, exit code 137)",
+      "run stopped during sweep-7500 because a platform container failed; phases never run: sweep-10000, hold",
+      "native metrics scrape of http://localhost:9643/metrics failed: scrape http://localhost:9643/metrics: parser panic: Invalid name validation scheme requested: unset (informational metrics only; harness numbers unaffected)"
+    ]
+  },
+  "phases": [
+    {
+      "name": "probe",
+      "offered_tps": 10,
+      "window": {
+        "phase_start": "2026-09-14T23:46:08.115353886+05:30",
+        "win_start": "2026-09-14T23:46:08.115353886+05:30",
+        "win_end": "2026-09-14T23:46:38.115353886+05:30"
+      },
+      "result": {
+        "wall_clock_sec": 30,
+        "submitted": 300,
+        "committed": 300,
+        "invalid": 0,
+        "errored": 0,
+        "timed_out": 0,
+        "confirmed_tps": 10,
+        "offered_tps": 10,
+        "failure_rate": 0,
+        "e2e_latency": {
+          "name": "e2e",
+          "count": 300,
+          "min_ms": 168.7,
+          "max_ms": 1555.46,
+          "mean_ms": 885.5560533333332,
+          "stddev_ms": 320.60410211390587,
+          "percentiles_ms": {
+            "p1": 217.22,
+            "p10": 456.45,
+            "p25": 627.2,
+            "p5": 368.9,
+            "p50": 887.3,
+            "p75": 1150.98,
+            "p90": 1308.67,
+            "p95": 1396.74,
+            "p99": 1509.38,
+            "p99.9": 1555.46,
+            "p99.99": 1555.46
+          }
+        },
+        "submit_latency": {
+          "name": "submit",
+          "count": 300,
+          "min_ms": 0.36,
+          "max_ms": 2.97,
+          "mean_ms": 0.5673499999999999,
+          "stddev_ms": 0.2484935294261536,
+          "percentiles_ms": {
+            "p1": 0.39,
+            "p10": 0.46,
+            "p25": 0.49,
+            "p5": 0.43,
+            "p50": 0.52,
+            "p75": 0.55,
+            "p90": 0.65,
+            "p95": 0.81,
+            "p99": 1.55,
+            "p99.9": 2.97,
+            "p99.99": 2.97
+          }
+        },
+        "commit_latency": {
+          "name": "commit",
+          "count": 300,
+          "min_ms": 168.06,
+          "max_ms": 1554.43,
+          "mean_ms": 884.3891199999997,
+          "stddev_ms": 320.5718235347563,
+          "percentiles_ms": {
+            "p1": 215.68,
+            "p10": 455.42,
+            "p25": 626.69,
+            "p5": 368.13,
+            "p50": 886.27,
+            "p75": 1150.98,
+            "p90": 1307.65,
+            "p95": 1395.71,
+            "p99": 1507.33,
+            "p99.9": 1554.43,
+            "p99.99": 1554.43
+          }
+        },
+        "send_gap": {
+          "name": "send_gap",
+          "count": 300,
+          "min_ms": 0.01,
+          "max_ms": 1.18,
+          "mean_ms": 0.6113700000000003,
+          "stddev_ms": 0.340974974301634,
+          "percentiles_ms": {
+            "p1": 0.04,
+            "p10": 0.11,
+            "p25": 0.37,
+            "p5": 0.06,
+            "p50": 0.58,
+            "p75": 0.96,
+            "p90": 1.03,
+            "p95": 1.06,
+            "p99": 1.12,
+            "p99.9": 1.18,
+            "p99.99": 1.18
+          }
+        },
+        "invariant_ok": true
+      }
+    },
+    {
+      "name": "sweep-100",
+      "offered_tps": 100,
+      "window": {
+        "phase_start": "2026-09-14T23:46:38.959972965+05:30",
+        "win_start": "2026-09-14T23:47:08.959972965+05:30",
+        "win_end": "2026-09-14T23:47:23.959972965+05:30"
+      },
+      "result": {
+        "wall_clock_sec": 15,
+        "submitted": 1500,
+        "committed": 1500,
+        "invalid": 0,
+        "errored": 0,
+        "timed_out": 0,
+        "confirmed_tps": 100,
+        "offered_tps": 100,
+        "failure_rate": 0,
+        "e2e_latency": {
+          "name": "e2e",
+          "count": 1500,
+          "min_ms": 152.7,
+          "max_ms": 1591.3,
+          "mean_ms": 862.2965760000004,
+          "stddev_ms": 318.10843580823433,
+          "percentiles_ms": {
+            "p1": 231.81,
+            "p10": 431.87,
+            "p25": 607.74,
+            "p5": 353.02,
+            "p50": 866.3,
+            "p75": 1117.18,
+            "p90": 1287.17,
+            "p95": 1367.04,
+            "p99": 1496.06,
+            "p99.9": 1591.3,
+            "p99.99": 1591.3
+          }
+        },
+        "submit_latency": {
+          "name": "submit",
+          "count": 1500,
+          "min_ms": 0.18,
+          "max_ms": 3.87,
+          "mean_ms": 0.3894860000000003,
+          "stddev_ms": 0.26846061002935484,
+          "percentiles_ms": {
+            "p1": 0.23,
+            "p10": 0.26,
+            "p25": 0.29,
+            "p5": 0.25,
+            "p50": 0.34,
+            "p75": 0.42,
+            "p90": 0.48,
+            "p95": 0.53,
+            "p99": 1.41,
+            "p99.9": 3.85,
+            "p99.99": 3.87
+          }
+        },
+        "commit_latency": {
+          "name": "commit",
+          "count": 1500,
+          "min_ms": 151.55,
+          "max_ms": 1590.27,
+          "mean_ms": 861.3206186666667,
+          "stddev_ms": 318.1151819525688,
+          "percentiles_ms": {
+            "p1": 231.04,
+            "p10": 430.34,
+            "p25": 606.21,
+            "p5": 351.49,
+            "p50": 865.79,
+            "p75": 1117.18,
+            "p90": 1286.14,
+            "p95": 1366.02,
+            "p99": 1495.04,
+            "p99.9": 1590.27,
+            "p99.99": 1590.27
+          }
+        },
+        "send_gap": {
+          "name": "send_gap",
+          "count": 1500,
+          "min_ms": 0.02,
+          "max_ms": 2.88,
+          "mean_ms": 0.5828086666666665,
+          "stddev_ms": 0.32251398738383785,
+          "percentiles_ms": {
+            "p1": 0.04,
+            "p10": 0.16,
+            "p25": 0.33,
+            "p5": 0.08,
+            "p50": 0.57,
+            "p75": 0.83,
+            "p90": 1,
+            "p95": 1.05,
+            "p99": 1.16,
+            "p99.9": 2.86,
+            "p99.99": 2.88
+          }
+        },
+        "invariant_ok": true
+      },
+      "verdict": "held"
+    },
+    {
+      "name": "sweep-250",
+      "offered_tps": 250,
+      "window": {
+        "phase_start": "2026-09-14T23:47:39.964002745+05:30",
+        "win_start": "2026-09-14T23:48:09.964002745+05:30",
+        "win_end": "2026-09-14T23:48:24.964002745+05:30"
+      },
+      "result": {
+        "wall_clock_sec": 15,
+        "submitted": 3750,
+        "committed": 3750,
+        "invalid": 0,
+        "errored": 0,
+        "timed_out": 0,
+        "confirmed_tps": 250,
+        "offered_tps": 250,
+        "failure_rate": 0,
+        "e2e_latency": {
+          "name": "e2e",
+          "count": 3750,
+          "min_ms": 147.2,
+          "max_ms": 1053.7,
+          "mean_ms": 597.8479616000001,
+          "stddev_ms": 191.4521163165032,
+          "percentiles_ms": {
+            "p1": 196.99,
+            "p10": 339.2,
+            "p25": 459.01,
+            "p5": 282.11,
+            "p50": 597.5,
+            "p75": 734.72,
+            "p90": 859.14,
+            "p95": 922.11,
+            "p99": 1002.5,
+            "p99.9": 1046.02,
+            "p99.99": 1053.7
+          }
+        },
+        "submit_latency": {
+          "name": "submit",
+          "count": 3750,
+          "min_ms": 0.18,
+          "max_ms": 3.08,
+          "mean_ms": 0.33815306666666656,
+          "stddev_ms": 0.1784984467829591,
+          "percentiles_ms": {
+            "p1": 0.21,
+            "p10": 0.25,
+            "p25": 0.27,
+            "p5": 0.23,
+            "p50": 0.3,
+            "p75": 0.36,
+            "p90": 0.43,
+            "p95": 0.51,
+            "p99": 1.27,
+            "p99.9": 2.23,
+            "p99.99": 3.08
+          }
+        },
+        "commit_latency": {
+          "name": "commit",
+          "count": 3750,
+          "min_ms": 145.92,
+          "max_ms": 1053.7,
+          "mean_ms": 596.923289599999,
+          "stddev_ms": 191.449886596114,
+          "percentiles_ms": {
+            "p1": 195.71,
+            "p10": 338.18,
+            "p25": 458.5,
+            "p5": 281.6,
+            "p50": 596.48,
+            "p75": 733.7,
+            "p90": 857.6,
+            "p95": 921.6,
+            "p99": 1000.96,
+            "p99.9": 1044.48,
+            "p99.99": 1053.7
+          }
+        },
+        "send_gap": {
+          "name": "send_gap",
+          "count": 3750,
+          "min_ms": 0.01,
+          "max_ms": 3.07,
+          "mean_ms": 0.5875719999999991,
+          "stddev_ms": 0.307124831107266,
+          "percentiles_ms": {
+            "p1": 0.03,
+            "p10": 0.18,
+            "p25": 0.34,
+            "p5": 0.08,
+            "p50": 0.59,
+            "p75": 0.84,
+            "p90": 1,
+            "p95": 1.05,
+            "p99": 1.11,
+            "p99.9": 1.44,
+            "p99.99": 3.07
+          }
+        },
+        "invariant_ok": true
+      },
+      "verdict": "held"
+    },
+    {
+      "name": "sweep-500",
+      "offered_tps": 500,
+      "window": {
+        "phase_start": "2026-09-14T23:48:41.129405653+05:30",
+        "win_start": "2026-09-14T23:49:11.129405653+05:30",
+        "win_end": "2026-09-14T23:49:26.129405653+05:30"
+      },
+      "result": {
+        "wall_clock_sec": 15,
+        "submitted": 7500,
+        "committed": 7500,
+        "invalid": 0,
+        "errored": 0,
+        "timed_out": 0,
+        "confirmed_tps": 500,
+        "offered_tps": 500,
+        "failure_rate": 0,
+        "e2e_latency": {
+          "name": "e2e",
+          "count": 7500,
+          "min_ms": 126.14,
+          "max_ms": 851.97,
+          "mean_ms": 501.8504021333333,
+          "stddev_ms": 157.9748577502986,
+          "percentiles_ms": {
+            "p1": 186.75,
+            "p10": 293.12,
+            "p25": 375.04,
+            "p5": 251.14,
+            "p50": 500.74,
+            "p75": 628.22,
+            "p90": 715.26,
+            "p95": 757.76,
+            "p99": 819.2,
+            "p99.9": 844.8,
+            "p99.99": 851.97
+          }
+        },
+        "submit_latency": {
+          "name": "submit",
+          "count": 7500,
+          "min_ms": 0.16,
+          "max_ms": 4.16,
+          "mean_ms": 0.2998688000000004,
+          "stddev_ms": 0.17387443626525437,
+          "percentiles_ms": {
+            "p1": 0.2,
+            "p10": 0.23,
+            "p25": 0.24,
+            "p5": 0.22,
+            "p50": 0.27,
+            "p75": 0.31,
+            "p90": 0.37,
+            "p95": 0.44,
+            "p99": 1.04,
+            "p99.9": 2.27,
+            "p99.99": 4.14
+          }
+        },
+        "commit_latency": {
+          "name": "commit",
+          "count": 7500,
+          "min_ms": 125.82,
+          "max_ms": 851.46,
+          "mean_ms": 500.97117013333377,
+          "stddev_ms": 157.97160632335192,
+          "percentiles_ms": {
+            "p1": 186.24,
+            "p10": 292.1,
+            "p25": 374.02,
+            "p5": 250.5,
+            "p50": 499.71,
+            "p75": 627.2,
+            "p90": 713.73,
+            "p95": 756.22,
+            "p99": 818.18,
+            "p99.9": 843.78,
+            "p99.99": 850.94
+          }
+        },
+        "send_gap": {
+          "name": "send_gap",
+          "count": 7500,
+          "min_ms": 0,
+          "max_ms": 3.07,
+          "mean_ms": 0.5784550666666667,
+          "stddev_ms": 0.3115131294948293,
+          "percentiles_ms": {
+            "p1": 0.03,
+            "p10": 0.17,
+            "p25": 0.33,
+            "p5": 0.07,
+            "p50": 0.58,
+            "p75": 0.84,
+            "p90": 0.99,
+            "p95": 1.04,
+            "p99": 1.12,
+            "p99.9": 1.87,
+            "p99.99": 2.71
+          }
+        },
+        "invariant_ok": true
+      },
+      "verdict": "held"
+    },
+    {
+      "name": "sweep-1000",
+      "offered_tps": 1000,
+      "window": {
+        "phase_start": "2026-09-14T23:49:42.358071805+05:30",
+        "win_start": "2026-09-14T23:50:12.358071805+05:30",
+        "win_end": "2026-09-14T23:50:27.358071805+05:30"
+      },
+      "result": {
+        "wall_clock_sec": 15,
+        "submitted": 15000,
+        "committed": 15000,
+        "invalid": 0,
+        "errored": 0,
+        "timed_out": 0,
+        "confirmed_tps": 1000,
+        "offered_tps": 1000,
+        "failure_rate": 0,
+        "e2e_latency": {
+          "name": "e2e",
+          "count": 15000,
+          "min_ms": 230.78,
+          "max_ms": 771.58,
+          "mean_ms": 491.6510719999998,
+          "stddev_ms": 131.58478145494544,
+          "percentiles_ms": {
+            "p1": 254.72,
+            "p10": 311.3,
+            "p25": 379.9,
+            "p5": 283.39,
+            "p50": 494.08,
+            "p75": 601.6,
+            "p90": 667.65,
+            "p95": 695.81,
+            "p99": 737.79,
+            "p99.9": 761.86,
+            "p99.99": 769.54
+          }
+        },
+        "submit_latency": {
+          "name": "submit",
+          "count": 15000,
+          "min_ms": 0.13,
+          "max_ms": 4.06,
+          "mean_ms": 0.2480688666666664,
+          "stddev_ms": 0.18109190408201273,
+          "percentiles_ms": {
+            "p1": 0.14,
+            "p10": 0.16,
+            "p25": 0.18,
+            "p5": 0.15,
+            "p50": 0.22,
+            "p75": 0.26,
+            "p90": 0.32,
+            "p95": 0.37,
+            "p99": 1.07,
+            "p99.9": 2.25,
+            "p99.99": 3.8
+          }
+        },
+        "commit_latency": {
+          "name": "commit",
+          "count": 15000,
+          "min_ms": 229.76,
+          "max_ms": 771.58,
+          "mean_ms": 490.87656106666725,
+          "stddev_ms": 131.58588307103003,
+          "percentiles_ms": {
+            "p1": 253.82,
+            "p10": 310.53,
+            "p25": 379.39,
+            "p5": 282.37,
+            "p50": 493.31,
+            "p75": 600.58,
+            "p90": 667.14,
+            "p95": 695.3,
+            "p99": 737.79,
+            "p99.9": 760.83,
+            "p99.99": 769.02
+          }
+        },
+        "send_gap": {
+          "name": "send_gap",
+          "count": 15000,
+          "min_ms": 0,
+          "max_ms": 5.28,
+          "mean_ms": 0.5265100666666674,
+          "stddev_ms": 0.3253711804980002,
+          "percentiles_ms": {
+            "p1": 0.02,
+            "p10": 0.1,
+            "p25": 0.26,
+            "p5": 0.05,
+            "p50": 0.52,
+            "p75": 0.78,
+            "p90": 0.96,
+            "p95": 1.01,
+            "p99": 1.08,
+            "p99.9": 2.32,
+            "p99.99": 4.92
+          }
+        },
+        "invariant_ok": true
+      },
+      "verdict": "held"
+    },
+    {
+      "name": "sweep-2000",
+      "offered_tps": 2000,
+      "window": {
+        "phase_start": "2026-09-14T23:50:43.679410159+05:30",
+        "win_start": "2026-09-14T23:51:13.679410159+05:30",
+        "win_end": "2026-09-14T23:51:28.679410159+05:30"
+      },
+      "result": {
+        "wall_clock_sec": 15,
+        "submitted": 30000,
+        "committed": 30000,
+        "invalid": 0,
+        "errored": 0,
+        "timed_out": 0,
+        "confirmed_tps": 2000,
+        "offered_tps": 2000,
+        "failure_rate": 0,
+        "e2e_latency": {
+          "name": "e2e",
+          "count": 30000,
+          "min_ms": 333.06,
+          "max_ms": 754.18,
+          "mean_ms": 544.2971477333332,
+          "stddev_ms": 96.99890699830681,
+          "percentiles_ms": {
+            "p1": 360.19,
+            "p10": 411.14,
+            "p25": 464.9,
+            "p5": 389.12,
+            "p50": 545.79,
+            "p75": 625.15,
+            "p90": 674.82,
+            "p95": 694.78,
+            "p99": 722.43,
+            "p99.9": 745.47,
+            "p99.99": 753.15
+          }
+        },
+        "submit_latency": {
+          "name": "submit",
+          "count": 30000,
+          "min_ms": 0.12,
+          "max_ms": 20.74,
+          "mean_ms": 0.2710213333333332,
+          "stddev_ms": 0.6003128751561323,
+          "percentiles_ms": {
+            "p1": 0.14,
+            "p10": 0.16,
+            "p25": 0.17,
+            "p5": 0.15,
+            "p50": 0.2,
+            "p75": 0.25,
+            "p90": 0.33,
+            "p95": 0.42,
+            "p99": 1.32,
+            "p99.9": 11.64,
+            "p99.99": 18.98
+          }
+        },
+        "commit_latency": {
+          "name": "commit",
+          "count": 30000,
+          "min_ms": 332.54,
+          "max_ms": 753.15,
+          "mean_ms": 543.5671765333335,
+          "stddev_ms": 96.97097530774202,
+          "percentiles_ms": {
+            "p1": 359.42,
+            "p10": 410.37,
+            "p25": 463.87,
+            "p5": 388.35,
+            "p50": 544.77,
+            "p75": 624.64,
+            "p90": 674.3,
+            "p95": 694.27,
+            "p99": 721.92,
+            "p99.9": 744.45,
+            "p99.99": 753.15
+          }
+        },
+        "send_gap": {
+          "name": "send_gap",
+          "count": 30000,
+          "min_ms": 0,
+          "max_ms": 9.75,
+          "mean_ms": 0.4584915333333333,
+          "stddev_ms": 0.4709201136020653,
+          "percentiles_ms": {
+            "p1": 0.01,
+            "p10": 0.01,
+            "p25": 0.05,
+            "p5": 0.01,
+            "p50": 0.44,
+            "p75": 0.75,
+            "p90": 0.92,
+            "p95": 1.01,
+            "p99": 1.13,
+            "p99.9": 6.76,
+            "p99.99": 9.22
+          }
+        },
+        "invariant_ok": true
+      },
+      "verdict": "held"
+    },
+    {
+      "name": "sweep-3500",
+      "offered_tps": 3500,
+      "window": {
+        "phase_start": "2026-09-14T23:51:45.311888111+05:30",
+        "win_start": "2026-09-14T23:52:15.311888111+05:30",
+        "win_end": "2026-09-14T23:52:30.311888111+05:30"
+      },
+      "result": {
+        "wall_clock_sec": 15,
+        "submitted": 52500,
+        "committed": 52500,
+        "invalid": 0,
+        "errored": 0,
+        "timed_out": 0,
+        "confirmed_tps": 3500,
+        "offered_tps": 3500,
+        "failure_rate": 0,
+        "e2e_latency": {
+          "name": "e2e",
+          "count": 52500,
+          "min_ms": 4386.82,
+          "max_ms": 6434.82,
+          "mean_ms": 5411.547740647618,
+          "stddev_ms": 546.1765193029305,
+          "percentiles_ms": {
+            "p1": 4468.74,
+            "p10": 4591.62,
+            "p25": 4956.16,
+            "p5": 4546.56,
+            "p50": 5410.82,
+            "p75": 5877.76,
+            "p90": 6119.42,
+            "p95": 6303.74,
+            "p99": 6385.66,
+            "p99.9": 6414.34,
+            "p99.99": 6426.62
+          }
+        },
+        "submit_latency": {
+          "name": "submit",
+          "count": 52500,
+          "min_ms": 0.11,
+          "max_ms": 67.14,
+          "mean_ms": 9.834452800000005,
+          "stddev_ms": 14.405103499922076,
+          "percentiles_ms": {
+            "p1": 0.15,
+            "p10": 0.19,
+            "p25": 0.24,
+            "p5": 0.18,
+            "p50": 0.42,
+            "p75": 17.55,
+            "p90": 33.41,
+            "p95": 40.9,
+            "p99": 53.22,
+            "p99.9": 62.66,
+            "p99.99": 66.88
+          }
+        },
+        "commit_latency": {
+          "name": "commit",
+          "count": 52500,
+          "min_ms": 4378.62,
+          "max_ms": 6430.72,
+          "mean_ms": 5401.248914285712,
+          "stddev_ms": 546.4231042531468,
+          "percentiles_ms": {
+            "p1": 4456.45,
+            "p10": 4575.23,
+            "p25": 4939.78,
+            "p5": 4534.27,
+            "p50": 5402.62,
+            "p75": 5865.47,
+            "p90": 6115.33,
+            "p95": 6287.36,
+            "p99": 6377.47,
+            "p99.9": 6410.24,
+            "p99.99": 6426.62
+          }
+        },
+        "send_gap": {
+          "name": "send_gap",
+          "count": 52500,
+          "min_ms": 0,
+          "max_ms": 22.13,
+          "mean_ms": 0.4764814666666662,
+          "stddev_ms": 0.7889993314375474,
+          "percentiles_ms": {
+            "p1": 0.01,
+            "p10": 0.02,
+            "p25": 0.08,
+            "p5": 0.01,
+            "p50": 0.33,
+            "p75": 0.79,
+            "p90": 0.95,
+            "p95": 1.02,
+            "p99": 2.14,
+            "p99.9": 12.25,
+            "p99.99": 16.96
+          }
+        },
+        "invariant_ok": true
+      },
+      "verdict": "held"
+    },
+    {
+      "name": "sweep-5000",
+      "offered_tps": 5000,
+      "window": {
+        "phase_start": "2026-09-14T23:52:51.67589091+05:30",
+        "win_start": "2026-09-14T23:53:21.67589091+05:30",
+        "win_end": "2026-09-14T23:53:36.67589091+05:30"
+      },
+      "result": {
+        "wall_clock_sec": 15,
+        "submitted": 75000,
+        "committed": 36052,
+        "invalid": 0,
+        "errored": 38948,
+        "timed_out": 0,
+        "confirmed_tps": 2403.4666666666667,
+        "offered_tps": 5000,
+        "failure_rate": 0.5193066666666667,
+        "e2e_latency": {
+          "name": "e2e",
+          "count": 36052,
+          "min_ms": 16687.1,
+          "max_ms": 22216.7,
+          "mean_ms": 19451.639393764566,
+          "stddev_ms": 1729.7660328474317,
+          "percentiles_ms": {
+            "p1": 16752.64,
+            "p10": 16875.52,
+            "p25": 17891.33,
+            "p5": 16826.37,
+            "p50": 19283.97,
+            "p75": 21168.13,
+            "p90": 21757.95,
+            "p95": 22069.25,
+            "p99": 22167.55,
+            "p99.9": 22200.32,
+            "p99.99": 22216.7
+          }
+        },
+        "submit_latency": {
+          "name": "submit",
+          "count": 36052,
+          "min_ms": 0.11,
+          "max_ms": 65.09,
+          "mean_ms": 9.915784061910584,
+          "stddev_ms": 14.092587108410267,
+          "percentiles_ms": {
+            "p1": 0.15,
+            "p10": 0.19,
+            "p25": 0.24,
+            "p5": 0.18,
+            "p50": 0.46,
+            "p75": 18.02,
+            "p90": 33.41,
+            "p95": 40.67,
+            "p99": 50.11,
+            "p99.9": 56.93,
+            "p99.99": 63.39
+          }
+        },
+        "commit_latency": {
+          "name": "commit",
+          "count": 36052,
+          "min_ms": 16678.91,
+          "max_ms": 22216.7,
+          "mean_ms": 19441.261012315532,
+          "stddev_ms": 1729.4815346431214,
+          "percentiles_ms": {
+            "p1": 16744.45,
+            "p10": 16859.14,
+            "p25": 17874.94,
+            "p5": 16826.37,
+            "p50": 19267.58,
+            "p75": 21168.13,
+            "p90": 21741.57,
+            "p95": 22069.25,
+            "p99": 22151.17,
+            "p99.9": 22183.94,
+            "p99.99": 22200.32
+          }
+        },
+        "send_gap": {
+          "name": "send_gap",
+          "count": 36052,
+          "min_ms": 0,
+          "max_ms": 18.83,
+          "mean_ms": 0.45829740375013955,
+          "stddev_ms": 0.9041769432306035,
+          "percentiles_ms": {
+            "p1": 0.01,
+            "p10": 0.02,
+            "p25": 0.05,
+            "p5": 0.01,
+            "p50": 0.25,
+            "p75": 0.68,
+            "p90": 0.98,
+            "p95": 1.04,
+            "p99": 2.22,
+            "p99.9": 14.98,
+            "p99.99": 18.16
+          }
+        },
+        "invariant_ok": true,
+        "errors": [
+          {
+            "message": "not sent: N transactions already in flight (platform is not finalizing)",
+            "count": 38948
+          }
+        ]
+      },
+      "verdict": "failure rate 51.93% \u003e 2.00%"
+    },
+    {
+      "name": "sweep-7500",
+      "offered_tps": 7500,
+      "window": {
+        "phase_start": "2026-09-14T23:54:04.45978776+05:30",
+        "win_start": "2026-09-14T23:54:34.45978776+05:30",
+        "win_end": "2026-09-14T23:54:49.45978776+05:30"
+      },
+      "result": {
+        "wall_clock_sec": 15,
+        "submitted": 112500,
+        "committed": 0,
+        "invalid": 0,
+        "errored": 107934,
+        "timed_out": 4566,
+        "confirmed_tps": 0,
+        "offered_tps": 7500,
+        "failure_rate": 1,
+        "e2e_latency": {
+          "name": "e2e",
+          "count": 0,
+          "min_ms": 0,
+          "max_ms": 0,
+          "mean_ms": 0,
+          "stddev_ms": 0,
+          "percentiles_ms": {
+            "p1": 0,
+            "p10": 0,
+            "p25": 0,
+            "p5": 0,
+            "p50": 0,
+            "p75": 0,
+            "p90": 0,
+            "p95": 0,
+            "p99": 0,
+            "p99.9": 0,
+            "p99.99": 0
+          }
+        },
+        "submit_latency": {
+          "name": "submit",
+          "count": 0,
+          "min_ms": 0,
+          "max_ms": 0,
+          "mean_ms": 0,
+          "stddev_ms": 0,
+          "percentiles_ms": {
+            "p1": 0,
+            "p10": 0,
+            "p25": 0,
+            "p5": 0,
+            "p50": 0,
+            "p75": 0,
+            "p90": 0,
+            "p95": 0,
+            "p99": 0,
+            "p99.9": 0,
+            "p99.99": 0
+          }
+        },
+        "commit_latency": {
+          "name": "commit",
+          "count": 0,
+          "min_ms": 0,
+          "max_ms": 0,
+          "mean_ms": 0,
+          "stddev_ms": 0,
+          "percentiles_ms": {
+            "p1": 0,
+            "p10": 0,
+            "p25": 0,
+            "p5": 0,
+            "p50": 0,
+            "p75": 0,
+            "p90": 0,
+            "p95": 0,
+            "p99": 0,
+            "p99.9": 0,
+            "p99.99": 0
+          }
+        },
+        "send_gap": {
+          "name": "send_gap",
+          "count": 0,
+          "min_ms": 0,
+          "max_ms": 0,
+          "mean_ms": 0,
+          "stddev_ms": 0,
+          "percentiles_ms": {
+            "p1": 0,
+            "p10": 0,
+            "p25": 0,
+            "p5": 0,
+            "p50": 0,
+            "p75": 0,
+            "p90": 0,
+            "p95": 0,
+            "p99": 0,
+            "p99.9": 0,
+            "p99.99": 0
+          }
+        },
+        "invariant_ok": true,
+        "errors": [
+          {
+            "message": "not sent: N transactions already in flight (platform is not finalizing)",
+            "count": 107934
+          },
+          {
+            "message": "fabricx: finality timeout: tx N not seen on the deliver stream from localhost:4001 within 1m0s",
+            "count": 4566
+          }
+        ]
+      },
+      "verdict": "failure rate 100.00% \u003e 2.00%"
+    }
+  ],
+  "headline": null,
+  "saturation_tps": 3500,
+  "system_samples": [
+    {
+      "t": "2026-09-14T23:46:11.16141303+05:30",
+      "cpu_percent": 17.220000000000002,
+      "mem_bytes": 709487491,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:46:13.17366276+05:30",
+      "cpu_percent": 15.78,
+      "mem_bytes": 727030167,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:46:15.186417416+05:30",
+      "cpu_percent": 15.190000000000001,
+      "mem_bytes": 753632541,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:46:17.199670195+05:30",
+      "cpu_percent": 17.39,
+      "mem_bytes": 778976623,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:46:19.21500869+05:30",
+      "cpu_percent": 15.06,
+      "mem_bytes": 791108648,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:46:21.228039254+05:30",
+      "cpu_percent": 16.939999999999998,
+      "mem_bytes": 804090018,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:46:23.24145703+05:30",
+      "cpu_percent": 17.87,
+      "mem_bytes": 813632060,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:46:25.254768422+05:30",
+      "cpu_percent": 18.48,
+      "mem_bytes": 815624353,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:46:27.268296143+05:30",
+      "cpu_percent": 19.08,
+      "mem_bytes": 814345091,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:46:29.281547577+05:30",
+      "cpu_percent": 17.64,
+      "mem_bytes": 815938926,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:46:31.294278201+05:30",
+      "cpu_percent": 17.83,
+      "mem_bytes": 816914103,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:46:33.307943797+05:30",
+      "cpu_percent": 17.47,
+      "mem_bytes": 814733064,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:46:35.320554959+05:30",
+      "cpu_percent": 20.12,
+      "mem_bytes": 824872795,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:46:37.339472886+05:30",
+      "cpu_percent": 18.35,
+      "mem_bytes": 825533397,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:46:39.352920872+05:30",
+      "cpu_percent": 19.89,
+      "mem_bytes": 825753598,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:46:41.366736143+05:30",
+      "cpu_percent": 33.05,
+      "mem_bytes": 831468337,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:46:43.380064088+05:30",
+      "cpu_percent": 27.21,
+      "mem_bytes": 835662641,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:46:45.393005868+05:30",
+      "cpu_percent": 31.11,
+      "mem_bytes": 843453561,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:46:47.406067032+05:30",
+      "cpu_percent": 28.639999999999997,
+      "mem_bytes": 845854800,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:46:49.419092706+05:30",
+      "cpu_percent": 28.32,
+      "mem_bytes": 845540227,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:46:51.431700346+05:30",
+      "cpu_percent": 29.58,
+      "mem_bytes": 855155668,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:46:53.445648116+05:30",
+      "cpu_percent": 29.62,
+      "mem_bytes": 857189906,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:46:55.457465181+05:30",
+      "cpu_percent": 37.79,
+      "mem_bytes": 867172350,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:46:57.470867824+05:30",
+      "cpu_percent": 29.38,
+      "mem_bytes": 879010773,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:46:59.485439843+05:30",
+      "cpu_percent": 28.59,
+      "mem_bytes": 884190739,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:47:01.50024355+05:30",
+      "cpu_percent": 27.96,
+      "mem_bytes": 886088661,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:47:03.512663982+05:30",
+      "cpu_percent": 28.52,
+      "mem_bytes": 887860755,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:47:05.528614559+05:30",
+      "cpu_percent": 36.970000000000006,
+      "mem_bytes": 898304572,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:47:07.541522402+05:30",
+      "cpu_percent": 27.08,
+      "mem_bytes": 901387385,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:47:09.555239648+05:30",
+      "cpu_percent": 28.259999999999998,
+      "mem_bytes": 901859245,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:47:11.566901563+05:30",
+      "cpu_percent": 29.98,
+      "mem_bytes": 905822861,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:47:13.579271038+05:30",
+      "cpu_percent": 28.68,
+      "mem_bytes": 905382460,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:47:15.592084433+05:30",
+      "cpu_percent": 29.45,
+      "mem_bytes": 907416698,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:47:17.60502627+05:30",
+      "cpu_percent": 37.16,
+      "mem_bytes": 913225808,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:47:19.61791767+05:30",
+      "cpu_percent": 26.14,
+      "mem_bytes": 909408991,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:47:21.63239701+05:30",
+      "cpu_percent": 28.5,
+      "mem_bytes": 910667283,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:47:23.647785823+05:30",
+      "cpu_percent": 28.28,
+      "mem_bytes": 911023799,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:47:25.660853161+05:30",
+      "cpu_percent": 25.910000000000004,
+      "mem_bytes": 915637533,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:47:27.673869389+05:30",
+      "cpu_percent": 29.01,
+      "mem_bytes": 913823497,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:47:29.686296638+05:30",
+      "cpu_percent": 39.15,
+      "mem_bytes": 930170797,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:47:31.700659868+05:30",
+      "cpu_percent": 28.779999999999998,
+      "mem_bytes": 932603492,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:47:33.714005135+05:30",
+      "cpu_percent": 28.970000000000002,
+      "mem_bytes": 933819841,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:47:35.728423125+05:30",
+      "cpu_percent": 24.95,
+      "mem_bytes": 932613979,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:47:37.740690282+05:30",
+      "cpu_percent": 28.240000000000002,
+      "mem_bytes": 932949523,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:47:39.754961199+05:30",
+      "cpu_percent": 20.900000000000002,
+      "mem_bytes": 932960009,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:47:41.767461195+05:30",
+      "cpu_percent": 52.13,
+      "mem_bytes": 945490492,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:47:43.779539792+05:30",
+      "cpu_percent": 51.67,
+      "mem_bytes": 951949720,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:47:45.791429778+05:30",
+      "cpu_percent": 48.08,
+      "mem_bytes": 949129051,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:47:47.80418872+05:30",
+      "cpu_percent": 51.1,
+      "mem_bytes": 963840572,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:47:49.821392083+05:30",
+      "cpu_percent": 49.620000000000005,
+      "mem_bytes": 965371493,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:47:51.832789427+05:30",
+      "cpu_percent": 42.85,
+      "mem_bytes": 960663386,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:47:53.846828622+05:30",
+      "cpu_percent": 48.09,
+      "mem_bytes": 965990153,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:47:55.858059638+05:30",
+      "cpu_percent": 49.849999999999994,
+      "mem_bytes": 988461136,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:47:57.872513685+05:30",
+      "cpu_percent": 47.53,
+      "mem_bytes": 990222744,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:47:59.888059223+05:30",
+      "cpu_percent": 46.42,
+      "mem_bytes": 996954602,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:48:01.90068584+05:30",
+      "cpu_percent": 46.92,
+      "mem_bytes": 999188070,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:48:03.91549692+05:30",
+      "cpu_percent": 48.61,
+      "mem_bytes": 1008226794,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:48:05.929775298+05:30",
+      "cpu_percent": 41.52,
+      "mem_bytes": 1019698215,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:48:07.942047628+05:30",
+      "cpu_percent": 43.29,
+      "mem_bytes": 1023798148,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:48:09.955506507+05:30",
+      "cpu_percent": 49.41,
+      "mem_bytes": 1032417441,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:48:11.968780424+05:30",
+      "cpu_percent": 45.919999999999995,
+      "mem_bytes": 1040134961,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:48:13.981758527+05:30",
+      "cpu_percent": 47.1,
+      "mem_bytes": 1047810538,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:48:15.994144656+05:30",
+      "cpu_percent": 49.82,
+      "mem_bytes": 1056241089,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:48:18.006505545+05:30",
+      "cpu_percent": 50.87,
+      "mem_bytes": 1063528692,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:48:20.018755162+05:30",
+      "cpu_percent": 43.669999999999995,
+      "mem_bytes": 1073165106,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:48:22.032313719+05:30",
+      "cpu_percent": 47.8,
+      "mem_bytes": 1085422959,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:48:24.04610129+05:30",
+      "cpu_percent": 52.49,
+      "mem_bytes": 1093025135,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:48:26.058431734+05:30",
+      "cpu_percent": 43.150000000000006,
+      "mem_bytes": 1096831466,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:48:28.073416512+05:30",
+      "cpu_percent": 40.61,
+      "mem_bytes": 1112780306,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:48:30.086453893+05:30",
+      "cpu_percent": 44.68,
+      "mem_bytes": 1128970320,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:48:32.099661027+05:30",
+      "cpu_percent": 45.78,
+      "mem_bytes": 1135062547,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:48:34.112887516+05:30",
+      "cpu_percent": 41.38999999999999,
+      "mem_bytes": 1140001339,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:48:36.12694034+05:30",
+      "cpu_percent": 43.86,
+      "mem_bytes": 1138784992,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:48:38.140422398+05:30",
+      "cpu_percent": 45.150000000000006,
+      "mem_bytes": 1148274605,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:48:40.153330787+05:30",
+      "cpu_percent": 41.29,
+      "mem_bytes": 1155100834,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:48:42.171072655+05:30",
+      "cpu_percent": 59.75,
+      "mem_bytes": 1157669846,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:48:44.183229254+05:30",
+      "cpu_percent": 68.43,
+      "mem_bytes": 1167432088,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:48:46.195504326+05:30",
+      "cpu_percent": 70.38,
+      "mem_bytes": 1181629807,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:48:48.207320025+05:30",
+      "cpu_percent": 67.57,
+      "mem_bytes": 1195177409,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:48:50.220480854+05:30",
+      "cpu_percent": 67.33,
+      "mem_bytes": 1203356302,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:48:52.236865999+05:30",
+      "cpu_percent": 66.15,
+      "mem_bytes": 1214397806,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:48:54.252259772+05:30",
+      "cpu_percent": 76.21000000000001,
+      "mem_bytes": 1230870936,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:48:56.265838178+05:30",
+      "cpu_percent": 69.66000000000001,
+      "mem_bytes": 1239532174,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:48:58.278869155+05:30",
+      "cpu_percent": 71.88000000000001,
+      "mem_bytes": 1243653077,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:49:00.291036762+05:30",
+      "cpu_percent": 78.82000000000001,
+      "mem_bytes": 1270496623,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:49:02.306800741+05:30",
+      "cpu_percent": 70.62,
+      "mem_bytes": 1282985164,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:49:04.320715309+05:30",
+      "cpu_percent": 70.93,
+      "mem_bytes": 1287714240,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:49:06.333932602+05:30",
+      "cpu_percent": 76.74,
+      "mem_bytes": 1300349581,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:49:08.354853479+05:30",
+      "cpu_percent": 80.48,
+      "mem_bytes": 1322652793,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:49:10.370351416+05:30",
+      "cpu_percent": 72.64999999999999,
+      "mem_bytes": 1318385088,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:49:12.382874859+05:30",
+      "cpu_percent": 75.92,
+      "mem_bytes": 1325809006,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:49:14.396371566+05:30",
+      "cpu_percent": 74.2,
+      "mem_bytes": 1346382069,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:49:16.409531554+05:30",
+      "cpu_percent": 72.17999999999999,
+      "mem_bytes": 1357213858,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:49:18.421206222+05:30",
+      "cpu_percent": 74.55000000000001,
+      "mem_bytes": 1367353588,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:49:20.434698828+05:30",
+      "cpu_percent": 74.61999999999999,
+      "mem_bytes": 1388297846,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:49:22.447341288+05:30",
+      "cpu_percent": 69.49,
+      "mem_bytes": 1406327060,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:49:24.460304786+05:30",
+      "cpu_percent": 71.45,
+      "mem_bytes": 1403871296,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:49:26.472452365+05:30",
+      "cpu_percent": 72.79,
+      "mem_bytes": 1419253906,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:49:28.485305401+05:30",
+      "cpu_percent": 69.50999999999999,
+      "mem_bytes": 1428531707,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:49:30.498218679+05:30",
+      "cpu_percent": 67.89999999999999,
+      "mem_bytes": 1438400903,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:49:32.510141877+05:30",
+      "cpu_percent": 74.45,
+      "mem_bytes": 1456648224,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:49:34.523426467+05:30",
+      "cpu_percent": 70.53999999999999,
+      "mem_bytes": 1467610037,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:49:36.536249769+05:30",
+      "cpu_percent": 73.15,
+      "mem_bytes": 1490332678,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:49:38.549075085+05:30",
+      "cpu_percent": 73.06,
+      "mem_bytes": 1502296931,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:49:40.564302345+05:30",
+      "cpu_percent": 75.31000000000002,
+      "mem_bytes": 1492488551,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:49:42.580129863+05:30",
+      "cpu_percent": 33.79,
+      "mem_bytes": 1461469576,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:49:44.59359104+05:30",
+      "cpu_percent": 115.9,
+      "mem_bytes": 1409336474,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:49:46.606019808+05:30",
+      "cpu_percent": 124.58000000000001,
+      "mem_bytes": 1313372896,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:49:48.618702825+05:30",
+      "cpu_percent": 120.84,
+      "mem_bytes": 1328283646,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:49:50.632456543+05:30",
+      "cpu_percent": 117.83,
+      "mem_bytes": 1343949371,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:49:52.644840521+05:30",
+      "cpu_percent": 116.07,
+      "mem_bytes": 1361135533,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:49:54.657319337+05:30",
+      "cpu_percent": 118.85999999999999,
+      "mem_bytes": 1383050771,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:49:56.670564125+05:30",
+      "cpu_percent": 118.97,
+      "mem_bytes": 1394622856,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:49:58.685383338+05:30",
+      "cpu_percent": 117.4,
+      "mem_bytes": 1396600469,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:50:00.69688215+05:30",
+      "cpu_percent": 127.9,
+      "mem_bytes": 1422858910,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:50:02.713499682+05:30",
+      "cpu_percent": 123.56,
+      "mem_bytes": 1435322284,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:50:04.725529621+05:30",
+      "cpu_percent": 114.6,
+      "mem_bytes": 1444323261,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:50:06.738826911+05:30",
+      "cpu_percent": 122.21,
+      "mem_bytes": 1463197629,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:50:08.752702768+05:30",
+      "cpu_percent": 126.72000000000001,
+      "mem_bytes": 1478693484,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:50:10.765708703+05:30",
+      "cpu_percent": 116.61,
+      "mem_bytes": 1483445632,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:50:12.777801113+05:30",
+      "cpu_percent": 122.36,
+      "mem_bytes": 1505516060,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:50:14.790728796+05:30",
+      "cpu_percent": 125.32000000000001,
+      "mem_bytes": 1523207632,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:50:16.805326356+05:30",
+      "cpu_percent": 114.22000000000001,
+      "mem_bytes": 1532516891,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:50:18.815681737+05:30",
+      "cpu_percent": 131.93,
+      "mem_bytes": 1548994214,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:50:20.827854604+05:30",
+      "cpu_percent": 124.80000000000001,
+      "mem_bytes": 1560931203,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:50:22.841323148+05:30",
+      "cpu_percent": 118.57,
+      "mem_bytes": 1573021285,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:50:24.854765802+05:30",
+      "cpu_percent": 130.77,
+      "mem_bytes": 1582234073,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:50:26.868528982+05:30",
+      "cpu_percent": 121.89999999999999,
+      "mem_bytes": 1590450714,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:50:28.881423002+05:30",
+      "cpu_percent": 114.21000000000001,
+      "mem_bytes": 1611445303,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:50:30.89366302+05:30",
+      "cpu_percent": 122.49,
+      "mem_bytes": 1627301870,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:50:32.906272818+05:30",
+      "cpu_percent": 123.63,
+      "mem_bytes": 1639758953,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:50:34.922892131+05:30",
+      "cpu_percent": 116.43,
+      "mem_bytes": 1651586889,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:50:36.935731462+05:30",
+      "cpu_percent": 125.10000000000001,
+      "mem_bytes": 1658205502,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:50:38.951518052+05:30",
+      "cpu_percent": 125.67,
+      "mem_bytes": 1675160975,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:50:40.963870837+05:30",
+      "cpu_percent": 121.31000000000002,
+      "mem_bytes": 1682924632,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:50:42.976777933+05:30",
+      "cpu_percent": 74.00999999999999,
+      "mem_bytes": 1686303145,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:50:44.989974696+05:30",
+      "cpu_percent": 205.23999999999998,
+      "mem_bytes": 1708910442,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:50:47.003577829+05:30",
+      "cpu_percent": 203.17000000000002,
+      "mem_bytes": 1728793541,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:50:49.01613682+05:30",
+      "cpu_percent": 211.88,
+      "mem_bytes": 1761360214,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:50:51.032186492+05:30",
+      "cpu_percent": 206.44,
+      "mem_bytes": 1777445370,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:50:53.048730951+05:30",
+      "cpu_percent": 201.84,
+      "mem_bytes": 1801059301,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:50:55.062020574+05:30",
+      "cpu_percent": 219.59,
+      "mem_bytes": 1829561695,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:50:57.080843232+05:30",
+      "cpu_percent": 203.75000000000003,
+      "mem_bytes": 1860500978,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:50:59.09572846+05:30",
+      "cpu_percent": 219.41,
+      "mem_bytes": 1881640270,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:51:01.110199541+05:30",
+      "cpu_percent": 217.33,
+      "mem_bytes": 1903891053,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:51:03.135855589+05:30",
+      "cpu_percent": 205.19,
+      "mem_bytes": 1915379252,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:51:05.149958018+05:30",
+      "cpu_percent": 212.76999999999998,
+      "mem_bytes": 1944682757,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:51:07.162376371+05:30",
+      "cpu_percent": 210.24999999999997,
+      "mem_bytes": 1969148131,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:51:09.177691938+05:30",
+      "cpu_percent": 194.4,
+      "mem_bytes": 1993418473,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:51:11.192154026+05:30",
+      "cpu_percent": 213.35,
+      "mem_bytes": 2007068835,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:51:13.206189022+05:30",
+      "cpu_percent": 211.01,
+      "mem_bytes": 2047246073,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:51:15.221847336+05:30",
+      "cpu_percent": 205.02,
+      "mem_bytes": 2052516215,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:51:17.23740098+05:30",
+      "cpu_percent": 215.82999999999998,
+      "mem_bytes": 2083780557,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:51:19.252352511+05:30",
+      "cpu_percent": 208.7,
+      "mem_bytes": 2096961158,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:51:21.265253511+05:30",
+      "cpu_percent": 211.87,
+      "mem_bytes": 2135085283,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:51:23.283089361+05:30",
+      "cpu_percent": 215.96,
+      "mem_bytes": 2156797098,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:51:25.296830302+05:30",
+      "cpu_percent": 221.46999999999997,
+      "mem_bytes": 2157264763,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:51:27.312820458+05:30",
+      "cpu_percent": 215.9,
+      "mem_bytes": 2184418688,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:51:29.330023263+05:30",
+      "cpu_percent": 206.22,
+      "mem_bytes": 2201086851,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:51:31.344467214+05:30",
+      "cpu_percent": 209.68,
+      "mem_bytes": 2202001210,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:51:33.369439987+05:30",
+      "cpu_percent": 216.54000000000002,
+      "mem_bytes": 2218971363,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:51:35.386008987+05:30",
+      "cpu_percent": 209.51999999999998,
+      "mem_bytes": 2235006188,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:51:37.399864828+05:30",
+      "cpu_percent": 207.48000000000002,
+      "mem_bytes": 2245378702,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:51:39.413223645+05:30",
+      "cpu_percent": 211.39,
+      "mem_bytes": 2262480976,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:51:41.428651126+05:30",
+      "cpu_percent": 206.2,
+      "mem_bytes": 2266270529,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:51:43.44514091+05:30",
+      "cpu_percent": 211.53,
+      "mem_bytes": 2269265263,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:51:45.459024559+05:30",
+      "cpu_percent": 44.2,
+      "mem_bytes": 2272889142,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:51:47.479108179+05:30",
+      "cpu_percent": 270.4,
+      "mem_bytes": 2279446937,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:51:49.491612239+05:30",
+      "cpu_percent": 269.37,
+      "mem_bytes": 2289131584,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:51:51.503682254+05:30",
+      "cpu_percent": 274.46,
+      "mem_bytes": 2295842470,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:51:53.524912696+05:30",
+      "cpu_percent": 271.99,
+      "mem_bytes": 2317573159,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:51:55.547292979+05:30",
+      "cpu_percent": 272.52,
+      "mem_bytes": 2315184504,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:51:57.564673836+05:30",
+      "cpu_percent": 271.02,
+      "mem_bytes": 2316337938,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:51:59.577227213+05:30",
+      "cpu_percent": 266.59,
+      "mem_bytes": 2312468691,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:52:01.589473126+05:30",
+      "cpu_percent": 262.47,
+      "mem_bytes": 2316052724,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:52:03.603674528+05:30",
+      "cpu_percent": 271.04,
+      "mem_bytes": 2327014537,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:52:05.620992732+05:30",
+      "cpu_percent": 264.07,
+      "mem_bytes": 2317980008,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:52:07.639173901+05:30",
+      "cpu_percent": 265.32,
+      "mem_bytes": 2323828963,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:52:09.651585444+05:30",
+      "cpu_percent": 274.34,
+      "mem_bytes": 2330328038,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:52:11.665720285+05:30",
+      "cpu_percent": 274.21,
+      "mem_bytes": 2334836914,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:52:13.681557425+05:30",
+      "cpu_percent": 268.04,
+      "mem_bytes": 2345148611,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:52:15.693356422+05:30",
+      "cpu_percent": 268.73,
+      "mem_bytes": 2358113205,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:52:17.705299211+05:30",
+      "cpu_percent": 268.09000000000003,
+      "mem_bytes": 2372749229,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:52:19.724155926+05:30",
+      "cpu_percent": 269.2,
+      "mem_bytes": 2399181732,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:52:21.741220499+05:30",
+      "cpu_percent": 271.97,
+      "mem_bytes": 2403539613,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:52:23.760638955+05:30",
+      "cpu_percent": 260.57,
+      "mem_bytes": 2405643056,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:52:25.774962226+05:30",
+      "cpu_percent": 283.45000000000005,
+      "mem_bytes": 2409661201,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:52:27.786375004+05:30",
+      "cpu_percent": 266.83,
+      "mem_bytes": 2419054344,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:52:29.79930524+05:30",
+      "cpu_percent": 270.89,
+      "mem_bytes": 2414826486,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:52:31.819598002+05:30",
+      "cpu_percent": 269.26,
+      "mem_bytes": 2431012306,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:52:33.843209639+05:30",
+      "cpu_percent": 277.41,
+      "mem_bytes": 2437177933,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:52:35.859935893+05:30",
+      "cpu_percent": 263.33,
+      "mem_bytes": 2444715097,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:52:37.874538076+05:30",
+      "cpu_percent": 258.34000000000003,
+      "mem_bytes": 2453938371,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:52:39.889290704+05:30",
+      "cpu_percent": 269.41999999999996,
+      "mem_bytes": 2462326979,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:52:41.902815512+05:30",
+      "cpu_percent": 267.21999999999997,
+      "mem_bytes": 2474282842,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:52:43.922498892+05:30",
+      "cpu_percent": 267.59000000000003,
+      "mem_bytes": 2492473539,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:52:45.938022669+05:30",
+      "cpu_percent": 235.01,
+      "mem_bytes": 2495608781,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:52:47.951105455+05:30",
+      "cpu_percent": 236.42000000000002,
+      "mem_bytes": 2513585568,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:52:49.965540966+05:30",
+      "cpu_percent": 200.03,
+      "mem_bytes": 2546070452,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:52:51.980122463+05:30",
+      "cpu_percent": 83.91,
+      "mem_bytes": 2546078841,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:52:53.992600178+05:30",
+      "cpu_percent": 261.21,
+      "mem_bytes": 2547515390,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:52:56.00551946+05:30",
+      "cpu_percent": 262.27,
+      "mem_bytes": 2535322549,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:52:58.036984873+05:30",
+      "cpu_percent": 269.41999999999996,
+      "mem_bytes": 2525604346,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:53:00.061442943+05:30",
+      "cpu_percent": 269.14,
+      "mem_bytes": 2528009780,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:53:02.079984848+05:30",
+      "cpu_percent": 255.44000000000003,
+      "mem_bytes": 2527391120,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:53:04.094869764+05:30",
+      "cpu_percent": 249.4,
+      "mem_bytes": 2527430965,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:53:06.106760199+05:30",
+      "cpu_percent": 250.86,
+      "mem_bytes": 2536125758,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:53:08.129902498+05:30",
+      "cpu_percent": 268.65000000000003,
+      "mem_bytes": 2562780560,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:53:10.149078993+05:30",
+      "cpu_percent": 275.54,
+      "mem_bytes": 2584410585,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:53:12.177708377+05:30",
+      "cpu_percent": 259.03000000000003,
+      "mem_bytes": 2598042074,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:53:14.181750739+05:30",
+      "cpu_percent": 269.77,
+      "mem_bytes": 2630157859,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:53:16.194722421+05:30",
+      "cpu_percent": 274.3,
+      "mem_bytes": 2638632451,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:53:18.208586944+05:30",
+      "cpu_percent": 284.32,
+      "mem_bytes": 2643770472,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:53:20.231116004+05:30",
+      "cpu_percent": 264.81,
+      "mem_bytes": 2650332462,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:53:22.250373768+05:30",
+      "cpu_percent": 270.8,
+      "mem_bytes": 2657066416,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:53:24.270640684+05:30",
+      "cpu_percent": 270.5,
+      "mem_bytes": 2656596654,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:53:26.286265213+05:30",
+      "cpu_percent": 270.84999999999997,
+      "mem_bytes": 2667256477,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:53:28.298617142+05:30",
+      "cpu_percent": 202.19,
+      "mem_bytes": 2675869481,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:53:30.313181898+05:30",
+      "cpu_percent": 249.12,
+      "mem_bytes": 2689962343,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:53:32.3331426+05:30",
+      "cpu_percent": 276.38,
+      "mem_bytes": 2697843439,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:53:34.347248894+05:30",
+      "cpu_percent": 209.51,
+      "mem_bytes": 2700819299,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:53:36.370885969+05:30",
+      "cpu_percent": 212.76,
+      "mem_bytes": 2704503995,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:53:38.382785124+05:30",
+      "cpu_percent": 238.49,
+      "mem_bytes": 2615305828,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:53:40.396616565+05:30",
+      "cpu_percent": 235.67,
+      "mem_bytes": 2621173659,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:53:42.416990325+05:30",
+      "cpu_percent": 237.82999999999998,
+      "mem_bytes": 2620370450,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:53:44.433369868+05:30",
+      "cpu_percent": 217.91,
+      "mem_bytes": 2625189706,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:53:46.452330155+05:30",
+      "cpu_percent": 259.84,
+      "mem_bytes": 2631852359,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:53:48.471543532+05:30",
+      "cpu_percent": 171.39,
+      "mem_bytes": 2615869963,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:53:50.488402441+05:30",
+      "cpu_percent": 161.75,
+      "mem_bytes": 2620840213,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:53:52.502051991+05:30",
+      "cpu_percent": 213.74,
+      "mem_bytes": 2625250523,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:53:54.519051124+05:30",
+      "cpu_percent": 187.69,
+      "mem_bytes": 2634224237,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:53:56.535579333+05:30",
+      "cpu_percent": 192.29999999999998,
+      "mem_bytes": 2636203949,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:53:58.550267729+05:30",
+      "cpu_percent": 216.9,
+      "mem_bytes": 2645555149,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:54:00.563987758+05:30",
+      "cpu_percent": 194.52,
+      "mem_bytes": 2621721016,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:54:02.580333759+05:30",
+      "cpu_percent": 212.54999999999998,
+      "mem_bytes": 2626718530,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:54:04.598023838+05:30",
+      "cpu_percent": 124.59,
+      "mem_bytes": 2613936389,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:54:06.605110913+05:30",
+      "cpu_percent": 241.51,
+      "mem_bytes": 2618162150,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:54:08.644510434+05:30",
+      "cpu_percent": 242.73,
+      "mem_bytes": 2619640641,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:54:10.66782982+05:30",
+      "cpu_percent": 241.83,
+      "mem_bytes": 2616341822,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:54:12.679663246+05:30",
+      "cpu_percent": 235.79999999999998,
+      "mem_bytes": 2615475698,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:54:14.690235658+05:30",
+      "cpu_percent": 245.79000000000002,
+      "mem_bytes": 2633655909,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:54:16.702279642+05:30",
+      "cpu_percent": 269.71000000000004,
+      "mem_bytes": 2639276276,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:54:18.719434059+05:30",
+      "cpu_percent": 270.72,
+      "mem_bytes": 2646725360,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:54:20.734164958+05:30",
+      "cpu_percent": 276.45,
+      "mem_bytes": 2675020135,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:54:22.753914627+05:30",
+      "cpu_percent": 275.97,
+      "mem_bytes": 2695515601,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:54:24.77190636+05:30",
+      "cpu_percent": 262.26,
+      "mem_bytes": 2692363582,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:54:26.784913195+05:30",
+      "cpu_percent": 270.83,
+      "mem_bytes": 2684862069,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:54:28.799426939+05:30",
+      "cpu_percent": 282.14,
+      "mem_bytes": 2694079052,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:54:30.816784246+05:30",
+      "cpu_percent": 258.94,
+      "mem_bytes": 2682687323,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:54:32.828923804+05:30",
+      "cpu_percent": 271.49999999999994,
+      "mem_bytes": 2682922204,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:54:34.850928365+05:30",
+      "cpu_percent": 276.78,
+      "mem_bytes": 2703277161,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:54:36.874926688+05:30",
+      "cpu_percent": 209.21,
+      "mem_bytes": 2699300961,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:54:38.891126506+05:30",
+      "cpu_percent": 203.49,
+      "mem_bytes": 2706278186,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:54:40.904917203+05:30",
+      "cpu_percent": 205.34000000000003,
+      "mem_bytes": 2706278186,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:54:42.939885252+05:30",
+      "cpu_percent": 209.86,
+      "mem_bytes": 2701983219,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:54:44.958970319+05:30",
+      "cpu_percent": 200.06,
+      "mem_bytes": 2703319105,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:54:46.971433988+05:30",
+      "cpu_percent": 203.32,
+      "mem_bytes": 2704707418,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:54:48.983490129+05:30",
+      "cpu_percent": 204.79,
+      "mem_bytes": 2695802912,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:54:50.996136802+05:30",
+      "cpu_percent": 202.35,
+      "mem_bytes": 2704654990,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:54:53.010028947+05:30",
+      "cpu_percent": 204.26,
+      "mem_bytes": 2699401624,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:54:55.045781529+05:30",
+      "cpu_percent": 213.42000000000002,
+      "mem_bytes": 2698086709,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:54:57.062151972+05:30",
+      "cpu_percent": 204.03,
+      "mem_bytes": 2704833247,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:54:59.075074204+05:30",
+      "cpu_percent": 205.36999999999998,
+      "mem_bytes": 2705990875,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:55:01.107767301+05:30",
+      "cpu_percent": 205.45000000000002,
+      "mem_bytes": 2707106560,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:55:03.120402867+05:30",
+      "cpu_percent": 204.27,
+      "mem_bytes": 2695316372,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:55:05.152464454+05:30",
+      "cpu_percent": 205.13000000000002,
+      "mem_bytes": 2704063593,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:55:07.169188273+05:30",
+      "cpu_percent": 206.13,
+      "mem_bytes": 2696903916,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:55:09.188132744+05:30",
+      "cpu_percent": 152.97,
+      "mem_bytes": 2438484457,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T23:55:11.201274356+05:30",
+      "cpu_percent": 5.12,
+      "mem_bytes": 566587554,
+      "containers": 3
+    },
+    {
+      "t": "2026-09-14T23:55:13.220337535+05:30",
+      "cpu_percent": 4.23,
+      "mem_bytes": 566388325,
+      "containers": 3
+    },
+    {
+      "t": "2026-09-14T23:55:15.233399586+05:30",
+      "cpu_percent": 4.4,
+      "mem_bytes": 566870670,
+      "containers": 3
+    },
+    {
+      "t": "2026-09-14T23:55:17.24806065+05:30",
+      "cpu_percent": 4.42,
+      "mem_bytes": 566933585,
+      "containers": 3
+    },
+    {
+      "t": "2026-09-14T23:55:19.262037441+05:30",
+      "cpu_percent": 4.35,
+      "mem_bytes": 567048927,
+      "containers": 3
+    },
+    {
+      "t": "2026-09-14T23:55:21.276212549+05:30",
+      "cpu_percent": 4.35,
+      "mem_bytes": 568338676,
+      "containers": 3
+    },
+    {
+      "t": "2026-09-14T23:55:23.290514669+05:30",
+      "cpu_percent": 4.79,
+      "mem_bytes": 566807755,
+      "containers": 3
+    },
+    {
+      "t": "2026-09-14T23:55:25.305932569+05:30",
+      "cpu_percent": 14.86,
+      "mem_bytes": 566860184,
+      "containers": 3
+    },
+    {
+      "t": "2026-09-14T23:55:27.323498605+05:30",
+      "cpu_percent": 4.16,
+      "mem_bytes": 566335896,
+      "containers": 3
+    },
+    {
+      "t": "2026-09-14T23:55:29.338357507+05:30",
+      "cpu_percent": 4.42,
+      "mem_bytes": 566178610,
+      "containers": 3
+    },
+    {
+      "t": "2026-09-14T23:55:31.352145368+05:30",
+      "cpu_percent": 4.43,
+      "mem_bytes": 565864037,
+      "containers": 3
+    },
+    {
+      "t": "2026-09-14T23:55:33.367206629+05:30",
+      "cpu_percent": 4.2,
+      "mem_bytes": 566335896,
+      "containers": 3
+    },
+    {
+      "t": "2026-09-14T23:55:35.381257076+05:30",
+      "cpu_percent": 4.300000000000001,
+      "mem_bytes": 566671441,
+      "containers": 3
+    }
+  ]
+}

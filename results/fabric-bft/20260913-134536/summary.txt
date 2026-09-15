@@ -1,0 +1,20 @@
+run:        quick-smoke
+platform:   fabric-bft  (version 3.1.5)
+workload:   kv-write   normalized=true
+profile:    local-small   state_db=leveldb
+resources:  8 CPU / 8 GB total over 8 containers (1.00 CPU each; memory by role weight peer=4 statedb=4 orderer=2 other=1)
+              455m     dev-peer0.org1.example.com-kvstore_1.0-2ea7b22cef577b6fa4ca655d0dab5283b6734bee9c35f654d050c69a24ed4de2
+              455m     dev-peer0.org2.example.com-kvstore_1.0-2ea7b22cef577b6fa4ca655d0dab5283b6734bee9c35f654d050c69a24ed4de2
+              910m     orderer.example.com
+              910m     orderer2.example.com
+              910m     orderer3.example.com
+              910m     orderer4.example.com
+              1820m    peer0.org1.example.com
+              1820m    peer0.org2.example.com
+batch:      msgcount=100 timeout=1s preferred=2 MB
+crypto:     sig=ECDSA-P256 hash=SHA-256 per_tx_endorse_verify=true
+
+phase           offered     conf_tps  goodput  fail_rate    e2e_p50    e2e_p99    gap_p99    com_p50  verdict
+single               50         50.0     100%     0.0000     644.61    1161.22       1.14     640.51  
+
+HEADLINE  confirmed_tps=50.0  fail_rate=0.0000  e2e p50/p99=644.61/1161.22 ms  invariant_ok=true

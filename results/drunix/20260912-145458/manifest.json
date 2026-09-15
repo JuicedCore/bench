@@ -1,0 +1,49 @@
+{
+  "run_name": "probe-sweep",
+  "platform": "drunix",
+  "workload": "kv-write",
+  "profile": "local",
+  "normalized": true,
+  "started_at": "2026-09-12T14:54:58.157267316+05:30",
+  "ended_at": "2026-09-12T14:54:58.16090882+05:30",
+  "harness_git_sha": "4e4cc55",
+  "platform_version": "drunix",
+  "state_db": "leveldb",
+  "state_db_requested": "leveldb",
+  "orderer_batch": {
+    "MaxMessageCount": 100,
+    "AbsoluteMaxBytes": "10 MB",
+    "PreferredMaxBytes": "2 MB",
+    "BatchTimeout": "1s"
+  },
+  "crypto": {
+    "signature_alg": "ECDSA-P256",
+    "hash_alg": "SHA-256",
+    "per_tx_endorsement_verify": true,
+    "msp_note": "Drunix (HLF 2.5.x fork); Lite Peer endorses, Committing Peer validates+commits"
+  },
+  "resource_limit_per_container": {
+    "CPUs": 1.3,
+    "Memory": "1200m"
+  },
+  "nodes": {
+    "committing_peer": 1,
+    "keydb": 1,
+    "lite_peer": 1,
+    "orderer": 1,
+    "validation_service": 1,
+    "yugabyte": 1
+  },
+  "seed": 1,
+  "key_space": 200000,
+  "key_distribution": "uniform",
+  "zipfian_constant": 0,
+  "read_write_ratio": 0,
+  "value_size_bytes": 64,
+  "warmup_sec": 30,
+  "cooldown_sec": 15,
+  "caveats": [
+    "drunix ran on YugabyteDB (its shipped test-network default); LevelDB parity is unavailable, so the state-DB variable is NOT held constant vs fabric-cft for this run",
+    "drunix write values are JSON-wrapped client-side to survive a YugabyteDB statedb bug (non-JSON values panic the Committing Peer); the on-wire payload format differs from the shared kv workload on other platforms for this run"
+  ]
+}

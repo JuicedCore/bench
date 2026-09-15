@@ -1,0 +1,19 @@
+run:        quick-smoke
+platform:   fabric-cft  (version 2.5.16)
+workload:   kv-write   normalized=true
+profile:    local-small   state_db=leveldb
+resources:  8 CPU / 8 GB total over 5 containers (1.60 CPU each; memory by role weight peer=4 statedb=4 orderer=2 other=1)
+              682m     dev-peer0.org1.example.com-kvstore_1.0-2ea7b22cef577b6fa4ca655d0dab5283b6734bee9c35f654d050c69a24ed4de2
+              682m     dev-peer0.org2.example.com-kvstore_1.0-2ea7b22cef577b6fa4ca655d0dab5283b6734bee9c35f654d050c69a24ed4de2
+              1365m    orderer.example.com
+              2730m    peer0.org1.example.com
+              2730m    peer0.org2.example.com
+batch:      msgcount=100 timeout=1s preferred=2 MB
+crypto:     sig=ECDSA-P256 hash=SHA-256 per_tx_endorse_verify=true
+caveats:
+  - native metrics scrape of http://localhost:9443/metrics failed: scrape http://localhost:9443/metrics: parser panic: Invalid name validation scheme requested: unset (informational metrics only; harness numbers unaffected)
+
+phase           offered     conf_tps  goodput  fail_rate    e2e_p50    e2e_p99    gap_p99    com_p50  verdict
+single               50         50.0     100%     0.0000     592.38    1113.09       1.13     587.78  
+
+HEADLINE  confirmed_tps=50.0  fail_rate=0.0000  e2e p50/p99=592.38/1113.09 ms  invariant_ok=true

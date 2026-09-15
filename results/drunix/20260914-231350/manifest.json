@@ -1,0 +1,72 @@
+{
+  "run_name": "quick-smoke",
+  "platform": "drunix",
+  "workload": "kv-write",
+  "profile": "local-small",
+  "normalized": true,
+  "started_at": "2026-09-14T23:13:50.485905488+05:30",
+  "ended_at": "2026-09-14T23:14:21.030590671+05:30",
+  "harness_git_sha": "63ab885",
+  "platform_version": "drunix-ddc0eae77815",
+  "state_db": "yugabyte",
+  "state_db_requested": "leveldb",
+  "orderer_batch": {
+    "MaxMessageCount": 100,
+    "AbsoluteMaxBytes": "10 MB",
+    "PreferredMaxBytes": "2 MB",
+    "BatchTimeout": "1s"
+  },
+  "crypto": {
+    "signature_alg": "ECDSA-P256",
+    "hash_alg": "SHA-256",
+    "per_tx_endorsement_verify": true,
+    "msp_note": "Drunix (HLF 2.5.x fork); Lite Peer endorses, Committing Peer validates+commits"
+  },
+  "resource_limit_per_container": {
+    "CPUs": 0.62,
+    "Memory": ""
+  },
+  "resource_memory_by_container": {
+    "cp.org1": "1024m",
+    "cp.org2": "1024m",
+    "dev-peer0.org1.example.com-kvstore_1.0-2ea7b22cef577b6fa4ca655d0dab5283b6734bee9c35f654d050c69a24ed4de2": "256m",
+    "dev-peer0.org2.example.com-kvstore_1.0-2ea7b22cef577b6fa4ca655d0dab5283b6734bee9c35f654d050c69a24ed4de2": "256m",
+    "hlf_keydb_org1msp": "256m",
+    "hlf_keydb_org2msp": "256m",
+    "lp1.org1": "1024m",
+    "lp1.org2": "1024m",
+    "orderer.example.com": "512m",
+    "vs1.org1": "256m",
+    "vs1.org2": "256m",
+    "yugabyte-org1": "1024m",
+    "yugabyte-org2": "1024m"
+  },
+  "resource_memory_weights": "peer=4 statedb=4 orderer=2 other=1",
+  "resource_containers": 13,
+  "resource_cpus_total": 8,
+  "resource_memory_total_gb": 8,
+  "nodes": {
+    "chaincode": 2,
+    "committing_peer": 2,
+    "keydb": 2,
+    "lite_peer": 2,
+    "orderer": 1,
+    "validation_service": 2,
+    "yugabyte": 2
+  },
+  "generators": 2,
+  "seed": 1,
+  "key_space": 5000,
+  "key_distribution": "uniform",
+  "zipfian_constant": 0,
+  "read_write_ratio": 0,
+  "value_size_bytes": 64,
+  "warmup_sec": 5,
+  "cooldown_sec": 3,
+  "caveats": [
+    "drunix ran on YugabyteDB (its shipped test-network default); LevelDB parity is unavailable, so the state-DB variable is NOT held constant vs fabric-cft for this run",
+    "drunix write values are JSON-wrapped client-side to survive a YugabyteDB statedb bug (non-JSON values panic the Committing Peer); the on-wire payload format differs from the shared kv workload on other platforms for this run",
+    "state-db parity not held: run requested leveldb, platform actually ran yugabyte",
+    "native metrics scrape of http://localhost:9444/metrics failed: scrape http://localhost:9444/metrics: parser panic: Invalid name validation scheme requested: unset (informational metrics only; harness numbers unaffected)"
+  ]
+}

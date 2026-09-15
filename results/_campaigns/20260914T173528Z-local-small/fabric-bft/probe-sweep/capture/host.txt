@@ -1,0 +1,34 @@
+=== date -u ===
+Mon Sep 14 06:06:45 PM UTC 2026
+
+=== free -m ===
+               total        used        free      shared  buff/cache   available
+Mem:           13608        6629         349          66        7021        6979
+Swap:          19316        1353       17962
+
+=== df -h ===
+Filesystem      Size  Used Avail Use% Mounted on
+dev             6.6G     0  6.6G   0% /dev
+run             6.7G  8.8M  6.7G   1% /run
+efivarfs        248K  103K  141K  43% /sys/firmware/efi/efivars
+/dev/nvme1n1p6  128G   94G   33G  75% /
+tmpfs           6.7G   98M  6.6G   2% /dev/shm
+none            1.0M     0  1.0M   0% /run/credentials/systemd-journald.service
+none            1.0M     0  1.0M   0% /run/credentials/systemd-resolved.service
+tmpfs           6.7G  252M  6.4G   4% /tmp
+/dev/nvme1n1p6  128G   94G   33G  75% /home
+/dev/nvme1n1p6  128G   94G   33G  75% /var/cache/pacman/pkg
+/dev/nvme1n1p6  128G   94G   33G  75% /var/log
+/dev/nvme1n1p5  976M  328M  648M  34% /boot
+none            1.0M     0  1.0M   0% /run/credentials/systemd-networkd.service
+tmpfs           1.4G   13M  1.4G   1% /run/user/1000
+
+=== docker system df ===
+TYPE            TOTAL     ACTIVE    SIZE      RECLAIMABLE
+Images          58        8         18.72GB   15.64GB (83%)
+Containers      16        12        40.96kB   0B (0%)
+Local Volumes   25        18        8.501GB   69.37MB (0%)
+Build Cache     110       0         8.907GB   1.326GB
+
+=== dmesg (oom/killed/segfault) ===
+(passwordless sudo not available; dmesg not captured)

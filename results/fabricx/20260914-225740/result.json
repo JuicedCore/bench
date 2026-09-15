@@ -1,0 +1,349 @@
+{
+  "manifest": {
+    "run_name": "quick-smoke",
+    "platform": "fabricx",
+    "workload": "kv-write",
+    "profile": "local-small",
+    "normalized": true,
+    "started_at": "2026-09-14T22:57:40.080881055+05:30",
+    "ended_at": "2026-09-14T22:58:10.966519877+05:30",
+    "harness_git_sha": "63ab885",
+    "platform_version": "fabricx-committer-v1.0.5-orderer-v1.0.6",
+    "state_db": "postgres",
+    "state_db_requested": "leveldb",
+    "orderer_batch": {
+      "MaxMessageCount": 100,
+      "AbsoluteMaxBytes": "10 MB",
+      "PreferredMaxBytes": "2 MB",
+      "BatchTimeout": "1s"
+    },
+    "crypto": {
+      "signature_alg": "ECDSA-P256",
+      "hash_alg": "SHA-256",
+      "per_tx_endorsement_verify": true,
+      "msp_note": "Fabric-X: client-signed ECDSA endorsement per namespace, verified by the committer against the namespace policy registered in _meta at deploy time. No peer endorsement round-trip."
+    },
+    "resource_limit_per_container": {
+      "CPUs": 2,
+      "Memory": ""
+    },
+    "resource_memory_by_container": {
+      "bench-fabricx-fabricx-arma-1": "2048m",
+      "bench-fabricx-fabricx-committer-1": "2048m",
+      "bench-fabricx-fabricx-db-1": "2048m",
+      "bench-fabricx-fabricx-pipeline-1": "2048m"
+    },
+    "resource_memory_weights": "peer=4 statedb=4 orderer=2 other=1",
+    "resource_containers": 4,
+    "resource_cpus_total": 8,
+    "resource_memory_total_gb": 8,
+    "nodes": {
+      "arma": 1,
+      "committer": 1,
+      "pipeline": 1,
+      "postgres": 1
+    },
+    "generators": 2,
+    "seed": 1,
+    "key_space": 5000,
+    "key_distribution": "uniform",
+    "zipfian_constant": 0,
+    "read_write_ratio": 0,
+    "value_size_bytes": 64,
+    "warmup_sec": 5,
+    "cooldown_sec": 3,
+    "caveats": [
+      "state-db parity not held: run requested leveldb, platform actually ran postgres",
+      "native metrics scrape of http://localhost:9643/metrics failed: scrape http://localhost:9643/metrics: parser panic: Invalid name validation scheme requested: unset (informational metrics only; harness numbers unaffected)"
+    ]
+  },
+  "phases": [
+    {
+      "name": "single",
+      "offered_tps": 50,
+      "window": {
+        "phase_start": "2026-09-14T22:57:40.121117712+05:30",
+        "win_start": "2026-09-14T22:57:45.121117712+05:30",
+        "win_end": "2026-09-14T22:58:07.121117712+05:30"
+      },
+      "result": {
+        "wall_clock_sec": 22,
+        "submitted": 1100,
+        "committed": 1100,
+        "invalid": 0,
+        "errored": 0,
+        "timed_out": 0,
+        "confirmed_tps": 50,
+        "offered_tps": 50,
+        "failure_rate": 0,
+        "e2e_latency": {
+          "name": "e2e",
+          "count": 1100,
+          "min_ms": 194.3,
+          "max_ms": 1658.88,
+          "mean_ms": 906.7987781818186,
+          "stddev_ms": 316.95577865247714,
+          "percentiles_ms": {
+            "p1": 273.66,
+            "p10": 473.6,
+            "p25": 658.94,
+            "p5": 393.73,
+            "p50": 909.82,
+            "p75": 1155.07,
+            "p90": 1331.2,
+            "p95": 1411.07,
+            "p99": 1539.07,
+            "p99.9": 1658.88,
+            "p99.99": 1658.88
+          }
+        },
+        "submit_latency": {
+          "name": "submit",
+          "count": 1100,
+          "min_ms": 0.2,
+          "max_ms": 1.52,
+          "mean_ms": 0.3281463636363637,
+          "stddev_ms": 0.09612600364982385,
+          "percentiles_ms": {
+            "p1": 0.22,
+            "p10": 0.24,
+            "p25": 0.27,
+            "p5": 0.23,
+            "p50": 0.3,
+            "p75": 0.37,
+            "p90": 0.45,
+            "p95": 0.5,
+            "p99": 0.61,
+            "p99.9": 1.35,
+            "p99.99": 1.52
+          }
+        },
+        "commit_latency": {
+          "name": "commit",
+          "count": 1100,
+          "min_ms": 193.92,
+          "max_ms": 1657.86,
+          "mean_ms": 905.9138327272727,
+          "stddev_ms": 316.9421174108511,
+          "percentiles_ms": {
+            "p1": 273.15,
+            "p10": 473.09,
+            "p25": 657.41,
+            "p5": 392.96,
+            "p50": 908.29,
+            "p75": 1154.05,
+            "p90": 1330.18,
+            "p95": 1410.05,
+            "p99": 1538.05,
+            "p99.9": 1657.86,
+            "p99.99": 1657.86
+          }
+        },
+        "send_gap": {
+          "name": "send_gap",
+          "count": 1100,
+          "min_ms": 0.01,
+          "max_ms": 1.3,
+          "mean_ms": 0.5507990909090916,
+          "stddev_ms": 0.29895737701535463,
+          "percentiles_ms": {
+            "p1": 0.02,
+            "p10": 0.14,
+            "p25": 0.29,
+            "p5": 0.08,
+            "p50": 0.56,
+            "p75": 0.8,
+            "p90": 0.97,
+            "p95": 1.02,
+            "p99": 1.07,
+            "p99.9": 1.12,
+            "p99.99": 1.3
+          }
+        },
+        "invariant_ok": true
+      }
+    }
+  ],
+  "headline": {
+    "wall_clock_sec": 22,
+    "submitted": 1100,
+    "committed": 1100,
+    "invalid": 0,
+    "errored": 0,
+    "timed_out": 0,
+    "confirmed_tps": 50,
+    "offered_tps": 50,
+    "failure_rate": 0,
+    "e2e_latency": {
+      "name": "e2e",
+      "count": 1100,
+      "min_ms": 194.3,
+      "max_ms": 1658.88,
+      "mean_ms": 906.7987781818186,
+      "stddev_ms": 316.95577865247714,
+      "percentiles_ms": {
+        "p1": 273.66,
+        "p10": 473.6,
+        "p25": 658.94,
+        "p5": 393.73,
+        "p50": 909.82,
+        "p75": 1155.07,
+        "p90": 1331.2,
+        "p95": 1411.07,
+        "p99": 1539.07,
+        "p99.9": 1658.88,
+        "p99.99": 1658.88
+      }
+    },
+    "submit_latency": {
+      "name": "submit",
+      "count": 1100,
+      "min_ms": 0.2,
+      "max_ms": 1.52,
+      "mean_ms": 0.3281463636363637,
+      "stddev_ms": 0.09612600364982385,
+      "percentiles_ms": {
+        "p1": 0.22,
+        "p10": 0.24,
+        "p25": 0.27,
+        "p5": 0.23,
+        "p50": 0.3,
+        "p75": 0.37,
+        "p90": 0.45,
+        "p95": 0.5,
+        "p99": 0.61,
+        "p99.9": 1.35,
+        "p99.99": 1.52
+      }
+    },
+    "commit_latency": {
+      "name": "commit",
+      "count": 1100,
+      "min_ms": 193.92,
+      "max_ms": 1657.86,
+      "mean_ms": 905.9138327272727,
+      "stddev_ms": 316.9421174108511,
+      "percentiles_ms": {
+        "p1": 273.15,
+        "p10": 473.09,
+        "p25": 657.41,
+        "p5": 392.96,
+        "p50": 908.29,
+        "p75": 1154.05,
+        "p90": 1330.18,
+        "p95": 1410.05,
+        "p99": 1538.05,
+        "p99.9": 1657.86,
+        "p99.99": 1657.86
+      }
+    },
+    "send_gap": {
+      "name": "send_gap",
+      "count": 1100,
+      "min_ms": 0.01,
+      "max_ms": 1.3,
+      "mean_ms": 0.5507990909090916,
+      "stddev_ms": 0.29895737701535463,
+      "percentiles_ms": {
+        "p1": 0.02,
+        "p10": 0.14,
+        "p25": 0.29,
+        "p5": 0.08,
+        "p50": 0.56,
+        "p75": 0.8,
+        "p90": 0.97,
+        "p95": 1.02,
+        "p99": 1.07,
+        "p99.9": 1.12,
+        "p99.99": 1.3
+      }
+    },
+    "invariant_ok": true
+  },
+  "system_samples": [
+    {
+      "t": "2026-09-14T22:57:43.156049034+05:30",
+      "cpu_percent": 17.79,
+      "mem_bytes": 728288458,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T22:57:45.165829369+05:30",
+      "cpu_percent": 14.83,
+      "mem_bytes": 749396294,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T22:57:47.174406677+05:30",
+      "cpu_percent": 14.91,
+      "mem_bytes": 777057729,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T22:57:49.183235266+05:30",
+      "cpu_percent": 18.04,
+      "mem_bytes": 802559097,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T22:57:51.191461025+05:30",
+      "cpu_percent": 16.62,
+      "mem_bytes": 810769448,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T22:57:53.199833307+05:30",
+      "cpu_percent": 17.799999999999997,
+      "mem_bytes": 835987700,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T22:57:55.208669272+05:30",
+      "cpu_percent": 16.87,
+      "mem_bytes": 838651083,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T22:57:57.217261709+05:30",
+      "cpu_percent": 16.63,
+      "mem_bytes": 841178150,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T22:57:59.225469972+05:30",
+      "cpu_percent": 17.830000000000002,
+      "mem_bytes": 844816709,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T22:58:01.234777353+05:30",
+      "cpu_percent": 17.91,
+      "mem_bytes": 845907228,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T22:58:03.245068454+05:30",
+      "cpu_percent": 22.459999999999997,
+      "mem_bytes": 857242336,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T22:58:05.253858031+05:30",
+      "cpu_percent": 18.96,
+      "mem_bytes": 855847730,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T22:58:07.26274099+05:30",
+      "cpu_percent": 17.82,
+      "mem_bytes": 857965853,
+      "containers": 4
+    },
+    {
+      "t": "2026-09-14T22:58:09.272878081+05:30",
+      "cpu_percent": 19.07,
+      "mem_bytes": 859612116,
+      "containers": 4
+    }
+  ]
+}

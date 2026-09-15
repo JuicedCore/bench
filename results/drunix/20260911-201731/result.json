@@ -1,0 +1,339 @@
+{
+  "manifest": {
+    "run_name": "quick-smoke",
+    "platform": "drunix",
+    "workload": "kv-write",
+    "profile": "local",
+    "normalized": true,
+    "started_at": "2026-09-11T20:17:31.434498741+05:30",
+    "ended_at": "2026-09-11T20:18:02.333915062+05:30",
+    "harness_git_sha": "4e4cc55",
+    "platform_version": "drunix-main",
+    "state_db": "leveldb",
+    "orderer_batch": {
+      "MaxMessageCount": 100,
+      "AbsoluteMaxBytes": "10 MB",
+      "PreferredMaxBytes": "2 MB",
+      "BatchTimeout": "1s"
+    },
+    "crypto": {
+      "signature_alg": "ECDSA-P256",
+      "hash_alg": "SHA-256",
+      "per_tx_endorsement_verify": true,
+      "msp_note": "Drunix (HLF 2.5.x fork); Lite Peer endorses, Committing Peer validates+commits"
+    },
+    "resource_limit_per_container": {
+      "CPUs": 1.3,
+      "Memory": "1200m"
+    },
+    "nodes": {
+      "committing_peer": 1,
+      "keydb": 1,
+      "lite_peer": 1,
+      "orderer": 1,
+      "validation_service": 1,
+      "yugabyte": 1
+    },
+    "seed": 1,
+    "key_space": 5000,
+    "key_distribution": "uniform",
+    "zipfian_constant": 0,
+    "read_write_ratio": 0,
+    "value_size_bytes": 64,
+    "warmup_sec": 5,
+    "cooldown_sec": 3,
+    "caveats": [
+      "drunix ran on YugabyteDB (its shipped test-network default); LevelDB parity is unavailable, so the state-DB variable is NOT held constant vs fabric-cft for this run",
+      "drunix write values are JSON-wrapped client-side to survive a YugabyteDB statedb bug (non-JSON values panic the Committing Peer); the on-wire payload format differs from the shared kv workload on other platforms for this run"
+    ]
+  },
+  "phases": [
+    {
+      "name": "single",
+      "offered_tps": 50,
+      "window": {
+        "phase_start": "2026-09-11T20:17:31.915544368+05:30",
+        "win_start": "2026-09-11T20:17:36.915544368+05:30",
+        "win_end": "2026-09-11T20:17:59.32675491+05:30"
+      },
+      "result": {
+        "wall_clock_sec": 22.411210533,
+        "submitted": 1121,
+        "committed": 1121,
+        "invalid": 0,
+        "errored": 0,
+        "timed_out": 0,
+        "confirmed_tps": 50.01960953199529,
+        "offered_tps": 50.01960953199529,
+        "failure_rate": 0,
+        "e2e_latency": {
+          "name": "e2e",
+          "count": 1121,
+          "min_ms": 261.76,
+          "max_ms": 2338.82,
+          "mean_ms": 1277.8601391614627,
+          "stddev_ms": 576.8272670317491,
+          "percentiles_ms": {
+            "p1": 291.33,
+            "p10": 476.16,
+            "p25": 780.8,
+            "p5": 375.55,
+            "p50": 1274.88,
+            "p75": 1775.62,
+            "p90": 2079.74,
+            "p95": 2181.12,
+            "p99": 2263.04,
+            "p99.9": 2318.34,
+            "p99.99": 2338.82
+          }
+        },
+        "submit_latency": {
+          "name": "submit",
+          "count": 1121,
+          "min_ms": 4.47,
+          "max_ms": 20.05,
+          "mean_ms": 5.840082069580733,
+          "stddev_ms": 1.0623471801521205,
+          "percentiles_ms": {
+            "p1": 4.83,
+            "p10": 5.16,
+            "p25": 5.4,
+            "p5": 5.04,
+            "p50": 5.7,
+            "p75": 6.02,
+            "p90": 6.38,
+            "p95": 6.71,
+            "p99": 9.9,
+            "p99.9": 19.09,
+            "p99.99": 20.05
+          }
+        },
+        "commit_latency": {
+          "name": "commit",
+          "count": 1121,
+          "min_ms": 255.23,
+          "max_ms": 2330.62,
+          "mean_ms": 1271.386205173951,
+          "stddev_ms": 576.6695887375122,
+          "percentiles_ms": {
+            "p1": 284.16,
+            "p10": 469.76,
+            "p25": 773.12,
+            "p5": 369.41,
+            "p50": 1267.71,
+            "p75": 1769.47,
+            "p90": 2072.58,
+            "p95": 2174.98,
+            "p99": 2256.9,
+            "p99.9": 2297.86,
+            "p99.99": 2330.62
+          }
+        },
+        "send_gap": {
+          "name": "send_gap",
+          "count": 1121,
+          "min_ms": 0.03,
+          "max_ms": 2.02,
+          "mean_ms": 0.6353764495985726,
+          "stddev_ms": 0.318895460959791,
+          "percentiles_ms": {
+            "p1": 0.06,
+            "p10": 0.2,
+            "p25": 0.38,
+            "p5": 0.11,
+            "p50": 0.63,
+            "p75": 0.91,
+            "p90": 1.05,
+            "p95": 1.1,
+            "p99": 1.19,
+            "p99.9": 1.8,
+            "p99.99": 2.02
+          }
+        },
+        "invariant_ok": true
+      }
+    }
+  ],
+  "headline": {
+    "wall_clock_sec": 22.411210533,
+    "submitted": 1121,
+    "committed": 1121,
+    "invalid": 0,
+    "errored": 0,
+    "timed_out": 0,
+    "confirmed_tps": 50.01960953199529,
+    "offered_tps": 50.01960953199529,
+    "failure_rate": 0,
+    "e2e_latency": {
+      "name": "e2e",
+      "count": 1121,
+      "min_ms": 261.76,
+      "max_ms": 2338.82,
+      "mean_ms": 1277.8601391614627,
+      "stddev_ms": 576.8272670317491,
+      "percentiles_ms": {
+        "p1": 291.33,
+        "p10": 476.16,
+        "p25": 780.8,
+        "p5": 375.55,
+        "p50": 1274.88,
+        "p75": 1775.62,
+        "p90": 2079.74,
+        "p95": 2181.12,
+        "p99": 2263.04,
+        "p99.9": 2318.34,
+        "p99.99": 2338.82
+      }
+    },
+    "submit_latency": {
+      "name": "submit",
+      "count": 1121,
+      "min_ms": 4.47,
+      "max_ms": 20.05,
+      "mean_ms": 5.840082069580733,
+      "stddev_ms": 1.0623471801521205,
+      "percentiles_ms": {
+        "p1": 4.83,
+        "p10": 5.16,
+        "p25": 5.4,
+        "p5": 5.04,
+        "p50": 5.7,
+        "p75": 6.02,
+        "p90": 6.38,
+        "p95": 6.71,
+        "p99": 9.9,
+        "p99.9": 19.09,
+        "p99.99": 20.05
+      }
+    },
+    "commit_latency": {
+      "name": "commit",
+      "count": 1121,
+      "min_ms": 255.23,
+      "max_ms": 2330.62,
+      "mean_ms": 1271.386205173951,
+      "stddev_ms": 576.6695887375122,
+      "percentiles_ms": {
+        "p1": 284.16,
+        "p10": 469.76,
+        "p25": 773.12,
+        "p5": 369.41,
+        "p50": 1267.71,
+        "p75": 1769.47,
+        "p90": 2072.58,
+        "p95": 2174.98,
+        "p99": 2256.9,
+        "p99.9": 2297.86,
+        "p99.99": 2330.62
+      }
+    },
+    "send_gap": {
+      "name": "send_gap",
+      "count": 1121,
+      "min_ms": 0.03,
+      "max_ms": 2.02,
+      "mean_ms": 0.6353764495985726,
+      "stddev_ms": 0.318895460959791,
+      "percentiles_ms": {
+        "p1": 0.06,
+        "p10": 0.2,
+        "p25": 0.38,
+        "p5": 0.11,
+        "p50": 0.63,
+        "p75": 0.91,
+        "p90": 1.05,
+        "p95": 1.1,
+        "p99": 1.19,
+        "p99.9": 1.8,
+        "p99.99": 2.02
+      }
+    },
+    "invariant_ok": true
+  },
+  "system_samples": [
+    {
+      "t": "2026-09-11T20:17:35.067251872+05:30",
+      "cpu_percent": 15.309999999999999,
+      "mem_bytes": 83676363,
+      "containers": 3
+    },
+    {
+      "t": "2026-09-11T20:17:37.114648756+05:30",
+      "cpu_percent": 12.999999999999998,
+      "mem_bytes": 87828724,
+      "containers": 3
+    },
+    {
+      "t": "2026-09-11T20:17:39.165885222+05:30",
+      "cpu_percent": 12.91,
+      "mem_bytes": 91142225,
+      "containers": 3
+    },
+    {
+      "t": "2026-09-11T20:17:41.210051175+05:30",
+      "cpu_percent": 12.18,
+      "mem_bytes": 94340382,
+      "containers": 3
+    },
+    {
+      "t": "2026-09-11T20:17:43.259717535+05:30",
+      "cpu_percent": 12.34,
+      "mem_bytes": 96028589,
+      "containers": 3
+    },
+    {
+      "t": "2026-09-11T20:17:45.304736818+05:30",
+      "cpu_percent": 12.219999999999999,
+      "mem_bytes": 97811168,
+      "containers": 3
+    },
+    {
+      "t": "2026-09-11T20:17:47.348363707+05:30",
+      "cpu_percent": 13.11,
+      "mem_bytes": 101722356,
+      "containers": 3
+    },
+    {
+      "t": "2026-09-11T20:17:49.393065921+05:30",
+      "cpu_percent": 11.93,
+      "mem_bytes": 100243865,
+      "containers": 3
+    },
+    {
+      "t": "2026-09-11T20:17:51.440978922+05:30",
+      "cpu_percent": 13.119999999999997,
+      "mem_bytes": 104626912,
+      "containers": 3
+    },
+    {
+      "t": "2026-09-11T20:17:53.486645667+05:30",
+      "cpu_percent": 12.469999999999999,
+      "mem_bytes": 105654516,
+      "containers": 3
+    },
+    {
+      "t": "2026-09-11T20:17:55.533173211+05:30",
+      "cpu_percent": 12.23,
+      "mem_bytes": 106556291,
+      "containers": 3
+    },
+    {
+      "t": "2026-09-11T20:17:57.58825659+05:30",
+      "cpu_percent": 12.44,
+      "mem_bytes": 109880277,
+      "containers": 3
+    },
+    {
+      "t": "2026-09-11T20:17:59.631920655+05:30",
+      "cpu_percent": 12.22,
+      "mem_bytes": 107552438,
+      "containers": 3
+    },
+    {
+      "t": "2026-09-11T20:18:01.680921798+05:30",
+      "cpu_percent": 12.54,
+      "mem_bytes": 108852673,
+      "containers": 3
+    }
+  ]
+}

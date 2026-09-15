@@ -1,0 +1,312 @@
+[deploy 23:05:34] fabric images pinned to 2.5.16 (ca 1.5.22); peer and orderer verified
+[deploy 23:05:34] pinning orderer batch in configtx.yaml: timeout=1s maxMsgCount=100 preferred=2 MB absolute=10 MB
+[0;34mUsing docker and docker-compose[0m
+[0;34mStopping network[0m
+Error response from daemon: get docker_orderer.example.com: no such volume
+Error response from daemon: get docker_peer0.org1.example.com: no such volume
+Error response from daemon: get docker_peer0.org2.example.com: no such volume
+[0;34mRemoving remaining containers[0m
+[0;34mRemoving generated chaincode docker images[0m
+[deploy 23:05:40] WARN: could not drop page cache (needs root); continuing
+[0;34mUsing docker and docker-compose[0m
+[0;34mCreating channel 'mychannel'.[0m
+[0;34mIf network is not up, starting nodes with CLI timeout of '5' tries and CLI delay of '3' seconds and using database 'leveldb with crypto from 'cryptogen'[0m
+[0;34mBringing up network[0m
+[0;34mLOCAL_VERSION=v2.5.16[0m
+[0;34mDOCKER_IMAGE_VERSION=v2.5.16[0m
+~/bench/deploy/docker/.cache/fabric-samples/bin/cryptogen
+[0;34mGenerating certificates using cryptogen tool[0m
+[0;34mCreating Org1 Identities[0m
++ cryptogen generate --config=./organizations/cryptogen/crypto-config-org1.yaml --output=organizations
+org1.example.com
++ res=0
+[0;34mCreating Org2 Identities[0m
++ cryptogen generate --config=./organizations/cryptogen/crypto-config-org2.yaml --output=organizations
+org2.example.com
++ res=0
+[0;34mCreating Orderer Org Identities[0m
++ cryptogen generate --config=./organizations/cryptogen/crypto-config-orderer.yaml --output=organizations
++ res=0
+[0;34mGenerating CCP files for Org1 and Org2[0m
+ Volume compose_peer0.org2.example.com Creating 
+ Volume compose_orderer.example.com Creating 
+ Volume compose_peer0.org2.example.com Creating 
+ Volume compose_peer0.org1.example.com Creating 
+ Volume compose_peer0.org1.example.com Creating 
+ Network fabric_test Creating 
+ Network fabric_test Creating 
+ Volume compose_orderer.example.com Creating 
+ Volume compose_peer0.org2.example.com Created 
+ Volume compose_peer0.org2.example.com Created 
+ Volume compose_peer0.org1.example.com Created 
+ Volume compose_peer0.org1.example.com Created 
+ Volume compose_orderer.example.com Created 
+ Volume compose_orderer.example.com Created 
+ Network fabric_test Created 
+ Network fabric_test Created 
+ Container peer0.org2.example.com Creating 
+ Container peer0.org1.example.com Creating 
+ Container orderer.example.com Creating 
+ Container peer0.org1.example.com Created 
+ Container peer0.org2.example.com Created 
+ Container orderer.example.com Created 
+ Container peer0.org2.example.com Starting 
+ Container peer0.org1.example.com Starting 
+ Container orderer.example.com Starting 
+ Container orderer.example.com Started 
+ Container peer0.org1.example.com Started 
+ Container peer0.org2.example.com Started 
+CONTAINER ID   IMAGE                               COMMAND                  CREATED          STATUS                    PORTS                                                                                                                                   NAMES
+82b207b03f50   hyperledger/fabric-peer:latest      "peer node start"        1 second ago     Up Less than a second     0.0.0.0:9051->9051/tcp, [::]:9051->9051/tcp, 7051/tcp, 0.0.0.0:9445->9445/tcp, [::]:9445->9445/tcp                                      peer0.org2.example.com
+40528a59b511   hyperledger/fabric-orderer:latest   "orderer"                1 second ago     Up Less than a second     0.0.0.0:7050->7050/tcp, [::]:7050->7050/tcp, 0.0.0.0:7053->7053/tcp, [::]:7053->7053/tcp, 0.0.0.0:9443->9443/tcp, [::]:9443->9443/tcp   orderer.example.com
+e8884ca8f9bc   hyperledger/fabric-peer:latest      "peer node start"        1 second ago     Up Less than a second     0.0.0.0:7051->7051/tcp, [::]:7051->7051/tcp, 0.0.0.0:9444->9444/tcp, [::]:9444->9444/tcp                                                peer0.org1.example.com
+3644ee7660d8   prom/prometheus:v3.1.0              "/bin/prometheus --c…"   29 seconds ago   Up 28 seconds             0.0.0.0:9090->9090/tcp, [::]:9090->9090/tcp                                                                                             bench-monitoring-prometheus-1
+1be7cebdcec7   ghcr.io/google/cadvisor:0.57.0      "/usr/bin/entrypoint…"   29 seconds ago   Up 28 seconds (healthy)   0.0.0.0:8080->8080/tcp, [::]:8080->8080/tcp                                                                                             bench-monitoring-cadvisor-1
+1a01fc4542da   grafana/grafana:11.4.0              "/run.sh"                29 seconds ago   Up 28 seconds             0.0.0.0:3000->3000/tcp, [::]:3000->3000/tcp                                                                                             bench-monitoring-grafana-1
+bfee4110033c   prom/node-exporter:v1.9.0           "/bin/node_exporter …"   29 seconds ago   Up 28 seconds             0.0.0.0:9100->9100/tcp, [::]:9100->9100/tcp                                                                                             bench-monitoring-node_exporter-1
+[0;34mUsing docker and docker-compose[0m
+[0;34mGenerating channel genesis block 'mychannel.block'[0m
+[0;34mUsing organization 1[0m
+~/bench/deploy/docker/.cache/fabric-samples/bin/configtxgen
++ '[' 0 -eq 1 ']'
++ configtxgen -profile ChannelUsingRaft -outputBlock ./channel-artifacts/mychannel.block -channelID mychannel
+[34m2026-09-14 23:05:42.810 IST 0001 INFO[0m [common.tools.configtxgen] [34;1mmain[0m -> Loading configuration
+[34m2026-09-14 23:05:42.813 IST 0002 INFO[0m [common.tools.configtxgen.localconfig] [34;1mcompleteInitialization[0m -> orderer type: etcdraft
+[34m2026-09-14 23:05:42.813 IST 0003 INFO[0m [common.tools.configtxgen.localconfig] [34;1mcompleteInitialization[0m -> Orderer.EtcdRaft.Options unset, setting to tick_interval:"500ms" election_tick:10 heartbeat_tick:1 max_inflight_blocks:5 snapshot_interval_size:16777216 
+[34m2026-09-14 23:05:42.813 IST 0004 INFO[0m [common.tools.configtxgen.localconfig] [34;1mLoad[0m -> Loaded configuration: ~/bench/deploy/docker/.cache/fabric-samples/test-network/configtx/configtx.yaml
+[34m2026-09-14 23:05:42.814 IST 0005 INFO[0m [common.tools.configtxgen] [34;1mdoOutputBlock[0m -> Generating genesis block
+[34m2026-09-14 23:05:42.814 IST 0006 INFO[0m [common.tools.configtxgen] [34;1mdoOutputBlock[0m -> Creating application channel genesis block
+[34m2026-09-14 23:05:42.814 IST 0007 INFO[0m [common.tools.configtxgen] [34;1mdoOutputBlock[0m -> Writing genesis block
++ res=0
+[0;34mCreating channel mychannel[0m
+[0;34mAdding orderers[0m
++ . scripts/orderer.sh mychannel
++ '[' 0 -eq 1 ']'
++ res=0
+Status: 201
+{
+	"name": "mychannel",
+	"url": "/participation/v1/channels/mychannel",
+	"consensusRelation": "consenter",
+	"status": "active",
+	"height": 1
+}
+
+[0;32mChannel 'mychannel' created[0m
+[0;34mJoining org1 peer to the channel...[0m
+[0;34mUsing organization 1[0m
++ peer channel join -b ./channel-artifacts/mychannel.block
++ res=0
+[34m2026-09-14 23:05:48.944 IST 0001 INFO[0m [channelCmd] [34;1mInitCmdFactory[0m -> Endorser and orderer connections initialized
+[34m2026-09-14 23:05:49.012 IST 0002 INFO[0m [channelCmd] [34;1mexecuteJoin[0m -> Successfully submitted proposal to join channel
+[0;34mJoining org2 peer to the channel...[0m
+[0;34mUsing organization 2[0m
++ peer channel join -b ./channel-artifacts/mychannel.block
++ res=0
+[34m2026-09-14 23:05:52.048 IST 0001 INFO[0m [channelCmd] [34;1mInitCmdFactory[0m -> Endorser and orderer connections initialized
+[34m2026-09-14 23:05:52.190 IST 0002 INFO[0m [channelCmd] [34;1mexecuteJoin[0m -> Successfully submitted proposal to join channel
+[0;34mSetting anchor peer for org1...[0m
+[0;34mUsing organization 1[0m
+[0;34mFetching channel config for channel mychannel[0m
+[0;34mUsing organization 1[0m
+[0;34mFetching the most recent configuration block for the channel[0m
+++ peer channel fetch config ~/bench/deploy/docker/.cache/fabric-samples/test-network/channel-artifacts/config_block.pb -o localhost:7050 --ordererTLSHostnameOverride orderer.example.com -c mychannel --tls --cafile ~/bench/deploy/docker/.cache/fabric-samples/test-network/organizations/ordererOrganizations/example.com/tlsca/tlsca.example.com-cert.pem
+[34m2026-09-14 23:05:52.224 IST 0001 INFO[0m [channelCmd] [34;1mInitCmdFactory[0m -> Endorser and orderer connections initialized
+[34m2026-09-14 23:05:52.225 IST 0002 INFO[0m [cli.common] [34;1mreadBlock[0m -> Received block: 0
+[34m2026-09-14 23:05:52.225 IST 0003 INFO[0m [channelCmd] [34;1mfetch[0m -> Retrieving last config block: 0
+[34m2026-09-14 23:05:52.226 IST 0004 INFO[0m [cli.common] [34;1mreadBlock[0m -> Received block: 0
+[0;34mDecoding config block to JSON and isolating config to ~/bench/deploy/docker/.cache/fabric-samples/test-network/channel-artifacts/Org1MSPconfig.json[0m
+++ configtxlator proto_decode --input ~/bench/deploy/docker/.cache/fabric-samples/test-network/channel-artifacts/config_block.pb --type common.Block --output ~/bench/deploy/docker/.cache/fabric-samples/test-network/channel-artifacts/config_block.json
+++ jq '.data.data[0].payload.data.config' ~/bench/deploy/docker/.cache/fabric-samples/test-network/channel-artifacts/config_block.json
+++ res=0
+[0;34mGenerating anchor peer update transaction for Org1 on channel mychannel[0m
+++ jq '.channel_group.groups.Application.groups.Org1MSP.values += {"AnchorPeers":{"mod_policy": "Admins","value":{"anchor_peers": [{"host": "peer0.org1.example.com","port": 7051}]},"version": "0"}}' ~/bench/deploy/docker/.cache/fabric-samples/test-network/channel-artifacts/Org1MSPconfig.json
+++ res=0
+++ configtxlator proto_encode --input ~/bench/deploy/docker/.cache/fabric-samples/test-network/channel-artifacts/Org1MSPconfig.json --type common.Config --output ~/bench/deploy/docker/.cache/fabric-samples/test-network/channel-artifacts/original_config.pb
+++ configtxlator proto_encode --input ~/bench/deploy/docker/.cache/fabric-samples/test-network/channel-artifacts/Org1MSPmodified_config.json --type common.Config --output ~/bench/deploy/docker/.cache/fabric-samples/test-network/channel-artifacts/modified_config.pb
+++ configtxlator compute_update --channel_id mychannel --original ~/bench/deploy/docker/.cache/fabric-samples/test-network/channel-artifacts/original_config.pb --updated ~/bench/deploy/docker/.cache/fabric-samples/test-network/channel-artifacts/modified_config.pb --output ~/bench/deploy/docker/.cache/fabric-samples/test-network/channel-artifacts/config_update.pb
+++ configtxlator proto_decode --input ~/bench/deploy/docker/.cache/fabric-samples/test-network/channel-artifacts/config_update.pb --type common.ConfigUpdate --output ~/bench/deploy/docker/.cache/fabric-samples/test-network/channel-artifacts/config_update.json
+++ jq .
++++ cat ~/bench/deploy/docker/.cache/fabric-samples/test-network/channel-artifacts/config_update.json
+++ echo '{"payload":{"header":{"channel_header":{"channel_id":"mychannel", "type":2}},"data":{"config_update":{' '"channel_id":' '"mychannel",' '"isolated_data":' '{},' '"read_set":' '{' '"groups":' '{' '"Application":' '{' '"groups":' '{' '"Org1MSP":' '{' '"groups":' '{},' '"mod_policy":' '"",' '"policies":' '{' '"Admins":' '{' '"mod_policy":' '"",' '"policy":' null, '"version":' '"0"' '},' '"Endorsement":' '{' '"mod_policy":' '"",' '"policy":' null, '"version":' '"0"' '},' '"Readers":' '{' '"mod_policy":' '"",' '"policy":' null, '"version":' '"0"' '},' '"Writers":' '{' '"mod_policy":' '"",' '"policy":' null, '"version":' '"0"' '}' '},' '"values":' '{' '"MSP":' '{' '"mod_policy":' '"",' '"value":' null, '"version":' '"0"' '}' '},' '"version":' '"0"' '}' '},' '"mod_policy":' '"",' '"policies":' '{},' '"values":' '{},' '"version":' '"0"' '}' '},' '"mod_policy":' '"",' '"policies":' '{},' '"values":' '{},' '"version":' '"0"' '},' '"write_set":' '{' '"groups":' '{' '"Application":' '{' '"groups":' '{' '"Org1MSP":' '{' '"groups":' '{},' '"mod_policy":' '"Admins",' '"policies":' '{' '"Admins":' '{' '"mod_policy":' '"",' '"policy":' null, '"version":' '"0"' '},' '"Endorsement":' '{' '"mod_policy":' '"",' '"policy":' null, '"version":' '"0"' '},' '"Readers":' '{' '"mod_policy":' '"",' '"policy":' null, '"version":' '"0"' '},' '"Writers":' '{' '"mod_policy":' '"",' '"policy":' null, '"version":' '"0"' '}' '},' '"values":' '{' '"AnchorPeers":' '{' '"mod_policy":' '"Admins",' '"value":' '{' '"anchor_peers":' '[' '{' '"host":' '"peer0.org1.example.com",' '"port":' 7051 '}' ']' '},' '"version":' '"0"' '},' '"MSP":' '{' '"mod_policy":' '"",' '"value":' null, '"version":' '"0"' '}' '},' '"version":' '"1"' '}' '},' '"mod_policy":' '"",' '"policies":' '{},' '"values":' '{},' '"version":' '"0"' '}' '},' '"mod_policy":' '"",' '"policies":' '{},' '"values":' '{},' '"version":' '"0"' '}' '}}}}'
+++ configtxlator proto_encode --input ~/bench/deploy/docker/.cache/fabric-samples/test-network/channel-artifacts/config_update_in_envelope.json --type common.Envelope --output ~/bench/deploy/docker/.cache/fabric-samples/test-network/channel-artifacts/Org1MSPanchors.tx
+[34m2026-09-14 23:05:52.321 IST 0001 INFO[0m [channelCmd] [34;1mInitCmdFactory[0m -> Endorser and orderer connections initialized
+[34m2026-09-14 23:05:52.329 IST 0002 INFO[0m [channelCmd] [34;1mupdate[0m -> Successfully submitted channel update
+[0;32mAnchor peer set for org 'Org1MSP' on channel 'mychannel'[0m
+[0;34mSetting anchor peer for org2...[0m
+[0;34mUsing organization 2[0m
+[0;34mFetching channel config for channel mychannel[0m
+[0;34mUsing organization 2[0m
+[0;34mFetching the most recent configuration block for the channel[0m
+++ peer channel fetch config ~/bench/deploy/docker/.cache/fabric-samples/test-network/channel-artifacts/config_block.pb -o localhost:7050 --ordererTLSHostnameOverride orderer.example.com -c mychannel --tls --cafile ~/bench/deploy/docker/.cache/fabric-samples/test-network/organizations/ordererOrganizations/example.com/tlsca/tlsca.example.com-cert.pem
+[34m2026-09-14 23:05:52.361 IST 0001 INFO[0m [channelCmd] [34;1mInitCmdFactory[0m -> Endorser and orderer connections initialized
+[34m2026-09-14 23:05:52.363 IST 0002 INFO[0m [cli.common] [34;1mreadBlock[0m -> Received block: 1
+[34m2026-09-14 23:05:52.363 IST 0003 INFO[0m [channelCmd] [34;1mfetch[0m -> Retrieving last config block: 1
+[34m2026-09-14 23:05:52.364 IST 0004 INFO[0m [cli.common] [34;1mreadBlock[0m -> Received block: 1
+[0;34mDecoding config block to JSON and isolating config to ~/bench/deploy/docker/.cache/fabric-samples/test-network/channel-artifacts/Org2MSPconfig.json[0m
+++ configtxlator proto_decode --input ~/bench/deploy/docker/.cache/fabric-samples/test-network/channel-artifacts/config_block.pb --type common.Block --output ~/bench/deploy/docker/.cache/fabric-samples/test-network/channel-artifacts/config_block.json
+++ jq '.data.data[0].payload.data.config' ~/bench/deploy/docker/.cache/fabric-samples/test-network/channel-artifacts/config_block.json
+++ res=0
+[0;34mGenerating anchor peer update transaction for Org2 on channel mychannel[0m
+++ jq '.channel_group.groups.Application.groups.Org2MSP.values += {"AnchorPeers":{"mod_policy": "Admins","value":{"anchor_peers": [{"host": "peer0.org2.example.com","port": 9051}]},"version": "0"}}' ~/bench/deploy/docker/.cache/fabric-samples/test-network/channel-artifacts/Org2MSPconfig.json
+++ res=0
+++ configtxlator proto_encode --input ~/bench/deploy/docker/.cache/fabric-samples/test-network/channel-artifacts/Org2MSPconfig.json --type common.Config --output ~/bench/deploy/docker/.cache/fabric-samples/test-network/channel-artifacts/original_config.pb
+++ configtxlator proto_encode --input ~/bench/deploy/docker/.cache/fabric-samples/test-network/channel-artifacts/Org2MSPmodified_config.json --type common.Config --output ~/bench/deploy/docker/.cache/fabric-samples/test-network/channel-artifacts/modified_config.pb
+++ configtxlator compute_update --channel_id mychannel --original ~/bench/deploy/docker/.cache/fabric-samples/test-network/channel-artifacts/original_config.pb --updated ~/bench/deploy/docker/.cache/fabric-samples/test-network/channel-artifacts/modified_config.pb --output ~/bench/deploy/docker/.cache/fabric-samples/test-network/channel-artifacts/config_update.pb
+++ configtxlator proto_decode --input ~/bench/deploy/docker/.cache/fabric-samples/test-network/channel-artifacts/config_update.pb --type common.ConfigUpdate --output ~/bench/deploy/docker/.cache/fabric-samples/test-network/channel-artifacts/config_update.json
+++ jq .
++++ cat ~/bench/deploy/docker/.cache/fabric-samples/test-network/channel-artifacts/config_update.json
+++ echo '{"payload":{"header":{"channel_header":{"channel_id":"mychannel", "type":2}},"data":{"config_update":{' '"channel_id":' '"mychannel",' '"isolated_data":' '{},' '"read_set":' '{' '"groups":' '{' '"Application":' '{' '"groups":' '{' '"Org2MSP":' '{' '"groups":' '{},' '"mod_policy":' '"",' '"policies":' '{' '"Admins":' '{' '"mod_policy":' '"",' '"policy":' null, '"version":' '"0"' '},' '"Endorsement":' '{' '"mod_policy":' '"",' '"policy":' null, '"version":' '"0"' '},' '"Readers":' '{' '"mod_policy":' '"",' '"policy":' null, '"version":' '"0"' '},' '"Writers":' '{' '"mod_policy":' '"",' '"policy":' null, '"version":' '"0"' '}' '},' '"values":' '{' '"MSP":' '{' '"mod_policy":' '"",' '"value":' null, '"version":' '"0"' '}' '},' '"version":' '"0"' '}' '},' '"mod_policy":' '"",' '"policies":' '{},' '"values":' '{},' '"version":' '"0"' '}' '},' '"mod_policy":' '"",' '"policies":' '{},' '"values":' '{},' '"version":' '"0"' '},' '"write_set":' '{' '"groups":' '{' '"Application":' '{' '"groups":' '{' '"Org2MSP":' '{' '"groups":' '{},' '"mod_policy":' '"Admins",' '"policies":' '{' '"Admins":' '{' '"mod_policy":' '"",' '"policy":' null, '"version":' '"0"' '},' '"Endorsement":' '{' '"mod_policy":' '"",' '"policy":' null, '"version":' '"0"' '},' '"Readers":' '{' '"mod_policy":' '"",' '"policy":' null, '"version":' '"0"' '},' '"Writers":' '{' '"mod_policy":' '"",' '"policy":' null, '"version":' '"0"' '}' '},' '"values":' '{' '"AnchorPeers":' '{' '"mod_policy":' '"Admins",' '"value":' '{' '"anchor_peers":' '[' '{' '"host":' '"peer0.org2.example.com",' '"port":' 9051 '}' ']' '},' '"version":' '"0"' '},' '"MSP":' '{' '"mod_policy":' '"",' '"value":' null, '"version":' '"0"' '}' '},' '"version":' '"1"' '}' '},' '"mod_policy":' '"",' '"policies":' '{},' '"values":' '{},' '"version":' '"0"' '}' '},' '"mod_policy":' '"",' '"policies":' '{},' '"values":' '{},' '"version":' '"0"' '}' '}}}}'
+++ configtxlator proto_encode --input ~/bench/deploy/docker/.cache/fabric-samples/test-network/channel-artifacts/config_update_in_envelope.json --type common.Envelope --output ~/bench/deploy/docker/.cache/fabric-samples/test-network/channel-artifacts/Org2MSPanchors.tx
+[34m2026-09-14 23:05:52.450 IST 0001 INFO[0m [channelCmd] [34;1mInitCmdFactory[0m -> Endorser and orderer connections initialized
+[34m2026-09-14 23:05:52.458 IST 0002 INFO[0m [channelCmd] [34;1mupdate[0m -> Successfully submitted channel update
+[0;32mAnchor peer set for org 'Org2MSP' on channel 'mychannel'[0m
+[0;32mChannel 'mychannel' joined[0m
+[deploy 23:05:52] deploying kvstore chaincode from ~/bench/chaincodes/kvstore
+[0;34mUsing docker and docker-compose[0m
+[0;34mdeploying chaincode on channel 'mychannel'[0m
+executing with the following
+- CHANNEL_NAME: [0;32mmychannel[0m
+- CC_NAME: [0;32mkvstore[0m
+- CC_SRC_PATH: [0;32m~/bench/chaincodes/kvstore[0m
+- CC_SRC_LANGUAGE: [0;32mgo[0m
+- CC_VERSION: [0;32m1.0[0m
+- CC_SEQUENCE: [0;32m1[0m
+- CC_END_POLICY: [0;32mNA[0m
+- CC_COLL_CONFIG: [0;32mNA[0m
+- CC_INIT_FCN: [0;32mNA[0m
+- DELAY: [0;32m3[0m
+- MAX_RETRY: [0;32m5[0m
+- VERBOSE: [0;32mfalse[0m
+executing with the following
+- CC_NAME: [0;32mkvstore[0m
+- CC_SRC_PATH: [0;32m~/bench/chaincodes/kvstore[0m
+- CC_SRC_LANGUAGE: [0;32mgo[0m
+- CC_VERSION: [0;32m1.0[0m
+[0;34mVendoring Go dependencies at ~/bench/chaincodes/kvstore[0m
+~/Projects/Bench/chaincodes/kvstore ~/Projects/Bench/deploy/docker/.cache/fabric-samples/test-network
+~/Projects/Bench/deploy/docker/.cache/fabric-samples/test-network
+[0;32mFinished vendoring Go dependencies[0m
++ '[' false = true ']'
++ peer lifecycle chaincode package kvstore.tar.gz --path ~/bench/chaincodes/kvstore --lang golang --label kvstore_1.0
++ res=0
+[0;32mChaincode is packaged[0m
+[0;34mInstalling chaincode on peer0.org1...[0m
+[0;34mUsing organization 1[0m
++ peer lifecycle chaincode queryinstalled --output json
++ jq -r 'try (.installed_chaincodes[].package_id)'
++ grep '^kvstore_1.0:2ea7b22cef577b6fa4ca655d0dab5283b6734bee9c35f654d050c69a24ed4de2$'
++ test 1 -ne 0
++ peer lifecycle chaincode install kvstore.tar.gz
++ res=0
+[34m2026-09-14 23:06:08.569 IST 0001 INFO[0m [cli.lifecycle.chaincode] [34;1msubmitInstallProposal[0m -> Installed remotely: response:<status:200 payload:"\nLkvstore_1.0:2ea7b22cef577b6fa4ca655d0dab5283b6734bee9c35f654d050c69a24ed4de2\022\013kvstore_1.0" > 
+[34m2026-09-14 23:06:08.569 IST 0002 INFO[0m [cli.lifecycle.chaincode] [34;1msubmitInstallProposal[0m -> Chaincode code package identifier: kvstore_1.0:2ea7b22cef577b6fa4ca655d0dab5283b6734bee9c35f654d050c69a24ed4de2
+[0;32mChaincode is installed on peer0.org1[0m
+[0;34mInstall chaincode on peer0.org2...[0m
+[0;34mUsing organization 2[0m
++ peer lifecycle chaincode queryinstalled --output json
++ jq -r 'try (.installed_chaincodes[].package_id)'
++ grep '^kvstore_1.0:2ea7b22cef577b6fa4ca655d0dab5283b6734bee9c35f654d050c69a24ed4de2$'
++ test 1 -ne 0
++ peer lifecycle chaincode install kvstore.tar.gz
++ res=0
+[34m2026-09-14 23:06:22.356 IST 0001 INFO[0m [cli.lifecycle.chaincode] [34;1msubmitInstallProposal[0m -> Installed remotely: response:<status:200 payload:"\nLkvstore_1.0:2ea7b22cef577b6fa4ca655d0dab5283b6734bee9c35f654d050c69a24ed4de2\022\013kvstore_1.0" > 
+[34m2026-09-14 23:06:22.357 IST 0002 INFO[0m [cli.lifecycle.chaincode] [34;1msubmitInstallProposal[0m -> Chaincode code package identifier: kvstore_1.0:2ea7b22cef577b6fa4ca655d0dab5283b6734bee9c35f654d050c69a24ed4de2
+[0;32mChaincode is installed on peer0.org2[0m
+[0;34mUsing organization 1[0m
++ peer lifecycle chaincode queryinstalled --output json
++ jq -r 'try (.installed_chaincodes[].package_id)'
++ grep '^kvstore_1.0:2ea7b22cef577b6fa4ca655d0dab5283b6734bee9c35f654d050c69a24ed4de2$'
++ res=0
+kvstore_1.0:2ea7b22cef577b6fa4ca655d0dab5283b6734bee9c35f654d050c69a24ed4de2
+[0;32mQuery installed successful on peer0.org1 on channel[0m
+[0;34mUsing organization 1[0m
++ peer lifecycle chaincode approveformyorg -o localhost:7050 --ordererTLSHostnameOverride orderer.example.com --tls --cafile ~/bench/deploy/docker/.cache/fabric-samples/test-network/organizations/ordererOrganizations/example.com/tlsca/tlsca.example.com-cert.pem --channelID mychannel --name kvstore --version 1.0 --package-id kvstore_1.0:2ea7b22cef577b6fa4ca655d0dab5283b6734bee9c35f654d050c69a24ed4de2 --sequence 1
++ res=0
+[34m2026-09-14 23:06:23.504 IST 0001 INFO[0m [chaincodeCmd] [34;1mClientWait[0m -> txid [209e1de1833e79b2bbdd8a631abab53acc94927d658b880eac1349e1bc145c50] committed with status (VALID) at localhost:7051
+[0;32mChaincode definition approved on peer0.org1 on channel 'mychannel'[0m
+[0;34mUsing organization 1[0m
+[0;34mChecking the commit readiness of the chaincode definition on peer0.org1 on channel 'mychannel'...[0m
+[0;34mAttempting to check the commit readiness of the chaincode definition on peer0.org1, Retry after 3 seconds.[0m
++ peer lifecycle chaincode checkcommitreadiness --channelID mychannel --name kvstore --version 1.0 --sequence 1 --output json
++ res=0
+{
+	"approvals": {
+		"Org1MSP": true,
+		"Org2MSP": false
+	}
+}
+[0;34mChecking the commit readiness of the chaincode definition successful on peer0.org1 on channel 'mychannel'[0m
+[0;34mUsing organization 2[0m
+[0;34mChecking the commit readiness of the chaincode definition on peer0.org2 on channel 'mychannel'...[0m
+[0;34mAttempting to check the commit readiness of the chaincode definition on peer0.org2, Retry after 3 seconds.[0m
++ peer lifecycle chaincode checkcommitreadiness --channelID mychannel --name kvstore --version 1.0 --sequence 1 --output json
++ res=0
+{
+	"approvals": {
+		"Org1MSP": true,
+		"Org2MSP": false
+	}
+}
+[0;34mChecking the commit readiness of the chaincode definition successful on peer0.org2 on channel 'mychannel'[0m
+[0;34mUsing organization 2[0m
++ peer lifecycle chaincode approveformyorg -o localhost:7050 --ordererTLSHostnameOverride orderer.example.com --tls --cafile ~/bench/deploy/docker/.cache/fabric-samples/test-network/organizations/ordererOrganizations/example.com/tlsca/tlsca.example.com-cert.pem --channelID mychannel --name kvstore --version 1.0 --package-id kvstore_1.0:2ea7b22cef577b6fa4ca655d0dab5283b6734bee9c35f654d050c69a24ed4de2 --sequence 1
++ res=0
+[34m2026-09-14 23:06:30.774 IST 0001 INFO[0m [chaincodeCmd] [34;1mClientWait[0m -> txid [798f033021167f767b3329195c136dc2022c4d74789e395a4fa4772c2778db52] committed with status (VALID) at localhost:9051
+[0;32mChaincode definition approved on peer0.org2 on channel 'mychannel'[0m
+[0;34mUsing organization 1[0m
+[0;34mChecking the commit readiness of the chaincode definition on peer0.org1 on channel 'mychannel'...[0m
+[0;34mAttempting to check the commit readiness of the chaincode definition on peer0.org1, Retry after 3 seconds.[0m
++ peer lifecycle chaincode checkcommitreadiness --channelID mychannel --name kvstore --version 1.0 --sequence 1 --output json
++ res=0
+{
+	"approvals": {
+		"Org1MSP": true,
+		"Org2MSP": true
+	}
+}
+[0;34mChecking the commit readiness of the chaincode definition successful on peer0.org1 on channel 'mychannel'[0m
+[0;34mUsing organization 2[0m
+[0;34mChecking the commit readiness of the chaincode definition on peer0.org2 on channel 'mychannel'...[0m
+[0;34mAttempting to check the commit readiness of the chaincode definition on peer0.org2, Retry after 3 seconds.[0m
++ peer lifecycle chaincode checkcommitreadiness --channelID mychannel --name kvstore --version 1.0 --sequence 1 --output json
++ res=0
+{
+	"approvals": {
+		"Org1MSP": true,
+		"Org2MSP": true
+	}
+}
+[0;34mChecking the commit readiness of the chaincode definition successful on peer0.org2 on channel 'mychannel'[0m
+[0;34mUsing organization 1[0m
+[0;34mUsing organization 2[0m
++ peer lifecycle chaincode commit -o localhost:7050 --ordererTLSHostnameOverride orderer.example.com --tls --cafile ~/bench/deploy/docker/.cache/fabric-samples/test-network/organizations/ordererOrganizations/example.com/tlsca/tlsca.example.com-cert.pem --channelID mychannel --name kvstore --peerAddresses localhost:7051 --tlsRootCertFiles ~/bench/deploy/docker/.cache/fabric-samples/test-network/organizations/peerOrganizations/org1.example.com/tlsca/tlsca.org1.example.com-cert.pem --peerAddresses localhost:9051 --tlsRootCertFiles ~/bench/deploy/docker/.cache/fabric-samples/test-network/organizations/peerOrganizations/org2.example.com/tlsca/tlsca.org2.example.com-cert.pem --version 1.0 --sequence 1
++ res=0
+[34m2026-09-14 23:06:38.172 IST 0001 INFO[0m [chaincodeCmd] [34;1mClientWait[0m -> txid [093df26a243ab959139aee2d4c388ab67ee41224207e793a8ef6235d033dfc4a] committed with status (VALID) at localhost:9051
+[34m2026-09-14 23:06:38.177 IST 0002 INFO[0m [chaincodeCmd] [34;1mClientWait[0m -> txid [093df26a243ab959139aee2d4c388ab67ee41224207e793a8ef6235d033dfc4a] committed with status (VALID) at localhost:7051
+[0;32mChaincode definition committed on channel 'mychannel'[0m
+[0;34mUsing organization 1[0m
+[0;34mQuerying chaincode definition on peer0.org1 on channel 'mychannel'...[0m
+[0;34mAttempting to Query committed status on peer0.org1, Retry after 3 seconds.[0m
++ peer lifecycle chaincode querycommitted --channelID mychannel --name kvstore
++ res=0
+Committed chaincode definition for chaincode 'kvstore' on channel 'mychannel':
+Version: 1.0, Sequence: 1, Endorsement Plugin: escc, Validation Plugin: vscc, Approvals: [Org1MSP: true, Org2MSP: true]
+[0;32mQuery chaincode definition successful on peer0.org1 on channel 'mychannel'[0m
+[0;34mUsing organization 2[0m
+[0;34mQuerying chaincode definition on peer0.org2 on channel 'mychannel'...[0m
+[0;34mAttempting to Query committed status on peer0.org2, Retry after 3 seconds.[0m
++ peer lifecycle chaincode querycommitted --channelID mychannel --name kvstore
++ res=0
+Committed chaincode definition for chaincode 'kvstore' on channel 'mychannel':
+Version: 1.0, Sequence: 1, Endorsement Plugin: escc, Validation Plugin: vscc, Approvals: [Org1MSP: true, Org2MSP: true]
+[0;32mQuery chaincode definition successful on peer0.org2 on channel 'mychannel'[0m
+[0;34mChaincode initialization is not required[0m
+[deploy 23:06:44] resource budget for fabric-cft: 8 CPU / 8 GB across 5 containers = 1.60 CPU each; memory by role weight (peer=4 statedb=4 orderer=2 other=1, total weight 12)
+[deploy 23:06:44]   dev-peer0.org1.example.com-kvstore_1.0-2ea7b22cef577b6fa4ca655d0dab5283b6734bee9c35f654d050c69a24ed4de2  (other) 682m
+[deploy 23:06:44]   dev-peer0.org2.example.com-kvstore_1.0-2ea7b22cef577b6fa4ca655d0dab5283b6734bee9c35f654d050c69a24ed4de2  (other) 682m
+[deploy 23:06:44]   orderer.example.com  (orderer) 1365m
+[deploy 23:06:44]   peer0.org1.example.com  (peer) 2730m
+[deploy 23:06:44]   peer0.org2.example.com  (peer) 2730m
+[deploy 23:06:44] wrote ~/bench/deploy/docker/fabric-cft/connection.env
+[deploy 23:06:44] fabric-cft up. peer :7051  orderer :7050  operations :9443

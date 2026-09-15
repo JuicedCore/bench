@@ -1,0 +1,332 @@
+{
+  "manifest": {
+    "run_name": "quick-smoke",
+    "platform": "fabric-cft",
+    "workload": "kv-write",
+    "profile": "local",
+    "normalized": true,
+    "started_at": "2026-09-11T14:24:36.516044846+05:30",
+    "ended_at": "2026-09-11T14:25:07.048594739+05:30",
+    "harness_git_sha": "4e4cc55",
+    "platform_version": "2.5.16",
+    "state_db": "leveldb",
+    "orderer_batch": {
+      "MaxMessageCount": 100,
+      "AbsoluteMaxBytes": "10 MB",
+      "PreferredMaxBytes": "2 MB",
+      "BatchTimeout": "1s"
+    },
+    "crypto": {
+      "signature_alg": "ECDSA-P256",
+      "hash_alg": "SHA-256",
+      "per_tx_endorsement_verify": true,
+      "msp_note": "X.509 MSP; endorsement signatures verified by every committing peer during VSCC"
+    },
+    "resource_limit_per_container": {
+      "CPUs": 2,
+      "Memory": "2g"
+    },
+    "nodes": {
+      "ca": 1,
+      "orderer": 1,
+      "peer": 1
+    },
+    "seed": 1,
+    "key_space": 5000,
+    "key_distribution": "uniform",
+    "zipfian_constant": 0,
+    "read_write_ratio": 0,
+    "value_size_bytes": 64,
+    "warmup_sec": 5,
+    "cooldown_sec": 3
+  },
+  "phases": [
+    {
+      "name": "single",
+      "offered_tps": 50,
+      "window": {
+        "phase_start": "2026-09-11T14:24:36.522773041+05:30",
+        "win_start": "2026-09-11T14:24:41.522773041+05:30",
+        "win_end": "2026-09-11T14:25:04.044035086+05:30"
+      },
+      "result": {
+        "wall_clock_sec": 22.521262045,
+        "submitted": 1127,
+        "committed": 1127,
+        "invalid": 0,
+        "errored": 0,
+        "timed_out": 0,
+        "confirmed_tps": 50.04160058828533,
+        "offered_tps": 50.04160058828533,
+        "failure_rate": 0,
+        "e2e_latency": {
+          "name": "e2e",
+          "count": 1127,
+          "min_ms": 64.93,
+          "max_ms": 1096.7,
+          "mean_ms": 588.1175936113577,
+          "stddev_ms": 294.6513436026097,
+          "percentiles_ms": {
+            "p1": 86.46,
+            "p10": 176.51,
+            "p25": 331.26,
+            "p5": 127.81,
+            "p50": 588.29,
+            "p75": 845.31,
+            "p90": 994.82,
+            "p95": 1044.99,
+            "p99": 1087.49,
+            "p99.9": 1096.7,
+            "p99.99": 1096.7
+          }
+        },
+        "submit_latency": {
+          "name": "submit",
+          "count": 1127,
+          "min_ms": 2.64,
+          "max_ms": 61.76,
+          "mean_ms": 5.434589174800357,
+          "stddev_ms": 7.412376363777385,
+          "percentiles_ms": {
+            "p1": 2.97,
+            "p10": 3.27,
+            "p25": 3.48,
+            "p5": 3.16,
+            "p50": 3.77,
+            "p75": 4.16,
+            "p90": 5.5,
+            "p95": 10.58,
+            "p99": 52.35,
+            "p99.9": 58.43,
+            "p99.99": 61.76
+          }
+        },
+        "commit_latency": {
+          "name": "commit",
+          "count": 1127,
+          "min_ms": 60.93,
+          "max_ms": 1092.61,
+          "mean_ms": 582.0898101153504,
+          "stddev_ms": 292.3744294185699,
+          "percentiles_ms": {
+            "p1": 81.86,
+            "p10": 172.42,
+            "p25": 326.4,
+            "p5": 123.2,
+            "p50": 583.17,
+            "p75": 841.73,
+            "p90": 984.58,
+            "p95": 1014.27,
+            "p99": 1080.32,
+            "p99.9": 1092.61,
+            "p99.99": 1092.61
+          }
+        },
+        "send_gap": {
+          "name": "send_gap",
+          "count": 1127,
+          "min_ms": 0.02,
+          "max_ms": 4.62,
+          "mean_ms": 0.5912280390417037,
+          "stddev_ms": 0.3337777879175864,
+          "percentiles_ms": {
+            "p1": 0.03,
+            "p10": 0.17,
+            "p25": 0.35,
+            "p5": 0.07,
+            "p50": 0.57,
+            "p75": 0.84,
+            "p90": 1,
+            "p95": 1.06,
+            "p99": 1.16,
+            "p99.9": 2.22,
+            "p99.99": 4.62
+          }
+        },
+        "invariant_ok": true
+      }
+    }
+  ],
+  "headline": {
+    "wall_clock_sec": 22.521262045,
+    "submitted": 1127,
+    "committed": 1127,
+    "invalid": 0,
+    "errored": 0,
+    "timed_out": 0,
+    "confirmed_tps": 50.04160058828533,
+    "offered_tps": 50.04160058828533,
+    "failure_rate": 0,
+    "e2e_latency": {
+      "name": "e2e",
+      "count": 1127,
+      "min_ms": 64.93,
+      "max_ms": 1096.7,
+      "mean_ms": 588.1175936113577,
+      "stddev_ms": 294.6513436026097,
+      "percentiles_ms": {
+        "p1": 86.46,
+        "p10": 176.51,
+        "p25": 331.26,
+        "p5": 127.81,
+        "p50": 588.29,
+        "p75": 845.31,
+        "p90": 994.82,
+        "p95": 1044.99,
+        "p99": 1087.49,
+        "p99.9": 1096.7,
+        "p99.99": 1096.7
+      }
+    },
+    "submit_latency": {
+      "name": "submit",
+      "count": 1127,
+      "min_ms": 2.64,
+      "max_ms": 61.76,
+      "mean_ms": 5.434589174800357,
+      "stddev_ms": 7.412376363777385,
+      "percentiles_ms": {
+        "p1": 2.97,
+        "p10": 3.27,
+        "p25": 3.48,
+        "p5": 3.16,
+        "p50": 3.77,
+        "p75": 4.16,
+        "p90": 5.5,
+        "p95": 10.58,
+        "p99": 52.35,
+        "p99.9": 58.43,
+        "p99.99": 61.76
+      }
+    },
+    "commit_latency": {
+      "name": "commit",
+      "count": 1127,
+      "min_ms": 60.93,
+      "max_ms": 1092.61,
+      "mean_ms": 582.0898101153504,
+      "stddev_ms": 292.3744294185699,
+      "percentiles_ms": {
+        "p1": 81.86,
+        "p10": 172.42,
+        "p25": 326.4,
+        "p5": 123.2,
+        "p50": 583.17,
+        "p75": 841.73,
+        "p90": 984.58,
+        "p95": 1014.27,
+        "p99": 1080.32,
+        "p99.9": 1092.61,
+        "p99.99": 1092.61
+      }
+    },
+    "send_gap": {
+      "name": "send_gap",
+      "count": 1127,
+      "min_ms": 0.02,
+      "max_ms": 4.62,
+      "mean_ms": 0.5912280390417037,
+      "stddev_ms": 0.3337777879175864,
+      "percentiles_ms": {
+        "p1": 0.03,
+        "p10": 0.17,
+        "p25": 0.35,
+        "p5": 0.07,
+        "p50": 0.57,
+        "p75": 0.84,
+        "p90": 1,
+        "p95": 1.06,
+        "p99": 1.16,
+        "p99.9": 2.22,
+        "p99.99": 4.62
+      }
+    },
+    "invariant_ok": true
+  },
+  "system_samples": [
+    {
+      "t": "2026-09-11T14:24:39.566690149+05:30",
+      "cpu_percent": 35.900000000000006,
+      "mem_bytes": 591554148,
+      "containers": 5
+    },
+    {
+      "t": "2026-09-11T14:24:41.583054734+05:30",
+      "cpu_percent": 34.269999999999996,
+      "mem_bytes": 608593508,
+      "containers": 5
+    },
+    {
+      "t": "2026-09-11T14:24:43.59968011+05:30",
+      "cpu_percent": 36.14,
+      "mem_bytes": 626167642,
+      "containers": 5
+    },
+    {
+      "t": "2026-09-11T14:24:45.613804903+05:30",
+      "cpu_percent": 40.96,
+      "mem_bytes": 628558395,
+      "containers": 5
+    },
+    {
+      "t": "2026-09-11T14:24:47.630690533+05:30",
+      "cpu_percent": 36.25,
+      "mem_bytes": 632448613,
+      "containers": 5
+    },
+    {
+      "t": "2026-09-11T14:24:49.646957149+05:30",
+      "cpu_percent": 33.14,
+      "mem_bytes": 638939298,
+      "containers": 5
+    },
+    {
+      "t": "2026-09-11T14:24:51.663291249+05:30",
+      "cpu_percent": 35.16,
+      "mem_bytes": 638215780,
+      "containers": 5
+    },
+    {
+      "t": "2026-09-11T14:24:53.678107575+05:30",
+      "cpu_percent": 33.32,
+      "mem_bytes": 637030889,
+      "containers": 5
+    },
+    {
+      "t": "2026-09-11T14:24:55.694653909+05:30",
+      "cpu_percent": 32.68,
+      "mem_bytes": 642525427,
+      "containers": 5
+    },
+    {
+      "t": "2026-09-11T14:24:57.711375231+05:30",
+      "cpu_percent": 36.150000000000006,
+      "mem_bytes": 648009481,
+      "containers": 5
+    },
+    {
+      "t": "2026-09-11T14:24:59.729160438+05:30",
+      "cpu_percent": 37.46,
+      "mem_bytes": 650526063,
+      "containers": 5
+    },
+    {
+      "t": "2026-09-11T14:25:01.744044287+05:30",
+      "cpu_percent": 34.540000000000006,
+      "mem_bytes": 659910818,
+      "containers": 5
+    },
+    {
+      "t": "2026-09-11T14:25:03.758640246+05:30",
+      "cpu_percent": 34.67,
+      "mem_bytes": 660686764,
+      "containers": 5
+    },
+    {
+      "t": "2026-09-11T14:25:05.77450379+05:30",
+      "cpu_percent": 36.66,
+      "mem_bytes": 658474268,
+      "containers": 5
+    }
+  ]
+}

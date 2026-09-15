@@ -1,0 +1,22 @@
+run:        probe-sweep
+platform:   fabric-bft  (version 3.1.5)
+workload:   kv-write   normalized=true
+profile:    local-small   state_db=leveldb
+resources:  8 CPU / 8 GB total over 8 containers (1.00 CPU / 1024m each)
+batch:      msgcount=100 timeout=1s preferred=2 MB
+crypto:     sig=ECDSA-P256 hash=SHA-256 per_tx_endorse_verify=true
+caveats:
+  - sweep aborted early after 2 consecutive failed steps; 4 higher step(s) were never offered
+
+phase           offered     conf_tps  goodput  fail_rate    e2e_p50    e2e_p99    gap_p99    com_p50  verdict
+probe                10          9.7      97%     0.0000     598.02    1112.06       1.16     593.41  
+sweep-100           100        100.1     100%     0.0000     714.75    1306.62       1.10     707.07  held
+sweep-250           250        250.1     100%     0.0000     344.06     542.21       1.08     338.69  held
+sweep-500           500        500.1     100%     0.0000     249.09     375.55       1.06     201.98  held
+sweep-1000         1000          0.0       0%     1.0000       0.00       0.00       0.00       0.00  failure rate 100.00% > 2.00%
+sweep-2000         2000          0.0       0%     1.0000       0.00       0.00       0.00       0.00  failure rate 100.00% > 2.00%
+hold                450          0.0       0%     1.0000       0.00       0.00       0.00       0.00  
+
+sweep aborted early; steps never offered: [3500 5000 7500 10000]
+detected saturation: ~500 offered TPS
+HEADLINE  confirmed_tps=0.0  fail_rate=1.0000  e2e p50/p99=0.00/0.00 ms  invariant_ok=true

@@ -1,0 +1,363 @@
+{
+  "manifest": {
+    "run_name": "quick-smoke",
+    "platform": "drunix",
+    "workload": "kv-write",
+    "profile": "local-small",
+    "normalized": true,
+    "started_at": "2026-09-14T23:13:50.485905488+05:30",
+    "ended_at": "2026-09-14T23:14:21.030590671+05:30",
+    "harness_git_sha": "63ab885",
+    "platform_version": "drunix-ddc0eae77815",
+    "state_db": "yugabyte",
+    "state_db_requested": "leveldb",
+    "orderer_batch": {
+      "MaxMessageCount": 100,
+      "AbsoluteMaxBytes": "10 MB",
+      "PreferredMaxBytes": "2 MB",
+      "BatchTimeout": "1s"
+    },
+    "crypto": {
+      "signature_alg": "ECDSA-P256",
+      "hash_alg": "SHA-256",
+      "per_tx_endorsement_verify": true,
+      "msp_note": "Drunix (HLF 2.5.x fork); Lite Peer endorses, Committing Peer validates+commits"
+    },
+    "resource_limit_per_container": {
+      "CPUs": 0.62,
+      "Memory": ""
+    },
+    "resource_memory_by_container": {
+      "cp.org1": "1024m",
+      "cp.org2": "1024m",
+      "dev-peer0.org1.example.com-kvstore_1.0-2ea7b22cef577b6fa4ca655d0dab5283b6734bee9c35f654d050c69a24ed4de2": "256m",
+      "dev-peer0.org2.example.com-kvstore_1.0-2ea7b22cef577b6fa4ca655d0dab5283b6734bee9c35f654d050c69a24ed4de2": "256m",
+      "hlf_keydb_org1msp": "256m",
+      "hlf_keydb_org2msp": "256m",
+      "lp1.org1": "1024m",
+      "lp1.org2": "1024m",
+      "orderer.example.com": "512m",
+      "vs1.org1": "256m",
+      "vs1.org2": "256m",
+      "yugabyte-org1": "1024m",
+      "yugabyte-org2": "1024m"
+    },
+    "resource_memory_weights": "peer=4 statedb=4 orderer=2 other=1",
+    "resource_containers": 13,
+    "resource_cpus_total": 8,
+    "resource_memory_total_gb": 8,
+    "nodes": {
+      "chaincode": 2,
+      "committing_peer": 2,
+      "keydb": 2,
+      "lite_peer": 2,
+      "orderer": 1,
+      "validation_service": 2,
+      "yugabyte": 2
+    },
+    "generators": 2,
+    "seed": 1,
+    "key_space": 5000,
+    "key_distribution": "uniform",
+    "zipfian_constant": 0,
+    "read_write_ratio": 0,
+    "value_size_bytes": 64,
+    "warmup_sec": 5,
+    "cooldown_sec": 3,
+    "caveats": [
+      "drunix ran on YugabyteDB (its shipped test-network default); LevelDB parity is unavailable, so the state-DB variable is NOT held constant vs fabric-cft for this run",
+      "drunix write values are JSON-wrapped client-side to survive a YugabyteDB statedb bug (non-JSON values panic the Committing Peer); the on-wire payload format differs from the shared kv workload on other platforms for this run",
+      "state-db parity not held: run requested leveldb, platform actually ran yugabyte",
+      "native metrics scrape of http://localhost:9444/metrics failed: scrape http://localhost:9444/metrics: parser panic: Invalid name validation scheme requested: unset (informational metrics only; harness numbers unaffected)"
+    ]
+  },
+  "phases": [
+    {
+      "name": "single",
+      "offered_tps": 50,
+      "window": {
+        "phase_start": "2026-09-14T23:13:50.497125305+05:30",
+        "win_start": "2026-09-14T23:13:55.497125305+05:30",
+        "win_end": "2026-09-14T23:14:17.497125305+05:30"
+      },
+      "result": {
+        "wall_clock_sec": 22,
+        "submitted": 1100,
+        "committed": 1100,
+        "invalid": 0,
+        "errored": 0,
+        "timed_out": 0,
+        "confirmed_tps": 50,
+        "offered_tps": 50,
+        "failure_rate": 0,
+        "e2e_latency": {
+          "name": "e2e",
+          "count": 1100,
+          "min_ms": 181.89,
+          "max_ms": 2215.94,
+          "mean_ms": 1196.4049454545452,
+          "stddev_ms": 587.5488723574925,
+          "percentiles_ms": {
+            "p1": 202.88,
+            "p10": 383.49,
+            "p25": 690.69,
+            "p5": 290.82,
+            "p50": 1183.74,
+            "p75": 1708.03,
+            "p90": 2015.23,
+            "p95": 2109.44,
+            "p99": 2189.31,
+            "p99.9": 2215.94,
+            "p99.99": 2215.94
+          }
+        },
+        "submit_latency": {
+          "name": "submit",
+          "count": 1100,
+          "min_ms": 2.79,
+          "max_ms": 8.58,
+          "mean_ms": 3.5410290909090882,
+          "stddev_ms": 0.5780839724068806,
+          "percentiles_ms": {
+            "p1": 2.88,
+            "p10": 3.13,
+            "p25": 3.28,
+            "p5": 3.01,
+            "p50": 3.42,
+            "p75": 3.66,
+            "p90": 3.95,
+            "p95": 4.23,
+            "p99": 6.12,
+            "p99.9": 8.55,
+            "p99.99": 8.58
+          }
+        },
+        "commit_latency": {
+          "name": "commit",
+          "count": 1100,
+          "min_ms": 178.18,
+          "max_ms": 2211.84,
+          "mean_ms": 1192.2643781818178,
+          "stddev_ms": 587.4859313303853,
+          "percentiles_ms": {
+            "p1": 198.66,
+            "p10": 379.65,
+            "p25": 687.1,
+            "p5": 287.23,
+            "p50": 1179.65,
+            "p75": 1704.96,
+            "p90": 2010.11,
+            "p95": 2105.34,
+            "p99": 2185.22,
+            "p99.9": 2211.84,
+            "p99.99": 2211.84
+          }
+        },
+        "send_gap": {
+          "name": "send_gap",
+          "count": 1100,
+          "min_ms": 0.02,
+          "max_ms": 2.1,
+          "mean_ms": 0.5828609090909097,
+          "stddev_ms": 0.32279400934946245,
+          "percentiles_ms": {
+            "p1": 0.03,
+            "p10": 0.16,
+            "p25": 0.33,
+            "p5": 0.05,
+            "p50": 0.58,
+            "p75": 0.84,
+            "p90": 0.99,
+            "p95": 1.04,
+            "p99": 1.24,
+            "p99.9": 2.06,
+            "p99.99": 2.1
+          }
+        },
+        "invariant_ok": true
+      }
+    }
+  ],
+  "headline": {
+    "wall_clock_sec": 22,
+    "submitted": 1100,
+    "committed": 1100,
+    "invalid": 0,
+    "errored": 0,
+    "timed_out": 0,
+    "confirmed_tps": 50,
+    "offered_tps": 50,
+    "failure_rate": 0,
+    "e2e_latency": {
+      "name": "e2e",
+      "count": 1100,
+      "min_ms": 181.89,
+      "max_ms": 2215.94,
+      "mean_ms": 1196.4049454545452,
+      "stddev_ms": 587.5488723574925,
+      "percentiles_ms": {
+        "p1": 202.88,
+        "p10": 383.49,
+        "p25": 690.69,
+        "p5": 290.82,
+        "p50": 1183.74,
+        "p75": 1708.03,
+        "p90": 2015.23,
+        "p95": 2109.44,
+        "p99": 2189.31,
+        "p99.9": 2215.94,
+        "p99.99": 2215.94
+      }
+    },
+    "submit_latency": {
+      "name": "submit",
+      "count": 1100,
+      "min_ms": 2.79,
+      "max_ms": 8.58,
+      "mean_ms": 3.5410290909090882,
+      "stddev_ms": 0.5780839724068806,
+      "percentiles_ms": {
+        "p1": 2.88,
+        "p10": 3.13,
+        "p25": 3.28,
+        "p5": 3.01,
+        "p50": 3.42,
+        "p75": 3.66,
+        "p90": 3.95,
+        "p95": 4.23,
+        "p99": 6.12,
+        "p99.9": 8.55,
+        "p99.99": 8.58
+      }
+    },
+    "commit_latency": {
+      "name": "commit",
+      "count": 1100,
+      "min_ms": 178.18,
+      "max_ms": 2211.84,
+      "mean_ms": 1192.2643781818178,
+      "stddev_ms": 587.4859313303853,
+      "percentiles_ms": {
+        "p1": 198.66,
+        "p10": 379.65,
+        "p25": 687.1,
+        "p5": 287.23,
+        "p50": 1179.65,
+        "p75": 1704.96,
+        "p90": 2010.11,
+        "p95": 2105.34,
+        "p99": 2185.22,
+        "p99.9": 2211.84,
+        "p99.99": 2211.84
+      }
+    },
+    "send_gap": {
+      "name": "send_gap",
+      "count": 1100,
+      "min_ms": 0.02,
+      "max_ms": 2.1,
+      "mean_ms": 0.5828609090909097,
+      "stddev_ms": 0.32279400934946245,
+      "percentiles_ms": {
+        "p1": 0.03,
+        "p10": 0.16,
+        "p25": 0.33,
+        "p5": 0.05,
+        "p50": 0.58,
+        "p75": 0.84,
+        "p90": 0.99,
+        "p95": 1.04,
+        "p99": 1.24,
+        "p99.9": 2.06,
+        "p99.99": 2.1
+      }
+    },
+    "invariant_ok": true
+  },
+  "system_samples": [
+    {
+      "t": "2026-09-14T23:13:53.562048414+05:30",
+      "cpu_percent": 169.23000000000002,
+      "mem_bytes": 2389547411,
+      "containers": 13
+    },
+    {
+      "t": "2026-09-14T23:13:55.590183419+05:30",
+      "cpu_percent": 146.46999999999997,
+      "mem_bytes": 2600353131,
+      "containers": 13
+    },
+    {
+      "t": "2026-09-14T23:13:57.614750901+05:30",
+      "cpu_percent": 53.04,
+      "mem_bytes": 2650946922,
+      "containers": 13
+    },
+    {
+      "t": "2026-09-14T23:13:59.638397073+05:30",
+      "cpu_percent": 45.39999999999999,
+      "mem_bytes": 2660793051,
+      "containers": 13
+    },
+    {
+      "t": "2026-09-14T23:14:01.668289305+05:30",
+      "cpu_percent": 54.64,
+      "mem_bytes": 2695668689,
+      "containers": 13
+    },
+    {
+      "t": "2026-09-14T23:14:03.692461111+05:30",
+      "cpu_percent": 44.68999999999999,
+      "mem_bytes": 2680663567,
+      "containers": 13
+    },
+    {
+      "t": "2026-09-14T23:14:05.717914736+05:30",
+      "cpu_percent": 49.38,
+      "mem_bytes": 2684899813,
+      "containers": 13
+    },
+    {
+      "t": "2026-09-14T23:14:07.745675822+05:30",
+      "cpu_percent": 40.339999999999996,
+      "mem_bytes": 2685707217,
+      "containers": 13
+    },
+    {
+      "t": "2026-09-14T23:14:09.771217219+05:30",
+      "cpu_percent": 39.71000000000001,
+      "mem_bytes": 2688706145,
+      "containers": 13
+    },
+    {
+      "t": "2026-09-14T23:14:11.797360565+05:30",
+      "cpu_percent": 42.779999999999994,
+      "mem_bytes": 2703690295,
+      "containers": 13
+    },
+    {
+      "t": "2026-09-14T23:14:13.823564654+05:30",
+      "cpu_percent": 43.849999999999994,
+      "mem_bytes": 2658748327,
+      "containers": 13
+    },
+    {
+      "t": "2026-09-14T23:14:15.848669767+05:30",
+      "cpu_percent": 44.89000000000001,
+      "mem_bytes": 2660090506,
+      "containers": 13
+    },
+    {
+      "t": "2026-09-14T23:14:17.877504428+05:30",
+      "cpu_percent": 46.64,
+      "mem_bytes": 2661998913,
+      "containers": 13
+    },
+    {
+      "t": "2026-09-14T23:14:19.902671345+05:30",
+      "cpu_percent": 40.93999999999999,
+      "mem_bytes": 2663204775,
+      "containers": 13
+    }
+  ]
+}

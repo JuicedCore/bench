@@ -1,0 +1,32 @@
+time=2026-09-14T23:46:08.093+05:30 level=INFO msg="run starting" workload=kv-write profile=local-small normalized=true out_dir=results/fabricx/20260914-234608
+time=2026-09-14T23:46:08.093+05:30 level=WARN msg=caveat text="state-db parity not held: run requested leveldb, platform actually ran postgres"
+time=2026-09-14T23:46:08.093+05:30 level=INFO msg="adapter setup"
+time=2026-09-14T23:46:08.115+05:30 level=INFO msg="setup complete" component=adapter routers=localhost:6022,localhost:6122,localhost:6222,localhost:6322 deliver=localhost:4001 channel=arma namespace=0 broadcast_streams=256
+time=2026-09-14T23:46:08.115+05:30 level=INFO msg="phase start" phase=probe offered_tps=10 workers=0 duration=30s
+time=2026-09-14T23:46:38.958+05:30 level=DEBUG msg="phase shorter than warmup+cooldown; measuring whole phase" phase=probe
+time=2026-09-14T23:46:38.959+05:30 level=INFO msg="phase end" phase=probe submitted=300 committed=300 confirmed_tps=10.0 fail_rate=0.0000 e2e_p99_ms=1509.38
+time=2026-09-14T23:46:38.959+05:30 level=INFO msg="phase start" phase=sweep-100 offered_tps=100 workers=0 duration=1m0s
+time=2026-09-14T23:47:39.963+05:30 level=INFO msg="phase end" phase=sweep-100 submitted=1500 committed=1500 confirmed_tps=100.0 fail_rate=0.0000 e2e_p99_ms=1496.06
+time=2026-09-14T23:47:39.964+05:30 level=INFO msg="phase start" phase=sweep-250 offered_tps=250 workers=0 duration=1m0s
+time=2026-09-14T23:48:41.129+05:30 level=INFO msg="phase end" phase=sweep-250 submitted=3750 committed=3750 confirmed_tps=250.0 fail_rate=0.0000 e2e_p99_ms=1002.50
+time=2026-09-14T23:48:41.129+05:30 level=INFO msg="phase start" phase=sweep-500 offered_tps=500 workers=0 duration=1m0s
+time=2026-09-14T23:49:42.358+05:30 level=INFO msg="phase end" phase=sweep-500 submitted=7500 committed=7500 confirmed_tps=500.0 fail_rate=0.0000 e2e_p99_ms=819.20
+time=2026-09-14T23:49:42.358+05:30 level=INFO msg="phase start" phase=sweep-1000 offered_tps=1000 workers=0 duration=1m0s
+time=2026-09-14T23:50:43.679+05:30 level=INFO msg="phase end" phase=sweep-1000 submitted=15000 committed=15000 confirmed_tps=1000.0 fail_rate=0.0000 e2e_p99_ms=737.79
+time=2026-09-14T23:50:43.679+05:30 level=INFO msg="phase start" phase=sweep-2000 offered_tps=2000 workers=0 duration=1m0s
+time=2026-09-14T23:51:45.311+05:30 level=INFO msg="phase end" phase=sweep-2000 submitted=30000 committed=30000 confirmed_tps=2000.0 fail_rate=0.0000 e2e_p99_ms=722.43
+time=2026-09-14T23:51:45.311+05:30 level=INFO msg="phase start" phase=sweep-3500 offered_tps=3500 workers=0 duration=1m0s
+time=2026-09-14T23:52:51.675+05:30 level=INFO msg="phase end" phase=sweep-3500 submitted=52500 committed=52500 confirmed_tps=3500.0 fail_rate=0.0000 e2e_p99_ms=6385.66
+time=2026-09-14T23:52:51.675+05:30 level=INFO msg="phase start" phase=sweep-5000 offered_tps=5000 workers=0 duration=1m0s
+time=2026-09-14T23:54:04.459+05:30 level=INFO msg="phase end" phase=sweep-5000 submitted=75000 committed=36052 confirmed_tps=2403.5 fail_rate=0.5193 e2e_p99_ms=22167.55
+time=2026-09-14T23:54:04.459+05:30 level=WARN msg="phase errors" phase=sweep-5000 count=38948 message="not sent: N transactions already in flight (platform is not finalizing)"
+time=2026-09-14T23:54:04.459+05:30 level=INFO msg="phase start" phase=sweep-7500 offered_tps=7500 workers=0 duration=1m0s
+time=2026-09-14T23:55:36.826+05:30 level=INFO msg="phase end" phase=sweep-7500 submitted=112500 committed=0 confirmed_tps=0.0 fail_rate=1.0000 e2e_p99_ms=0.00
+time=2026-09-14T23:55:36.826+05:30 level=WARN msg="phase errors" phase=sweep-7500 count=107934 message="not sent: N transactions already in flight (platform is not finalizing)"
+time=2026-09-14T23:55:36.826+05:30 level=WARN msg="phase errors" phase=sweep-7500 count=4566 message="fabricx: finality timeout: tx N not seen on the deliver stream from localhost:4001 within 1m0s"
+time=2026-09-14T23:55:36.826+05:30 level=WARN msg=caveat text="platform container bench-fabricx-fabricx-arma-1 was OOM-killed at its memory limit and exited (after 23:55:08, exit code 137)"
+time=2026-09-14T23:55:36.863+05:30 level=INFO msg="captured container log" container=bench-fabricx-fabricx-arma-1 path=results/fabricx/20260914-234608/container-logs/bench-fabricx-fabricx-arma-1.log
+time=2026-09-14T23:55:36.863+05:30 level=WARN msg=caveat text="run stopped during sweep-7500 because a platform container failed; phases never run: sweep-10000, hold"
+time=2026-09-14T23:55:37.127+05:30 level=WARN msg=caveat text="native metrics scrape of http://localhost:9643/metrics failed: scrape http://localhost:9643/metrics: parser panic: Invalid name validation scheme requested: unset (informational metrics only; harness numbers unaffected)"
+time=2026-09-14T23:55:37.128+05:30 level=WARN msg="run has no headline: it did not complete a headline phase on a healthy platform; see caveats in summary.txt" dir=results/fabricx/20260914-234608
+time=2026-09-14T23:55:37.129+05:30 level=INFO msg="run finished" out_dir=results/fabricx/20260914-234608 caveats=4

@@ -1,0 +1,55 @@
+2026-09-14T17:35:14.929428658Z time=2026-09-14T17:35:14.929Z level=INFO source=node_exporter.go:216 msg="Starting node_exporter" version="(version=1.9.0, branch=HEAD, revision=02afa5c53c36123611533f2defea6ccd4546a9bb)"
+2026-09-14T17:35:14.929456290Z time=2026-09-14T17:35:14.929Z level=INFO source=node_exporter.go:217 msg="Build context" build_context="(go=go1.23.6, platform=linux/amd64, user=root@745e986f4d3a, date=20250217-07:22:48, tags=unknown)"
+2026-09-14T17:35:14.929874272Z time=2026-09-14T17:35:14.929Z level=INFO source=filesystem_common.go:266 msg="Parsed flag --collector.filesystem.mount-points-exclude" collector=filesystem flag=^/(dev|proc|run/credentials/.+|sys|var/lib/docker/.+|var/lib/containers/storage/.+)($|/)
+2026-09-14T17:35:14.929930388Z time=2026-09-14T17:35:14.929Z level=INFO source=filesystem_common.go:295 msg="Parsed flag --collector.filesystem.fs-types-exclude" collector=filesystem flag=^(autofs|binfmt_misc|bpf|cgroup2?|configfs|debugfs|devpts|devtmpfs|fusectl|hugetlbfs|iso9660|mqueue|nsfs|overlay|proc|procfs|pstore|rpc_pipefs|securityfs|selinuxfs|squashfs|sysfs|tracefs)$
+2026-09-14T17:35:14.929980453Z time=2026-09-14T17:35:14.929Z level=INFO source=diskstats_common.go:110 msg="Parsed flag --collector.diskstats.device-exclude" collector=diskstats flag=^(z?ram|loop|fd|(h|s|v|xv)d[a-z]|nvme\d+n\d+p)\d+$
+2026-09-14T17:35:14.930033744Z time=2026-09-14T17:35:14.930Z level=ERROR source=diskstats_linux.go:264 msg="Failed to open directory, disabling udev device properties" collector=diskstats path=/run/udev/data
+2026-09-14T17:35:14.930519674Z time=2026-09-14T17:35:14.930Z level=INFO source=node_exporter.go:135 msg="Enabled collectors"
+2026-09-14T17:35:14.930524643Z time=2026-09-14T17:35:14.930Z level=INFO source=node_exporter.go:141 msg=arp
+2026-09-14T17:35:14.930527639Z time=2026-09-14T17:35:14.930Z level=INFO source=node_exporter.go:141 msg=bcache
+2026-09-14T17:35:14.930530434Z time=2026-09-14T17:35:14.930Z level=INFO source=node_exporter.go:141 msg=bonding
+2026-09-14T17:35:14.930533189Z time=2026-09-14T17:35:14.930Z level=INFO source=node_exporter.go:141 msg=btrfs
+2026-09-14T17:35:14.930536906Z time=2026-09-14T17:35:14.930Z level=INFO source=node_exporter.go:141 msg=conntrack
+2026-09-14T17:35:14.930539742Z time=2026-09-14T17:35:14.930Z level=INFO source=node_exporter.go:141 msg=cpu
+2026-09-14T17:35:14.930542537Z time=2026-09-14T17:35:14.930Z level=INFO source=node_exporter.go:141 msg=cpufreq
+2026-09-14T17:35:14.930545372Z time=2026-09-14T17:35:14.930Z level=INFO source=node_exporter.go:141 msg=diskstats
+2026-09-14T17:35:14.930548108Z time=2026-09-14T17:35:14.930Z level=INFO source=node_exporter.go:141 msg=dmi
+2026-09-14T17:35:14.930550903Z time=2026-09-14T17:35:14.930Z level=INFO source=node_exporter.go:141 msg=edac
+2026-09-14T17:35:14.930553848Z time=2026-09-14T17:35:14.930Z level=INFO source=node_exporter.go:141 msg=entropy
+2026-09-14T17:35:14.930556584Z time=2026-09-14T17:35:14.930Z level=INFO source=node_exporter.go:141 msg=fibrechannel
+2026-09-14T17:35:14.930559329Z time=2026-09-14T17:35:14.930Z level=INFO source=node_exporter.go:141 msg=filefd
+2026-09-14T17:35:14.930562665Z time=2026-09-14T17:35:14.930Z level=INFO source=node_exporter.go:141 msg=filesystem
+2026-09-14T17:35:14.930565430Z time=2026-09-14T17:35:14.930Z level=INFO source=node_exporter.go:141 msg=hwmon
+2026-09-14T17:35:14.930574868Z time=2026-09-14T17:35:14.930Z level=INFO source=node_exporter.go:141 msg=infiniband
+2026-09-14T17:35:14.930581791Z time=2026-09-14T17:35:14.930Z level=INFO source=node_exporter.go:141 msg=ipvs
+2026-09-14T17:35:14.930584767Z time=2026-09-14T17:35:14.930Z level=INFO source=node_exporter.go:141 msg=loadavg
+2026-09-14T17:35:14.930587572Z time=2026-09-14T17:35:14.930Z level=INFO source=node_exporter.go:141 msg=mdadm
+2026-09-14T17:35:14.930590348Z time=2026-09-14T17:35:14.930Z level=INFO source=node_exporter.go:141 msg=meminfo
+2026-09-14T17:35:14.930593193Z time=2026-09-14T17:35:14.930Z level=INFO source=node_exporter.go:141 msg=netclass
+2026-09-14T17:35:14.930595978Z time=2026-09-14T17:35:14.930Z level=INFO source=node_exporter.go:141 msg=netdev
+2026-09-14T17:35:14.930598743Z time=2026-09-14T17:35:14.930Z level=INFO source=node_exporter.go:141 msg=netstat
+2026-09-14T17:35:14.930601489Z time=2026-09-14T17:35:14.930Z level=INFO source=node_exporter.go:141 msg=nfs
+2026-09-14T17:35:14.930604324Z time=2026-09-14T17:35:14.930Z level=INFO source=node_exporter.go:141 msg=nfsd
+2026-09-14T17:35:14.930607089Z time=2026-09-14T17:35:14.930Z level=INFO source=node_exporter.go:141 msg=nvme
+2026-09-14T17:35:14.930609855Z time=2026-09-14T17:35:14.930Z level=INFO source=node_exporter.go:141 msg=os
+2026-09-14T17:35:14.930613221Z time=2026-09-14T17:35:14.930Z level=INFO source=node_exporter.go:141 msg=powersupplyclass
+2026-09-14T17:35:14.930616066Z time=2026-09-14T17:35:14.930Z level=INFO source=node_exporter.go:141 msg=pressure
+2026-09-14T17:35:14.930618842Z time=2026-09-14T17:35:14.930Z level=INFO source=node_exporter.go:141 msg=rapl
+2026-09-14T17:35:14.930621627Z time=2026-09-14T17:35:14.930Z level=INFO source=node_exporter.go:141 msg=schedstat
+2026-09-14T17:35:14.930624402Z time=2026-09-14T17:35:14.930Z level=INFO source=node_exporter.go:141 msg=selinux
+2026-09-14T17:35:14.930627157Z time=2026-09-14T17:35:14.930Z level=INFO source=node_exporter.go:141 msg=sockstat
+2026-09-14T17:35:14.930629923Z time=2026-09-14T17:35:14.930Z level=INFO source=node_exporter.go:141 msg=softnet
+2026-09-14T17:35:14.930632698Z time=2026-09-14T17:35:14.930Z level=INFO source=node_exporter.go:141 msg=stat
+2026-09-14T17:35:14.930635613Z time=2026-09-14T17:35:14.930Z level=INFO source=node_exporter.go:141 msg=tapestats
+2026-09-14T17:35:14.930638419Z time=2026-09-14T17:35:14.930Z level=INFO source=node_exporter.go:141 msg=textfile
+2026-09-14T17:35:14.930641194Z time=2026-09-14T17:35:14.930Z level=INFO source=node_exporter.go:141 msg=thermal_zone
+2026-09-14T17:35:14.930643979Z time=2026-09-14T17:35:14.930Z level=INFO source=node_exporter.go:141 msg=time
+2026-09-14T17:35:14.930646744Z time=2026-09-14T17:35:14.930Z level=INFO source=node_exporter.go:141 msg=timex
+2026-09-14T17:35:14.930649520Z time=2026-09-14T17:35:14.930Z level=INFO source=node_exporter.go:141 msg=udp_queues
+2026-09-14T17:35:14.930652325Z time=2026-09-14T17:35:14.930Z level=INFO source=node_exporter.go:141 msg=uname
+2026-09-14T17:35:14.930672894Z time=2026-09-14T17:35:14.930Z level=INFO source=node_exporter.go:141 msg=vmstat
+2026-09-14T17:35:14.930677422Z time=2026-09-14T17:35:14.930Z level=INFO source=node_exporter.go:141 msg=watchdog
+2026-09-14T17:35:14.930680418Z time=2026-09-14T17:35:14.930Z level=INFO source=node_exporter.go:141 msg=xfs
+2026-09-14T17:35:14.930683173Z time=2026-09-14T17:35:14.930Z level=INFO source=node_exporter.go:141 msg=zfs
+2026-09-14T17:35:14.930973573Z time=2026-09-14T17:35:14.930Z level=INFO source=tls_config.go:347 msg="Listening on" address=[::]:9100
+2026-09-14T17:35:14.930981278Z time=2026-09-14T17:35:14.930Z level=INFO source=tls_config.go:350 msg="TLS is disabled." http2=false address=[::]:9100

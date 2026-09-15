@@ -1,0 +1,66 @@
+{
+  "run_name": "probe-sweep",
+  "platform": "drunix",
+  "workload": "kv-write",
+  "profile": "local-small",
+  "normalized": true,
+  "started_at": "2026-09-13T12:00:11.75529877+05:30",
+  "ended_at": "2026-09-13T12:11:41.811541737+05:30",
+  "harness_git_sha": "a8b6158",
+  "platform_version": "drunix-main",
+  "state_db": "yugabyte",
+  "state_db_requested": "leveldb",
+  "orderer_batch": {
+    "MaxMessageCount": 100,
+    "AbsoluteMaxBytes": "10 MB",
+    "PreferredMaxBytes": "2 MB",
+    "BatchTimeout": "1s"
+  },
+  "crypto": {
+    "signature_alg": "ECDSA-P256",
+    "hash_alg": "SHA-256",
+    "per_tx_endorsement_verify": true,
+    "msp_note": "Drunix (HLF 2.5.x fork); Lite Peer endorses, Committing Peer validates+commits"
+  },
+  "resource_limit_per_container": {
+    "CPUs": 0.62,
+    "Memory": "630m"
+  },
+  "resource_containers": 13,
+  "resource_cpus_total": 8,
+  "resource_memory_total_gb": 8,
+  "nodes": {
+    "chaincode": 2,
+    "committing_peer": 2,
+    "keydb": 2,
+    "lite_peer": 2,
+    "orderer": 1,
+    "validation_service": 2,
+    "yugabyte": 2
+  },
+  "generators": 2,
+  "seed": 1,
+  "key_space": 200000,
+  "key_distribution": "uniform",
+  "zipfian_constant": 0,
+  "read_write_ratio": 0,
+  "value_size_bytes": 64,
+  "warmup_sec": 30,
+  "cooldown_sec": 15,
+  "skipped_steps": [
+    500,
+    1000,
+    2000,
+    3500,
+    5000,
+    7500,
+    10000
+  ],
+  "caveats": [
+    "drunix ran on YugabyteDB (its shipped test-network default); LevelDB parity is unavailable, so the state-DB variable is NOT held constant vs fabric-cft for this run",
+    "drunix write values are JSON-wrapped client-side to survive a YugabyteDB statedb bug (non-JSON values panic the Committing Peer); the on-wire payload format differs from the shared kv workload on other platforms for this run",
+    "state-db parity not held: run requested leveldb, platform actually ran yugabyte",
+    "no sweep step held (failure \u003c= 2.0%, goodput \u003e= 95%, send-gap p99 \u003c= 50 ms); hold ran at the probe rate (10 TPS) and the headline is a floor, not a saturation figure",
+    "sweep aborted early after 2 consecutive failed steps; 7 higher step(s) were never offered"
+  ]
+}

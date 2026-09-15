@@ -1,0 +1,78 @@
+{
+  "run_name": "probe-sweep",
+  "platform": "fabric-cft",
+  "workload": "kv-write",
+  "profile": "local-small",
+  "normalized": true,
+  "started_at": "2026-09-14T23:17:21.1663671+05:30",
+  "ended_at": "2026-09-14T23:24:14.328939021+05:30",
+  "harness_git_sha": "63ab885",
+  "platform_version": "2.5.16",
+  "state_db": "leveldb",
+  "state_db_requested": "leveldb",
+  "orderer_batch": {
+    "MaxMessageCount": 100,
+    "AbsoluteMaxBytes": "10 MB",
+    "PreferredMaxBytes": "2 MB",
+    "BatchTimeout": "1s"
+  },
+  "crypto": {
+    "signature_alg": "ECDSA-P256",
+    "hash_alg": "SHA-256",
+    "per_tx_endorsement_verify": true,
+    "msp_note": "X.509 MSP; endorsement signatures verified by every committing peer during VSCC"
+  },
+  "resource_limit_per_container": {
+    "CPUs": 1.6,
+    "Memory": ""
+  },
+  "resource_memory_by_container": {
+    "dev-peer0.org1.example.com-kvstore_1.0-2ea7b22cef577b6fa4ca655d0dab5283b6734bee9c35f654d050c69a24ed4de2": "682m",
+    "dev-peer0.org2.example.com-kvstore_1.0-2ea7b22cef577b6fa4ca655d0dab5283b6734bee9c35f654d050c69a24ed4de2": "682m",
+    "orderer.example.com": "1365m",
+    "peer0.org1.example.com": "2730m",
+    "peer0.org2.example.com": "2730m"
+  },
+  "resource_memory_weights": "peer=4 statedb=4 orderer=2 other=1",
+  "resource_containers": 5,
+  "resource_cpus_total": 8,
+  "resource_memory_total_gb": 8,
+  "nodes": {
+    "chaincode": 2,
+    "orderer": 1,
+    "peer": 2
+  },
+  "generators": 2,
+  "seed": 1,
+  "key_space": 200000,
+  "key_distribution": "uniform",
+  "zipfian_constant": 0,
+  "read_write_ratio": 0,
+  "value_size_bytes": 64,
+  "warmup_sec": 30,
+  "cooldown_sec": 15,
+  "container_failures": [
+    {
+      "name": "dev-peer0.org2.example.com-kvstore_1.0-2ea7b22cef577b6fa4ca655d0dab5283b6734bee9c35f654d050c69a24ed4de2",
+      "at": "2026-09-14T23:23:14.945633804+05:30",
+      "oom_killed": false,
+      "exited": true,
+      "exit_code": 2,
+      "status": "exited"
+    },
+    {
+      "name": "peer0.org2.example.com",
+      "at": "2026-09-14T23:23:14.945633804+05:30",
+      "oom_killed": false,
+      "exited": true,
+      "exit_code": 2,
+      "status": "exited"
+    }
+  ],
+  "caveats": [
+    "platform container dev-peer0.org2.example.com-kvstore_1.0-2ea7b22cef577b6fa4ca655d0dab5283b6734bee9c35f654d050c69a24ed4de2 exited (after 23:23:14, status exited, exit code 2)",
+    "platform container peer0.org2.example.com exited (after 23:23:14, status exited, exit code 2)",
+    "run stopped during sweep-3500 because a platform container failed; phases never run: sweep-5000, sweep-7500, sweep-10000, hold",
+    "native metrics scrape of http://localhost:9443/metrics failed: scrape http://localhost:9443/metrics: parser panic: Invalid name validation scheme requested: unset (informational metrics only; harness numbers unaffected)"
+  ]
+}

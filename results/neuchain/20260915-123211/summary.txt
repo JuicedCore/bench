@@ -1,0 +1,19 @@
+run:        quick-smoke
+platform:   neuchain  (version neuchain-ev-patched)
+workload:   kv-write   normalized=true
+profile:    local-small   state_db=leveldb
+resources:  8 CPU / 8 GB total over 4 containers (2.00 CPU each; memory by role weight peer=4 statedb=4 orderer=2 other=1)
+              2048m    bench-neuchain-block-server-0
+              2048m    bench-neuchain-block-server-1
+              2048m    bench-neuchain-block-server-2
+              2048m    bench-neuchain-block-server-3
+batch:      msgcount=0 timeout= preferred=
+crypto:     sig=RSA-1024-PKCS1v15 hash=SHA-256 per_tx_endorse_verify=false
+caveats:
+  - server image is a patched NeuChain ev build (deploy/docker/neuchain/patched/README.md); provisional until a clean upstream build is run
+
+phase           offered     conf_tps  goodput  fail_rate    e2e_p50    e2e_p99    gap_p99    com_p50  verdict
+single               50         50.0     100%     0.0009     211.84     282.11       1.07     210.82  
+
+errors single              1 x committed invalid
+HEADLINE  confirmed_tps=50.0  fail_rate=0.0009  e2e p50/p99=211.84/282.11 ms  invariant_ok=true

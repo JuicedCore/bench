@@ -1,0 +1,169 @@
+[deploy 23:45:39] orderer batch from profile 'local-small': timeout=1s maxMessageCount=100
+[deploy 23:45:39] building bench/fabricx:local (first build pulls a Go toolchain and compiles Arma + committer; several minutes)
+#0 building with "default" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile
+#1 transferring dockerfile: 3.76kB done
+#1 DONE 0.1s
+
+#2 resolve image config for docker-image://docker.io/docker/dockerfile:1
+#2 DONE 1.4s
+
+#3 docker-image://docker.io/docker/dockerfile:1@sha256:ecfaec9ed6d810b56388c508f4121597bfbba70d41a6dfeee4d8cad5f295fc32
+#3 resolve docker.io/docker/dockerfile:1@sha256:ecfaec9ed6d810b56388c508f4121597bfbba70d41a6dfeee4d8cad5f295fc32 0.1s done
+#3 CACHED
+
+#4 [internal] load metadata for docker.io/library/golang:1.27-bookworm
+#4 ...
+
+#5 [internal] load metadata for docker.io/library/postgres:18.3-alpine3.23
+#5 DONE 1.4s
+
+#4 [internal] load metadata for docker.io/library/golang:1.27-bookworm
+#4 DONE 1.4s
+
+#6 [internal] load .dockerignore
+#6 transferring context: 2B done
+#6 DONE 0.1s
+
+#7 [internal] load build context
+#7 DONE 0.0s
+
+#8 [stage-1  1/12] FROM docker.io/library/postgres:18.3-alpine3.23@sha256:54451ecb8ab38c24c3ec123f2fd501303a3a1856a5c66e98cecf2460d5e1e9d7
+#8 resolve docker.io/library/postgres:18.3-alpine3.23@sha256:54451ecb8ab38c24c3ec123f2fd501303a3a1856a5c66e98cecf2460d5e1e9d7 0.1s done
+#8 DONE 0.2s
+
+#9 [build 1/8] FROM docker.io/library/golang:1.27-bookworm@sha256:648f440f42a0958804efb24df176f806f9d353b41f1c0627f666428e40310f6b
+#9 resolve docker.io/library/golang:1.27-bookworm@sha256:648f440f42a0958804efb24df176f806f9d353b41f1c0627f666428e40310f6b
+#9 resolve docker.io/library/golang:1.27-bookworm@sha256:648f440f42a0958804efb24df176f806f9d353b41f1c0627f666428e40310f6b 0.1s done
+#9 DONE 0.2s
+
+#7 [internal] load build context
+#7 transferring context: 491.99kB 0.1s done
+#7 DONE 0.2s
+
+#10 [stage-1 10/12] RUN python3 /opt/fabric-x/patch-configs.py
+#10 CACHED
+
+#11 [build 7/8] WORKDIR /src/orderer
+#11 CACHED
+
+#12 [build 5/8] RUN go build -o /out/committer ./cmd/committer  && go build -o /out/loadgen   ./cmd/loadgen
+#12 CACHED
+
+#13 [build 2/8] WORKDIR /src
+#13 CACHED
+
+#14 [stage-1  5/12] COPY .cache/fabric-x-orderer-src/testutil/fabric/sampleconfig  /root/arma-sampleconfig
+#14 CACHED
+
+#15 [build 6/8] COPY .cache/fabric-x-orderer-src /src/orderer
+#15 CACHED
+
+#16 [stage-1  3/12] COPY --from=build /out/committer /out/loadgen /out/arma /out/armageddon /root/bin/
+#16 CACHED
+
+#17 [stage-1  4/12] COPY .cache/fabric-x-committer-src/cmd/config/samples          /root/config
+#17 CACHED
+
+#18 [stage-1  2/12] RUN apk add --no-cache ca-certificates python3  && mkdir -p /root/bin /root/config /root/artifacts /data/ledger /data/arma /opt/fabric-x
+#18 CACHED
+
+#19 [stage-1  8/12] RUN chmod a+x /root/bin/* /opt/fabric-x/*.sh /opt/fabric-x/patch-configs.py
+#19 CACHED
+
+#20 [build 4/8] WORKDIR /src/committer
+#20 CACHED
+
+#21 [stage-1  9/12] RUN apk add --no-cache openssl  && openssl genpkey -algorithm EC -pkeyopt ec_paramgen_curve:P-256       -outform PEM -out /root/artifacts/ns-signing-key.pem  && openssl pkey -in /root/artifacts/ns-signing-key.pem -pubout       -out /root/artifacts/ns-verification-key.pem  && chmod 600 /root/artifacts/ns-signing-key.pem
+#21 CACHED
+
+#22 [build 8/8] RUN go build -o /out/arma       ./cmd/arma  && go build -o /out/armageddon ./cmd/armageddon
+#22 CACHED
+
+#23 [stage-1  6/12] COPY image/run.sh image/start-arma.sh image/start-node2.sh image/start-node3.sh      image/generate-arma.sh image/patch-configs.py image/entrypoint.sh /opt/fabric-x/
+#23 CACHED
+
+#24 [build 3/8] COPY .cache/fabric-x-committer-src /src/committer
+#24 CACHED
+
+#25 [stage-1 11/12] RUN ARMA_OUT=/root/arma DEPLOY=/opt/fabric-x/arma-deployment.yaml     SAMPLE=/root/arma-sampleconfig ARMAGEDDON=/root/bin/armageddon     /opt/fabric-x/generate-arma.sh  && loadgen make-artifacts -c /root/config/loadgen.yaml  && cp /root/arma/bootstrap/bootstrap.block /root/artifacts/config-block.pb.bin
+#25 CACHED
+
+#26 [stage-1  7/12] COPY image/arma-deployment.yaml /opt/fabric-x/arma-deployment.yaml
+#26 CACHED
+
+#27 [stage-1 12/12] WORKDIR /data
+#27 CACHED
+
+#28 exporting to image
+#28 exporting layers done
+#28 exporting manifest sha256:259b7a6cba8926f15371aa56d37b3526ca6a8c057b9c4f6d8c8ebbd9e0dcb618 0.0s done
+#28 exporting config sha256:5ceb7aad3a9c8631909b826cc7b2b40409689f955b5e9ace516e45ab411f18fd 0.0s done
+#28 exporting attestation manifest sha256:7e44b64b376bb583d254915924eeb66008d1152e49750a235d915551ae44b298 0.1s done
+#28 exporting manifest list sha256:23f5ebf152790faba22db2c827529294dcd9375a062f531c15c4f32b770868d7
+#28 exporting manifest list sha256:23f5ebf152790faba22db2c827529294dcd9375a062f531c15c4f32b770868d7 0.0s done
+#28 naming to docker.io/bench/fabricx:local 0.0s done
+#28 unpacking to docker.io/bench/fabricx:local 0.0s done
+#28 DONE 0.3s
+
+ [33m3 warnings found (use docker --debug to expand):
+[0m - SecretsUsedInArgOrEnv: Do not use ARG or ENV instructions for sensitive data (ENV "POSTGRES_PASSWORD") (line 37)
+ - SecretsUsedInArgOrEnv: Do not use ARG or ENV instructions for sensitive data (ENV "SC_VC_DATABASE_PASSWORD") (line 37)
+ - SecretsUsedInArgOrEnv: Do not use ARG or ENV instructions for sensitive data (ENV "SC_QUERY_DATABASE_PASSWORD") (line 37)
+[deploy 23:45:46] WARN: could not drop page cache (needs root); continuing
+[deploy 23:45:46] starting stack
+ Volume bench-fabricx_fx-ledger Creating 
+ Network bench-fabricx_fx Creating 
+ Volume bench-fabricx_fx-ledger Creating 
+ Network bench-fabricx_fx Creating 
+ Volume bench-fabricx_fx-arma Creating 
+ Volume bench-fabricx_fx-arma Creating 
+ Volume bench-fabricx_fx-pgdata Creating 
+ Volume bench-fabricx_fx-pgdata Creating 
+ Volume bench-fabricx_fx-arma Created 
+ Volume bench-fabricx_fx-arma Created 
+ Volume bench-fabricx_fx-pgdata Created 
+ Volume bench-fabricx_fx-pgdata Created 
+ Volume bench-fabricx_fx-ledger Created 
+ Volume bench-fabricx_fx-ledger Created 
+ Network bench-fabricx_fx Created 
+ Network bench-fabricx_fx Created 
+ Container bench-fabricx-fabricx-db-1 Creating 
+ Container bench-fabricx-fabricx-db-1 Created 
+ Container bench-fabricx-fabricx-arma-1 Creating 
+ Container bench-fabricx-fabricx-arma-1 Created 
+ Container bench-fabricx-fabricx-pipeline-1 Creating 
+ Container bench-fabricx-fabricx-pipeline-1 Created 
+ Container bench-fabricx-fabricx-committer-1 Creating 
+ Container bench-fabricx-fabricx-committer-1 Created 
+ Container bench-fabricx-fabricx-db-1 Starting 
+ Container bench-fabricx-fabricx-db-1 Started 
+ Container bench-fabricx-fabricx-db-1 Waiting 
+ Container bench-fabricx-fabricx-db-1 Healthy 
+ Container bench-fabricx-fabricx-arma-1 Starting 
+ Container bench-fabricx-fabricx-arma-1 Started 
+ Container bench-fabricx-fabricx-pipeline-1 Starting 
+ Container bench-fabricx-fabricx-pipeline-1 Started 
+ Container bench-fabricx-fabricx-committer-1 Starting 
+ Container bench-fabricx-fabricx-committer-1 Started 
+[deploy 23:45:59] resource budget for fabricx: 8 CPU / 8 GB across 4 containers = 2.00 CPU each; memory by role weight (peer=4 statedb=4 orderer=2 other=1, total weight 16)
+[deploy 23:45:59]   bench-fabricx-fabricx-arma-1  (peer) 2048m
+[deploy 23:45:59]   bench-fabricx-fabricx-committer-1  (peer) 2048m
+[deploy 23:45:59]   bench-fabricx-fabricx-db-1  (statedb) 2048m
+[deploy 23:45:59]   bench-fabricx-fabricx-pipeline-1  (peer) 2048m
+[deploy 23:45:59] waiting up to 120s for Arma router on :6022
+[deploy 23:45:59] Arma router on :6022: ready after 0s
+[deploy 23:45:59] waiting up to 120s for Arma router on :6122
+[deploy 23:45:59] Arma router on :6122: ready after 0s
+[deploy 23:45:59] waiting up to 120s for Arma router on :6222
+[deploy 23:45:59] Arma router on :6222: ready after 0s
+[deploy 23:45:59] waiting up to 120s for Arma router on :6322
+[deploy 23:45:59] Arma router on :6322: ready after 0s
+[deploy 23:45:59] waiting up to 120s for sidecar deliver on :4001
+[deploy 23:45:59] sidecar deliver on :4001: ready after 0s
+[deploy 23:45:59] registering application namespace '0'
+[deploy 23:46:07] namespace '0' committed with the image's ECDSA verification key
+[deploy 23:46:08] exported namespace signing key to ~/bench/deploy/docker/fabricx/.cache/keys/ns-signing-key.pem
+[deploy 23:46:08] fabricx up. broadcast :6022,:6122,:6222,:6322  deliver :4001  metrics :9643
+[deploy 23:46:08] wrote ~/bench/deploy/docker/fabricx/connection.env

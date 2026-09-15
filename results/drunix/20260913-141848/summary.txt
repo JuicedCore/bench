@@ -1,0 +1,40 @@
+run:        probe-sweep
+platform:   drunix  (version drunix-main)
+workload:   kv-write   normalized=true
+profile:    local-small   state_db=yugabyte (requested leveldb - PARITY NOT HELD)
+resources:  8 CPU / 8 GB total over 13 containers (0.62 CPU each; memory by role weight peer=4 statedb=4 orderer=2 other=1)
+              1024m    cp.org1
+              1024m    cp.org2
+              256m     dev-peer0.org1.example.com-kvstore_1.0-2ea7b22cef577b6fa4ca655d0dab5283b6734bee9c35f654d050c69a24ed4de2
+              256m     dev-peer0.org2.example.com-kvstore_1.0-2ea7b22cef577b6fa4ca655d0dab5283b6734bee9c35f654d050c69a24ed4de2
+              256m     hlf_keydb_org1msp
+              256m     hlf_keydb_org2msp
+              1024m    lp1.org1
+              1024m    lp1.org2
+              512m     orderer.example.com
+              256m     vs1.org1
+              256m     vs1.org2
+              1024m    yugabyte-org1
+              1024m    yugabyte-org2
+batch:      msgcount=100 timeout=1s preferred=2 MB
+crypto:     sig=ECDSA-P256 hash=SHA-256 per_tx_endorse_verify=true
+caveats:
+  - drunix ran on YugabyteDB (its shipped test-network default); LevelDB parity is unavailable, so the state-DB variable is NOT held constant vs fabric-cft for this run
+  - drunix write values are JSON-wrapped client-side to survive a YugabyteDB statedb bug (non-JSON values panic the Committing Peer); the on-wire payload format differs from the shared kv workload on other platforms for this run
+  - state-db parity not held: run requested leveldb, platform actually ran yugabyte
+  - platform container cp.org2 exited (after 14:24:42, status exited, exit code 2)
+  - run stopped during sweep-2000 because a platform container failed; phases never run: sweep-3500, sweep-5000, sweep-7500, sweep-10000, hold
+
+phase           offered     conf_tps  goodput  fail_rate    e2e_p50    e2e_p99    gap_p99    com_p50  verdict
+probe                10         10.0     100%     0.0000    1300.48    3495.94       1.20    1295.36  
+sweep-100           100        100.0     100%     0.0000    1415.17    2334.72       1.11    1411.07  held
+sweep-250           250        250.0     100%     0.0000     749.06    1156.10       1.13     744.96  held
+sweep-500           500        500.0     100%     0.0000     686.08     916.99       1.08     679.42  held
+sweep-1000         1000        613.3      61%     0.2539   12582.91   18595.84       1.14    5861.38  failure rate 25.39% > 2.00%
+sweep-2000         2000        506.7      25%     0.6005   46333.95   52035.58      28.85   37552.13  failure rate 60.05% > 2.00%
+
+errors sweep-1000       3131 x not sent: N transactions already in flight (platform is not finalizing)
+errors sweep-2000      11424 x not sent: N transactions already in flight (platform is not finalizing)
+PLATFORM FAILURE  cp.org2 exited (after 14:24:42, status exited, exit code 2)
+detected saturation: ~500 offered TPS
+HEADLINE  none - the run did not complete a headline phase on a healthy platform

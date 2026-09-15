@@ -1,0 +1,12 @@
+run:        quick-smoke
+platform:   fabric-bft  (version 3.1.5)
+workload:   kv-write   normalized=true
+profile:    local-small   state_db=leveldb
+resources:  8 CPU / 8 GB total over 8 containers (1.00 CPU / 1024m each)
+batch:      msgcount=100 timeout=1s preferred=2 MB
+crypto:     sig=ECDSA-P256 hash=SHA-256 per_tx_endorse_verify=true
+
+phase           offered     conf_tps  goodput  fail_rate    e2e_p50    e2e_p99    gap_p99    com_p50  verdict
+single               50         50.0     100%     0.0000     646.66    1160.19       1.15     641.02  
+
+HEADLINE  confirmed_tps=50.0  fail_rate=0.0000  e2e p50/p99=646.66/1160.19 ms  invariant_ok=true

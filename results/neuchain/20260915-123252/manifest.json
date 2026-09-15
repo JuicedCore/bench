@@ -1,0 +1,93 @@
+{
+  "run_name": "probe-sweep",
+  "platform": "neuchain",
+  "workload": "kv-write",
+  "profile": "local-small",
+  "normalized": true,
+  "started_at": "2026-09-15T12:32:52.022502051+05:30",
+  "ended_at": "2026-09-15T12:47:48.603529519+05:30",
+  "harness_git_sha": "63ab885",
+  "platform_version": "neuchain-ev-patched",
+  "state_db": "leveldb",
+  "state_db_requested": "leveldb",
+  "orderer_batch": {
+    "MaxMessageCount": 0,
+    "AbsoluteMaxBytes": "",
+    "PreferredMaxBytes": "",
+    "BatchTimeout": ""
+  },
+  "crypto": {
+    "signature_alg": "RSA-1024-PKCS1v15",
+    "hash_alg": "SHA-256",
+    "per_tx_endorsement_verify": false,
+    "msp_note": "NeuChain EV: RSA-1024 user signature over the serialized TransactionPayload; no endorsement phase, ordering implicit via deterministic execution"
+  },
+  "resource_limit_per_container": {
+    "CPUs": 2,
+    "Memory": ""
+  },
+  "resource_memory_by_container": {
+    "bench-neuchain-block-server-0": "2048m",
+    "bench-neuchain-block-server-1": "2048m",
+    "bench-neuchain-block-server-2": "2048m",
+    "bench-neuchain-block-server-3": "2048m"
+  },
+  "resource_memory_weights": "peer=4 statedb=4 orderer=2 other=1",
+  "resource_containers": 4,
+  "resource_cpus_total": 8,
+  "resource_memory_total_gb": 8,
+  "nodes": {
+    "block_server": 4,
+    "epoch_server": 4
+  },
+  "generators": 2,
+  "seed": 1,
+  "key_space": 200000,
+  "key_distribution": "uniform",
+  "zipfian_constant": 0,
+  "read_write_ratio": 0,
+  "value_size_bytes": 64,
+  "warmup_sec": 30,
+  "cooldown_sec": 15,
+  "container_failures": [
+    {
+      "name": "bench-neuchain-block-server-0",
+      "at": "2026-09-15T12:43:00.885012573+05:30",
+      "oom_killed": false,
+      "exited": true,
+      "exit_code": 139,
+      "status": "exited"
+    },
+    {
+      "name": "bench-neuchain-block-server-1",
+      "at": "2026-09-15T12:43:00.885012573+05:30",
+      "oom_killed": false,
+      "exited": true,
+      "exit_code": 139,
+      "status": "exited"
+    },
+    {
+      "name": "bench-neuchain-block-server-2",
+      "at": "2026-09-15T12:43:00.885012573+05:30",
+      "oom_killed": false,
+      "exited": true,
+      "exit_code": 139,
+      "status": "exited"
+    },
+    {
+      "name": "bench-neuchain-block-server-3",
+      "at": "2026-09-15T12:43:00.885012573+05:30",
+      "oom_killed": false,
+      "exited": true,
+      "exit_code": 139,
+      "status": "exited"
+    }
+  ],
+  "caveats": [
+    "server image is a patched NeuChain ev build (deploy/docker/neuchain/patched/README.md); provisional until a clean upstream build is run",
+    "platform container bench-neuchain-block-server-0 exited (after 12:43:00, status exited, exit code 139)",
+    "platform container bench-neuchain-block-server-1 exited (after 12:43:00, status exited, exit code 139)",
+    "platform container bench-neuchain-block-server-2 exited (after 12:43:00, status exited, exit code 139)",
+    "platform container bench-neuchain-block-server-3 exited (after 12:43:00, status exited, exit code 139)"
+  ]
+}

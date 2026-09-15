@@ -1,0 +1,12 @@
+adapter setup failed for platform fabric-cft (profile local)
+
+fabric: peer_endpoint (or endorse_endpoint) is required
+
+What to check:
+  1. Is the network up?            docker ps   (bring it up: benchrunner setup --platform <p> --profile <profile>)
+  2. Was connection.env sourced?   set -a; source deploy/docker/<platform>/connection.env; set +a
+     An unset BENCH_ADAPTER_* variable expands to an empty adapter key.
+  3. Do the cert/key/TLS paths in connection.env exist and match the running network
+     (a re-deployed network regenerates crypto material)?
+  4. Rerun with --log-level debug and read run.log in this directory.
+See docs/README.md#troubleshooting for the full error lookup.

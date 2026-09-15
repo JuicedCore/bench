@@ -1,0 +1,16 @@
+run:        quick-smoke
+platform:   drunix  (version drunix-main)
+workload:   kv-write   normalized=true
+profile:    local-small   state_db=yugabyte (requested leveldb - PARITY NOT HELD)
+resources:  8 CPU / 8 GB total over 13 containers (0.62 CPU / 630m each)
+batch:      msgcount=100 timeout=1s preferred=2 MB
+crypto:     sig=ECDSA-P256 hash=SHA-256 per_tx_endorse_verify=true
+caveats:
+  - drunix ran on YugabyteDB (its shipped test-network default); LevelDB parity is unavailable, so the state-DB variable is NOT held constant vs fabric-cft for this run
+  - drunix write values are JSON-wrapped client-side to survive a YugabyteDB statedb bug (non-JSON values panic the Committing Peer); the on-wire payload format differs from the shared kv workload on other platforms for this run
+  - state-db parity not held: run requested leveldb, platform actually ran yugabyte
+
+phase           offered     conf_tps  goodput  fail_rate    e2e_p50    e2e_p99    gap_p99    com_p50  verdict
+single               50          0.0       0%     1.0000       0.00       0.00       0.00       0.00  
+
+HEADLINE  confirmed_tps=0.0  fail_rate=1.0000  e2e p50/p99=0.00/0.00 ms  invariant_ok=true

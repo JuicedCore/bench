@@ -1,0 +1,45 @@
+run:        probe-sweep
+platform:   neuchain  (version neuchain-ev-patched)
+workload:   kv-write   normalized=true
+profile:    local-small   state_db=leveldb
+resources:  8 CPU / 8 GB total over 4 containers (2.00 CPU each; memory by role weight peer=4 statedb=4 orderer=2 other=1)
+              2048m    bench-neuchain-block-server-0
+              2048m    bench-neuchain-block-server-1
+              2048m    bench-neuchain-block-server-2
+              2048m    bench-neuchain-block-server-3
+batch:      msgcount=0 timeout= preferred=
+crypto:     sig=RSA-1024-PKCS1v15 hash=SHA-256 per_tx_endorse_verify=false
+caveats:
+  - server image is a patched NeuChain ev build (deploy/docker/neuchain/patched/README.md); provisional until a clean upstream build is run
+  - platform container bench-neuchain-block-server-0 exited (after 12:43:00, status exited, exit code 139)
+  - platform container bench-neuchain-block-server-1 exited (after 12:43:00, status exited, exit code 139)
+  - platform container bench-neuchain-block-server-2 exited (after 12:43:00, status exited, exit code 139)
+  - platform container bench-neuchain-block-server-3 exited (after 12:43:00, status exited, exit code 139)
+
+phase           offered     conf_tps  goodput  fail_rate    e2e_p50    e2e_p99    gap_p99    com_p50  verdict
+probe                10         10.0     100%     0.0000     352.26     452.86       0.97     351.49  
+sweep-100           100        100.0     100%     0.0000     178.43     238.72       1.08     177.41  held
+sweep-250           250        250.0     100%     0.0000     141.57     192.26       1.11     140.42  held
+sweep-500           500        500.0     100%     0.0000     134.40     185.34       1.08     133.50  held
+sweep-1000         1000        999.9     100%     0.0001     135.68     187.78       1.07     134.40  held
+sweep-2000         2000       1999.3     100%     0.0003     135.17     185.73       1.10     134.27  held
+sweep-3500         3500       3497.5     100%     0.0007     134.53     185.22       1.69     133.89  held
+sweep-5000         5000       4996.9     100%     0.0006     137.86     189.57       1.97     137.22  held
+sweep-7500         7500       7492.5     100%     0.0010     140.54     193.41       4.85     139.90  held
+sweep-10000       10000       9982.1     100%     0.0018     155.90     366.08      74.82     154.50  send-gap p99 75 ms > 50 ms (generator fell behind)
+hold               6750          0.0       0%     1.0000       0.00       0.00       0.00       0.00  
+
+errors sweep-1000          2 x committed invalid
+errors sweep-2000         10 x committed invalid
+errors sweep-3500         38 x committed invalid
+errors sweep-5000         46 x committed invalid
+errors sweep-7500        112 x committed invalid
+errors sweep-10000       268 x committed invalid
+errors hold          1366930 x neuchain: finality stream down: tip_query to localhost:7003 has failed for 30s: neuchain: tip_query send to localhost:7003: zmq4: no connections available: %!w(<nil>)
+errors hold           354320 x not sent: N transactions already in flight (platform is not finalizing)
+PLATFORM FAILURE  bench-neuchain-block-server-0 exited (after 12:43:00, status exited, exit code 139)
+PLATFORM FAILURE  bench-neuchain-block-server-1 exited (after 12:43:00, status exited, exit code 139)
+PLATFORM FAILURE  bench-neuchain-block-server-2 exited (after 12:43:00, status exited, exit code 139)
+PLATFORM FAILURE  bench-neuchain-block-server-3 exited (after 12:43:00, status exited, exit code 139)
+detected saturation: ~7500 offered TPS
+HEADLINE  none - the run did not complete a headline phase on a healthy platform

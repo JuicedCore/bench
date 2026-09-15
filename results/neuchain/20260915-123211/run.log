@@ -1,0 +1,8 @@
+time=2026-09-15T12:32:11.583+05:30 level=INFO msg="run starting" workload=kv-write profile=local-small normalized=true out_dir=results/neuchain/20260915-123211
+time=2026-09-15T12:32:11.583+05:30 level=WARN msg=caveat text="server image is a patched NeuChain ev build (deploy/docker/neuchain/patched/README.md); provisional until a clean upstream build is run"
+time=2026-09-15T12:32:11.583+05:30 level=INFO msg="adapter setup"
+time=2026-09-15T12:32:11.787+05:30 level=INFO msg="setup complete" component=adapter block_servers="[localhost:5001 localhost:5011 localhost:5021 localhost:5031]" query=localhost:7003 tip=466 start_block=467 poll_interval=50ms
+time=2026-09-15T12:32:11.787+05:30 level=INFO msg="phase start" phase=single offered_tps=50 workers=0 duration=30s
+time=2026-09-15T12:32:42.241+05:30 level=INFO msg="phase end" phase=single submitted=1100 committed=1099 confirmed_tps=50.0 fail_rate=0.0009 e2e_p99_ms=282.11
+time=2026-09-15T12:32:42.241+05:30 level=WARN msg="phase errors" phase=single count=1 message="committed invalid"
+time=2026-09-15T12:32:42.242+05:30 level=INFO msg="run finished" out_dir=results/neuchain/20260915-123211 caveats=1

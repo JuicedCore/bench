@@ -1,0 +1,54 @@
+{
+  "run_name": "quick-smoke",
+  "platform": "fabric-cft",
+  "workload": "kv-write",
+  "profile": "local-small",
+  "normalized": true,
+  "started_at": "2026-09-13T13:43:33.246634406+05:30",
+  "ended_at": "2026-09-13T13:44:03.74639036+05:30",
+  "harness_git_sha": "a8b6158",
+  "platform_version": "2.5.16",
+  "state_db": "leveldb",
+  "state_db_requested": "leveldb",
+  "orderer_batch": {
+    "MaxMessageCount": 100,
+    "AbsoluteMaxBytes": "10 MB",
+    "PreferredMaxBytes": "2 MB",
+    "BatchTimeout": "1s"
+  },
+  "crypto": {
+    "signature_alg": "ECDSA-P256",
+    "hash_alg": "SHA-256",
+    "per_tx_endorsement_verify": true,
+    "msp_note": "X.509 MSP; endorsement signatures verified by every committing peer during VSCC"
+  },
+  "resource_limit_per_container": {
+    "CPUs": 1.6,
+    "Memory": ""
+  },
+  "resource_memory_by_container": {
+    "dev-peer0.org1.example.com-kvstore_1.0-2ea7b22cef577b6fa4ca655d0dab5283b6734bee9c35f654d050c69a24ed4de2": "682m",
+    "dev-peer0.org2.example.com-kvstore_1.0-2ea7b22cef577b6fa4ca655d0dab5283b6734bee9c35f654d050c69a24ed4de2": "682m",
+    "orderer.example.com": "1365m",
+    "peer0.org1.example.com": "2730m",
+    "peer0.org2.example.com": "2730m"
+  },
+  "resource_memory_weights": "peer=4 statedb=4 orderer=2 other=1",
+  "resource_containers": 5,
+  "resource_cpus_total": 8,
+  "resource_memory_total_gb": 8,
+  "nodes": {
+    "chaincode": 2,
+    "orderer": 1,
+    "peer": 2
+  },
+  "generators": 2,
+  "seed": 1,
+  "key_space": 5000,
+  "key_distribution": "uniform",
+  "zipfian_constant": 0,
+  "read_write_ratio": 0,
+  "value_size_bytes": 64,
+  "warmup_sec": 5,
+  "cooldown_sec": 3
+}

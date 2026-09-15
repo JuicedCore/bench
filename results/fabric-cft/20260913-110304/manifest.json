@@ -1,0 +1,54 @@
+{
+  "run_name": "probe-sweep",
+  "platform": "fabric-cft",
+  "workload": "kv-write",
+  "profile": "local-small",
+  "normalized": true,
+  "started_at": "2026-09-13T11:03:04.017241063+05:30",
+  "ended_at": "2026-09-13T11:14:56.099663005+05:30",
+  "harness_git_sha": "a8b6158",
+  "platform_version": "2.5.16",
+  "state_db": "leveldb",
+  "state_db_requested": "leveldb",
+  "orderer_batch": {
+    "MaxMessageCount": 100,
+    "AbsoluteMaxBytes": "10 MB",
+    "PreferredMaxBytes": "2 MB",
+    "BatchTimeout": "1s"
+  },
+  "crypto": {
+    "signature_alg": "ECDSA-P256",
+    "hash_alg": "SHA-256",
+    "per_tx_endorsement_verify": true,
+    "msp_note": "X.509 MSP; endorsement signatures verified by every committing peer during VSCC"
+  },
+  "resource_limit_per_container": {
+    "CPUs": 1.6,
+    "Memory": "1638m"
+  },
+  "resource_containers": 5,
+  "resource_cpus_total": 8,
+  "resource_memory_total_gb": 8,
+  "nodes": {
+    "chaincode": 2,
+    "orderer": 1,
+    "peer": 2
+  },
+  "generators": 2,
+  "seed": 1,
+  "key_space": 200000,
+  "key_distribution": "uniform",
+  "zipfian_constant": 0,
+  "read_write_ratio": 0,
+  "value_size_bytes": 64,
+  "warmup_sec": 30,
+  "cooldown_sec": 15,
+  "skipped_steps": [
+    5000,
+    7500,
+    10000
+  ],
+  "caveats": [
+    "sweep aborted early after 2 consecutive failed steps; 3 higher step(s) were never offered"
+  ]
+}

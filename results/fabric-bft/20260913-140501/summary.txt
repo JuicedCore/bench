@@ -1,0 +1,47 @@
+run:        probe-sweep
+platform:   fabric-bft  (version 3.1.5)
+workload:   kv-write   normalized=true
+profile:    local-small   state_db=leveldb
+resources:  8 CPU / 8 GB total over 8 containers (1.00 CPU each; memory by role weight peer=4 statedb=4 orderer=2 other=1)
+              455m     dev-peer0.org1.example.com-kvstore_1.0-2ea7b22cef577b6fa4ca655d0dab5283b6734bee9c35f654d050c69a24ed4de2
+              455m     dev-peer0.org2.example.com-kvstore_1.0-2ea7b22cef577b6fa4ca655d0dab5283b6734bee9c35f654d050c69a24ed4de2
+              910m     orderer.example.com
+              910m     orderer2.example.com
+              910m     orderer3.example.com
+              910m     orderer4.example.com
+              1820m    peer0.org1.example.com
+              1820m    peer0.org2.example.com
+batch:      msgcount=100 timeout=1s preferred=2 MB
+crypto:     sig=ECDSA-P256 hash=SHA-256 per_tx_endorse_verify=true
+caveats:
+  - sweep aborted early after 2 consecutive failed steps; 4 higher step(s) were never offered
+
+phase           offered     conf_tps  goodput  fail_rate    e2e_p50    e2e_p99    gap_p99    com_p50  verdict
+probe                10         10.0     100%     0.0000     614.40    1142.78       1.52     608.77  
+sweep-100           100        100.0     100%     0.0000     660.99    1154.05       1.15     655.87  held
+sweep-250           250        250.0     100%     0.0000     352.26     548.86       1.12     345.60  held
+sweep-500           500        500.0     100%     0.0000     250.11     359.68       1.09     203.14  held
+sweep-1000         1000        653.0      65%     0.2281   12394.50   12713.98       2.17   12238.85  failure rate 22.81% > 2.00%
+sweep-2000         2000        400.8      20%     0.6728   24788.99   30457.86      49.98   19496.96  failure rate 67.28% > 2.00%
+hold                450        450.0     100%     0.0000     266.50     394.50       1.49     225.79  
+
+errors sweep-1000       2894 x not sent: N transactions already in flight (platform is not finalizing)
+errors sweep-1000          1 x submit: submit error: rpc error: code = Unavailable desc = insufficient number of orderers could successfully process transaction to satisfy quorum requirement
+Details:
+  - Address: orderer3.example.com:N
+    MspId: OrdererMSP
+    Message: received unsuccessful response from orderer: status=SERVI
+errors sweep-2000      12350 x not sent: N transactions already in flight (platform is not finalizing)
+errors sweep-2000          7 x submit: submit error: rpc error: code = Unavailable desc = insufficient number of orderers could successfully process transaction to satisfy quorum requirement
+Details:
+  - Address: orderer3.example.com:N
+    MspId: OrdererMSP
+    Message: received unsuccessful response from orderer: status=SERVI
+errors sweep-2000          4 x submit: submit error: rpc error: code = Unavailable desc = insufficient number of orderers could successfully process transaction to satisfy quorum requirement
+Details:
+  - Address: orderer2.example.com:N
+    MspId: OrdererMSP
+    Message: received unsuccessful response from orderer: status=SERVI
+sweep aborted early; steps never offered: [3500 5000 7500 10000]
+detected saturation: ~500 offered TPS
+HEADLINE  confirmed_tps=450.0  fail_rate=0.0000  e2e p50/p99=266.50/394.50 ms  invariant_ok=true

@@ -1,0 +1,34 @@
+[0;34mUsing docker and docker-compose[0m
+[0;34mStopping network[0m
+ Container peer0.org2.example.com Stopping 
+ Container peer0.org1.example.com Stopping 
+ Container orderer.example.com Stopping 
+ Container peer0.org2.example.com Stopped 
+ Container peer0.org2.example.com Removing 
+ Container peer0.org2.example.com Removed 
+ Container orderer.example.com Stopped 
+ Container orderer.example.com Removing 
+ Container orderer.example.com Removed 
+ Container peer0.org1.example.com Stopped 
+ Container peer0.org1.example.com Removing 
+ Container peer0.org1.example.com Removed 
+ Volume compose_peer0.org1.example.com Removing 
+ Volume compose_peer0.org2.example.com Removing 
+ Volume compose_orderer.example.com Removing 
+ Network fabric_test Removing 
+ Volume compose_peer0.org1.example.com Removed 
+ Network fabric_test Removed 
+ Volume compose_peer0.org2.example.com Removed 
+ Volume compose_orderer.example.com Removed 
+Error response from daemon: get docker_orderer.example.com: no such volume
+Error response from daemon: get docker_peer0.org1.example.com: no such volume
+Error response from daemon: get docker_peer0.org2.example.com: no such volume
+[0;34mRemoving remaining containers[0m
+683804c26c31
+[0;34mRemoving generated chaincode docker images[0m
+Untagged: dev-peer0.org2.example.com-kvstore_1.0-2ea7b22cef577b6fa4ca655d0dab5283b6734bee9c35f654d050c69a24ed4de2-66df8d15e996db8c818a7789c9509cde750e8b55a524e463d93ae58586a76342:latest
+Deleted: sha256:dfc762d692eef929287c31b6289ed4514369dd1198d3275a207161e5a44ec3d0
+Untagged: dev-peer0.org1.example.com-kvstore_1.0-2ea7b22cef577b6fa4ca655d0dab5283b6734bee9c35f654d050c69a24ed4de2-f93e551618bbe1f07063118dfeb9edef05725d1badac579b530c38a96205d266:latest
+Deleted: sha256:a3779c9c84986371d674ec9077b22f9a10b664cda4a12f64dbc0af1fd0c30e37
+[deploy 23:24:24] WARN: could not drop page cache (needs root); continuing
+[deploy 23:24:24] fabric-cft down

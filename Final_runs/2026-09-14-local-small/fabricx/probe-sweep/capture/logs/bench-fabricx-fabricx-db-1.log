@@ -1,0 +1,58 @@
+2026-09-14T18:15:47.817194591Z The files belonging to this database system will be owned by user "postgres".
+2026-09-14T18:15:47.817236671Z This user must also own the server process.
+2026-09-14T18:15:47.817251339Z 
+2026-09-14T18:15:47.818403555Z The database cluster will be initialized with locale "en_US.utf8".
+2026-09-14T18:15:47.818412882Z The default database encoding has accordingly been set to "UTF8".
+2026-09-14T18:15:47.818416429Z The default text search configuration will be set to "english".
+2026-09-14T18:15:47.818419304Z 
+2026-09-14T18:15:47.818422070Z Data page checksums are enabled.
+2026-09-14T18:15:47.818424725Z 
+2026-09-14T18:15:47.818459791Z fixing permissions on existing directory /var/lib/postgresql/18/docker ... ok
+2026-09-14T18:15:47.818821017Z creating subdirectories ... ok
+2026-09-14T18:15:47.818891029Z selecting dynamic shared memory implementation ... posix
+2026-09-14T18:15:47.835572698Z selecting default "max_connections" ... 100
+2026-09-14T18:15:47.858340894Z selecting default "shared_buffers" ... 128MB
+2026-09-14T18:15:47.914364744Z selecting default time zone ... UTC
+2026-09-14T18:15:47.915512051Z creating configuration files ... ok
+2026-09-14T18:15:48.048061546Z running bootstrap script ... ok
+2026-09-14T18:15:48.251154598Z sh: locale: Permission denied
+2026-09-14T18:15:48.251222857Z 2026-09-14 18:15:48.251 UTC [40] WARNING:  no usable system locales were found
+2026-09-14T18:15:48.614489484Z performing post-bootstrap initialization ... ok
+2026-09-14T18:15:54.182046270Z initdb: warning: enabling "trust" authentication for local connections
+2026-09-14T18:15:54.182069253Z initdb: hint: You can change this by editing pg_hba.conf or using the option -A, or --auth-local and --auth-host, the next time you run initdb.
+2026-09-14T18:15:54.182047201Z syncing data to disk ... ok
+2026-09-14T18:15:54.182082568Z 
+2026-09-14T18:15:54.182088249Z 
+2026-09-14T18:15:54.182092277Z Success. You can now start the database server using:
+2026-09-14T18:15:54.182096244Z 
+2026-09-14T18:15:54.182100212Z     pg_ctl -D /var/lib/postgresql/18/docker -l logfile start
+2026-09-14T18:15:54.182104019Z 
+2026-09-14T18:15:54.230538700Z waiting for server to start....2026-09-14 18:15:54.230 UTC [64] LOG:  starting PostgreSQL 18.3 on x86_64-pc-linux-musl, compiled by gcc (Alpine 15.2.0) 15.2.0, 64-bit
+2026-09-14T18:15:54.235556079Z 2026-09-14 18:15:54.235 UTC [64] LOG:  listening on Unix socket "/var/run/postgresql/.s.PGSQL.5432"
+2026-09-14T18:15:54.254048443Z 2026-09-14 18:15:54.253 UTC [70] LOG:  database system was shut down at 2026-09-14 18:15:48 UTC
+2026-09-14T18:15:54.263116337Z 2026-09-14 18:15:54.262 UTC [64] LOG:  database system is ready to accept connections
+2026-09-14T18:15:54.300208449Z  done
+2026-09-14T18:15:54.300235249Z server started
+2026-09-14T18:15:54.317619892Z 
+2026-09-14T18:15:54.317655570Z /usr/local/bin/docker-entrypoint.sh: ignoring /docker-entrypoint-initdb.d/*
+2026-09-14T18:15:54.317663164Z 
+2026-09-14T18:15:54.318394061Z waiting for server to shut down....2026-09-14 18:15:54.318 UTC [64] LOG:  received fast shutdown request
+2026-09-14T18:15:54.323670992Z 2026-09-14 18:15:54.323 UTC [64] LOG:  aborting any active transactions
+2026-09-14T18:15:54.325745698Z 2026-09-14 18:15:54.325 UTC [64] LOG:  background worker "logical replication launcher" (PID 73) exited with exit code 1
+2026-09-14T18:15:54.325765887Z 2026-09-14 18:15:54.325 UTC [68] LOG:  shutting down
+2026-09-14T18:15:54.330803103Z 2026-09-14 18:15:54.330 UTC [68] LOG:  checkpoint starting: shutdown immediate
+2026-09-14T18:15:54.373829043Z 2026-09-14 18:15:54.373 UTC [68] LOG:  checkpoint complete: wrote 0 buffers (0.0%), wrote 3 SLRU buffers; 0 WAL file(s) added, 0 removed, 0 recycled; write=0.001 s, sync=0.011 s, total=0.048 s; sync files=2, longest=0.006 s, average=0.006 s; distance=0 kB, estimate=0 kB; lsn=0/175F3A8, redo lsn=0/175F3A8
+2026-09-14T18:15:54.396725182Z 2026-09-14 18:15:54.396 UTC [64] LOG:  database system is shut down
+2026-09-14T18:15:54.418577039Z  done
+2026-09-14T18:15:54.418602618Z server stopped
+2026-09-14T18:15:54.419537291Z 
+2026-09-14T18:15:54.419551358Z PostgreSQL init process complete; ready for start up.
+2026-09-14T18:15:54.419558291Z 
+2026-09-14T18:15:54.447225792Z 2026-09-14 18:15:54.447 UTC [1] LOG:  starting PostgreSQL 18.3 on x86_64-pc-linux-musl, compiled by gcc (Alpine 15.2.0) 15.2.0, 64-bit
+2026-09-14T18:15:54.447250609Z 2026-09-14 18:15:54.447 UTC [1] LOG:  listening on IPv4 address "0.0.0.0", port 5432
+2026-09-14T18:15:54.447256841Z 2026-09-14 18:15:54.447 UTC [1] LOG:  listening on IPv6 address "::", port 5432
+2026-09-14T18:15:54.457783572Z 2026-09-14 18:15:54.457 UTC [1] LOG:  listening on Unix socket "/var/run/postgresql/.s.PGSQL.5432"
+2026-09-14T18:15:54.469905661Z 2026-09-14 18:15:54.469 UTC [84] LOG:  database system was shut down at 2026-09-14 18:15:54 UTC
+2026-09-14T18:15:54.477954721Z 2026-09-14 18:15:54.477 UTC [1] LOG:  database system is ready to accept connections
+2026-09-14T18:20:54.569250437Z 2026-09-14 18:20:54.569 UTC [82] LOG:  checkpoint starting: time
+2026-09-14T18:25:24.097244401Z 2026-09-14 18:25:24.097 UTC [82] LOG:  checkpoint complete: wrote 5869 buffers (35.8%), wrote 7 SLRU buffers; 0 WAL file(s) added, 4 removed, 0 recycled; write=269.451 s, sync=0.008 s, total=269.528 s; sync files=98, longest=0.007 s, average=0.001 s; distance=73685 kB, estimate=73685 kB; lsn=0/1A5B8AC0, redo lsn=0/5F54B18

@@ -1,0 +1,337 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Monitoring report — fabric-cft / kv-write</title>
+<style>
+  :root {
+    --bg: #f4f5f7;
+    --card: #ffffff;
+    --border: #e3e5e9;
+    --text: #1c1f26;
+    --muted: #6b7280;
+    --accent: #2563eb;
+    --accent-soft: #eff4ff;
+    --danger: #b3261e;
+    --danger-bg: #fdecea;
+    --danger-border: #f2b8b0;
+    --ok: #16794f;
+    --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+    --radius: 10px;
+    --shadow: 0 1px 2px rgba(20,20,30,.04), 0 1px 8px rgba(20,20,30,.04);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #14161b;
+      --card: #1c1f26;
+      --border: #2c303a;
+      --text: #e7e9ee;
+      --muted: #9aa1ac;
+      --accent: #6ea8fe;
+      --accent-soft: #1c2942;
+      --danger: #ff8a80;
+      --danger-bg: #3a1f1e;
+      --danger-border: #6b2f2a;
+      --ok: #5fd8a6;
+      --shadow: 0 1px 2px rgba(0,0,0,.3), 0 1px 8px rgba(0,0,0,.3);
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    font: 14px/1.55 -apple-system, "Segoe UI", system-ui, sans-serif;
+    margin: 0;
+    color: var(--text);
+    background: var(--bg);
+  }
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
+
+  header.top { margin-bottom: 1.5rem; }
+  h1 { font-size: 1.5rem; margin: 0 0 .6rem; letter-spacing: -.01em; }
+  .chips { display: flex; flex-wrap: wrap; gap: .4rem; align-items: center; margin-bottom: .4rem; }
+  .chip {
+    display: inline-flex; align-items: center; gap: .3rem;
+    font-size: .78rem; font-weight: 600; padding: .22rem .6rem;
+    border-radius: 999px; background: var(--accent-soft); color: var(--accent);
+    border: 1px solid transparent;
+  }
+  .chip.muted { background: transparent; color: var(--muted); border-color: var(--border); font-weight: 500; }
+  .timerange { color: var(--muted); font-size: .85rem; }
+  .timerange strong { color: var(--text); font-weight: 600; }
+
+  .banner {
+    background: var(--danger-bg); border: 1px solid var(--danger-border); color: var(--text);
+    border-radius: var(--radius); padding: .9rem 1.1rem; margin: 0 0 1.5rem; box-shadow: var(--shadow);
+  }
+  .banner .head { display: flex; align-items: center; gap: .45rem; font-weight: 700; color: var(--danger); margin-bottom: .3rem; }
+  .banner ul { margin: 0; padding-left: 1.2rem; }
+  .banner li { margin: .15rem 0; }
+
+  section.card {
+    background: var(--card); border: 1px solid var(--border); border-radius: var(--radius);
+    box-shadow: var(--shadow); padding: 1.3rem 1.4rem; margin-bottom: 1.4rem;
+  }
+  section.card > h2 {
+    font-size: .95rem; text-transform: uppercase; letter-spacing: .04em;
+    color: var(--muted); margin: 0 0 1rem; font-weight: 700;
+  }
+
+  .kv { display: grid; grid-template-columns: max-content 1fr; gap: .5rem 1.5rem; }
+  .kv dt { color: var(--muted); font-weight: 600; white-space: nowrap; }
+  .kv dd { margin: 0; font-family: var(--mono); font-size: .88rem; word-break: break-word; }
+  .kv dd.caveat { font-family: inherit; color: var(--danger); }
+  .kv dd.caveat div { margin-bottom: .2rem; }
+
+  table { border-collapse: collapse; width: 100%; font-size: .86rem; }
+  table.metrics th, table.metrics td { padding: .5rem .7rem; text-align: right; white-space: nowrap; }
+  table.metrics th { color: var(--muted); font-weight: 600; border-bottom: 2px solid var(--border); font-size: .78rem; text-transform: uppercase; letter-spacing: .03em; }
+  table.metrics td { border-bottom: 1px solid var(--border); font-family: var(--mono); }
+  table.metrics td:first-child, table.metrics th:first-child { text-align: left; font-family: inherit; font-weight: 600; }
+  table.metrics tbody tr:last-child td { border-bottom: none; }
+  table.metrics tbody tr:hover td { background: var(--accent-soft); }
+  .table-scroll { overflow-x: auto; }
+
+  .note { color: var(--muted); font-size: .82rem; margin: .8rem 0 0; line-height: 1.6; }
+  .note b { color: var(--text); font-weight: 600; }
+
+  .charts-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(420px, 1fr)); gap: 1.1rem; }
+  .chart { border: 1px solid var(--border); border-radius: var(--radius); padding: .9rem .9rem 1rem; background: var(--card); }
+  .chart .chart-title { font-weight: 600; font-size: .85rem; margin-bottom: .5rem; }
+  .chart img { max-width: 100%; display: block; border-radius: 6px; }
+  .chart .explain { color: var(--muted); font-size: .8rem; margin-top: .55rem; line-height: 1.5; }
+  .placeholder {
+    color: var(--muted); font-style: italic; font-size: .85rem;
+    padding: 2.2rem 1rem; text-align: center; border: 1px dashed var(--border); border-radius: 6px;
+  }
+
+  .footer { color: var(--muted); font-size: .8rem; margin-top: 2.5rem; border-top: 1px solid var(--border); padding-top: 1rem; }
+
+  .stats { display: flex; flex-wrap: wrap; gap: 1.6rem; }
+  .stat-label { color: var(--muted); font-size: .74rem; text-transform: uppercase; letter-spacing: .04em; margin-bottom: .2rem; }
+  .stat-value { font-family: var(--mono); font-size: 1.35rem; font-weight: 600; }
+  .stat-value.bad { color: var(--danger); }
+  .stat-value.ok { color: var(--ok); }
+
+  details.phase { border: 1px solid var(--border); border-radius: 8px; margin-top: .7rem; padding: .6rem .8rem; }
+  details.phase summary { cursor: pointer; font-weight: 600; font-size: .85rem; }
+  details.phase summary .window { color: var(--muted); font-weight: 400; font-family: var(--mono); font-size: .78rem; margin-left: .6rem; }
+  table.pctl { margin-top: .7rem; }
+  table.pctl th, table.pctl td { padding: .3rem .6rem; }
+</style>
+
+<div class="wrap">
+
+<header class="top">
+  <h1>quick-smoke</h1>
+  <div class="chips">
+    <span class="chip">fabric-cft · 2.5.16</span>
+    <span class="chip muted">workload kv-write</span>
+    <span class="chip muted">profile local</span>
+    <span class="chip muted">normalized=true</span>
+  </div>
+  <div class="timerange"><strong>2026-09-11 13:43:38 IST</strong> → <strong>2026-09-11 13:44:08 IST</strong> &nbsp;(30s)</div>
+</header>
+
+
+<div class="banner">
+  <div class="head">&#9888; Needs attention</div>
+  <ul>
+    <li>chart rendering failed: json: unsupported value: NaN</li>
+  </ul>
+</div>
+
+
+
+<section class="card">
+  <h2>Headline result</h2>
+  <div class="stats">
+    <div class="stat"><div class="stat-label">confirmed tps</div><div class="stat-value">50.0</div></div>
+    <div class="stat"><div class="stat-label">fail rate</div><div class="stat-value">0.00%</div></div>
+    <div class="stat"><div class="stat-label">e2e p50 / p99 ms</div><div class="stat-value">584.7 / 1081.3</div></div>
+    <div class="stat"><div class="stat-label">invariant</div><div class="stat-value ok">&#10003; ok</div></div>
+    
+  </div>
+  <p class="note">The measurement window used as this run&#39;s single-number result - the hold phase for a sweep, or the only phase otherwise.</p>
+</section>
+
+
+<section class="card">
+  <h2>Experiment control settings</h2>
+  <dl class="kv">
+    <dt>State DB</dt><dd>leveldb</dd>
+    <dt>Orderer batch</dt><dd>msgcount=100 timeout=1s preferred=2 MB max=10 MB</dd>
+    <dt>Crypto</dt><dd>sig=ECDSA-P256 hash=SHA-256 per_tx_endorse_verify=true (X.509 MSP; endorsement signatures verified by every committing peer during VSCC)</dd>
+    <dt>Resource limit / container</dt><dd>2 CPUs, 2g memory</dd>
+    <dt>Nodes</dt><dd>ca=1 orderer=1 peer=1 </dd>
+    <dt>Load determinism</dt><dd>seed=1 key_space=5000 key_distribution=uniform read_write_ratio=0 value_size_bytes=64</dd>
+    <dt>Windowing</dt><dd>warmup=5s cooldown=3s</dd>
+    <dt>Harness git SHA</dt><dd>4e4cc55</dd>
+    
+  </dl>
+</section>
+
+<section class="card">
+  <h2>Harness result metrics</h2>
+  <div class="table-scroll">
+  <table class="metrics">
+    <thead><tr>
+      <th>phase</th><th>offered tps</th><th>confirmed tps</th><th>fail rate</th>
+      <th>submitted</th><th>committed</th><th>invalid</th><th>errored</th><th>timed out</th>
+      <th>e2e p50 ms</th><th>e2e p99 ms</th><th>submit p50 ms</th><th>commit p50 ms</th><th>send-gap p99 ms</th>
+    </tr></thead>
+    <tbody>
+    
+    <tr>
+      <td>single</td><td>50</td><td>50.0</td><td>0.0000</td>
+      <td>1122</td><td>1122</td><td>0</td><td>0</td><td>0</td>
+      <td>584.70</td><td>1081.34</td>
+      <td>3.67</td><td>580.61</td>
+      <td>1.10</td>
+    </tr>
+    
+    </tbody>
+  </table>
+  </div>
+  <p class="note">
+    <b>confirmed_tps</b>: Committed transactions per second, using only T3 (observed-committed) timestamps. &nbsp;·&nbsp;
+    <b>fail_rate</b>: (Invalid &#43; Errored &#43; TimedOut) / Submitted for this measurement window. &nbsp;·&nbsp;
+    <b>e2e</b>: End-to-end latency from the load generator&#39;s scheduled send time to observed finality (open-loop, so queueing delay can&#39;t hide behind a busy generator). &nbsp;·&nbsp;
+    <b>submit</b>: Latency from the adapter&#39;s Submit call entering to the platform acknowledging receipt. &nbsp;·&nbsp;
+    <b>commit</b>: Latency from platform acknowledgement to observed commit in a block. &nbsp;·&nbsp;
+    <b>send-gap</b>: How far behind schedule the load generator ran (actual send time minus scheduled send time). A large p99 here means the generator, not the platform, was the bottleneck.
+  </p>
+
+  
+  <details class="phase" open>
+    <summary>single — full percentile detail
+      <span class="window">window 2026-09-11 13:43:43 IST → 2026-09-11 13:44:05 IST (phase started 2026-09-11 13:43:38 IST)</span>
+    </summary>
+    <div class="table-scroll">
+    <table class="metrics pctl">
+      <thead><tr><th>percentile</th><th>e2e ms</th><th>submit ms</th><th>commit ms</th><th>send-gap ms</th></tr></thead>
+      <tbody>
+      
+      <tr><td>p1</td><td>84.61</td><td>3.02</td><td>80.13</td><td>0.03</td></tr>
+      
+      <tr><td>p5</td><td>125.06</td><td>3.15</td><td>120.77</td><td>0.07</td></tr>
+      
+      <tr><td>p10</td><td>180.48</td><td>3.22</td><td>176.51</td><td>0.19</td></tr>
+      
+      <tr><td>p25</td><td>330.75</td><td>3.42</td><td>324.86</td><td>0.34</td></tr>
+      
+      <tr><td>p50</td><td>584.70</td><td>3.67</td><td>580.61</td><td>0.59</td></tr>
+      
+      <tr><td>p75</td><td>841.73</td><td>4.04</td><td>837.63</td><td>0.86</td></tr>
+      
+      <tr><td>p90</td><td>991.74</td><td>5.04</td><td>980.48</td><td>0.98</td></tr>
+      
+      <tr><td>p95</td><td>1041.41</td><td>7.32</td><td>1012.22</td><td>1.05</td></tr>
+      
+      <tr><td>p99</td><td>1081.34</td><td>46.56</td><td>1078.27</td><td>1.10</td></tr>
+      
+      <tr><td>p99.9</td><td>1091.58</td><td>56.10</td><td>1084.42</td><td>1.17</td></tr>
+      
+      <tr><td>p99.99</td><td>1101.82</td><td>63.94</td><td>1097.73</td><td>1.28</td></tr>
+      
+      <tr><td>count</td><td>1122</td><td>1122</td><td>1122</td><td>1122</td></tr>
+      <tr><td>min ms</td><td>64.86</td><td>2.61</td><td>60.22</td><td>0.01</td></tr>
+      <tr><td>max ms</td><td>1101.82</td><td>63.94</td><td>1097.73</td><td>1.28</td></tr>
+      <tr><td>mean ms</td><td>586.53</td><td>5.15</td><td>580.81</td><td>0.59</td></tr>
+      <tr><td>stddev ms</td><td>293.69</td><td>6.80</td><td>291.64</td><td>0.30</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <p class="note">Full latency spectrum from the HDR histogram (3 significant figures) backing this phase&#39;s measurement window. See docs/architecture/metrics-methodology.md.</p>
+  </details>
+  
+</section>
+
+<section class="card">
+  <h2>Host + container resource metrics</h2>
+  
+    <div class="charts-grid">
+    
+    <div class="chart">
+      <div class="chart-title">Harness CPU sampling (docker stats)</div>
+      <div class="placeholder">no data in this window</div>
+      <div class="explain">CPU% summed across this run&#39;s containers, sampled directly by the harness via `docker stats` once per second. Independent of Prometheus - the one chart that still renders even when the monitoring stack is down.</div>
+    </div>
+    
+    <div class="chart">
+      <div class="chart-title">Harness memory sampling (docker stats)</div>
+      <div class="placeholder">no data in this window</div>
+      <div class="explain">Resident memory summed across this run&#39;s containers, sampled the same way as the CPU chart above - a coarse fallback, not a substitute for the cAdvisor chart when Prometheus is available.</div>
+    </div>
+    
+    </div>
+  
+  
+    <p class="note">Throughput / latency come from the harness result files (`results/&lt;platform&gt;/&lt;ts&gt;/`), not Grafana. This dashboard is host &#43; container resource context only. Platform-native `/metrics` are informational and excluded from cross-platform comparison.</p>
+    <div class="charts-grid">
+    
+    <div class="chart">
+      <div class="chart-title">Container CPU cores (cAdvisor)</div>
+      <div class="placeholder">no data in this window</div>
+      <div class="explain">CPU cores used by this platform&#39;s own containers during the run. High values explain resource pressure; they are not a fairness metric on their own.</div>
+    </div>
+    
+    <div class="chart">
+      <div class="chart-title">Container memory (RSS)</div>
+      <div class="placeholder">no data in this window</div>
+      <div class="explain">Resident memory used by this platform&#39;s own containers during the run.</div>
+    </div>
+    
+    <div class="chart">
+      <div class="chart-title">Host CPU utilisation (node_exporter)</div>
+      <div class="placeholder">data was fetched but could not be rendered — see banner above</div>
+      
+      <div class="explain">Fraction of the test machine&#39;s CPU that was busy. If this saturates, the bottleneck may be the test machine, not the platform under test.</div>
+    </div>
+    
+    <div class="chart">
+      <div class="chart-title">Host disk IO (bytes/s)</div>
+      <div class="placeholder">data was fetched but could not be rendered — see banner above</div>
+      
+      <div class="explain">Disk read/write throughput on the test machine — host-level resource context, not a platform metric.</div>
+    </div>
+    
+    </div>
+  
+</section>
+
+<section class="card">
+  <h2>Native platform metrics</h2>
+  
+    <p class="note">These panels explain **why** a platform behaves as it does. They are **not** comparable across platforms - see docs/architecture/fairness-guarantees.md. Metric names differ per platform / version; adjust queries to what the deployed build actually exposes.</p>
+    <div class="charts-grid">
+    
+    <div class="chart">
+      <div class="chart-title">Native /metrics up (informational only)</div>
+      <div class="placeholder">data was fetched but could not be rendered — see banner above</div>
+      
+      <div class="explain">Whether the platform&#39;s own /metrics endpoint was reachable at each sample point; gaps mean scrape failures, not necessarily platform downtime.</div>
+    </div>
+    
+    <div class="chart">
+      <div class="chart-title">Fabric/Drunix: blocks committed rate</div>
+      <div class="placeholder">data was fetched but could not be rendered — see banner above</div>
+      
+      <div class="explain">Blocks committed per second, from the platform&#39;s own ledger metric. Informational only — block size/batching config differs per platform, so this is not comparable across platforms.</div>
+    </div>
+    
+    <div class="chart">
+      <div class="chart-title">Fabric/Drunix: endorsement proposal duration p99</div>
+      <div class="placeholder">data was fetched but could not be rendered — see banner above</div>
+      
+      <div class="explain">p99 time for a peer to simulate and endorse one proposal, as reported by the platform itself. Excluded from cross-platform TPS comparisons, but useful for explaining where time goes inside one platform.</div>
+    </div>
+    
+    </div>
+  
+</section>
+
+
+
+<div class="footer">
+  Generated 2026-09-11 13:44:08 IST by benchrunner — everything from manifest.json, result.json and this run's monitoring window is above; no need to open those files separately.
+</div>
+
+</div>

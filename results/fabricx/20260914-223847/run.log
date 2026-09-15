@@ -1,0 +1,11 @@
+time=2026-09-14T22:38:47.038+05:30 level=INFO msg="run starting" workload=kv-write profile=local-small normalized=true out_dir=results/fabricx/20260914-223847
+time=2026-09-14T22:38:47.038+05:30 level=WARN msg=caveat text="state-db parity not held: run requested leveldb, platform actually ran postgres"
+time=2026-09-14T22:38:47.038+05:30 level=INFO msg="adapter setup"
+time=2026-09-14T22:38:47.050+05:30 level=INFO msg="setup complete" component=adapter router=localhost:6022 deliver=localhost:4001 channel=arma namespace=0 broadcast_streams=256
+time=2026-09-14T22:38:47.050+05:30 level=INFO msg="phase start" phase=single offered_tps=50 workers=0 duration=30s
+time=2026-09-14T22:38:58.312+05:30 level=INFO msg="phase end" phase=single submitted=164 committed=0 confirmed_tps=0.0 fail_rate=1.0000 e2e_p99_ms=0.00
+time=2026-09-14T22:38:58.312+05:30 level=WARN msg="phase errors" phase=single count=164 message="context canceled"
+time=2026-09-14T22:38:58.312+05:30 level=WARN msg=caveat text="run interrupted (signal or cancelled context) during phase single after 11s: that phase is partial and not a headline; phases never run: none"
+time=2026-09-14T22:38:58.317+05:30 level=WARN msg=caveat text="native metrics scrape of http://localhost:9643/metrics failed: scrape http://localhost:9643/metrics: parser panic: Invalid name validation scheme requested: unset (informational metrics only; harness numbers unaffected)"
+time=2026-09-14T22:38:58.318+05:30 level=WARN msg="run has no headline: it did not complete a headline phase on a healthy platform; see caveats in summary.txt" dir=results/fabricx/20260914-223847
+time=2026-09-14T22:38:58.318+05:30 level=INFO msg="run finished" out_dir=results/fabricx/20260914-223847 caveats=3

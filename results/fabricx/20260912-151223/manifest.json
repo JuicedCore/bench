@@ -1,0 +1,49 @@
+{
+  "run_name": "throughput-scan-fabricx",
+  "platform": "fabricx",
+  "workload": "transfer",
+  "profile": "local",
+  "normalized": false,
+  "started_at": "2026-09-12T15:12:23.845370119+05:30",
+  "ended_at": "2026-09-12T15:12:23.847565611+05:30",
+  "harness_git_sha": "4e4cc55",
+  "platform_version": "fabricx",
+  "state_db": "leveldb",
+  "state_db_requested": "leveldb",
+  "orderer_batch": {
+    "MaxMessageCount": 100,
+    "AbsoluteMaxBytes": "10 MB",
+    "PreferredMaxBytes": "2 MB",
+    "BatchTimeout": "1s"
+  },
+  "crypto": {
+    "signature_alg": "ECDSA-P256",
+    "hash_alg": "SHA-256",
+    "per_tx_endorsement_verify": true,
+    "msp_note": "Fabric-X: FSC view/session + Token SDK; committer verifies signatures. REST/FSC node is in the measured path; submit latency (T2-T1) is N/A - the sample POST blocks to finality."
+  },
+  "resource_limit_per_container": {
+    "CPUs": 0.8,
+    "Memory": "800m"
+  },
+  "nodes": {
+    "arma_assembler": 1,
+    "arma_batcher": 2,
+    "arma_consenter": 2,
+    "arma_router": 1,
+    "committer": 1,
+    "endorser": 1,
+    "validator": 1
+  },
+  "seed": 1,
+  "key_space": 2,
+  "key_distribution": "uniform",
+  "zipfian_constant": 0,
+  "read_write_ratio": 0,
+  "value_size_bytes": 64,
+  "warmup_sec": 15,
+  "cooldown_sec": 10,
+  "caveats": [
+    "fabricx on the local profile is resource-constrained; absolute throughput is NOT comparable to its published scale-out ceiling"
+  ]
+}

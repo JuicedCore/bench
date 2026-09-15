@@ -1,0 +1,552 @@
+time=2026-09-14T23:39:33.885+05:30 level=INFO msg="run starting" platform=drunix run=probe-sweep workload=kv-write profile=local-small normalized=true out_dir=results/drunix/20260914-233933
+time=2026-09-14T23:39:33.885+05:30 level=WARN msg=caveat platform=drunix run=probe-sweep text="drunix ran on YugabyteDB (its shipped test-network default); LevelDB parity is unavailable, so the state-DB variable is NOT held constant vs fabric-cft for this run"
+time=2026-09-14T23:39:33.885+05:30 level=WARN msg=caveat platform=drunix run=probe-sweep text="drunix write values are JSON-wrapped client-side to survive a YugabyteDB statedb bug (non-JSON values panic the Committing Peer); the on-wire payload format differs from the shared kv workload on other platforms for this run"
+time=2026-09-14T23:39:33.885+05:30 level=WARN msg=caveat platform=drunix run=probe-sweep text="state-db parity not held: run requested leveldb, platform actually ran yugabyte"
+time=2026-09-14T23:39:33.885+05:30 level=INFO msg="adapter setup" platform=drunix run=probe-sweep
+[34m2026-09-14 23:39:33.885 IST 0001 INFO[0m [grpc] [34;1mInfof[0m -> [core] original dial target is: "localhost:7051"
+[34m2026-09-14 23:39:33.886 IST 0002 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1] Channel created for target "localhost:7051"
+[34m2026-09-14 23:39:33.886 IST 0003 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1] parsed dial target is: resolver.Target{URL:url.URL{Scheme:"dns", Opaque:"", User:(*url.Userinfo)(nil), Host:"", Path:"/localhost:7051", Fragment:"", RawQuery:"", RawPath:"", RawFragment:"", ForceQuery:false, OmitHost:false}}
+[34m2026-09-14 23:39:33.886 IST 0004 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1] Channel authority set to "peer0.org1.example.com"
+[34m2026-09-14 23:39:33.886 IST 0005 INFO[0m [grpc] [34;1mInfof[0m -> [core] original dial target is: "localhost:7061"
+[34m2026-09-14 23:39:33.886 IST 0006 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #2] Channel created for target "localhost:7061"
+[34m2026-09-14 23:39:33.886 IST 0007 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #2] parsed dial target is: resolver.Target{URL:url.URL{Scheme:"dns", Opaque:"", User:(*url.Userinfo)(nil), Host:"", Path:"/localhost:7061", Fragment:"", RawQuery:"", RawPath:"", RawFragment:"", ForceQuery:false, OmitHost:false}}
+[34m2026-09-14 23:39:33.886 IST 0008 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #2] Channel authority set to "peer1.org1.example.com"
+[34m2026-09-14 23:39:33.886 IST 0009 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #2] Channel Connectivity change to CONNECTING
+[34m2026-09-14 23:39:33.886 IST 000a INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #2] Channel exiting idle mode
+[34m2026-09-14 23:39:33.887 IST 000b INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #2] Resolver state updated: {
+  "Addresses": [
+    {
+      "Addr": "[::1]:7061",
+      "ServerName": "",
+      "Attributes": null,
+      "BalancerAttributes": null,
+      "Metadata": null
+    },
+    {
+      "Addr": "127.0.0.1:7061",
+      "ServerName": "",
+      "Attributes": null,
+      "BalancerAttributes": null,
+      "Metadata": null
+    }
+  ],
+  "Endpoints": [
+    {
+      "Addresses": [
+        {
+          "Addr": "[::1]:7061",
+          "ServerName": "",
+          "Attributes": null,
+          "BalancerAttributes": null,
+          "Metadata": null
+        }
+      ],
+      "Attributes": null
+    },
+    {
+      "Addresses": [
+        {
+          "Addr": "127.0.0.1:7061",
+          "ServerName": "",
+          "Attributes": null,
+          "BalancerAttributes": null,
+          "Metadata": null
+        }
+      ],
+      "Attributes": null
+    }
+  ],
+  "ServiceConfig": null,
+  "Attributes": null
+} (resolver returned new addresses)
+[34m2026-09-14 23:39:33.887 IST 000c INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #2] Channel switches to new LB policy "pick_first"
+[34m2026-09-14 23:39:33.887 IST 000d INFO[0m [grpc] [34;1mInfof[0m -> [pick-first-leaf-lb] [pick-first-leaf-lb 0x21648a88c000] Received new config {
+  "shuffleAddressList": false
+}, resolver state {
+  "Addresses": [
+    {
+      "Addr": "[::1]:7061",
+      "ServerName": "",
+      "Attributes": null,
+      "BalancerAttributes": null,
+      "Metadata": null
+    },
+    {
+      "Addr": "127.0.0.1:7061",
+      "ServerName": "",
+      "Attributes": null,
+      "BalancerAttributes": null,
+      "Metadata": null
+    }
+  ],
+  "Endpoints": [
+    {
+      "Addresses": [
+        {
+          "Addr": "[::1]:7061",
+          "ServerName": "",
+          "Attributes": null,
+          "BalancerAttributes": null,
+          "Metadata": null
+        }
+      ],
+      "Attributes": null
+    },
+    {
+      "Addresses": [
+        {
+          "Addr": "127.0.0.1:7061",
+          "ServerName": "",
+          "Attributes": null,
+          "BalancerAttributes": null,
+          "Metadata": null
+        }
+      ],
+      "Attributes": null
+    }
+  ],
+  "ServiceConfig": null,
+  "Attributes": null
+}
+[34m2026-09-14 23:39:33.887 IST 000e INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #2 SubChannel #3] Subchannel created
+[34m2026-09-14 23:39:33.887 IST 000f INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #2 SubChannel #3] Subchannel Connectivity change to CONNECTING
+[34m2026-09-14 23:39:33.887 IST 0010 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #2 SubChannel #3] Subchannel picks a new address "[::1]:7061" to connect
+[34m2026-09-14 23:39:33.890 IST 0011 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #2 SubChannel #3] Subchannel Connectivity change to READY
+[34m2026-09-14 23:39:33.890 IST 0012 INFO[0m [grpc] [34;1mInfof[0m -> [pick-first-leaf-lb] [pick-first-leaf-lb 0x21648a88c000] SubConn 0x21648a4da410 reported connectivity state READY and the health listener is disabled. Transitioning SubConn to READY.
+[34m2026-09-14 23:39:33.890 IST 0013 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #2] Channel Connectivity change to READY
+[34m2026-09-14 23:39:33.890 IST 0014 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1] Channel Connectivity change to CONNECTING
+[34m2026-09-14 23:39:33.890 IST 0015 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1] Channel exiting idle mode
+[34m2026-09-14 23:39:33.891 IST 0016 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1] Resolver state updated: {
+  "Addresses": [
+    {
+      "Addr": "[::1]:7051",
+      "ServerName": "",
+      "Attributes": null,
+      "BalancerAttributes": null,
+      "Metadata": null
+    },
+    {
+      "Addr": "127.0.0.1:7051",
+      "ServerName": "",
+      "Attributes": null,
+      "BalancerAttributes": null,
+      "Metadata": null
+    }
+  ],
+  "Endpoints": [
+    {
+      "Addresses": [
+        {
+          "Addr": "[::1]:7051",
+          "ServerName": "",
+          "Attributes": null,
+          "BalancerAttributes": null,
+          "Metadata": null
+        }
+      ],
+      "Attributes": null
+    },
+    {
+      "Addresses": [
+        {
+          "Addr": "127.0.0.1:7051",
+          "ServerName": "",
+          "Attributes": null,
+          "BalancerAttributes": null,
+          "Metadata": null
+        }
+      ],
+      "Attributes": null
+    }
+  ],
+  "ServiceConfig": null,
+  "Attributes": null
+} (resolver returned new addresses)
+[34m2026-09-14 23:39:33.891 IST 0017 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1] Channel switches to new LB policy "pick_first"
+[34m2026-09-14 23:39:33.891 IST 0018 INFO[0m [grpc] [34;1mInfof[0m -> [pick-first-leaf-lb] [pick-first-leaf-lb 0x21648a954090] Received new config {
+  "shuffleAddressList": false
+}, resolver state {
+  "Addresses": [
+    {
+      "Addr": "[::1]:7051",
+      "ServerName": "",
+      "Attributes": null,
+      "BalancerAttributes": null,
+      "Metadata": null
+    },
+    {
+      "Addr": "127.0.0.1:7051",
+      "ServerName": "",
+      "Attributes": null,
+      "BalancerAttributes": null,
+      "Metadata": null
+    }
+  ],
+  "Endpoints": [
+    {
+      "Addresses": [
+        {
+          "Addr": "[::1]:7051",
+          "ServerName": "",
+          "Attributes": null,
+          "BalancerAttributes": null,
+          "Metadata": null
+        }
+      ],
+      "Attributes": null
+    },
+    {
+      "Addresses": [
+        {
+          "Addr": "127.0.0.1:7051",
+          "ServerName": "",
+          "Attributes": null,
+          "BalancerAttributes": null,
+          "Metadata": null
+        }
+      ],
+      "Attributes": null
+    }
+  ],
+  "ServiceConfig": null,
+  "Attributes": null
+}
+[34m2026-09-14 23:39:33.891 IST 0019 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1 SubChannel #5] Subchannel created
+[34m2026-09-14 23:39:33.891 IST 001a INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1 SubChannel #5] Subchannel Connectivity change to CONNECTING
+[34m2026-09-14 23:39:33.891 IST 001b INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1 SubChannel #5] Subchannel picks a new address "[::1]:7051" to connect
+[34m2026-09-14 23:39:33.892 IST 001c INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1 SubChannel #5] Subchannel Connectivity change to READY
+[34m2026-09-14 23:39:33.892 IST 001d INFO[0m [grpc] [34;1mInfof[0m -> [pick-first-leaf-lb] [pick-first-leaf-lb 0x21648a954090] SubConn 0x21648a4da4b0 reported connectivity state READY and the health listener is disabled. Transitioning SubConn to READY.
+[34m2026-09-14 23:39:33.892 IST 001e INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1] Channel Connectivity change to READY
+time=2026-09-14T23:39:33.895+05:30 level=INFO msg="setup complete" platform=drunix run=probe-sweep component=adapter gateway=localhost:7051 finality_from=localhost:7061
+time=2026-09-14T23:39:33.895+05:30 level=INFO msg="phase start" platform=drunix run=probe-sweep phase=probe offered_tps=10 workers=0 duration=30s
+time=2026-09-14T23:40:05.796+05:30 level=INFO msg="phase end" platform=drunix run=probe-sweep phase=probe submitted=300 committed=300 confirmed_tps=10.0 fail_rate=0.0000 e2e_p99_ms=3143.68
+time=2026-09-14T23:40:05.796+05:30 level=INFO msg="phase start" platform=drunix run=probe-sweep phase=sweep-100 offered_tps=100 workers=0 duration=1m0s
+time=2026-09-14T23:41:07.890+05:30 level=INFO msg="phase end" platform=drunix run=probe-sweep phase=sweep-100 submitted=1500 committed=1500 confirmed_tps=100.0 fail_rate=0.0000 e2e_p99_ms=2334.72
+time=2026-09-14T23:41:07.890+05:30 level=INFO msg="phase start" platform=drunix run=probe-sweep phase=sweep-250 offered_tps=250 workers=0 duration=1m0s
+time=2026-09-14T23:42:09.969+05:30 level=INFO msg="phase end" platform=drunix run=probe-sweep phase=sweep-250 submitted=3750 committed=3750 confirmed_tps=250.0 fail_rate=0.0000 e2e_p99_ms=1181.70
+time=2026-09-14T23:42:09.969+05:30 level=INFO msg="phase start" platform=drunix run=probe-sweep phase=sweep-500 offered_tps=500 workers=0 duration=1m0s
+time=2026-09-14T23:43:12.041+05:30 level=INFO msg="phase end" platform=drunix run=probe-sweep phase=sweep-500 submitted=7500 committed=7500 confirmed_tps=500.0 fail_rate=0.0000 e2e_p99_ms=2079.74
+time=2026-09-14T23:43:12.041+05:30 level=INFO msg="phase start" platform=drunix run=probe-sweep phase=sweep-1000 offered_tps=1000 workers=0 duration=1m0s
+time=2026-09-14T23:44:24.353+05:30 level=INFO msg="phase end" platform=drunix run=probe-sweep phase=sweep-1000 submitted=15000 committed=8002 confirmed_tps=533.5 fail_rate=0.4665 e2e_p99_ms=22429.70
+time=2026-09-14T23:44:24.354+05:30 level=WARN msg="phase errors" platform=drunix run=probe-sweep phase=sweep-1000 count=6998 message="not sent: N transactions already in flight (platform is not finalizing)"
+time=2026-09-14T23:44:24.354+05:30 level=INFO msg="phase start" platform=drunix run=probe-sweep phase=sweep-2000 offered_tps=2000 workers=0 duration=1m0s
+[34m2026-09-14 23:44:31.820 IST 001f INFO[0m [grpc] [34;1mInfof[0m -> [transport] [client-transport 0x21648a95b208] Closing: connection error: desc = "error reading from server: EOF"
+[34m2026-09-14 23:44:31.820 IST 0020 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1 SubChannel #5] Subchannel Connectivity change to IDLE
+[34m2026-09-14 23:44:31.820 IST 0021 INFO[0m [grpc] [34;1mInfof[0m -> [transport] [client-transport 0x21648a95b208] loopyWriter exiting with error: connection error: desc = "error reading from server: EOF"
+[34m2026-09-14 23:44:31.820 IST 0022 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1] Channel Connectivity change to IDLE
+[34m2026-09-14 23:44:31.820 IST 0023 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1] Channel Connectivity change to CONNECTING
+[34m2026-09-14 23:44:31.821 IST 0024 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1 SubChannel #5] Subchannel Connectivity change to CONNECTING
+[34m2026-09-14 23:44:31.821 IST 0025 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1 SubChannel #5] Subchannel picks a new address "[::1]:7051" to connect
+[34m2026-09-14 23:44:31.824 IST 0026 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1] Resolver state updated: {
+  "Addresses": [
+    {
+      "Addr": "[::1]:7051",
+      "ServerName": "",
+      "Attributes": null,
+      "BalancerAttributes": null,
+      "Metadata": null
+    },
+    {
+      "Addr": "127.0.0.1:7051",
+      "ServerName": "",
+      "Attributes": null,
+      "BalancerAttributes": null,
+      "Metadata": null
+    }
+  ],
+  "Endpoints": [
+    {
+      "Addresses": [
+        {
+          "Addr": "[::1]:7051",
+          "ServerName": "",
+          "Attributes": null,
+          "BalancerAttributes": null,
+          "Metadata": null
+        }
+      ],
+      "Attributes": null
+    },
+    {
+      "Addresses": [
+        {
+          "Addr": "127.0.0.1:7051",
+          "ServerName": "",
+          "Attributes": null,
+          "BalancerAttributes": null,
+          "Metadata": null
+        }
+      ],
+      "Attributes": null
+    }
+  ],
+  "ServiceConfig": null,
+  "Attributes": null
+} ()
+[34m2026-09-14 23:44:31.825 IST 0027 INFO[0m [grpc] [34;1mInfof[0m -> [pick-first-leaf-lb] [pick-first-leaf-lb 0x21648a954090] Received new config {
+  "shuffleAddressList": false
+}, resolver state {
+  "Addresses": [
+    {
+      "Addr": "[::1]:7051",
+      "ServerName": "",
+      "Attributes": null,
+      "BalancerAttributes": null,
+      "Metadata": null
+    },
+    {
+      "Addr": "127.0.0.1:7051",
+      "ServerName": "",
+      "Attributes": null,
+      "BalancerAttributes": null,
+      "Metadata": null
+    }
+  ],
+  "Endpoints": [
+    {
+      "Addresses": [
+        {
+          "Addr": "[::1]:7051",
+          "ServerName": "",
+          "Attributes": null,
+          "BalancerAttributes": null,
+          "Metadata": null
+        }
+      ],
+      "Attributes": null
+    },
+    {
+      "Addresses": [
+        {
+          "Addr": "127.0.0.1:7051",
+          "ServerName": "",
+          "Attributes": null,
+          "BalancerAttributes": null,
+          "Metadata": null
+        }
+      ],
+      "Attributes": null
+    }
+  ],
+  "ServiceConfig": null,
+  "Attributes": null
+}
+[34m2026-09-14 23:44:31.825 IST 0028 INFO[0m [grpc] [34;1mInfof[0m -> [core] Creating new client transport to "{Addr: \"[::1]:7051\", ServerName: \"peer0.org1.example.com\", }": connection error: desc = "transport: authentication handshake failed: EOF"
+[33m2026-09-14 23:44:31.825 IST 0029 WARN[0m [grpc] [33;1mAddTraceEvent[0m -> [core] [Channel #1 SubChannel #5] grpc: addrConn.createTransport failed to connect to {Addr: "[::1]:7051", ServerName: "peer0.org1.example.com", }. Err: connection error: desc = "transport: authentication handshake failed: EOF"
+[34m2026-09-14 23:44:31.825 IST 002a INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1 SubChannel #5] Subchannel Connectivity change to TRANSIENT_FAILURE, last error: connection error: desc = "transport: authentication handshake failed: EOF"
+[34m2026-09-14 23:44:31.825 IST 002b INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1 SubChannel #7] Subchannel created
+[34m2026-09-14 23:44:31.825 IST 002c INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1 SubChannel #7] Subchannel Connectivity change to CONNECTING
+[34m2026-09-14 23:44:31.825 IST 002d INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1 SubChannel #7] Subchannel picks a new address "127.0.0.1:7051" to connect
+[34m2026-09-14 23:44:31.826 IST 002e INFO[0m [grpc] [34;1mInfof[0m -> [core] Creating new client transport to "{Addr: \"127.0.0.1:7051\", ServerName: \"peer0.org1.example.com\", }": connection error: desc = "transport: authentication handshake failed: read tcp 127.0.0.1:48310->127.0.0.1:7051: read: connection reset by peer"
+[33m2026-09-14 23:44:31.826 IST 002f WARN[0m [grpc] [33;1mAddTraceEvent[0m -> [core] [Channel #1 SubChannel #7] grpc: addrConn.createTransport failed to connect to {Addr: "127.0.0.1:7051", ServerName: "peer0.org1.example.com", }. Err: connection error: desc = "transport: authentication handshake failed: read tcp 127.0.0.1:48310->127.0.0.1:7051: read: connection reset by peer"
+[34m2026-09-14 23:44:31.826 IST 0030 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1 SubChannel #7] Subchannel Connectivity change to TRANSIENT_FAILURE, last error: connection error: desc = "transport: authentication handshake failed: read tcp 127.0.0.1:48310->127.0.0.1:7051: read: connection reset by peer"
+[34m2026-09-14 23:44:31.826 IST 0031 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1] Channel Connectivity change to TRANSIENT_FAILURE
+[34m2026-09-14 23:44:32.826 IST 0032 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1 SubChannel #5] Subchannel Connectivity change to IDLE, last error: connection error: desc = "transport: authentication handshake failed: EOF"
+[34m2026-09-14 23:44:32.826 IST 0033 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1 SubChannel #5] Subchannel Connectivity change to CONNECTING
+[34m2026-09-14 23:44:32.826 IST 0034 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1 SubChannel #5] Subchannel picks a new address "[::1]:7051" to connect
+[34m2026-09-14 23:44:32.826 IST 0035 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1 SubChannel #7] Subchannel Connectivity change to IDLE, last error: connection error: desc = "transport: authentication handshake failed: read tcp 127.0.0.1:48310->127.0.0.1:7051: read: connection reset by peer"
+[34m2026-09-14 23:44:32.826 IST 0036 INFO[0m [grpc] [34;1mInfof[0m -> [core] Creating new client transport to "{Addr: \"[::1]:7051\", ServerName: \"peer0.org1.example.com\", }": connection error: desc = "transport: Error while dialing: dial tcp [::1]:7051: connect: connection refused"
+[34m2026-09-14 23:44:32.826 IST 0037 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1 SubChannel #7] Subchannel Connectivity change to CONNECTING
+[33m2026-09-14 23:44:32.826 IST 0038 WARN[0m [grpc] [33;1mAddTraceEvent[0m -> [core] [Channel #1 SubChannel #5] grpc: addrConn.createTransport failed to connect to {Addr: "[::1]:7051", ServerName: "peer0.org1.example.com", }. Err: connection error: desc = "transport: Error while dialing: dial tcp [::1]:7051: connect: connection refused"
+[34m2026-09-14 23:44:32.826 IST 0039 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1 SubChannel #7] Subchannel picks a new address "127.0.0.1:7051" to connect
+[34m2026-09-14 23:44:32.826 IST 003a INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1 SubChannel #5] Subchannel Connectivity change to TRANSIENT_FAILURE, last error: connection error: desc = "transport: Error while dialing: dial tcp [::1]:7051: connect: connection refused"
+[34m2026-09-14 23:44:32.826 IST 003b INFO[0m [grpc] [34;1mInfof[0m -> [core] Creating new client transport to "{Addr: \"127.0.0.1:7051\", ServerName: \"peer0.org1.example.com\", }": connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:7051: connect: connection refused"
+[33m2026-09-14 23:44:32.826 IST 003c WARN[0m [grpc] [33;1mAddTraceEvent[0m -> [core] [Channel #1 SubChannel #7] grpc: addrConn.createTransport failed to connect to {Addr: "127.0.0.1:7051", ServerName: "peer0.org1.example.com", }. Err: connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:7051: connect: connection refused"
+[34m2026-09-14 23:44:32.826 IST 003d INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1 SubChannel #7] Subchannel Connectivity change to TRANSIENT_FAILURE, last error: connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:7051: connect: connection refused"
+[34m2026-09-14 23:44:34.276 IST 003e INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1 SubChannel #5] Subchannel Connectivity change to IDLE, last error: connection error: desc = "transport: Error while dialing: dial tcp [::1]:7051: connect: connection refused"
+[34m2026-09-14 23:44:34.276 IST 003f INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1 SubChannel #5] Subchannel Connectivity change to CONNECTING
+[34m2026-09-14 23:44:34.276 IST 0040 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1 SubChannel #5] Subchannel picks a new address "[::1]:7051" to connect
+[34m2026-09-14 23:44:34.277 IST 0041 INFO[0m [grpc] [34;1mInfof[0m -> [core] Creating new client transport to "{Addr: \"[::1]:7051\", ServerName: \"peer0.org1.example.com\", }": connection error: desc = "transport: Error while dialing: dial tcp [::1]:7051: connect: connection refused"
+[33m2026-09-14 23:44:34.277 IST 0042 WARN[0m [grpc] [33;1mAddTraceEvent[0m -> [core] [Channel #1 SubChannel #5] grpc: addrConn.createTransport failed to connect to {Addr: "[::1]:7051", ServerName: "peer0.org1.example.com", }. Err: connection error: desc = "transport: Error while dialing: dial tcp [::1]:7051: connect: connection refused"
+[34m2026-09-14 23:44:34.277 IST 0043 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1 SubChannel #5] Subchannel Connectivity change to TRANSIENT_FAILURE, last error: connection error: desc = "transport: Error while dialing: dial tcp [::1]:7051: connect: connection refused"
+[34m2026-09-14 23:44:34.592 IST 0044 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1 SubChannel #7] Subchannel Connectivity change to IDLE, last error: connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:7051: connect: connection refused"
+[34m2026-09-14 23:44:34.593 IST 0045 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1 SubChannel #7] Subchannel Connectivity change to CONNECTING
+[34m2026-09-14 23:44:34.593 IST 0046 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1 SubChannel #7] Subchannel picks a new address "127.0.0.1:7051" to connect
+[34m2026-09-14 23:44:34.593 IST 0047 INFO[0m [grpc] [34;1mInfof[0m -> [core] Creating new client transport to "{Addr: \"127.0.0.1:7051\", ServerName: \"peer0.org1.example.com\", }": connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:7051: connect: connection refused"
+[33m2026-09-14 23:44:34.593 IST 0048 WARN[0m [grpc] [33;1mAddTraceEvent[0m -> [core] [Channel #1 SubChannel #7] grpc: addrConn.createTransport failed to connect to {Addr: "127.0.0.1:7051", ServerName: "peer0.org1.example.com", }. Err: connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:7051: connect: connection refused"
+[34m2026-09-14 23:44:34.593 IST 0049 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1 SubChannel #7] Subchannel Connectivity change to TRANSIENT_FAILURE, last error: connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:7051: connect: connection refused"
+[34m2026-09-14 23:44:36.434 IST 004a INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1 SubChannel #5] Subchannel Connectivity change to IDLE, last error: connection error: desc = "transport: Error while dialing: dial tcp [::1]:7051: connect: connection refused"
+[34m2026-09-14 23:44:36.434 IST 004b INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1 SubChannel #5] Subchannel Connectivity change to CONNECTING
+[34m2026-09-14 23:44:36.434 IST 004c INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1 SubChannel #5] Subchannel picks a new address "[::1]:7051" to connect
+[34m2026-09-14 23:44:36.434 IST 004d INFO[0m [grpc] [34;1mInfof[0m -> [core] Creating new client transport to "{Addr: \"[::1]:7051\", ServerName: \"peer0.org1.example.com\", }": connection error: desc = "transport: Error while dialing: dial tcp [::1]:7051: connect: connection refused"
+[33m2026-09-14 23:44:36.434 IST 004e WARN[0m [grpc] [33;1mAddTraceEvent[0m -> [core] [Channel #1 SubChannel #5] grpc: addrConn.createTransport failed to connect to {Addr: "[::1]:7051", ServerName: "peer0.org1.example.com", }. Err: connection error: desc = "transport: Error while dialing: dial tcp [::1]:7051: connect: connection refused"
+[34m2026-09-14 23:44:36.434 IST 004f INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1 SubChannel #5] Subchannel Connectivity change to TRANSIENT_FAILURE, last error: connection error: desc = "transport: Error while dialing: dial tcp [::1]:7051: connect: connection refused"
+[34m2026-09-14 23:44:36.690 IST 0050 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1 SubChannel #7] Subchannel Connectivity change to IDLE, last error: connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:7051: connect: connection refused"
+[34m2026-09-14 23:44:36.690 IST 0051 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1 SubChannel #7] Subchannel Connectivity change to CONNECTING
+[34m2026-09-14 23:44:36.690 IST 0052 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1 SubChannel #7] Subchannel picks a new address "127.0.0.1:7051" to connect
+[34m2026-09-14 23:44:36.690 IST 0053 INFO[0m [grpc] [34;1mInfof[0m -> [core] Creating new client transport to "{Addr: \"127.0.0.1:7051\", ServerName: \"peer0.org1.example.com\", }": connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:7051: connect: connection refused"
+[33m2026-09-14 23:44:36.690 IST 0054 WARN[0m [grpc] [33;1mAddTraceEvent[0m -> [core] [Channel #1 SubChannel #7] grpc: addrConn.createTransport failed to connect to {Addr: "127.0.0.1:7051", ServerName: "peer0.org1.example.com", }. Err: connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:7051: connect: connection refused"
+[34m2026-09-14 23:44:36.690 IST 0055 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1 SubChannel #7] Subchannel Connectivity change to TRANSIENT_FAILURE, last error: connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:7051: connect: connection refused"
+[34m2026-09-14 23:44:40.365 IST 0056 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1 SubChannel #7] Subchannel Connectivity change to IDLE, last error: connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:7051: connect: connection refused"
+[34m2026-09-14 23:44:40.365 IST 0057 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1 SubChannel #7] Subchannel Connectivity change to CONNECTING
+[34m2026-09-14 23:44:40.365 IST 0058 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1 SubChannel #7] Subchannel picks a new address "127.0.0.1:7051" to connect
+[34m2026-09-14 23:44:40.366 IST 0059 INFO[0m [grpc] [34;1mInfof[0m -> [core] Creating new client transport to "{Addr: \"127.0.0.1:7051\", ServerName: \"peer0.org1.example.com\", }": connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:7051: connect: connection refused"
+[33m2026-09-14 23:44:40.366 IST 005a WARN[0m [grpc] [33;1mAddTraceEvent[0m -> [core] [Channel #1 SubChannel #7] grpc: addrConn.createTransport failed to connect to {Addr: "127.0.0.1:7051", ServerName: "peer0.org1.example.com", }. Err: connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:7051: connect: connection refused"
+[34m2026-09-14 23:44:40.366 IST 005b INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1 SubChannel #7] Subchannel Connectivity change to TRANSIENT_FAILURE, last error: connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:7051: connect: connection refused"
+[34m2026-09-14 23:44:40.622 IST 005c INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1 SubChannel #5] Subchannel Connectivity change to IDLE, last error: connection error: desc = "transport: Error while dialing: dial tcp [::1]:7051: connect: connection refused"
+[34m2026-09-14 23:44:40.622 IST 005d INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1 SubChannel #5] Subchannel Connectivity change to CONNECTING
+[34m2026-09-14 23:44:40.622 IST 005e INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1 SubChannel #5] Subchannel picks a new address "[::1]:7051" to connect
+[34m2026-09-14 23:44:40.623 IST 005f INFO[0m [grpc] [34;1mInfof[0m -> [core] Creating new client transport to "{Addr: \"[::1]:7051\", ServerName: \"peer0.org1.example.com\", }": connection error: desc = "transport: Error while dialing: dial tcp [::1]:7051: connect: connection refused"
+[33m2026-09-14 23:44:40.623 IST 0060 WARN[0m [grpc] [33;1mAddTraceEvent[0m -> [core] [Channel #1 SubChannel #5] grpc: addrConn.createTransport failed to connect to {Addr: "[::1]:7051", ServerName: "peer0.org1.example.com", }. Err: connection error: desc = "transport: Error while dialing: dial tcp [::1]:7051: connect: connection refused"
+[34m2026-09-14 23:44:40.623 IST 0061 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1 SubChannel #5] Subchannel Connectivity change to TRANSIENT_FAILURE, last error: connection error: desc = "transport: Error while dialing: dial tcp [::1]:7051: connect: connection refused"
+[34m2026-09-14 23:44:46.388 IST 0062 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1 SubChannel #7] Subchannel Connectivity change to IDLE, last error: connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:7051: connect: connection refused"
+[34m2026-09-14 23:44:46.388 IST 0063 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1 SubChannel #7] Subchannel Connectivity change to CONNECTING
+[34m2026-09-14 23:44:46.388 IST 0064 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1 SubChannel #7] Subchannel picks a new address "127.0.0.1:7051" to connect
+[34m2026-09-14 23:44:46.388 IST 0065 INFO[0m [grpc] [34;1mInfof[0m -> [core] Creating new client transport to "{Addr: \"127.0.0.1:7051\", ServerName: \"peer0.org1.example.com\", }": connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:7051: connect: connection refused"
+[33m2026-09-14 23:44:46.388 IST 0066 WARN[0m [grpc] [33;1mAddTraceEvent[0m -> [core] [Channel #1 SubChannel #7] grpc: addrConn.createTransport failed to connect to {Addr: "127.0.0.1:7051", ServerName: "peer0.org1.example.com", }. Err: connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:7051: connect: connection refused"
+[34m2026-09-14 23:44:46.388 IST 0067 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1 SubChannel #7] Subchannel Connectivity change to TRANSIENT_FAILURE, last error: connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:7051: connect: connection refused"
+[34m2026-09-14 23:44:46.979 IST 0068 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1 SubChannel #5] Subchannel Connectivity change to IDLE, last error: connection error: desc = "transport: Error while dialing: dial tcp [::1]:7051: connect: connection refused"
+[34m2026-09-14 23:44:46.979 IST 0069 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1 SubChannel #5] Subchannel Connectivity change to CONNECTING
+[34m2026-09-14 23:44:46.979 IST 006a INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1 SubChannel #5] Subchannel picks a new address "[::1]:7051" to connect
+[34m2026-09-14 23:44:46.979 IST 006b INFO[0m [grpc] [34;1mInfof[0m -> [core] Creating new client transport to "{Addr: \"[::1]:7051\", ServerName: \"peer0.org1.example.com\", }": connection error: desc = "transport: Error while dialing: dial tcp [::1]:7051: connect: connection refused"
+[33m2026-09-14 23:44:46.979 IST 006c WARN[0m [grpc] [33;1mAddTraceEvent[0m -> [core] [Channel #1 SubChannel #5] grpc: addrConn.createTransport failed to connect to {Addr: "[::1]:7051", ServerName: "peer0.org1.example.com", }. Err: connection error: desc = "transport: Error while dialing: dial tcp [::1]:7051: connect: connection refused"
+[34m2026-09-14 23:44:46.979 IST 006d INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1 SubChannel #5] Subchannel Connectivity change to TRANSIENT_FAILURE, last error: connection error: desc = "transport: Error while dialing: dial tcp [::1]:7051: connect: connection refused"
+[34m2026-09-14 23:44:55.697 IST 006e INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1 SubChannel #5] Subchannel Connectivity change to IDLE, last error: connection error: desc = "transport: Error while dialing: dial tcp [::1]:7051: connect: connection refused"
+[34m2026-09-14 23:44:55.697 IST 006f INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1 SubChannel #5] Subchannel Connectivity change to CONNECTING
+[34m2026-09-14 23:44:55.698 IST 0070 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1 SubChannel #5] Subchannel picks a new address "[::1]:7051" to connect
+[34m2026-09-14 23:44:55.698 IST 0071 INFO[0m [grpc] [34;1mInfof[0m -> [core] Creating new client transport to "{Addr: \"[::1]:7051\", ServerName: \"peer0.org1.example.com\", }": connection error: desc = "transport: Error while dialing: dial tcp [::1]:7051: connect: connection refused"
+[33m2026-09-14 23:44:55.698 IST 0072 WARN[0m [grpc] [33;1mAddTraceEvent[0m -> [core] [Channel #1 SubChannel #5] grpc: addrConn.createTransport failed to connect to {Addr: "[::1]:7051", ServerName: "peer0.org1.example.com", }. Err: connection error: desc = "transport: Error while dialing: dial tcp [::1]:7051: connect: connection refused"
+[34m2026-09-14 23:44:55.698 IST 0073 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1 SubChannel #5] Subchannel Connectivity change to TRANSIENT_FAILURE, last error: connection error: desc = "transport: Error while dialing: dial tcp [::1]:7051: connect: connection refused"
+[34m2026-09-14 23:44:58.368 IST 0074 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1 SubChannel #7] Subchannel Connectivity change to IDLE, last error: connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:7051: connect: connection refused"
+[34m2026-09-14 23:44:58.368 IST 0075 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1 SubChannel #7] Subchannel Connectivity change to CONNECTING
+[34m2026-09-14 23:44:58.368 IST 0076 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1 SubChannel #7] Subchannel picks a new address "127.0.0.1:7051" to connect
+[34m2026-09-14 23:44:58.368 IST 0077 INFO[0m [grpc] [34;1mInfof[0m -> [core] Creating new client transport to "{Addr: \"127.0.0.1:7051\", ServerName: \"peer0.org1.example.com\", }": connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:7051: connect: connection refused"
+[33m2026-09-14 23:44:58.368 IST 0078 WARN[0m [grpc] [33;1mAddTraceEvent[0m -> [core] [Channel #1 SubChannel #7] grpc: addrConn.createTransport failed to connect to {Addr: "127.0.0.1:7051", ServerName: "peer0.org1.example.com", }. Err: connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:7051: connect: connection refused"
+[34m2026-09-14 23:44:58.368 IST 0079 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1 SubChannel #7] Subchannel Connectivity change to TRANSIENT_FAILURE, last error: connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:7051: connect: connection refused"
+[34m2026-09-14 23:45:01.826 IST 007a INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1] Resolver state updated: {
+  "Addresses": [
+    {
+      "Addr": "[::1]:7051",
+      "ServerName": "",
+      "Attributes": null,
+      "BalancerAttributes": null,
+      "Metadata": null
+    },
+    {
+      "Addr": "127.0.0.1:7051",
+      "ServerName": "",
+      "Attributes": null,
+      "BalancerAttributes": null,
+      "Metadata": null
+    }
+  ],
+  "Endpoints": [
+    {
+      "Addresses": [
+        {
+          "Addr": "[::1]:7051",
+          "ServerName": "",
+          "Attributes": null,
+          "BalancerAttributes": null,
+          "Metadata": null
+        }
+      ],
+      "Attributes": null
+    },
+    {
+      "Addresses": [
+        {
+          "Addr": "127.0.0.1:7051",
+          "ServerName": "",
+          "Attributes": null,
+          "BalancerAttributes": null,
+          "Metadata": null
+        }
+      ],
+      "Attributes": null
+    }
+  ],
+  "ServiceConfig": null,
+  "Attributes": null
+} ()
+[34m2026-09-14 23:45:01.826 IST 007b INFO[0m [grpc] [34;1mInfof[0m -> [pick-first-leaf-lb] [pick-first-leaf-lb 0x21648a954090] Received new config {
+  "shuffleAddressList": false
+}, resolver state {
+  "Addresses": [
+    {
+      "Addr": "[::1]:7051",
+      "ServerName": "",
+      "Attributes": null,
+      "BalancerAttributes": null,
+      "Metadata": null
+    },
+    {
+      "Addr": "127.0.0.1:7051",
+      "ServerName": "",
+      "Attributes": null,
+      "BalancerAttributes": null,
+      "Metadata": null
+    }
+  ],
+  "Endpoints": [
+    {
+      "Addresses": [
+        {
+          "Addr": "[::1]:7051",
+          "ServerName": "",
+          "Attributes": null,
+          "BalancerAttributes": null,
+          "Metadata": null
+        }
+      ],
+      "Attributes": null
+    },
+    {
+      "Addresses": [
+        {
+          "Addr": "127.0.0.1:7051",
+          "ServerName": "",
+          "Attributes": null,
+          "BalancerAttributes": null,
+          "Metadata": null
+        }
+      ],
+      "Attributes": null
+    }
+  ],
+  "ServiceConfig": null,
+  "Attributes": null
+}
+[34m2026-09-14 23:45:15.022 IST 007c INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1 SubChannel #7] Subchannel Connectivity change to IDLE, last error: connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:7051: connect: connection refused"
+[34m2026-09-14 23:45:15.022 IST 007d INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1 SubChannel #7] Subchannel Connectivity change to CONNECTING
+[34m2026-09-14 23:45:15.022 IST 007e INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1 SubChannel #7] Subchannel picks a new address "127.0.0.1:7051" to connect
+[34m2026-09-14 23:45:15.022 IST 007f INFO[0m [grpc] [34;1mInfof[0m -> [core] Creating new client transport to "{Addr: \"127.0.0.1:7051\", ServerName: \"peer0.org1.example.com\", }": connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:7051: connect: connection refused"
+[33m2026-09-14 23:45:15.022 IST 0080 WARN[0m [grpc] [33;1mAddTraceEvent[0m -> [core] [Channel #1 SubChannel #7] grpc: addrConn.createTransport failed to connect to {Addr: "127.0.0.1:7051", ServerName: "peer0.org1.example.com", }. Err: connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:7051: connect: connection refused"
+[34m2026-09-14 23:45:15.022 IST 0081 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1 SubChannel #7] Subchannel Connectivity change to TRANSIENT_FAILURE, last error: connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:7051: connect: connection refused"
+[34m2026-09-14 23:45:15.566 IST 0082 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1 SubChannel #5] Subchannel Connectivity change to IDLE, last error: connection error: desc = "transport: Error while dialing: dial tcp [::1]:7051: connect: connection refused"
+[34m2026-09-14 23:45:15.566 IST 0083 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1 SubChannel #5] Subchannel Connectivity change to CONNECTING
+[34m2026-09-14 23:45:15.566 IST 0084 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1 SubChannel #5] Subchannel picks a new address "[::1]:7051" to connect
+[34m2026-09-14 23:45:15.566 IST 0085 INFO[0m [grpc] [34;1mInfof[0m -> [core] Creating new client transport to "{Addr: \"[::1]:7051\", ServerName: \"peer0.org1.example.com\", }": connection error: desc = "transport: Error while dialing: dial tcp [::1]:7051: connect: connection refused"
+[33m2026-09-14 23:45:15.566 IST 0086 WARN[0m [grpc] [33;1mAddTraceEvent[0m -> [core] [Channel #1 SubChannel #5] grpc: addrConn.createTransport failed to connect to {Addr: "[::1]:7051", ServerName: "peer0.org1.example.com", }. Err: connection error: desc = "transport: Error while dialing: dial tcp [::1]:7051: connect: connection refused"
+[34m2026-09-14 23:45:15.566 IST 0087 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1 SubChannel #5] Subchannel Connectivity change to TRANSIENT_FAILURE, last error: connection error: desc = "transport: Error while dialing: dial tcp [::1]:7051: connect: connection refused"
+time=2026-09-14T23:45:24.585+05:30 level=INFO msg="phase end" platform=drunix run=probe-sweep phase=sweep-2000 submitted=30000 committed=0 confirmed_tps=0.0 fail_rate=1.0000 e2e_p99_ms=0.00
+time=2026-09-14T23:45:24.585+05:30 level=WARN msg="phase errors" platform=drunix run=probe-sweep phase=sweep-2000 count=21972 message="endorse Put: rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:7051: connect: connection refused\""
+time=2026-09-14T23:45:24.585+05:30 level=WARN msg="phase errors" platform=drunix run=probe-sweep phase=sweep-2000 count=8028 message="endorse Put: rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp [::1]:7051: connect: connection refused\""
+time=2026-09-14T23:45:24.585+05:30 level=WARN msg=caveat platform=drunix run=probe-sweep text="platform container lp1.org1 was OOM-killed at its memory limit and exited (after 23:44:31, exit code 137)"
+time=2026-09-14T23:45:24.618+05:30 level=INFO msg="captured container log" platform=drunix run=probe-sweep container=lp1.org1 path=results/drunix/20260914-233933/container-logs/lp1.org1.log
+time=2026-09-14T23:45:24.618+05:30 level=WARN msg=caveat platform=drunix run=probe-sweep text="platform container dev-peer0.org1.example.com-kvstore_1.0-2ea7b22cef577b6fa4ca655d0dab5283b6734bee9c35f654d050c69a24ed4de2 exited (after 23:44:31, status exited, exit code 2)"
+time=2026-09-14T23:45:24.628+05:30 level=INFO msg="captured container log" platform=drunix run=probe-sweep container=dev-peer0.org1.example.com-kvstore_1.0-2ea7b22cef577b6fa4ca655d0dab5283b6734bee9c35f654d050c69a24ed4de2 path=results/drunix/20260914-233933/container-logs/dev-peer0.org1.example.com-kvstore_1.0-2ea7b22cef577b6fa4ca655d0dab5283b6734bee9c35f654d050c69a24ed4de2.log
+time=2026-09-14T23:45:24.628+05:30 level=WARN msg=caveat platform=drunix run=probe-sweep text="run stopped during sweep-2000 because a platform container failed; phases never run: sweep-3500, sweep-5000, sweep-7500, sweep-10000, hold"
+time=2026-09-14T23:45:24.647+05:30 level=WARN msg=caveat platform=drunix run=probe-sweep text="4598 latency observations were out of range (negative: T3 before T1/T2, usually adapter or clock timestamp error; or above 5 min) and were clamped"
+time=2026-09-14T23:45:24.648+05:30 level=WARN msg=caveat platform=drunix run=probe-sweep text="native metrics scrape of http://localhost:9444/metrics failed: Get \"http://localhost:9444/metrics\": dial tcp [::1]:9444: connect: connection refused (informational metrics only; harness numbers unaffected)"
+time=2026-09-14T23:45:24.648+05:30 level=WARN msg="run has no headline: it did not complete a headline phase on a healthy platform; see caveats in summary.txt" platform=drunix run=probe-sweep dir=results/drunix/20260914-233933
+time=2026-09-14T23:45:24.648+05:30 level=INFO msg="run finished" platform=drunix run=probe-sweep out_dir=results/drunix/20260914-233933 caveats=8
+results written to results/drunix/20260914-233933
+[34m2026-09-14 23:45:24.648 IST 0088 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #2] Channel Connectivity change to SHUTDOWN
+[34m2026-09-14 23:45:24.649 IST 0089 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #2] Closing the name resolver
+[34m2026-09-14 23:45:24.649 IST 008a INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #2] ccBalancerWrapper: closing
+[34m2026-09-14 23:45:24.649 IST 008b INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #2 SubChannel #3] Subchannel Connectivity change to SHUTDOWN
+[34m2026-09-14 23:45:24.649 IST 008c INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #2 SubChannel #3] Subchannel deleted
+[34m2026-09-14 23:45:24.649 IST 008d INFO[0m [grpc] [34;1mInfof[0m -> [transport] [client-transport 0x21648a95a008] Closing: rpc error: code = Canceled desc = grpc: the client connection is closing
+[34m2026-09-14 23:45:24.649 IST 008e INFO[0m [grpc] [34;1mInfof[0m -> [transport] [client-transport 0x21648a95a008] loopyWriter exiting with error: rpc error: code = Canceled desc = grpc: the client connection is closing
+[34m2026-09-14 23:45:24.649 IST 008f INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #2] Channel deleted
+[34m2026-09-14 23:45:24.649 IST 0090 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1] Channel Connectivity change to SHUTDOWN
+[34m2026-09-14 23:45:24.649 IST 0091 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1] Closing the name resolver
+[34m2026-09-14 23:45:24.649 IST 0092 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1] ccBalancerWrapper: closing
+[34m2026-09-14 23:45:24.649 IST 0093 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1 SubChannel #7] Subchannel Connectivity change to SHUTDOWN
+[34m2026-09-14 23:45:24.649 IST 0094 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1 SubChannel #7] Subchannel deleted
+[34m2026-09-14 23:45:24.649 IST 0095 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1 SubChannel #5] Subchannel Connectivity change to SHUTDOWN
+[34m2026-09-14 23:45:24.649 IST 0096 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1 SubChannel #5] Subchannel deleted
+[34m2026-09-14 23:45:24.649 IST 0097 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1] Channel deleted
+monitoring report: results/drunix/20260914-233933/monitoring-report.html
+error: platform container failed during the run: lp1.org1 was OOM-killed at its memory limit and exited (after 23:44:31, exit code 137); dev-peer0.org1.example.com-kvstore_1.0-2ea7b22cef577b6fa4ca655d0dab5283b6734bee9c35f654d050c69a24ed4de2 exited (after 23:44:31, status exited, exit code 2) (results written to results/drunix/20260914-233933)

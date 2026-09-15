@@ -1,0 +1,31 @@
+time=2026-09-14T23:17:21.168+05:30 level=INFO msg="run starting" workload=kv-write profile=local-small normalized=true out_dir=results/fabric-cft/20260914-231721
+time=2026-09-14T23:17:21.168+05:30 level=INFO msg="adapter setup"
+time=2026-09-14T23:17:21.168+05:30 level=DEBUG msg="gateway connection configured" component=adapter endpoint=localhost:7051 tls_server_name=peer0.org1.example.com msp_id=Org1MSP channel=mychannel chaincode=kvstore
+time=2026-09-14T23:17:21.171+05:30 level=DEBUG msg="block event stream open" component=adapter stream=filtered-block-events endpoint=localhost:7051 channel=mychannel
+time=2026-09-14T23:17:21.173+05:30 level=INFO msg="setup complete" component=adapter gateway=localhost:7051 finality_from=localhost:7051
+time=2026-09-14T23:17:21.174+05:30 level=INFO msg="phase start" phase=probe offered_tps=10 workers=0 duration=30s
+time=2026-09-14T23:17:52.025+05:30 level=DEBUG msg="phase shorter than warmup+cooldown; measuring whole phase" phase=probe
+time=2026-09-14T23:17:52.027+05:30 level=INFO msg="phase end" phase=probe submitted=300 committed=300 confirmed_tps=10.0 fail_rate=0.0000 e2e_p99_ms=1086.46
+time=2026-09-14T23:17:52.027+05:30 level=INFO msg="phase start" phase=sweep-100 offered_tps=100 workers=0 duration=1m0s
+time=2026-09-14T23:18:53.092+05:30 level=INFO msg="phase end" phase=sweep-100 submitted=1500 committed=1500 confirmed_tps=100.0 fail_rate=0.0000 e2e_p99_ms=1085.44
+time=2026-09-14T23:18:53.092+05:30 level=INFO msg="phase start" phase=sweep-250 offered_tps=250 workers=0 duration=1m0s
+time=2026-09-14T23:19:54.158+05:30 level=INFO msg="phase end" phase=sweep-250 submitted=3750 committed=3750 confirmed_tps=250.0 fail_rate=0.0000 e2e_p99_ms=499.20
+time=2026-09-14T23:19:54.158+05:30 level=INFO msg="phase start" phase=sweep-500 offered_tps=500 workers=0 duration=1m0s
+time=2026-09-14T23:20:55.226+05:30 level=INFO msg="phase end" phase=sweep-500 submitted=7500 committed=7500 confirmed_tps=500.0 fail_rate=0.0000 e2e_p99_ms=308.22
+time=2026-09-14T23:20:55.226+05:30 level=INFO msg="phase start" phase=sweep-1000 offered_tps=1000 workers=0 duration=1m0s
+time=2026-09-14T23:21:56.336+05:30 level=INFO msg="phase end" phase=sweep-1000 submitted=15000 committed=15000 confirmed_tps=1000.0 fail_rate=0.0000 e2e_p99_ms=334.85
+time=2026-09-14T23:21:56.336+05:30 level=INFO msg="phase start" phase=sweep-2000 offered_tps=2000 workers=0 duration=1m0s
+time=2026-09-14T23:23:05.485+05:30 level=INFO msg="phase end" phase=sweep-2000 submitted=30000 committed=16043 confirmed_tps=1069.5 fail_rate=0.4652 e2e_p99_ms=14917.63
+time=2026-09-14T23:23:05.485+05:30 level=WARN msg="phase errors" phase=sweep-2000 count=13957 message="not sent: N transactions already in flight (platform is not finalizing)"
+time=2026-09-14T23:23:05.485+05:30 level=INFO msg="phase start" phase=sweep-3500 offered_tps=3500 workers=0 duration=1m0s
+time=2026-09-14T23:24:14.253+05:30 level=INFO msg="phase end" phase=sweep-3500 submitted=52500 committed=0 confirmed_tps=0.0 fail_rate=1.0000 e2e_p99_ms=0.00
+time=2026-09-14T23:24:14.253+05:30 level=WARN msg="phase errors" phase=sweep-3500 count=36576 message="endorse Put: rpc error: code = FailedPrecondition desc = no combination of peers can be derived which satisfy the endorsement policy: no peer combination can satisfy the endorsement policy"
+time=2026-09-14T23:24:14.253+05:30 level=WARN msg="phase errors" phase=sweep-3500 count=15924 message="not sent: N transactions already in flight (platform is not finalizing)"
+time=2026-09-14T23:24:14.253+05:30 level=WARN msg=caveat text="platform container dev-peer0.org2.example.com-kvstore_1.0-2ea7b22cef577b6fa4ca655d0dab5283b6734bee9c35f654d050c69a24ed4de2 exited (after 23:23:14, status exited, exit code 2)"
+time=2026-09-14T23:24:14.262+05:30 level=INFO msg="captured container log" container=dev-peer0.org2.example.com-kvstore_1.0-2ea7b22cef577b6fa4ca655d0dab5283b6734bee9c35f654d050c69a24ed4de2 path=results/fabric-cft/20260914-231721/container-logs/dev-peer0.org2.example.com-kvstore_1.0-2ea7b22cef577b6fa4ca655d0dab5283b6734bee9c35f654d050c69a24ed4de2.log
+time=2026-09-14T23:24:14.262+05:30 level=WARN msg=caveat text="platform container peer0.org2.example.com exited (after 23:23:14, status exited, exit code 2)"
+time=2026-09-14T23:24:14.290+05:30 level=INFO msg="captured container log" container=peer0.org2.example.com path=results/fabric-cft/20260914-231721/container-logs/peer0.org2.example.com.log
+time=2026-09-14T23:24:14.290+05:30 level=WARN msg=caveat text="run stopped during sweep-3500 because a platform container failed; phases never run: sweep-5000, sweep-7500, sweep-10000, hold"
+time=2026-09-14T23:24:14.328+05:30 level=WARN msg=caveat text="native metrics scrape of http://localhost:9443/metrics failed: scrape http://localhost:9443/metrics: parser panic: Invalid name validation scheme requested: unset (informational metrics only; harness numbers unaffected)"
+time=2026-09-14T23:24:14.329+05:30 level=WARN msg="run has no headline: it did not complete a headline phase on a healthy platform; see caveats in summary.txt" dir=results/fabric-cft/20260914-231721
+time=2026-09-14T23:24:14.329+05:30 level=INFO msg="run finished" out_dir=results/fabric-cft/20260914-231721 caveats=4

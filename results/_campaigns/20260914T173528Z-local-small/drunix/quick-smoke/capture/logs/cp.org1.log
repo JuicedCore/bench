@@ -1,0 +1,537 @@
+2026-09-14T17:41:54.845634344Z [34m2026-09-14 17:41:54.845 UTC 0001 INFO[0m [nodeCmd] [34;1mserve[0m -> Starting peer:
+2026-09-14T17:41:54.845666735Z  Version: 1.0.0
+2026-09-14T17:41:54.845677606Z  Commit SHA: 0176a5d
+2026-09-14T17:41:54.845684288Z  Go version: go1.26.1
+2026-09-14T17:41:54.845690139Z  OS/Arch: linux/amd64
+2026-09-14T17:41:54.845696181Z  Chaincode:
+2026-09-14T17:41:54.845702192Z   Base Docker Label: org.npcioss.drunix
+2026-09-14T17:41:54.845708725Z   Docker Namespace: npcioss
+2026-09-14T17:41:54.846365790Z [34m2026-09-14 17:41:54.846 UTC 0002 INFO[0m [nodeCmd] [34;1mserve[0m -> Peer config with combined core.yaml settings and environment variable overrides:
+2026-09-14T17:41:54.846376510Z chaincode:
+2026-09-14T17:41:54.846379816Z   builder: $(DOCKER_NS)/drunix-ccenv:$(TWO_DIGIT_VERSION)
+2026-09-14T17:41:54.846383153Z   executetimeout: 300s
+2026-09-14T17:41:54.846385768Z   externalbuilders:
+2026-09-14T17:41:54.846388352Z   - name: ccaas_builder
+2026-09-14T17:41:54.846390927Z     path: /opt/hyperledger/ccaas_builder
+2026-09-14T17:41:54.846393532Z     propagateEnvironment:
+2026-09-14T17:41:54.846396257Z     - CHAINCODE_AS_A_SERVICE_BUILDER_CONFIG
+2026-09-14T17:41:54.846398842Z   golang:
+2026-09-14T17:41:54.846401397Z     dynamiclink: false
+2026-09-14T17:41:54.846403972Z     runtime: $(DOCKER_NS)/drunix-baseos:$(TWO_DIGIT_VERSION)
+2026-09-14T17:41:54.846406577Z   installtimeout: 300s
+2026-09-14T17:41:54.846409152Z   java:
+2026-09-14T17:41:54.846411807Z     runtime: $(DOCKER_NS)/fabric-javaenv:2.5
+2026-09-14T17:41:54.846414402Z   keepalive: 0
+2026-09-14T17:41:54.846416947Z   logging:
+2026-09-14T17:41:54.846419532Z     format: '%{color}%{time:2006-01-02 15:04:05.000 MST} [%{module}] %{shortfunc}
+2026-09-14T17:41:54.846422177Z       -> %{level:.4s} %{id:03x}%{color:reset} %{message}'
+2026-09-14T17:41:54.846424842Z     level: info
+2026-09-14T17:41:54.846427427Z     shim: warning
+2026-09-14T17:41:54.846430132Z   mode: net
+2026-09-14T17:41:54.846432707Z   node:
+2026-09-14T17:41:54.846435271Z     runtime: $(DOCKER_NS)/fabric-nodeenv:2.5
+2026-09-14T17:41:54.846437866Z   pull: false
+2026-09-14T17:41:54.846441062Z   startuptimeout: 300s
+2026-09-14T17:41:54.846444539Z   system:
+2026-09-14T17:41:54.846447986Z     _lifecycle: enable
+2026-09-14T17:41:54.846451031Z     cscc: enable
+2026-09-14T17:41:54.846453576Z     lscc: enable
+2026-09-14T17:41:54.846456101Z     qscc: enable
+2026-09-14T17:41:54.846458706Z ledger:
+2026-09-14T17:41:54.846461201Z   history:
+2026-09-14T17:41:54.846471250Z     enablehistorydatabase: true
+2026-09-14T17:41:54.846478083Z   pvtdatastore:
+2026-09-14T17:41:54.846481018Z     collelgprocdbbatchesinterval: 1000
+2026-09-14T17:41:54.846483723Z     collelgprocmaxdbbatchsize: 5000
+2026-09-14T17:41:54.846486529Z     deprioritizeddatareconcilerinterval: 60m
+2026-09-14T17:41:54.846489184Z   snapshots:
+2026-09-14T17:41:54.846491839Z     rootdir: /var/hyperledger/production/snapshots
+2026-09-14T17:41:54.846494524Z   state:
+2026-09-14T17:41:54.846497229Z     couchdbconfig:
+2026-09-14T17:41:54.846499904Z       cachesize: 64
+2026-09-14T17:41:54.846502609Z       couchdbaddress: 127.0.0.1:5984
+2026-09-14T17:41:54.846505314Z       createglobalchangesdb: false
+2026-09-14T17:41:54.846508009Z       internalquerylimit: 1000
+2026-09-14T17:41:54.846510684Z       maxbatchupdatesize: 1000
+2026-09-14T17:41:54.846513359Z       maxretries: 3
+2026-09-14T17:41:54.846516565Z       maxretriesonstartup: 10
+2026-09-14T17:41:54.846520283Z       requesttimeout: 35s
+2026-09-14T17:41:54.846523358Z     statedatabase: sqldb
+2026-09-14T17:41:54.846526043Z     totalquerylimit: 100000
+2026-09-14T17:41:54.846528678Z logging_level: ""
+2026-09-14T17:41:54.846531444Z metrics:
+2026-09-14T17:41:54.846534079Z   provider: prometheus
+2026-09-14T17:41:54.846536754Z   statsd:
+2026-09-14T17:41:54.846539409Z     address: 127.0.0.1:8125
+2026-09-14T17:41:54.846542084Z     network: udp
+2026-09-14T17:41:54.846544759Z     writeinterval: 10s
+2026-09-14T17:41:54.846547444Z operations:
+2026-09-14T17:41:54.846550269Z   listenaddress: peer1.org1.example.com:9454
+2026-09-14T17:41:54.846552964Z   tls:
+2026-09-14T17:41:54.846555589Z     clientauthrequired: false
+2026-09-14T17:41:54.846558365Z     clientrootcas:
+2026-09-14T17:41:54.846561000Z       files: []
+2026-09-14T17:41:54.846563705Z     enabled: false
+2026-09-14T17:41:54.846566520Z peer:
+2026-09-14T17:41:54.846569195Z   address: peer1.org1.example.com:7061
+2026-09-14T17:41:54.846571890Z   addressautodetect: false
+2026-09-14T17:41:54.846574555Z   authentication:
+2026-09-14T17:41:54.846577180Z     timewindow: 15m
+2026-09-14T17:41:54.846579825Z   bccsp:
+2026-09-14T17:41:54.846582430Z     default: SW
+2026-09-14T17:41:54.846585075Z     sw:
+2026-09-14T17:41:54.846587710Z       hash: SHA2
+2026-09-14T17:41:54.846590355Z       security: 256
+2026-09-14T17:41:54.846593161Z   client:
+2026-09-14T17:41:54.846598871Z     conntimeout: 3s
+2026-09-14T17:41:54.846602919Z   deliveryclient:
+2026-09-14T17:41:54.846606025Z     blockgossipenabled: "false"
+2026-09-14T17:41:54.846608941Z     conntimeout: 3s
+2026-09-14T17:41:54.846611676Z     reconnectbackoffthreshold: 3600s
+2026-09-14T17:41:54.846614371Z     reconnecttotaltimethreshold: 3600s
+2026-09-14T17:41:54.846617036Z   discovery:
+2026-09-14T17:41:54.846619761Z     authcacheenabled: true
+2026-09-14T17:41:54.846622426Z     authcachemaxsize: 1000
+2026-09-14T17:41:54.846625111Z     authcachepurgeretentionratio: 0.75
+2026-09-14T17:41:54.846627716Z     enabled: true
+2026-09-14T17:41:54.846631072Z     orgmembersallowedaccess: false
+2026-09-14T17:41:54.846634890Z   filesystempath: /var/hyperledger/production
+2026-09-14T17:41:54.846638577Z   gateway:
+2026-09-14T17:41:54.846641322Z     dialtimeout: 2m
+2026-09-14T17:41:54.846644047Z     enabled: true
+2026-09-14T17:41:54.846647444Z     endorsementtimeout: 30s
+2026-09-14T17:41:54.846651090Z   gossip:
+2026-09-14T17:41:54.846654757Z     aliveexpirationtimeout: 25s
+2026-09-14T17:41:54.846657863Z     alivetimeinterval: 5s
+2026-09-14T17:41:54.846660548Z     bootstrap: peer1.org1.example.com:7061
+2026-09-14T17:41:54.846663233Z     conntimeout: 2s
+2026-09-14T17:41:54.846665858Z     dialtimeout: 3s
+2026-09-14T17:41:54.846668503Z     digestwaittime: 1s
+2026-09-14T17:41:54.846671128Z     election:
+2026-09-14T17:41:54.846673803Z       leaderalivethreshold: 10s
+2026-09-14T17:41:54.846677110Z       leaderelectionduration: 5s
+2026-09-14T17:41:54.846680927Z       membershipsampleinterval: 1s
+2026-09-14T17:41:54.846683923Z       startupgraceperiod: 15s
+2026-09-14T17:41:54.846686618Z     externalendpoint: peer1.org1.example.com:7061
+2026-09-14T17:41:54.846689283Z     maxblockcounttostore: 10
+2026-09-14T17:41:54.846691938Z     maxconnectionattempts: 120
+2026-09-14T17:41:54.846694613Z     maxpropagationburstlatency: 10ms
+2026-09-14T17:41:54.846697408Z     maxpropagationburstsize: 10
+2026-09-14T17:41:54.846700063Z     membershiptrackerinterval: 5s
+2026-09-14T17:41:54.846702788Z     msgexpirationfactor: 20
+2026-09-14T17:41:54.846705443Z     orgleader: "true"
+2026-09-14T17:41:54.846708159Z     propagateiterations: 1
+2026-09-14T17:41:54.846710834Z     propagatepeernum: 3
+2026-09-14T17:41:54.846713559Z     publishcertperiod: 10s
+2026-09-14T17:41:54.846716204Z     publishstateinfointerval: 4s
+2026-09-14T17:41:54.846718859Z     pullinterval: 4s
+2026-09-14T17:41:54.846724459Z     pullpeernum: 3
+2026-09-14T17:41:54.846728337Z     pvtdata:
+2026-09-14T17:41:54.846730982Z       btlpullmargin: 10
+2026-09-14T17:41:54.846733637Z       implicitcollectiondisseminationpolicy:
+2026-09-14T17:41:54.846736282Z         maxpeercount: 1
+2026-09-14T17:41:54.846740851Z         requiredpeercount: 0
+2026-09-14T17:41:54.846744227Z       pullretrythreshold: 60s
+2026-09-14T17:41:54.846747253Z       pushacktimeout: 3s
+2026-09-14T17:41:54.846755859Z       reconcilebatchsize: 10
+2026-09-14T17:41:54.846759235Z       reconcilesleepinterval: 1m
+2026-09-14T17:41:54.846762672Z       reconciliationenabled: true
+2026-09-14T17:41:54.846765918Z       skippullinginvalidtransactionsduringcommit: false
+2026-09-14T17:41:54.846769034Z       transientstoremaxblockretention: 1000
+2026-09-14T17:41:54.846771769Z     reconnectinterval: 25s
+2026-09-14T17:41:54.846774414Z     recvbuffsize: 20
+2026-09-14T17:41:54.846777039Z     requeststateinfointerval: 4s
+2026-09-14T17:41:54.846779814Z     requestwaittime: 1500ms
+2026-09-14T17:41:54.846782489Z     responsewaittime: 2s
+2026-09-14T17:41:54.846785104Z     sendbuffsize: 200
+2026-09-14T17:41:54.846787729Z     skipblockverification: false
+2026-09-14T17:41:54.846790374Z     state:
+2026-09-14T17:41:54.846792989Z       batchsize: 10
+2026-09-14T17:41:54.846795624Z       blockbuffersize: 20
+2026-09-14T17:41:54.846798259Z       checkinterval: 10s
+2026-09-14T17:41:54.846800874Z       enabled: "false"
+2026-09-14T17:41:54.846804060Z       maxretries: 3
+2026-09-14T17:41:54.846806725Z       responsetimeout: 3s
+2026-09-14T17:41:54.846809340Z     useleaderelection: "false"
+2026-09-14T17:41:54.846812005Z   handlers:
+2026-09-14T17:41:54.846814590Z     authfilters:
+2026-09-14T17:41:54.846817185Z     - name: DefaultAuth
+2026-09-14T17:41:54.846820171Z     - name: ExpirationCheck
+2026-09-14T17:41:54.846823688Z     decorators:
+2026-09-14T17:41:54.846827174Z     - name: DefaultDecorator
+2026-09-14T17:41:54.846831001Z     endorsers:
+2026-09-14T17:41:54.846834839Z       escc:
+2026-09-14T17:41:54.846838756Z         name: DefaultEndorsement
+2026-09-14T17:41:54.846842463Z     validators:
+2026-09-14T17:41:54.846846070Z       vscc:
+2026-09-14T17:41:54.846849306Z         name: DefaultValidation
+2026-09-14T17:41:54.846852743Z   id: peer1.org1.example.com
+2026-09-14T17:41:54.846856309Z   keepalive:
+2026-09-14T17:41:54.846859856Z     client:
+2026-09-14T17:41:54.846866449Z       interval: 60s
+2026-09-14T17:41:54.846870767Z       timeout: 20s
+2026-09-14T17:41:54.846873512Z     deliveryclient:
+2026-09-14T17:41:54.846876147Z       interval: 60s
+2026-09-14T17:41:54.846879012Z       timeout: 20s
+2026-09-14T17:41:54.846881748Z     interval: 7200s
+2026-09-14T17:41:54.846884403Z     mininterval: 60s
+2026-09-14T17:41:54.846887148Z     timeout: 20s
+2026-09-14T17:41:54.846893650Z   limits:
+2026-09-14T17:41:54.846897237Z     concurrency:
+2026-09-14T17:41:54.846900493Z       deliverservice: 2500
+2026-09-14T17:41:54.846903358Z       endorserservice: 2500
+2026-09-14T17:41:54.846906134Z   listenaddress: peer1.org1.example.com:7061
+2026-09-14T17:41:54.846908769Z   localmspid: Org1MSP
+2026-09-14T17:41:54.846911644Z   localmsptype: bccsp
+2026-09-14T17:41:54.846914259Z   maxrecvmsgsize: 104857600
+2026-09-14T17:41:54.846917165Z   maxsendmsgsize: 104857600
+2026-09-14T17:41:54.846919800Z   mspconfigpath: /etc/hyperledger/fabric/msp
+2026-09-14T17:41:54.846922565Z   networkid: dev
+2026-09-14T17:41:54.846925200Z   profile:
+2026-09-14T17:41:54.846927945Z     enabled: "false"
+2026-09-14T17:41:54.846930580Z     listenaddress: 0.0.0.0:6060
+2026-09-14T17:41:54.846933345Z   tls:
+2026-09-14T17:41:54.846935980Z     cert:
+2026-09-14T17:41:54.846938705Z       file: /etc/hyperledger/fabric/tls/server.crt
+2026-09-14T17:41:54.846941371Z     clientauthrequired: false
+2026-09-14T17:41:54.846944106Z     clientrootcas:
+2026-09-14T17:41:54.846946741Z       files:
+2026-09-14T17:41:54.846949466Z       - tls/ca.crt
+2026-09-14T17:41:54.846952081Z     enabled: "true"
+2026-09-14T17:41:54.846954766Z     key:
+2026-09-14T17:41:54.846957401Z       file: /etc/hyperledger/fabric/tls/server.key
+2026-09-14T17:41:54.846960106Z     rootcert:
+2026-09-14T17:41:54.846962741Z       file: /etc/hyperledger/fabric/tls/ca.crt
+2026-09-14T17:41:54.846966328Z vm:
+2026-09-14T17:41:54.846970035Z   docker:
+2026-09-14T17:41:54.846973091Z     attachstdout: false
+2026-09-14T17:41:54.846975776Z     hostconfig:
+2026-09-14T17:41:54.846978441Z       logconfig:
+2026-09-14T17:41:54.846981056Z         config:
+2026-09-14T17:41:54.846983681Z           max-file: "5"
+2026-09-14T17:41:54.846986476Z           max-size: 50m
+2026-09-14T17:41:54.846989161Z         type: json-file
+2026-09-14T17:41:54.846991796Z       memory: 2147483648
+2026-09-14T17:41:54.846997186Z       networkmode: drunix_test
+2026-09-14T17:41:54.847000853Z     tls:
+2026-09-14T17:41:54.847003538Z       ca:
+2026-09-14T17:41:54.847006223Z         file: docker/ca.crt
+2026-09-14T17:41:54.847008878Z       cert:
+2026-09-14T17:41:54.847011564Z         file: docker/tls.crt
+2026-09-14T17:41:54.847014279Z       enabled: false
+2026-09-14T17:41:54.847016954Z       key:
+2026-09-14T17:41:54.847019589Z         file: docker/tls.key
+2026-09-14T17:41:54.847022304Z   endpoint: unix:///host/var/run/docker.sock
+2026-09-14T17:41:54.847025049Z [34m2026-09-14 17:41:54.846 UTC 0003 INFO[0m [peer] [34;1mgetLocalAddress[0m -> Auto-detected peer address: 172.18.0.12:7061
+2026-09-14T17:41:54.847028015Z [34m2026-09-14 17:41:54.846 UTC 0004 INFO[0m [peer] [34;1mgetLocalAddress[0m -> Returning peer1.org1.example.com:7061
+2026-09-14T17:41:54.847415459Z [34m2026-09-14 17:41:54.847 UTC 0005 INFO[0m [nodeCmd] [34;1minitGrpcSemaphores[0m -> concurrency limit for endorser service is 2500
+2026-09-14T17:41:54.847426149Z [34m2026-09-14 17:41:54.847 UTC 0006 INFO[0m [nodeCmd] [34;1minitGrpcSemaphores[0m -> concurrency limit for deliver service is 2500
+2026-09-14T17:41:54.847430337Z [34m2026-09-14 17:41:54.847 UTC 0007 INFO[0m [nodeCmd] [34;1mserve[0m -> Starting peer with TLS enabled
+2026-09-14T17:41:54.849935725Z [34m2026-09-14 17:41:54.849 UTC 0008 INFO[0m [keyvaluedb] [34;1mNewKeyValueDBConnection[0m -> the key-value store ping: PONG
+2026-09-14T17:41:54.849995839Z [34m2026-09-14 17:41:54.849 UTC 0009 INFO[0m [keyvaluedb] [34;1mNewKeyValueDBConnection[0m -> the replica key-value store ping: PONG
+2026-09-14T17:41:54.987983646Z [34m2026-09-14 17:41:54.987 UTC 000a INFO[0m [transientstore] [34;1mnewKVStoreProvider[0m -> the key-value store connection established
+2026-09-14T17:41:54.988012160Z [34m2026-09-14 17:41:54.987 UTC 000b INFO[0m [chaincode.event.publisher] [34;1mNewUnimplementedPublisher[0m -> created unimplemented event publisher which does nothing when publish is called
+2026-09-14T17:41:54.988254830Z [34m2026-09-14 17:41:54.988 UTC 000c INFO[0m [certmonitor] [34;1mtrackCertExpiration[0m -> The enrollment certificate will expire on 2036-09-11 17:35:00 +0000 UTC
+2026-09-14T17:41:54.988279727Z [34m2026-09-14 17:41:54.988 UTC 000d INFO[0m [certmonitor] [34;1mtrackCertExpiration[0m -> The server TLS certificate will expire on 2036-09-11 17:35:00 +0000 UTC
+2026-09-14T17:41:54.988597549Z [34m2026-09-14 17:41:54.988 UTC 000e INFO[0m [ledgermgmt] [34;1mNewLedgerMgr[0m -> Initializing LedgerMgr
+2026-09-14T17:41:55.208310473Z [34m2026-09-14 17:41:55.208 UTC 000f INFO[0m [leveldbhelper] [34;1mopenDBAndCheckFormat[0m -> DB is empty Setting db format as 2.0
+2026-09-14T17:41:55.219002646Z [34m2026-09-14 17:41:55.218 UTC 0010 INFO[0m [blkstorage] [34;1mNewProvider[0m -> Creating new file ledger directory at /var/hyperledger/production/ledgersData/chains/chains
+2026-09-14T17:41:55.332222663Z [34m2026-09-14 17:41:55.332 UTC 0011 INFO[0m [leveldbhelper] [34;1mopenDBAndCheckFormat[0m -> DB is empty Setting db format as 2.5
+2026-09-14T17:41:55.407333053Z [34m2026-09-14 17:41:55.407 UTC 0012 INFO[0m [leveldbhelper] [34;1mopenDBAndCheckFormat[0m -> DB is empty Setting db format as 2.0
+2026-09-14T17:41:55.532315662Z [34m2026-09-14 17:41:55.532 UTC 0013 INFO[0m [sqldb] [34;1mNewVersionedDBProvider[0m -> NewVersionedDBProvider : STATE SQL DB
+2026-09-14T17:41:55.549471717Z [34m2026-09-14 17:41:55.549 UTC 0014 INFO[0m [ledgermgmt] [34;1mNewLedgerMgr[0m -> Initialized LedgerMgr
+2026-09-14T17:41:55.550282233Z [34m2026-09-14 17:41:55.550 UTC 0015 INFO[0m [gossip.service] [34;1mNew[0m -> Initialize gossip with endpoint peer1.org1.example.com:7061
+2026-09-14T17:41:55.550902027Z [34m2026-09-14 17:41:55.550 UTC 0016 INFO[0m [gossip.gossip] [34;1mNew[0m -> Creating gossip service with self membership of Endpoint: peer1.org1.example.com:7061, InternalEndpoint: peer1.org1.example.com:7061, PKI-ID: 1b4da36ff500049c892e9f63ddd3812884c6e77dd2f22fa23a0448fa6746c82e, Metadata: 
+2026-09-14T17:41:55.551040630Z [34m2026-09-14 17:41:55.550 UTC 0017 INFO[0m [gossip.gossip] [34;1mstart[0m -> Gossip instance peer1.org1.example.com:7061 started
+2026-09-14T17:41:55.551050128Z [34m2026-09-14 17:41:55.551 UTC 0018 INFO[0m [lifecycle] [34;1mInitializeLocalChaincodes[0m -> Initialized lifecycle cache with 0 already installed chaincodes
+2026-09-14T17:41:55.551217996Z [34m2026-09-14 17:41:55.551 UTC 0019 INFO[0m [nodeCmd] [34;1mcomputeChaincodeEndpoint[0m -> Entering computeChaincodeEndpoint with peerHostname: peer1.org1.example.com
+2026-09-14T17:41:55.551225881Z [34m2026-09-14 17:41:55.551 UTC 001a INFO[0m [nodeCmd] [34;1mcomputeChaincodeEndpoint[0m -> Exit with ccEndpoint: peer1.org1.example.com:7062
+2026-09-14T17:41:55.551978017Z [34m2026-09-14 17:41:55.551 UTC 001b INFO[0m [sccapi] [34;1mDeploySysCC[0m -> deploying system chaincode 'lscc'
+2026-09-14T17:41:55.552051025Z [34m2026-09-14 17:41:55.552 UTC 001c INFO[0m [sccapi] [34;1mDeploySysCC[0m -> deploying system chaincode 'cscc'
+2026-09-14T17:41:55.552072766Z [34m2026-09-14 17:41:55.552 UTC 001d INFO[0m [sccapi] [34;1mDeploySysCC[0m -> deploying system chaincode 'qscc'
+2026-09-14T17:41:55.552117160Z [34m2026-09-14 17:41:55.552 UTC 001e INFO[0m [sccapi] [34;1mDeploySysCC[0m -> deploying system chaincode '_lifecycle'
+2026-09-14T17:41:55.552161404Z [34m2026-09-14 17:41:55.552 UTC 001f INFO[0m [nodeCmd] [34;1mserve[0m -> Deployed system chaincodes
+2026-09-14T17:41:55.552289407Z [34m2026-09-14 17:41:55.552 UTC 0020 INFO[0m [discovery] [34;1mNewService[0m -> Created with config TLS: true, authCacheMaxSize: 1000, authCachePurgeRatio: 0.750000
+2026-09-14T17:41:55.552307250Z [34m2026-09-14 17:41:55.552 UTC 0021 INFO[0m [nodeCmd] [34;1mserve[0m -> Discovery service activated
+2026-09-14T17:41:55.552326818Z [34m2026-09-14 17:41:55.552 UTC 0022 INFO[0m [nodeCmd] [34;1mserve[0m -> Starting peer with Gateway enabled
+2026-09-14T17:41:55.552359509Z [34m2026-09-14 17:41:55.552 UTC 0023 INFO[0m [nodeCmd] [34;1mserve[0m -> Starting peer with ID=[peer1.org1.example.com], network ID=[dev], address=[peer1.org1.example.com:7061]
+2026-09-14T17:41:55.552437437Z [34m2026-09-14 17:41:55.552 UTC 0024 INFO[0m [nodeCmd] [34;1mserve[0m -> Started peer with ID=[peer1.org1.example.com], network ID=[dev], address=[peer1.org1.example.com:7061]
+2026-09-14T17:41:55.552459249Z [34m2026-09-14 17:41:55.552 UTC 0025 INFO[0m [kvledger] [34;1mLoadPreResetHeight[0m -> Loading prereset height from path [/var/hyperledger/production/ledgersData/chains]
+2026-09-14T17:41:55.552470520Z [34m2026-09-14 17:41:55.552 UTC 0026 INFO[0m [blkstorage] [34;1mpreResetHtFiles[0m -> No active channels passed
+2026-09-14T17:42:01.138861674Z [34m2026-09-14 17:42:01.138 UTC 0027 INFO[0m [ledgermgmt] [34;1mCreateLedger[0m -> Creating ledger [mychannel] with genesis block
+2026-09-14T17:42:01.149807709Z [34m2026-09-14 17:42:01.149 UTC 0028 INFO[0m [blkstorage] [34;1mnewBlockfileMgr[0m -> Getting block information from block storage
+2026-09-14T17:42:01.743587298Z [34m2026-09-14 17:42:01.743 UTC 0029 INFO[0m [sqldb] [34;1mNewSqlBatcher[0m -> NewSqlBatcher Initialised
+2026-09-14T17:42:01.747422146Z [33m2026-09-14 17:42:01.747 UTC 002a WARN[0m [lifecycle] [33;1mhandleMetadataUpdatesForChannel[0m -> no metadata found on channel 'mychannel': could not get channel config for channel 'mychannel'
+2026-09-14T17:42:01.752839093Z [33m2026-09-14 17:42:01.752 UTC 002b WARN[0m [validation] [33;1mextractSparseFilter[0m -> Genesis Block received
+2026-09-14T17:42:01.805629653Z [34m2026-09-14 17:42:01.805 UTC 002c INFO[0m [sqldb] [34;1mSet[0m -> Key d CHANNEL_CONFIG_ENV_BYTES stored in cache
+2026-09-14T17:42:01.816689905Z [34m2026-09-14 17:42:01.816 UTC 002d INFO[0m [sqldb] [34;1mSet[0m -> Key s stored in cache
+2026-09-14T17:42:01.822443028Z [34m2026-09-14 17:42:01.822 UTC 002e INFO[0m [kvledger] [34;1mcommit[0m -> [mychannel] Committed block [0] with 1 transaction(s) in 69ms (state_validation=0ms block_and_pvtdata_commit=15ms state_commit=48ms) commitHash=[]
+2026-09-14T17:42:01.822480940Z [34m2026-09-14 17:42:01.822 UTC 002f INFO[0m [kvledger] [34;1mupdateLedgerStatus[0m -> Updating ledger [mychannel] status to [ACTIVE]
+2026-09-14T17:42:01.827928985Z [34m2026-09-14 17:42:01.827 UTC 0030 INFO[0m [ledgermgmt] [34;1mCreateLedger[0m -> Created ledger [mychannel] with genesis block
+2026-09-14T17:42:01.829752622Z [33m2026-09-14 17:42:01.829 UTC 0031 WARN[0m [peer.orderers] [33;1mUpdate[0m -> Config defines both orderer org specific endpoints and global endpoints, global endpoints will be ignored channel=mychannel
+2026-09-14T17:42:01.829899971Z [34m2026-09-14 17:42:01.829 UTC 0032 INFO[0m [gossip.gossip] [34;1mJoinChan[0m -> Joining gossip network of channel mychannel with 2 organizations
+2026-09-14T17:42:01.829916362Z [34m2026-09-14 17:42:01.829 UTC 0033 INFO[0m [gossip.gossip] [34;1mlearnAnchorPeers[0m -> No configured anchor peers of Org1MSP for channel mychannel to learn about
+2026-09-14T17:42:01.829925710Z [34m2026-09-14 17:42:01.829 UTC 0034 INFO[0m [gossip.gossip] [34;1mlearnAnchorPeers[0m -> No configured anchor peers of Org2MSP for channel mychannel to learn about
+2026-09-14T17:42:01.829970735Z [34m2026-09-14 17:42:01.829 UTC 0035 INFO[0m [gateway] [34;1mconfigUpdate[0m -> Updating orderer config channel=mychannel
+2026-09-14T17:42:01.830024707Z [34m2026-09-14 17:42:01.829 UTC 0036 INFO[0m [vscc_service] [34;1mNewVsccServiceClient[0m -> vsccConfig: &{Enabled:true endpoint:peer2.org1.example.com:7071 tlsEnabled:true tlsCertFile:/etc/hyperledger/fabric/tls/server.crt ingressEndpoint:peer1.org1.example.com batchSize:10 grpcsvcconfig:}
+2026-09-14T17:42:01.830258851Z [33m2026-09-14 17:42:01.830 UTC 0037 WARN[0m [common.deliverevents] [33;1mcreateChannel[0m -> Value for IsLtfEnabled has been reset to  false
+2026-09-14T17:42:01.830417662Z [34m2026-09-14 17:42:01.830 UTC 0038 INFO[0m [gossip.state] [34;1mNewGossipStateProvider[0m -> Updating metadata information for channel mychannel, current ledger sequence is at = 0, next expected block is = 1
+2026-09-14T17:42:01.830431128Z [34m2026-09-14 17:42:01.830 UTC 0039 INFO[0m [deliveryClient] [34;1mStartDeliverForChannel[0m -> This peer will retrieve blocks from ordering service (will not disseminate them to other peers in the organization) channel=mychannel
+2026-09-14T17:42:01.830457397Z [34m2026-09-14 17:42:01.830 UTC 003a INFO[0m [common.deliverevents] [34;1mcreateChannel[0m -> created channel :  mychannel
+2026-09-14T17:42:01.830592513Z [34m2026-09-14 17:42:01.830 UTC 003b INFO[0m [endorser] [34;1mcallChaincode[0m -> [0;32mfinished chaincode: cscc duration: 693ms[0m channel= txID=68fdb316
+2026-09-14T17:42:01.830644692Z [34m2026-09-14 17:42:01.830 UTC 003c INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=protos.Endorser grpc.method=ProcessProposal grpc.peer_address=172.18.0.1:44016 grpc.code=OK grpc.call_duration=694.575551ms
+2026-09-14T17:42:01.832305099Z [34m2026-09-14 17:42:01.832 UTC 003d INFO[0m [peer.blocksprovider] [34;1mDeliverBlocks[0m -> Pulling next blocks from ordering service channel=mychannel orderer-address=orderer.example.com:7050 nextBlock=1
+2026-09-14T17:42:05.141927935Z [34m2026-09-14 17:42:05.141 UTC 003e INFO[0m [gateway] [34;1mConfigEvents[0m -> Receieved config event request : peer_id:"peer0.org1.example.com" channel_id:"mychannel" 
+2026-09-14T17:42:12.436525944Z [34m2026-09-14 17:42:12.436 UTC 003f INFO[0m [gossip.privdata] [34;1mStoreBlock[0m -> Received block [1] from buffer channel=mychannel
+2026-09-14T17:42:12.439087789Z [33m2026-09-14 17:42:12.439 UTC 0040 WARN[0m [peer.orderers] [33;1mUpdate[0m -> Config defines both orderer org specific endpoints and global endpoints, global endpoints will be ignored channel=mychannel
+2026-09-14T17:42:12.439122655Z [34m2026-09-14 17:42:12.439 UTC 0041 INFO[0m [gossip.gossip] [34;1mJoinChan[0m -> Joining gossip network of channel mychannel with 2 organizations
+2026-09-14T17:42:12.439132103Z [34m2026-09-14 17:42:12.439 UTC 0042 INFO[0m [gossip.gossip] [34;1mlearnAnchorPeers[0m -> No configured anchor peers of Org2MSP for channel mychannel to learn about
+2026-09-14T17:42:12.439137974Z [34m2026-09-14 17:42:12.439 UTC 0043 INFO[0m [gossip.gossip] [34;1mlearnAnchorPeers[0m -> Learning about the configured anchor peers of Org1MSP for channel mychannel: [{peer1.org1.example.com 7061}]
+2026-09-14T17:42:12.439150578Z [34m2026-09-14 17:42:12.439 UTC 0044 INFO[0m [gossip.gossip] [34;1mlearnAnchorPeers[0m -> Anchor peer for channel mychannel with same endpoint, skipping connecting to myself
+2026-09-14T17:42:12.439427232Z [34m2026-09-14 17:42:12.439 UTC 0045 INFO[0m [gateway] [34;1mconfigUpdate[0m -> Updating orderer config channel=mychannel
+2026-09-14T17:42:12.439433104Z [33m2026-09-14 17:42:12.439 UTC 0046 WARN[0m [committer.txvalidator] [33;1mvalidateTx[0m -> Value for IsLtfEnabled has been updated as  false
+2026-09-14T17:42:12.439436260Z [34m2026-09-14 17:42:12.439 UTC 0047 INFO[0m [committer.txvalidator] [34;1mvalidateTx[0m -> Config transaction validated and applied to channel resources channel=mychannel
+2026-09-14T17:42:12.439450326Z [34m2026-09-14 17:42:12.439 UTC 0048 INFO[0m [committer.txvalidator] [34;1mValidate[0m -> [mychannel] Validated block [1] in 2ms
+2026-09-14T17:42:12.439483750Z [34m2026-09-14 17:42:12.439 UTC 0049 INFO[0m [gossip.privdata] [34;1mStoreBlock[0m -> [mychannel] Pvt Data Fetch for block [1] with 1 transactions in 0ms
+2026-09-14T17:42:12.441153354Z [34m2026-09-14 17:42:12.441 UTC 004a INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=gossip.Gossip grpc.method=Ping grpc.request_deadline=2026-09-14T17:42:14.44Z grpc.peer_address=172.18.0.7:41850 grpc.peer_subject="CN=peer1.org2.example.com,L=San Francisco,ST=California,C=US" grpc.code=OK grpc.call_duration=30.748µs
+2026-09-14T17:42:12.442399546Z [34m2026-09-14 17:42:12.442 UTC 004b INFO[0m [gossip.comm] [34;1mGossipStream[0m -> Peer 743e1c9c489a7e0b528d36b3b07a22ba90083aa363d927de77fc7e836cfb69f1 (172.18.0.7:41850) probed us
+2026-09-14T17:42:12.442420766Z [34m2026-09-14 17:42:12.442 UTC 004c INFO[0m [comm.grpc.server] [34;1m1[0m -> streaming call completed grpc.service=gossip.Gossip grpc.method=GossipStream grpc.request_deadline=2026-09-14T17:42:22.441Z grpc.peer_address=172.18.0.7:41850 grpc.peer_subject="CN=peer1.org2.example.com,L=San Francisco,ST=California,C=US" grpc.code=OK grpc.call_duration=1.07624ms
+2026-09-14T17:42:12.443808977Z [34m2026-09-14 17:42:12.443 UTC 004d INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=gossip.Gossip grpc.method=Ping grpc.request_deadline=2026-09-14T17:42:14.443Z grpc.peer_address=172.18.0.7:41854 grpc.peer_subject="CN=peer1.org2.example.com,L=San Francisco,ST=California,C=US" grpc.code=OK grpc.call_duration=24.446µs
+2026-09-14T17:42:12.490218695Z [34m2026-09-14 17:42:12.490 UTC 004e INFO[0m [sqldb] [34;1mSet[0m -> Key d CHANNEL_CONFIG_ENV_BYTES stored in cache
+2026-09-14T17:42:12.492090172Z [34m2026-09-14 17:42:12.492 UTC 004f INFO[0m [sqldb] [34;1mSet[0m -> Key s stored in cache
+2026-09-14T17:42:12.499117020Z [34m2026-09-14 17:42:12.499 UTC 0050 INFO[0m [kvledger] [34;1mcommit[0m -> [mychannel] Committed block [1] with 1 transaction(s) in 59ms (state_validation=0ms block_and_pvtdata_commit=30ms state_commit=22ms) commitHash=[47dc540c94ceb704a23875c11273e16bb0b8a87aed84de911f2133568115f254]
+2026-09-14T17:42:12.499162416Z [34m2026-09-14 17:42:12.499 UTC 0051 INFO[0m [gossip.state] [34;1mdeliverPayloads[0m -> [0;32m[mychannel] Total time taken to process block 1 with transaction(s) 1 is: 62.686006ms[0m
+2026-09-14T17:42:12.499186832Z [34m2026-09-14 17:42:12.499 UTC 0052 INFO[0m [gateway] [34;1mnotifyConfig[0m -> Config Listeners : [[peer0.org1.example.com:1]]
+2026-09-14T17:42:12.499217310Z [34m2026-09-14 17:42:12.499 UTC 0053 INFO[0m [gateway] [34;1mConfigEvents[0m -> sending config event response : peer_id:"peer0.org1.example.com" channel_id:"mychannel" 
+2026-09-14T17:42:12.508814189Z [34m2026-09-14 17:42:12.508 UTC 0054 INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=gossip.Gossip grpc.method=Ping grpc.request_deadline=2026-09-14T17:42:14.508Z grpc.peer_address=172.18.0.11:53888 grpc.peer_subject="CN=peer0.org2.example.com,L=San Francisco,ST=California,C=US" grpc.code=OK grpc.call_duration=52.389µs
+2026-09-14T17:42:12.509870340Z [34m2026-09-14 17:42:12.509 UTC 0055 INFO[0m [gossip.comm] [34;1mGossipStream[0m -> Peer 883079a80918cf7b82ff57ccfcca32595ba73783a34a30c6db2fcfeb82a451e6 (172.18.0.11:53888) probed us
+2026-09-14T17:42:12.509885309Z [34m2026-09-14 17:42:12.509 UTC 0056 INFO[0m [comm.grpc.server] [34;1m1[0m -> streaming call completed grpc.service=gossip.Gossip grpc.method=GossipStream grpc.request_deadline=2026-09-14T17:42:22.508Z grpc.peer_address=172.18.0.11:53888 grpc.peer_subject="CN=peer0.org2.example.com,L=San Francisco,ST=California,C=US" grpc.code=OK grpc.call_duration=896.219µs
+2026-09-14T17:42:12.511665392Z [34m2026-09-14 17:42:12.511 UTC 0057 INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=gossip.Gossip grpc.method=Ping grpc.request_deadline=2026-09-14T17:42:14.511Z grpc.peer_address=172.18.0.11:53904 grpc.peer_subject="CN=peer0.org2.example.com,L=San Francisco,ST=California,C=US" grpc.code=OK grpc.call_duration=20.79µs
+2026-09-14T17:42:12.520355933Z [34m2026-09-14 17:42:12.520 UTC 0058 INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=gossip.Gossip grpc.method=Ping grpc.request_deadline=2026-09-14T17:42:14.52Z grpc.peer_address=172.18.0.8:42220 grpc.peer_subject="CN=peer0.org1.example.com,L=San Francisco,ST=California,C=US" grpc.code=OK grpc.call_duration=28.925µs
+2026-09-14T17:42:12.520944599Z [34m2026-09-14 17:42:12.520 UTC 0059 INFO[0m [gossip.comm] [34;1mGossipStream[0m -> Peer e5a896ec40783cf63bf5640edec3d05a5b8625f5183a63404d68d8cff9d1ad0b (172.18.0.8:42220) probed us
+2026-09-14T17:42:12.520954608Z [34m2026-09-14 17:42:12.520 UTC 005a INFO[0m [comm.grpc.server] [34;1m1[0m -> streaming call completed grpc.service=gossip.Gossip grpc.method=GossipStream grpc.request_deadline=2026-09-14T17:42:22.52Z grpc.peer_address=172.18.0.8:42220 grpc.peer_subject="CN=peer0.org1.example.com,L=San Francisco,ST=California,C=US" grpc.code=OK grpc.call_duration=484.849µs
+2026-09-14T17:42:12.522396160Z [34m2026-09-14 17:42:12.522 UTC 005b INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=gossip.Gossip grpc.method=Ping grpc.request_deadline=2026-09-14T17:42:14.522Z grpc.peer_address=172.18.0.8:42224 grpc.peer_subject="CN=peer0.org1.example.com,L=San Francisco,ST=California,C=US" grpc.code=OK grpc.call_duration=18.696µs
+2026-09-14T17:42:12.564923420Z [34m2026-09-14 17:42:12.564 UTC 005c INFO[0m [gossip.privdata] [34;1mStoreBlock[0m -> Received block [2] from buffer channel=mychannel
+2026-09-14T17:42:12.567030984Z [33m2026-09-14 17:42:12.566 UTC 005d WARN[0m [peer.orderers] [33;1mUpdate[0m -> Config defines both orderer org specific endpoints and global endpoints, global endpoints will be ignored channel=mychannel
+2026-09-14T17:42:12.567263425Z [34m2026-09-14 17:42:12.567 UTC 005e INFO[0m [gossip.gossip] [34;1mJoinChan[0m -> Joining gossip network of channel mychannel with 2 organizations
+2026-09-14T17:42:12.567296257Z [34m2026-09-14 17:42:12.567 UTC 005f INFO[0m [gossip.gossip] [34;1mlearnAnchorPeers[0m -> Learning about the configured anchor peers of Org1MSP for channel mychannel: [{peer1.org1.example.com 7061}]
+2026-09-14T17:42:12.567336413Z [34m2026-09-14 17:42:12.567 UTC 0060 INFO[0m [gossip.gossip] [34;1mlearnAnchorPeers[0m -> Anchor peer for channel mychannel with same endpoint, skipping connecting to myself
+2026-09-14T17:42:12.567996003Z [34m2026-09-14 17:42:12.567 UTC 0061 INFO[0m [gossip.gossip] [34;1mlearnAnchorPeers[0m -> Learning about the configured anchor peers of Org2MSP for channel mychannel: [{peer1.org2.example.com 9061}]
+2026-09-14T17:42:12.568012855Z [34m2026-09-14 17:42:12.567 UTC 0062 INFO[0m [gateway] [34;1mconfigUpdate[0m -> Updating orderer config channel=mychannel
+2026-09-14T17:42:12.568019939Z [33m2026-09-14 17:42:12.567 UTC 0063 WARN[0m [committer.txvalidator] [33;1mvalidateTx[0m -> Value for IsLtfEnabled has been updated as  false
+2026-09-14T17:42:12.568024628Z [34m2026-09-14 17:42:12.567 UTC 0064 INFO[0m [committer.txvalidator] [34;1mvalidateTx[0m -> Config transaction validated and applied to channel resources channel=mychannel
+2026-09-14T17:42:12.568029026Z [34m2026-09-14 17:42:12.567 UTC 0065 INFO[0m [committer.txvalidator] [34;1mValidate[0m -> [mychannel] Validated block [2] in 2ms
+2026-09-14T17:42:12.568035458Z [34m2026-09-14 17:42:12.567 UTC 0066 INFO[0m [gossip.privdata] [34;1mStoreBlock[0m -> [mychannel] Pvt Data Fetch for block [2] with 1 transactions in 0ms
+2026-09-14T17:42:12.570175284Z [34m2026-09-14 17:42:12.570 UTC 0067 INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=gossip.Gossip grpc.method=Ping grpc.request_deadline=2026-09-14T17:42:14.569Z grpc.peer_address=172.18.0.7:41868 grpc.peer_subject="CN=peer1.org2.example.com,L=San Francisco,ST=California,C=US" grpc.code=OK grpc.call_duration=39.084µs
+2026-09-14T17:42:12.571224783Z [34m2026-09-14 17:42:12.571 UTC 0068 INFO[0m [gossip.comm] [34;1mGossipStream[0m -> Peer 743e1c9c489a7e0b528d36b3b07a22ba90083aa363d927de77fc7e836cfb69f1 (172.18.0.7:41868) probed us
+2026-09-14T17:42:12.571250572Z [34m2026-09-14 17:42:12.571 UTC 0069 INFO[0m [comm.grpc.server] [34;1m1[0m -> streaming call completed grpc.service=gossip.Gossip grpc.method=GossipStream grpc.request_deadline=2026-09-14T17:42:22.57Z grpc.peer_address=172.18.0.7:41868 grpc.peer_subject="CN=peer1.org2.example.com,L=San Francisco,ST=California,C=US" grpc.code=OK grpc.call_duration=935.152µs
+2026-09-14T17:42:12.589203367Z [34m2026-09-14 17:42:12.589 UTC 006a INFO[0m [sqldb] [34;1mSet[0m -> Key d CHANNEL_CONFIG_ENV_BYTES stored in cache
+2026-09-14T17:42:12.590442495Z [34m2026-09-14 17:42:12.590 UTC 006b INFO[0m [sqldb] [34;1mSet[0m -> Key s stored in cache
+2026-09-14T17:42:12.599094834Z [34m2026-09-14 17:42:12.598 UTC 006c INFO[0m [kvledger] [34;1mcommit[0m -> [mychannel] Committed block [2] with 1 transaction(s) in 31ms (state_validation=0ms block_and_pvtdata_commit=18ms state_commit=4ms) commitHash=[5f88b61407b149a48413433f4670c46531e5c4a8febdc339a9536ff8716a559e]
+2026-09-14T17:42:12.599125672Z [34m2026-09-14 17:42:12.599 UTC 006d INFO[0m [gateway] [34;1mnotifyConfig[0m -> Config Listeners : [[peer0.org1.example.com:1]]
+2026-09-14T17:42:12.599138336Z [34m2026-09-14 17:42:12.599 UTC 006e INFO[0m [gossip.state] [34;1mdeliverPayloads[0m -> [0;32m[mychannel] Total time taken to process block 2 with transaction(s) 1 is: 34.235284ms[0m
+2026-09-14T17:42:12.599226463Z [34m2026-09-14 17:42:12.599 UTC 006f INFO[0m [gateway] [34;1mConfigEvents[0m -> sending config event response : peer_id:"peer0.org1.example.com" channel_id:"mychannel" 
+2026-09-14T17:42:12.617420035Z [34m2026-09-14 17:42:12.617 UTC 0070 INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=gossip.Gossip grpc.method=Ping grpc.request_deadline=2026-09-14T17:42:14.617Z grpc.peer_address=172.18.0.8:42228 grpc.peer_subject="CN=peer0.org1.example.com,L=San Francisco,ST=California,C=US" grpc.code=OK grpc.call_duration=23.174µs
+2026-09-14T17:42:12.617434101Z [34m2026-09-14 17:42:12.617 UTC 0071 INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=gossip.Gossip grpc.method=Ping grpc.request_deadline=2026-09-14T17:42:14.617Z grpc.peer_address=172.18.0.11:53916 grpc.peer_subject="CN=peer0.org2.example.com,L=San Francisco,ST=California,C=US" grpc.code=OK grpc.call_duration=30.598µs
+2026-09-14T17:42:12.617798512Z [34m2026-09-14 17:42:12.617 UTC 0072 INFO[0m [gossip.comm] [34;1mGossipStream[0m -> Peer e5a896ec40783cf63bf5640edec3d05a5b8625f5183a63404d68d8cff9d1ad0b (172.18.0.8:42228) probed us
+2026-09-14T17:42:12.617809713Z [34m2026-09-14 17:42:12.617 UTC 0073 INFO[0m [comm.grpc.server] [34;1m1[0m -> streaming call completed grpc.service=gossip.Gossip grpc.method=GossipStream grpc.request_deadline=2026-09-14T17:42:22.617Z grpc.peer_address=172.18.0.8:42228 grpc.peer_subject="CN=peer0.org1.example.com,L=San Francisco,ST=California,C=US" grpc.code=OK grpc.call_duration=277.646µs
+2026-09-14T17:42:12.617928879Z [34m2026-09-14 17:42:12.617 UTC 0074 INFO[0m [gossip.comm] [34;1mGossipStream[0m -> Peer 883079a80918cf7b82ff57ccfcca32595ba73783a34a30c6db2fcfeb82a451e6 (172.18.0.11:53916) probed us
+2026-09-14T17:42:12.617940541Z [34m2026-09-14 17:42:12.617 UTC 0075 INFO[0m [comm.grpc.server] [34;1m1[0m -> streaming call completed grpc.service=gossip.Gossip grpc.method=GossipStream grpc.request_deadline=2026-09-14T17:42:22.617Z grpc.peer_address=172.18.0.11:53916 grpc.peer_subject="CN=peer0.org2.example.com,L=San Francisco,ST=California,C=US" grpc.code=OK grpc.call_duration=432.85µs
+2026-09-14T17:42:16.830413959Z [34m2026-09-14 17:42:16.830 UTC 0076 INFO[0m [gossip.channel] [34;1mreportMembershipChanges[0m -> [[mychannel] Membership view has changed. peers went online:  [[peer0.org1.example.com:7051] [peer1.org2.example.com:9061 ] [peer0.org2.example.com:9051 ]] , current view:  [[peer0.org1.example.com:7051] [peer1.org2.example.com:9061 ] [peer0.org2.example.com:9051 ]]]
+2026-09-14T17:42:41.703551635Z [34m2026-09-14 17:42:41.703 UTC 0077 INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle namespaces/metadata/kvstore not found in cache
+2026-09-14T17:42:41.705092305Z [34m2026-09-14 17:42:41.705 UTC 0078 INFO[0m [sqldb] [34;1mGet[0m -> Key dlscc kvstore not found in cache
+2026-09-14T17:42:41.705399066Z [34m2026-09-14 17:42:41.705 UTC 0079 INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle namespaces/fields/kvstore/Sequence not found in cache
+2026-09-14T17:42:41.705752786Z [34m2026-09-14 17:42:41.705 UTC 007a INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle$$p_implicit_org_Org1MSP namespaces/metadata/kvstore#1 not found in cache
+2026-09-14T17:42:41.705956382Z [34m2026-09-14 17:42:41.705 UTC 007b INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle$$h_implicit_org_Org1MSP nnJJI9ghjg2hlceyrnrgXfyqK9I0xbYyD4IgG4IVVus= not found in cache
+2026-09-14T17:42:41.706168795Z [34m2026-09-14 17:42:41.706 UTC 007c INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle$$p_implicit_org_Org1MSP namespaces/metadata/kvstore#1 not found in cache
+2026-09-14T17:42:41.706340520Z [34m2026-09-14 17:42:41.706 UTC 007d INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle$$h_implicit_org_Org1MSP nnJJI9ghjg2hlceyrnrgXfyqK9I0xbYyD4IgG4IVVus= not found in cache
+2026-09-14T17:42:41.706666628Z [34m2026-09-14 17:42:41.706 UTC 007e INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle$$p_implicit_org_Org1MSP chaincode-sources/metadata/kvstore#1 not found in cache
+2026-09-14T17:42:41.706835859Z [34m2026-09-14 17:42:41.706 UTC 007f INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle$$h_implicit_org_Org1MSP Q16AI1BcHaRYmTReZZSSFx25YxCvZzmtEYNtdGbbjkY= not found in cache
+2026-09-14T17:42:41.707072037Z [34m2026-09-14 17:42:41.707 UTC 0080 INFO[0m [lifecycle] [34;1mApproveChaincodeDefinitionForOrg[0m -> Successfully endorsed chaincode approval with name 'kvstore', package ID 'kvstore_1.0:2ea7b22cef577b6fa4ca655d0dab5283b6734bee9c35f654d050c69a24ed4de2', on channel 'mychannel' with definition {sequence: 1, endorsement info: (version: '1.0', plugin: 'escc', init required: false), validation info: (plugin: 'vscc', policy: '12202f4368616e6e656c2f4170706c69636174696f6e2f456e646f7273656d656e74'), collections: ()}
+2026-09-14T17:42:41.707098066Z [34m2026-09-14 17:42:41.707 UTC 0081 INFO[0m [endorser] [34;1mcallChaincode[0m -> [0;32mfinished chaincode: _lifecycle duration: 4ms[0m channel=mychannel txID=646a1b0c
+2026-09-14T17:42:41.730919135Z [34m2026-09-14 17:42:41.730 UTC 0082 INFO[0m [transientstore] [34;1mflushBatchToRedis[0m -> Setting Pvt Data at Height of 2
+2026-09-14T17:42:41.737163861Z [34m2026-09-14 17:42:41.737 UTC 0083 INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=protos.Endorser grpc.method=ProcessProposal grpc.peer_address=172.18.0.1:55502 grpc.code=OK grpc.call_duration=34.617922ms
+2026-09-14T17:42:43.760387570Z [34m2026-09-14 17:42:43.760 UTC 0084 INFO[0m [gossip.privdata] [34;1mStoreBlock[0m -> Received block [3] from buffer channel=mychannel
+2026-09-14T17:42:43.986202464Z [34m2026-09-14 17:42:43.986 UTC 0085 INFO[0m [committer.txvalidator] [34;1mValidate[0m -> [mychannel] Validated block [3] in 225ms
+2026-09-14T17:42:43.986596661Z [34m2026-09-14 17:42:43.986 UTC 0086 INFO[0m [gossip.privdata] [34;1mRetrievePvtdata[0m -> [0;32mSuccessfully fetched (or marked to reconcile later) all 1 eligible collection private write sets for block [3] (0 from local cache, 1 from transient store, 0 from other peers)[0m channel=mychannel
+2026-09-14T17:42:43.986604366Z [34m2026-09-14 17:42:43.986 UTC 0087 INFO[0m [gossip.privdata] [34;1mStoreBlock[0m -> [mychannel] Pvt Data Fetch for block [3] with 1 transactions in 0ms
+2026-09-14T17:42:44.030434278Z [34m2026-09-14 17:42:44.030 UTC 0088 INFO[0m [sqldb] [34;1mSet[0m -> Key d_lifecycle$$p_implicit_org_Org1MSP namespaces/fields/kvstore#1/EndorsementInfo stored in cache
+2026-09-14T17:42:44.030449858Z [34m2026-09-14 17:42:44.030 UTC 0089 INFO[0m [sqldb] [34;1mSet[0m -> Key d_lifecycle$$h_implicit_org_Org1MSP nnJJI9ghjg2hlceyrnrgXfyqK9I0xbYyD4IgG4IVVus= stored in cache
+2026-09-14T17:42:44.030454316Z [34m2026-09-14 17:42:44.030 UTC 008a INFO[0m [sqldb] [34;1mSet[0m -> Key d_lifecycle$$p_implicit_org_Org1MSP chaincode-sources/metadata/kvstore#1 stored in cache
+2026-09-14T17:42:44.030458384Z [34m2026-09-14 17:42:44.030 UTC 008b INFO[0m [sqldb] [34;1mSet[0m -> Key d_lifecycle$$p_implicit_org_Org1MSP namespaces/fields/kvstore#1/ValidationInfo stored in cache
+2026-09-14T17:42:44.030461981Z [34m2026-09-14 17:42:44.030 UTC 008c INFO[0m [sqldb] [34;1mSet[0m -> Key d_lifecycle$$p_implicit_org_Org1MSP namespaces/fields/kvstore#1/Collections stored in cache
+2026-09-14T17:42:44.030465568Z [34m2026-09-14 17:42:44.030 UTC 008d INFO[0m [sqldb] [34;1mSet[0m -> Key d_lifecycle$$p_implicit_org_Org1MSP namespaces/metadata/kvstore#1 stored in cache
+2026-09-14T17:42:44.030469134Z [34m2026-09-14 17:42:44.030 UTC 008e INFO[0m [sqldb] [34;1mSet[0m -> Key d_lifecycle$$p_implicit_org_Org1MSP chaincode-sources/fields/kvstore#1/PackageID stored in cache
+2026-09-14T17:42:44.030472821Z [34m2026-09-14 17:42:44.030 UTC 008f INFO[0m [sqldb] [34;1mSet[0m -> Key d_lifecycle$$h_implicit_org_Org1MSP yIeBDkxkGtQCxugi4BEMMzScQELr2/1soAe43GZRw/4= stored in cache
+2026-09-14T17:42:44.030476619Z [34m2026-09-14 17:42:44.030 UTC 0090 INFO[0m [sqldb] [34;1mSet[0m -> Key d_lifecycle$$h_implicit_org_Org1MSP Q16AI1BcHaRYmTReZZSSFx25YxCvZzmtEYNtdGbbjkY= stored in cache
+2026-09-14T17:42:44.030490585Z [34m2026-09-14 17:42:44.030 UTC 0091 INFO[0m [sqldb] [34;1mSet[0m -> Key d_lifecycle$$h_implicit_org_Org1MSP zNUoF+TP5uqLBkPEtT+zhpNS3mMXM8U9QZ/oAnSQ0LY= stored in cache
+2026-09-14T17:42:44.030500514Z [34m2026-09-14 17:42:44.030 UTC 0092 INFO[0m [sqldb] [34;1mSet[0m -> Key d_lifecycle$$h_implicit_org_Org1MSP 7CLnGBTim1LYmNoPKD2McY2049SqmyyBqqbgcjHM/aE= stored in cache
+2026-09-14T17:42:44.030504852Z [34m2026-09-14 17:42:44.030 UTC 0093 INFO[0m [sqldb] [34;1mSet[0m -> Key d_lifecycle$$h_implicit_org_Org1MSP 46rdowJBMzdmOvIVNsV66uqWM6GW8EMrVf1yJNCZsXc= stored in cache
+2026-09-14T17:42:44.031810386Z [34m2026-09-14 17:42:44.031 UTC 0094 INFO[0m [sqldb] [34;1mSet[0m -> Key s stored in cache
+2026-09-14T17:42:44.039985461Z [34m2026-09-14 17:42:44.039 UTC 0095 INFO[0m [kvledger] [34;1mcommit[0m -> [mychannel] Committed block [3] with 1 transaction(s) in 53ms (state_validation=3ms block_and_pvtdata_commit=28ms state_commit=12ms) commitHash=[734b9024e388640e8fbc322c874ee0469a0bd4ce079022386e2b9b7e01c1d2f2]
+2026-09-14T17:42:44.040025567Z [34m2026-09-14 17:42:44.039 UTC 0096 INFO[0m [gossip.state] [34;1mdeliverPayloads[0m -> [0;32m[mychannel] Total time taken to process block 3 with transaction(s) 1 is: 279.709963ms[0m
+2026-09-14T17:42:44.040033452Z [34m2026-09-14 17:42:44.039 UTC 0097 INFO[0m [gateway] [34;1mnotifyConfig[0m -> Config Listeners : [[peer0.org1.example.com:1]]
+2026-09-14T17:42:44.040063138Z [34m2026-09-14 17:42:44.040 UTC 0098 INFO[0m [gateway] [34;1mConfigEvents[0m -> sending config event response : peer_id:"peer0.org1.example.com" channel_id:"mychannel" 
+2026-09-14T17:42:44.040297062Z [34m2026-09-14 17:42:44.040 UTC 0099 INFO[0m [transientstore] [34;1mPurgeByTxids[0m -> Purging pvtData by TxIds
+2026-09-14T17:42:44.042758086Z [34m2026-09-14 17:42:44.042 UTC 009a INFO[0m [comm.grpc.server] [34;1m1[0m -> streaming call completed grpc.service=protos.Deliver grpc.method=DeliverFiltered grpc.request_deadline=2026-09-14T17:43:11.737Z grpc.peer_address=172.18.0.1:55510 error="context finished before block retrieved: context canceled" grpc.code=Unknown grpc.call_duration=2.304624838s
+2026-09-14T17:42:44.061331799Z [34m2026-09-14 17:42:44.061 UTC 009b INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=gossip.Gossip grpc.method=Ping grpc.request_deadline=2026-09-14T17:42:46.061Z grpc.peer_address=172.18.0.11:56606 grpc.peer_subject="CN=peer0.org2.example.com,L=San Francisco,ST=California,C=US" grpc.code=OK grpc.call_duration=24.897µs
+2026-09-14T17:42:44.061770521Z [34m2026-09-14 17:42:44.061 UTC 009c INFO[0m [gossip.comm] [34;1mGossipStream[0m -> Peer 883079a80918cf7b82ff57ccfcca32595ba73783a34a30c6db2fcfeb82a451e6 (172.18.0.11:56606) probed us
+2026-09-14T17:42:44.061779859Z [34m2026-09-14 17:42:44.061 UTC 009d INFO[0m [comm.grpc.server] [34;1m1[0m -> streaming call completed grpc.service=gossip.Gossip grpc.method=GossipStream grpc.request_deadline=2026-09-14T17:42:54.061Z grpc.peer_address=172.18.0.11:56606 grpc.peer_subject="CN=peer0.org2.example.com,L=San Francisco,ST=California,C=US" grpc.code=OK grpc.call_duration=348.25µs
+2026-09-14T17:42:44.067461417Z [34m2026-09-14 17:42:44.067 UTC 009e INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=gossip.Gossip grpc.method=Ping grpc.request_deadline=2026-09-14T17:42:46.067Z grpc.peer_address=172.18.0.8:53210 grpc.peer_subject="CN=peer0.org1.example.com,L=San Francisco,ST=California,C=US" grpc.code=OK grpc.call_duration=36.389µs
+2026-09-14T17:42:44.067776865Z [34m2026-09-14 17:42:44.067 UTC 009f INFO[0m [gossip.comm] [34;1mGossipStream[0m -> Peer e5a896ec40783cf63bf5640edec3d05a5b8625f5183a63404d68d8cff9d1ad0b (172.18.0.8:53210) probed us
+2026-09-14T17:42:44.067784980Z [34m2026-09-14 17:42:44.067 UTC 00a0 INFO[0m [comm.grpc.server] [34;1m1[0m -> streaming call completed grpc.service=gossip.Gossip grpc.method=GossipStream grpc.request_deadline=2026-09-14T17:42:54.067Z grpc.peer_address=172.18.0.8:53210 grpc.peer_subject="CN=peer0.org1.example.com,L=San Francisco,ST=California,C=US" grpc.code=OK grpc.call_duration=228.263µs
+2026-09-14T17:42:54.077566361Z [34m2026-09-14 17:42:54.077 UTC 00a1 INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle namespaces/fields/kvstore/Sequence not found in cache
+2026-09-14T17:42:54.078287097Z [34m2026-09-14 17:42:54.078 UTC 00a2 INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle$$h_implicit_org_Org2MSP nnJJI9ghjg2hlceyrnrgXfyqK9I0xbYyD4IgG4IVVus= not found in cache
+2026-09-14T17:42:54.078537491Z [34m2026-09-14 17:42:54.078 UTC 00a3 INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle$$h_implicit_org_Org2MSP 46rdowJBMzdmOvIVNsV66uqWM6GW8EMrVf1yJNCZsXc= not found in cache
+2026-09-14T17:42:54.078795420Z [34m2026-09-14 17:42:54.078 UTC 00a4 INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle$$h_implicit_org_Org2MSP zNUoF+TP5uqLBkPEtT+zhpNS3mMXM8U9QZ/oAnSQ0LY= not found in cache
+2026-09-14T17:42:54.078963559Z [34m2026-09-14 17:42:54.078 UTC 00a5 INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle$$h_implicit_org_Org2MSP 7CLnGBTim1LYmNoPKD2McY2049SqmyyBqqbgcjHM/aE= not found in cache
+2026-09-14T17:42:54.079252015Z [34m2026-09-14 17:42:54.079 UTC 00a6 INFO[0m [lifecycle] [34;1mCheckCommitReadiness[0m -> Successfully checked commit readiness of chaincode name 'kvstore' on channel 'mychannel' with definition {sequence: 1, endorsement info: (version: '1.0', plugin: 'escc', init required: false), validation info: (plugin: 'vscc', policy: '12202f4368616e6e656c2f4170706c69636174696f6e2f456e646f7273656d656e74'), collections: (<nil>)}
+2026-09-14T17:42:54.079318542Z [34m2026-09-14 17:42:54.079 UTC 00a7 INFO[0m [endorser] [34;1mcallChaincode[0m -> [0;32mfinished chaincode: _lifecycle duration: 2ms[0m channel=mychannel txID=a93ca2bf
+2026-09-14T17:42:54.079475218Z [34m2026-09-14 17:42:54.079 UTC 00a8 INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=protos.Endorser grpc.method=ProcessProposal grpc.peer_address=172.18.0.1:33196 grpc.code=OK grpc.call_duration=2.350465ms
+2026-09-14T17:43:06.276556698Z [34m2026-09-14 17:43:06.276 UTC 00a9 INFO[0m [gossip.privdata] [34;1mStoreBlock[0m -> Received block [4] from buffer channel=mychannel
+2026-09-14T17:43:06.280327405Z [34m2026-09-14 17:43:06.280 UTC 00aa INFO[0m [committer.txvalidator] [34;1mValidate[0m -> [mychannel] Validated block [4] in 3ms
+2026-09-14T17:43:06.280715341Z [34m2026-09-14 17:43:06.280 UTC 00ab INFO[0m [gossip.privdata] [34;1mStoreBlock[0m -> [mychannel] Pvt Data Fetch for block [4] with 1 transactions in 0ms
+2026-09-14T17:43:06.312547495Z [34m2026-09-14 17:43:06.312 UTC 00ac INFO[0m [sqldb] [34;1mSet[0m -> Key d_lifecycle$$h_implicit_org_Org2MSP yIeBDkxkGtQCxugi4BEMMzScQELr2/1soAe43GZRw/4= stored in cache
+2026-09-14T17:43:06.312560349Z [34m2026-09-14 17:43:06.312 UTC 00ad INFO[0m [sqldb] [34;1mSet[0m -> Key d_lifecycle$$h_implicit_org_Org2MSP Q16AI1BcHaRYmTReZZSSFx25YxCvZzmtEYNtdGbbjkY= stored in cache
+2026-09-14T17:43:06.312565749Z [34m2026-09-14 17:43:06.312 UTC 00ae INFO[0m [sqldb] [34;1mSet[0m -> Key d_lifecycle$$h_implicit_org_Org2MSP 7CLnGBTim1LYmNoPKD2McY2049SqmyyBqqbgcjHM/aE= stored in cache
+2026-09-14T17:43:06.312570588Z [34m2026-09-14 17:43:06.312 UTC 00af INFO[0m [sqldb] [34;1mSet[0m -> Key d_lifecycle$$h_implicit_org_Org2MSP 46rdowJBMzdmOvIVNsV66uqWM6GW8EMrVf1yJNCZsXc= stored in cache
+2026-09-14T17:43:06.312575227Z [34m2026-09-14 17:43:06.312 UTC 00b0 INFO[0m [sqldb] [34;1mSet[0m -> Key d_lifecycle$$h_implicit_org_Org2MSP zNUoF+TP5uqLBkPEtT+zhpNS3mMXM8U9QZ/oAnSQ0LY= stored in cache
+2026-09-14T17:43:06.312579646Z [34m2026-09-14 17:43:06.312 UTC 00b1 INFO[0m [sqldb] [34;1mSet[0m -> Key d_lifecycle$$h_implicit_org_Org2MSP nnJJI9ghjg2hlceyrnrgXfyqK9I0xbYyD4IgG4IVVus= stored in cache
+2026-09-14T17:43:06.314069450Z [34m2026-09-14 17:43:06.314 UTC 00b2 INFO[0m [sqldb] [34;1mSet[0m -> Key s stored in cache
+2026-09-14T17:43:06.324350616Z [34m2026-09-14 17:43:06.324 UTC 00b3 INFO[0m [kvledger] [34;1mcommit[0m -> [mychannel] Committed block [4] with 1 transaction(s) in 43ms (state_validation=0ms block_and_pvtdata_commit=17ms state_commit=15ms) commitHash=[6ba95dd9d224c9925f9706a6897b2c7d3f6d407a8beca0809c2c3ea4f850e001]
+2026-09-14T17:43:06.324427051Z [34m2026-09-14 17:43:06.324 UTC 00b4 INFO[0m [gossip.state] [34;1mdeliverPayloads[0m -> [0;32m[mychannel] Total time taken to process block 4 with transaction(s) 1 is: 47.885922ms[0m
+2026-09-14T17:43:06.324441859Z [34m2026-09-14 17:43:06.324 UTC 00b5 INFO[0m [gateway] [34;1mnotifyConfig[0m -> Config Listeners : [[peer0.org1.example.com:1]]
+2026-09-14T17:43:06.324459082Z [34m2026-09-14 17:43:06.324 UTC 00b6 INFO[0m [gateway] [34;1mConfigEvents[0m -> sending config event response : peer_id:"peer0.org1.example.com" channel_id:"mychannel" 
+2026-09-14T17:43:06.345393170Z [34m2026-09-14 17:43:06.345 UTC 00b7 INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=gossip.Gossip grpc.method=Ping grpc.request_deadline=2026-09-14T17:43:08.345Z grpc.peer_address=172.18.0.8:52964 grpc.peer_subject="CN=peer0.org1.example.com,L=San Francisco,ST=California,C=US" grpc.code=OK grpc.call_duration=27.502µs
+2026-09-14T17:43:06.345710872Z [34m2026-09-14 17:43:06.345 UTC 00b8 INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=gossip.Gossip grpc.method=Ping grpc.request_deadline=2026-09-14T17:43:08.345Z grpc.peer_address=172.18.0.11:51210 grpc.peer_subject="CN=peer0.org2.example.com,L=San Francisco,ST=California,C=US" grpc.code=OK grpc.call_duration=20.318µs
+2026-09-14T17:43:06.345789862Z [34m2026-09-14 17:43:06.345 UTC 00b9 INFO[0m [gossip.comm] [34;1mGossipStream[0m -> Peer e5a896ec40783cf63bf5640edec3d05a5b8625f5183a63404d68d8cff9d1ad0b (172.18.0.8:52964) probed us
+2026-09-14T17:43:06.345806864Z [34m2026-09-14 17:43:06.345 UTC 00ba INFO[0m [comm.grpc.server] [34;1m1[0m -> streaming call completed grpc.service=gossip.Gossip grpc.method=GossipStream grpc.request_deadline=2026-09-14T17:43:16.345Z grpc.peer_address=172.18.0.8:52964 grpc.peer_subject="CN=peer0.org1.example.com,L=San Francisco,ST=California,C=US" grpc.code=OK grpc.call_duration=307.723µs
+2026-09-14T17:43:06.346218965Z [34m2026-09-14 17:43:06.346 UTC 00bb INFO[0m [gossip.comm] [34;1mGossipStream[0m -> Peer 883079a80918cf7b82ff57ccfcca32595ba73783a34a30c6db2fcfeb82a451e6 (172.18.0.11:51210) probed us
+2026-09-14T17:43:06.346223394Z [34m2026-09-14 17:43:06.346 UTC 00bc INFO[0m [comm.grpc.server] [34;1m1[0m -> streaming call completed grpc.service=gossip.Gossip grpc.method=GossipStream grpc.request_deadline=2026-09-14T17:43:16.345Z grpc.peer_address=172.18.0.11:51210 grpc.peer_subject="CN=peer0.org2.example.com,L=San Francisco,ST=California,C=US" grpc.code=OK grpc.call_duration=410.187µs
+2026-09-14T17:43:16.361175187Z [34m2026-09-14 17:43:16.361 UTC 00bd INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle namespaces/fields/kvstore/Sequence not found in cache
+2026-09-14T17:43:16.361993648Z [34m2026-09-14 17:43:16.361 UTC 00be INFO[0m [lifecycle] [34;1mCheckCommitReadiness[0m -> Successfully checked commit readiness of chaincode name 'kvstore' on channel 'mychannel' with definition {sequence: 1, endorsement info: (version: '1.0', plugin: 'escc', init required: false), validation info: (plugin: 'vscc', policy: '12202f4368616e6e656c2f4170706c69636174696f6e2f456e646f7273656d656e74'), collections: (<nil>)}
+2026-09-14T17:43:16.362029506Z [34m2026-09-14 17:43:16.362 UTC 00bf INFO[0m [endorser] [34;1mcallChaincode[0m -> [0;32mfinished chaincode: _lifecycle duration: 1ms[0m channel=mychannel txID=eb1b6a6c
+2026-09-14T17:43:16.362124256Z [34m2026-09-14 17:43:16.362 UTC 00c0 INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=protos.Endorser grpc.method=ProcessProposal grpc.peer_address=172.18.0.1:34998 grpc.code=OK grpc.call_duration=1.410924ms
+2026-09-14T17:43:26.444006055Z [34m2026-09-14 17:43:26.443 UTC 00c1 INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle namespaces/metadata/kvstore not found in cache
+2026-09-14T17:43:26.444528605Z [34m2026-09-14 17:43:26.444 UTC 00c2 INFO[0m [sqldb] [34;1mGet[0m -> Key dlscc kvstore not found in cache
+2026-09-14T17:43:26.444757119Z [34m2026-09-14 17:43:26.444 UTC 00c3 INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle namespaces/fields/kvstore/Sequence not found in cache
+2026-09-14T17:43:26.445058600Z [34m2026-09-14 17:43:26.445 UTC 00c4 INFO[0m [lifecycle] [34;1mCheckCommitReadiness[0m -> Successfully checked commit readiness of chaincode name 'kvstore' on channel 'mychannel' with definition {sequence: 1, endorsement info: (version: '1.0', plugin: 'escc', init required: false), validation info: (plugin: 'vscc', policy: '12202f4368616e6e656c2f4170706c69636174696f6e2f456e646f7273656d656e74'), collections: (<nil>)}
+2026-09-14T17:43:26.445077686Z [34m2026-09-14 17:43:26.445 UTC 00c5 INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle namespaces/metadata/kvstore not found in cache
+2026-09-14T17:43:26.445348199Z [34m2026-09-14 17:43:26.445 UTC 00c6 INFO[0m [lifecycle] [34;1mCommitChaincodeDefinition[0m -> Successfully endorsed commit for chaincode name 'kvstore' on channel 'mychannel' with definition {sequence: 1, endorsement info: (version: '1.0', plugin: 'escc', init required: false), validation info: (plugin: 'vscc', policy: '12202f4368616e6e656c2f4170706c69636174696f6e2f456e646f7273656d656e74'), collections: (<nil>)}
+2026-09-14T17:43:26.445371713Z [34m2026-09-14 17:43:26.445 UTC 00c7 INFO[0m [endorser] [34;1mcallChaincode[0m -> [0;32mfinished chaincode: _lifecycle duration: 1ms[0m channel=mychannel txID=7d0f6ecf
+2026-09-14T17:43:26.445473256Z [34m2026-09-14 17:43:26.445 UTC 00c8 INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=protos.Endorser grpc.method=ProcessProposal grpc.peer_address=172.18.0.1:33176 grpc.code=OK grpc.call_duration=2.318014ms
+2026-09-14T17:43:28.468319270Z [34m2026-09-14 17:43:28.468 UTC 00c9 INFO[0m [gossip.privdata] [34;1mStoreBlock[0m -> Received block [5] from buffer channel=mychannel
+2026-09-14T17:43:28.472561521Z [34m2026-09-14 17:43:28.472 UTC 00ca INFO[0m [committer.txvalidator] [34;1mValidate[0m -> [mychannel] Validated block [5] in 4ms
+2026-09-14T17:43:28.472647133Z [34m2026-09-14 17:43:28.472 UTC 00cb INFO[0m [gossip.privdata] [34;1mStoreBlock[0m -> [mychannel] Pvt Data Fetch for block [5] with 1 transactions in 0ms
+2026-09-14T17:43:28.473914695Z [34m2026-09-14 17:43:28.473 UTC 00cc INFO[0m [lifecycle] [34;1mupdate[0m -> Updating cached definition for chaincode 'kvstore' on channel 'mychannel'
+2026-09-14T17:43:28.474031487Z [34m2026-09-14 17:43:28.473 UTC 00cd INFO[0m [cceventmgmt] [34;1mHandleStateUpdates[0m -> Channel [mychannel]: Handling deploy or update of chaincode [kvstore]
+2026-09-14T17:43:28.474038781Z [34m2026-09-14 17:43:28.474 UTC 00ce INFO[0m [sqldb] [34;1mGet[0m -> Key d_lifecycle namespaces/metadata/kvstore not found in cache
+2026-09-14T17:43:28.474258287Z [34m2026-09-14 17:43:28.474 UTC 00cf INFO[0m [sqldb] [34;1mGet[0m -> Key dlscc kvstore not found in cache
+2026-09-14T17:43:28.519680802Z [34m2026-09-14 17:43:28.519 UTC 00d0 INFO[0m [sqldb] [34;1mSet[0m -> Key d_lifecycle namespaces/fields/kvstore/ValidationInfo stored in cache
+2026-09-14T17:43:28.519693707Z [34m2026-09-14 17:43:28.519 UTC 00d1 INFO[0m [sqldb] [34;1mSet[0m -> Key d_lifecycle namespaces/metadata/kvstore stored in cache
+2026-09-14T17:43:28.519698015Z [34m2026-09-14 17:43:28.519 UTC 00d2 INFO[0m [sqldb] [34;1mSet[0m -> Key d_lifecycle namespaces/fields/kvstore/Collections stored in cache
+2026-09-14T17:43:28.519702002Z [34m2026-09-14 17:43:28.519 UTC 00d3 INFO[0m [sqldb] [34;1mSet[0m -> Key d_lifecycle namespaces/fields/kvstore/EndorsementInfo stored in cache
+2026-09-14T17:43:28.519712943Z [34m2026-09-14 17:43:28.519 UTC 00d4 INFO[0m [sqldb] [34;1mSet[0m -> Key d_lifecycle namespaces/fields/kvstore/Sequence stored in cache
+2026-09-14T17:43:28.520964826Z [34m2026-09-14 17:43:28.520 UTC 00d5 INFO[0m [sqldb] [34;1mSet[0m -> Key s stored in cache
+2026-09-14T17:43:28.529951289Z [34m2026-09-14 17:43:28.529 UTC 00d6 INFO[0m [kvledger] [34;1mcommit[0m -> [mychannel] Committed block [5] with 1 transaction(s) in 57ms (state_validation=1ms block_and_pvtdata_commit=18ms state_commit=28ms) commitHash=[521ddfe9a9927dbd9ae4a4bb1c02ccdb1ce018ec78911e05a7106ff110fe56a7]
+2026-09-14T17:43:28.529984432Z [34m2026-09-14 17:43:28.529 UTC 00d7 INFO[0m [gossip.state] [34;1mdeliverPayloads[0m -> [0;32m[mychannel] Total time taken to process block 5 with transaction(s) 1 is: 61.707382ms[0m
+2026-09-14T17:43:28.529995112Z [34m2026-09-14 17:43:28.529 UTC 00d8 INFO[0m [gateway] [34;1mnotifyConfig[0m -> Config Listeners : [[peer0.org1.example.com:1]]
+2026-09-14T17:43:28.530034697Z [34m2026-09-14 17:43:28.529 UTC 00d9 INFO[0m [gateway] [34;1mConfigEvents[0m -> sending config event response : peer_id:"peer0.org1.example.com" channel_id:"mychannel" 
+2026-09-14T17:43:28.532636389Z [34m2026-09-14 17:43:28.532 UTC 00da INFO[0m [comm.grpc.server] [34;1m1[0m -> streaming call completed grpc.service=protos.Deliver grpc.method=DeliverFiltered grpc.request_deadline=2026-09-14T17:43:56.448Z grpc.peer_address=172.18.0.1:33186 error="context finished before block retrieved: context canceled" grpc.code=Unknown grpc.call_duration=2.084324082s
+2026-09-14T17:43:28.685562650Z [34m2026-09-14 17:43:28.685 UTC 00db INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=gossip.Gossip grpc.method=Ping grpc.request_deadline=2026-09-14T17:43:30.685Z grpc.peer_address=172.18.0.11:44826 grpc.peer_subject="CN=peer0.org2.example.com,L=San Francisco,ST=California,C=US" grpc.code=OK grpc.call_duration=55.175µs
+2026-09-14T17:43:28.686306350Z [34m2026-09-14 17:43:28.686 UTC 00dc INFO[0m [gossip.comm] [34;1mGossipStream[0m -> Peer 883079a80918cf7b82ff57ccfcca32595ba73783a34a30c6db2fcfeb82a451e6 (172.18.0.11:44826) probed us
+2026-09-14T17:43:28.686315697Z [34m2026-09-14 17:43:28.686 UTC 00dd INFO[0m [comm.grpc.server] [34;1m1[0m -> streaming call completed grpc.service=gossip.Gossip grpc.method=GossipStream grpc.request_deadline=2026-09-14T17:43:38.685Z grpc.peer_address=172.18.0.11:44826 grpc.peer_subject="CN=peer0.org2.example.com,L=San Francisco,ST=California,C=US" grpc.code=OK grpc.call_duration=612.681µs
+2026-09-14T17:43:28.695460070Z [34m2026-09-14 17:43:28.695 UTC 00de INFO[0m [comm.grpc.server] [34;1m1[0m -> unary call completed grpc.service=gossip.Gossip grpc.method=Ping grpc.request_deadline=2026-09-14T17:43:30.695Z grpc.peer_address=172.18.0.8:39452 grpc.peer_subject="CN=peer0.org1.example.com,L=San Francisco,ST=California,C=US" grpc.code=OK grpc.call_duration=25.879µs
+2026-09-14T17:43:28.695979314Z [34m2026-09-14 17:43:28.695 UTC 00df INFO[0m [gossip.comm] [34;1mGossipStream[0m -> Peer e5a896ec40783cf63bf5640edec3d05a5b8625f5183a63404d68d8cff9d1ad0b (172.18.0.8:39452) probed us
+2026-09-14T17:43:28.695988021Z [34m2026-09-14 17:43:28.695 UTC 00e0 INFO[0m [comm.grpc.server] [34;1m1[0m -> streaming call completed grpc.service=gossip.Gossip grpc.method=GossipStream grpc.request_deadline=2026-09-14T17:43:38.695Z grpc.peer_address=172.18.0.8:39452 grpc.peer_subject="CN=peer0.org1.example.com,L=San Francisco,ST=California,C=US" grpc.code=OK grpc.call_duration=362.868µs
+2026-09-14T17:43:52.529200246Z [34m2026-09-14 17:43:52.529 UTC 00e1 INFO[0m [gossip.privdata] [34;1mStoreBlock[0m -> Received block [6] from buffer channel=mychannel
+2026-09-14T17:43:55.949180364Z [34m2026-09-14 17:43:55.949 UTC 00e2 INFO[0m [committer.txvalidator] [34;1mValidate[0m -> [mychannel] Validated block [6] in 3420ms
+2026-09-14T17:43:55.950419132Z [34m2026-09-14 17:43:55.950 UTC 00e3 INFO[0m [gossip.privdata] [34;1mStoreBlock[0m -> [mychannel] Pvt Data Fetch for block [6] with 102 transactions in 1ms
+2026-09-14T17:43:56.144653742Z [34m2026-09-14 17:43:56.144 UTC 00e4 INFO[0m [sqldb] [34;1mSet[0m -> Key s stored in cache
+2026-09-14T17:43:56.151342721Z [34m2026-09-14 17:43:56.151 UTC 00e5 INFO[0m [kvledger] [34;1mcommit[0m -> [mychannel] Committed block [6] with 102 transaction(s) in 200ms (state_validation=2ms block_and_pvtdata_commit=23ms state_commit=168ms) commitHash=[09c13982c3034d003c82f618db0da3319ea64c1e67f248620399fcbc8b7e7610]
+2026-09-14T17:43:56.151496302Z [34m2026-09-14 17:43:56.151 UTC 00e6 INFO[0m [gossip.state] [34;1mdeliverPayloads[0m -> [0;32m[mychannel] Total time taken to process block 6 with transaction(s) 102 is: 3.622468514s[0m
+2026-09-14T17:43:56.151623694Z [34m2026-09-14 17:43:56.151 UTC 00e7 INFO[0m [gossip.privdata] [34;1mStoreBlock[0m -> Received block [7] from buffer channel=mychannel
+2026-09-14T17:43:56.172528448Z [34m2026-09-14 17:43:56.172 UTC 00e8 INFO[0m [committer.txvalidator] [34;1mValidate[0m -> [mychannel] Validated block [7] in 20ms
+2026-09-14T17:43:56.174695556Z [34m2026-09-14 17:43:56.174 UTC 00e9 INFO[0m [gossip.privdata] [34;1mStoreBlock[0m -> [mychannel] Pvt Data Fetch for block [7] with 102 transactions in 2ms
+2026-09-14T17:43:56.290215914Z [34m2026-09-14 17:43:56.290 UTC 00ea INFO[0m [sqldb] [34;1mSet[0m -> Key s stored in cache
+2026-09-14T17:43:56.296556232Z [34m2026-09-14 17:43:56.296 UTC 00eb INFO[0m [kvledger] [34;1mcommit[0m -> [mychannel] Committed block [7] with 102 transaction(s) in 121ms (state_validation=7ms block_and_pvtdata_commit=16ms state_commit=91ms) commitHash=[b74ebe01eff1733b6b959e635ff56aac362cbf1950b2976584680068d7252276]
+2026-09-14T17:43:56.296681059Z [34m2026-09-14 17:43:56.296 UTC 00ec INFO[0m [gossip.state] [34;1mdeliverPayloads[0m -> [0;32m[mychannel] Total time taken to process block 7 with transaction(s) 102 is: 145.169157ms[0m
+2026-09-14T17:43:56.603274935Z [34m2026-09-14 17:43:56.603 UTC 00ed INFO[0m [gossip.privdata] [34;1mStoreBlock[0m -> Received block [8] from buffer channel=mychannel
+2026-09-14T17:43:56.627408470Z [34m2026-09-14 17:43:56.627 UTC 00ee INFO[0m [committer.txvalidator] [34;1mValidate[0m -> [mychannel] Validated block [8] in 24ms
+2026-09-14T17:43:56.628957065Z [34m2026-09-14 17:43:56.628 UTC 00ef INFO[0m [gossip.privdata] [34;1mStoreBlock[0m -> [mychannel] Pvt Data Fetch for block [8] with 100 transactions in 1ms
+2026-09-14T17:43:56.727604771Z [34m2026-09-14 17:43:56.727 UTC 00f0 INFO[0m [sqldb] [34;1mSet[0m -> Key s stored in cache
+2026-09-14T17:43:56.734840166Z [34m2026-09-14 17:43:56.734 UTC 00f1 INFO[0m [kvledger] [34;1mcommit[0m -> [mychannel] Committed block [8] with 100 transaction(s) in 105ms (state_validation=1ms block_and_pvtdata_commit=29ms state_commit=67ms) commitHash=[ebe5dfbf93c3f42ab674afce3bbafabfe2850dc0484076929b8548653e0f1d26]
+2026-09-14T17:43:56.734963640Z [34m2026-09-14 17:43:56.734 UTC 00f2 INFO[0m [gossip.state] [34;1mdeliverPayloads[0m -> [0;32m[mychannel] Total time taken to process block 8 with transaction(s) 100 is: 131.79137ms[0m
+2026-09-14T17:43:58.606638188Z [34m2026-09-14 17:43:58.606 UTC 00f3 INFO[0m [gossip.privdata] [34;1mStoreBlock[0m -> Received block [9] from buffer channel=mychannel
+2026-09-14T17:43:58.629620591Z [34m2026-09-14 17:43:58.629 UTC 00f4 INFO[0m [committer.txvalidator] [34;1mValidate[0m -> [mychannel] Validated block [9] in 22ms
+2026-09-14T17:43:58.631057875Z [34m2026-09-14 17:43:58.630 UTC 00f5 INFO[0m [gossip.privdata] [34;1mStoreBlock[0m -> [mychannel] Pvt Data Fetch for block [9] with 102 transactions in 1ms
+2026-09-14T17:43:58.766216007Z [34m2026-09-14 17:43:58.766 UTC 00f6 INFO[0m [sqldb] [34;1mSet[0m -> Key s stored in cache
+2026-09-14T17:43:58.777729952Z [34m2026-09-14 17:43:58.777 UTC 00f7 INFO[0m [kvledger] [34;1mcommit[0m -> [mychannel] Committed block [9] with 102 transaction(s) in 146ms (state_validation=1ms block_and_pvtdata_commit=18ms state_commit=114ms) commitHash=[9f75cdf053c9b68162a1984c3d4a4b0c84d8d33641b4477d314722ba3fa099b0]
+2026-09-14T17:43:58.777896217Z [34m2026-09-14 17:43:58.777 UTC 00f8 INFO[0m [gossip.state] [34;1mdeliverPayloads[0m -> [0;32m[mychannel] Total time taken to process block 9 with transaction(s) 102 is: 171.405979ms[0m
+2026-09-14T17:44:00.646719468Z [34m2026-09-14 17:44:00.646 UTC 00f9 INFO[0m [gossip.privdata] [34;1mStoreBlock[0m -> Received block [10] from buffer channel=mychannel
+2026-09-14T17:44:00.669160495Z [34m2026-09-14 17:44:00.669 UTC 00fa INFO[0m [committer.txvalidator] [34;1mValidate[0m -> [mychannel] Validated block [10] in 22ms
+2026-09-14T17:44:00.672088725Z [34m2026-09-14 17:44:00.672 UTC 00fb INFO[0m [gossip.privdata] [34;1mStoreBlock[0m -> [mychannel] Pvt Data Fetch for block [10] with 100 transactions in 2ms
+2026-09-14T17:44:00.794199626Z [34m2026-09-14 17:44:00.794 UTC 00fc INFO[0m [sqldb] [34;1mSet[0m -> Key s stored in cache
+2026-09-14T17:44:00.804148535Z [34m2026-09-14 17:44:00.804 UTC 00fd INFO[0m [kvledger] [34;1mcommit[0m -> [mychannel] Committed block [10] with 100 transaction(s) in 131ms (state_validation=2ms block_and_pvtdata_commit=26ms state_commit=92ms) commitHash=[7a2612860e6cf91056ac94ff8e1bcf555afe96eced8aafb4b9d3426156b4a5a4]
+2026-09-14T17:44:00.804315551Z [34m2026-09-14 17:44:00.804 UTC 00fe INFO[0m [gossip.state] [34;1mdeliverPayloads[0m -> [0;32m[mychannel] Total time taken to process block 10 with transaction(s) 100 is: 157.846979ms[0m
+2026-09-14T17:44:02.647927111Z [34m2026-09-14 17:44:02.647 UTC 00ff INFO[0m [gossip.privdata] [34;1mStoreBlock[0m -> Received block [11] from buffer channel=mychannel
+2026-09-14T17:44:02.671946370Z [34m2026-09-14 17:44:02.671 UTC 0100 INFO[0m [committer.txvalidator] [34;1mValidate[0m -> [mychannel] Validated block [11] in 24ms
+2026-09-14T17:44:02.673364959Z [34m2026-09-14 17:44:02.673 UTC 0101 INFO[0m [gossip.privdata] [34;1mStoreBlock[0m -> [mychannel] Pvt Data Fetch for block [11] with 102 transactions in 1ms
+2026-09-14T17:44:02.792325139Z [34m2026-09-14 17:44:02.792 UTC 0102 INFO[0m [sqldb] [34;1mSet[0m -> Key s stored in cache
+2026-09-14T17:44:02.799299348Z [34m2026-09-14 17:44:02.799 UTC 0103 INFO[0m [kvledger] [34;1mcommit[0m -> [mychannel] Committed block [11] with 102 transaction(s) in 125ms (state_validation=1ms block_and_pvtdata_commit=31ms state_commit=85ms) commitHash=[7731b2b4797fa20ca509f955e9a0bca49b1853eef3693c2d34256a34921a8c98]
+2026-09-14T17:44:02.799429054Z [34m2026-09-14 17:44:02.799 UTC 0104 INFO[0m [gossip.state] [34;1mdeliverPayloads[0m -> [0;32m[mychannel] Total time taken to process block 11 with transaction(s) 102 is: 151.65916ms[0m
+2026-09-14T17:44:04.687210816Z [34m2026-09-14 17:44:04.687 UTC 0105 INFO[0m [gossip.privdata] [34;1mStoreBlock[0m -> Received block [12] from buffer channel=mychannel
+2026-09-14T17:44:04.709500537Z [34m2026-09-14 17:44:04.709 UTC 0106 INFO[0m [committer.txvalidator] [34;1mValidate[0m -> [mychannel] Validated block [12] in 22ms
+2026-09-14T17:44:04.711141878Z [34m2026-09-14 17:44:04.711 UTC 0107 INFO[0m [gossip.privdata] [34;1mStoreBlock[0m -> [mychannel] Pvt Data Fetch for block [12] with 100 transactions in 1ms
+2026-09-14T17:44:04.863350210Z [34m2026-09-14 17:44:04.863 UTC 0108 INFO[0m [sqldb] [34;1mSet[0m -> Key s stored in cache
+2026-09-14T17:44:04.870527805Z [34m2026-09-14 17:44:04.870 UTC 0109 INFO[0m [kvledger] [34;1mcommit[0m -> [mychannel] Committed block [12] with 100 transaction(s) in 159ms (state_validation=2ms block_and_pvtdata_commit=33ms state_commit=116ms) commitHash=[b9309371dd6a07555beed7f8ee5f552f1f07c0941a8267bc979084c3d4af05ee]
+2026-09-14T17:44:04.870616063Z [34m2026-09-14 17:44:04.870 UTC 010a INFO[0m [gossip.state] [34;1mdeliverPayloads[0m -> [0;32m[mychannel] Total time taken to process block 12 with transaction(s) 100 is: 183.521557ms[0m
+2026-09-14T17:44:06.688124700Z [34m2026-09-14 17:44:06.688 UTC 010b INFO[0m [gossip.privdata] [34;1mStoreBlock[0m -> Received block [13] from buffer channel=mychannel
+2026-09-14T17:44:06.711543190Z [34m2026-09-14 17:44:06.711 UTC 010c INFO[0m [committer.txvalidator] [34;1mValidate[0m -> [mychannel] Validated block [13] in 23ms
+2026-09-14T17:44:06.713023997Z [34m2026-09-14 17:44:06.712 UTC 010d INFO[0m [gossip.privdata] [34;1mStoreBlock[0m -> [mychannel] Pvt Data Fetch for block [13] with 100 transactions in 1ms
+2026-09-14T17:44:06.823798621Z [34m2026-09-14 17:44:06.823 UTC 010e INFO[0m [sqldb] [34;1mSet[0m -> Key s stored in cache
+2026-09-14T17:44:06.835377790Z [34m2026-09-14 17:44:06.835 UTC 010f INFO[0m [kvledger] [34;1mcommit[0m -> [mychannel] Committed block [13] with 100 transaction(s) in 122ms (state_validation=1ms block_and_pvtdata_commit=18ms state_commit=90ms) commitHash=[f235b113f2ac0e7a6c33c6946286e7481c455067be4435da4289abe23863f522]
+2026-09-14T17:44:06.835508988Z [34m2026-09-14 17:44:06.835 UTC 0110 INFO[0m [gossip.state] [34;1mdeliverPayloads[0m -> [0;32m[mychannel] Total time taken to process block 13 with transaction(s) 100 is: 147.502853ms[0m
+2026-09-14T17:44:08.687823007Z [34m2026-09-14 17:44:08.687 UTC 0111 INFO[0m [gossip.privdata] [34;1mStoreBlock[0m -> Received block [14] from buffer channel=mychannel
+2026-09-14T17:44:08.712263614Z [34m2026-09-14 17:44:08.712 UTC 0112 INFO[0m [committer.txvalidator] [34;1mValidate[0m -> [mychannel] Validated block [14] in 24ms
+2026-09-14T17:44:08.713535896Z [34m2026-09-14 17:44:08.713 UTC 0113 INFO[0m [gossip.privdata] [34;1mStoreBlock[0m -> [mychannel] Pvt Data Fetch for block [14] with 102 transactions in 1ms
+2026-09-14T17:44:08.859830770Z [34m2026-09-14 17:44:08.859 UTC 0114 INFO[0m [sqldb] [34;1mSet[0m -> Key s stored in cache
+2026-09-14T17:44:08.866537162Z [34m2026-09-14 17:44:08.866 UTC 0115 INFO[0m [kvledger] [34;1mcommit[0m -> [mychannel] Committed block [14] with 102 transaction(s) in 152ms (state_validation=1ms block_and_pvtdata_commit=25ms state_commit=119ms) commitHash=[6a9da7ff757cb9bf46b5f3095fb8d41b3a6b72fe4ccb65192a49f756531b70c1]
+2026-09-14T17:44:08.866678370Z [34m2026-09-14 17:44:08.866 UTC 0116 INFO[0m [gossip.state] [34;1mdeliverPayloads[0m -> [0;32m[mychannel] Total time taken to process block 14 with transaction(s) 102 is: 178.983917ms[0m
+2026-09-14T17:44:10.734566466Z [34m2026-09-14 17:44:10.734 UTC 0117 INFO[0m [gossip.privdata] [34;1mStoreBlock[0m -> Received block [15] from buffer channel=mychannel
+2026-09-14T17:44:10.757960139Z [34m2026-09-14 17:44:10.757 UTC 0118 INFO[0m [committer.txvalidator] [34;1mValidate[0m -> [mychannel] Validated block [15] in 23ms
+2026-09-14T17:44:10.759576383Z [34m2026-09-14 17:44:10.759 UTC 0119 INFO[0m [gossip.privdata] [34;1mStoreBlock[0m -> [mychannel] Pvt Data Fetch for block [15] with 102 transactions in 1ms
+2026-09-14T17:44:10.874281258Z [34m2026-09-14 17:44:10.874 UTC 011a INFO[0m [sqldb] [34;1mSet[0m -> Key s stored in cache
+2026-09-14T17:44:10.885495545Z [34m2026-09-14 17:44:10.885 UTC 011b INFO[0m [kvledger] [34;1mcommit[0m -> [mychannel] Committed block [15] with 102 transaction(s) in 125ms (state_validation=3ms block_and_pvtdata_commit=30ms state_commit=81ms) commitHash=[1aeebe7134c05e898235b053f3d0aaef357b5c9ad1de5adf2edd8deff0c60d9d]
+2026-09-14T17:44:10.885675115Z [34m2026-09-14 17:44:10.885 UTC 011c INFO[0m [gossip.state] [34;1mdeliverPayloads[0m -> [0;32m[mychannel] Total time taken to process block 15 with transaction(s) 102 is: 151.227395ms[0m
+2026-09-14T17:44:12.767593384Z [34m2026-09-14 17:44:12.767 UTC 011d INFO[0m [gossip.privdata] [34;1mStoreBlock[0m -> Received block [16] from buffer channel=mychannel
+2026-09-14T17:44:12.791743100Z [34m2026-09-14 17:44:12.791 UTC 011e INFO[0m [committer.txvalidator] [34;1mValidate[0m -> [mychannel] Validated block [16] in 24ms
+2026-09-14T17:44:12.793172490Z [34m2026-09-14 17:44:12.793 UTC 011f INFO[0m [gossip.privdata] [34;1mStoreBlock[0m -> [mychannel] Pvt Data Fetch for block [16] with 102 transactions in 1ms
+2026-09-14T17:44:12.907240608Z [34m2026-09-14 17:44:12.907 UTC 0120 INFO[0m [sqldb] [34;1mSet[0m -> Key s stored in cache
+2026-09-14T17:44:12.917848175Z [34m2026-09-14 17:44:12.917 UTC 0121 INFO[0m [kvledger] [34;1mcommit[0m -> [mychannel] Committed block [16] with 102 transaction(s) in 124ms (state_validation=1ms block_and_pvtdata_commit=30ms state_commit=81ms) commitHash=[f0496b82144df4a4aa0e0ea37724d871201cac05f77a242db2eb63f25b5dc73f]
+2026-09-14T17:44:12.918030501Z [34m2026-09-14 17:44:12.917 UTC 0122 INFO[0m [gossip.state] [34;1mdeliverPayloads[0m -> [0;32m[mychannel] Total time taken to process block 16 with transaction(s) 102 is: 150.571532ms[0m
+2026-09-14T17:44:14.807300161Z [34m2026-09-14 17:44:14.807 UTC 0123 INFO[0m [gossip.privdata] [34;1mStoreBlock[0m -> Received block [17] from buffer channel=mychannel
+2026-09-14T17:44:14.832392404Z [34m2026-09-14 17:44:14.832 UTC 0124 INFO[0m [committer.txvalidator] [34;1mValidate[0m -> [mychannel] Validated block [17] in 25ms
+2026-09-14T17:44:14.833935038Z [34m2026-09-14 17:44:14.833 UTC 0125 INFO[0m [gossip.privdata] [34;1mStoreBlock[0m -> [mychannel] Pvt Data Fetch for block [17] with 102 transactions in 1ms
+2026-09-14T17:44:14.954602396Z [34m2026-09-14 17:44:14.954 UTC 0126 INFO[0m [sqldb] [34;1mSet[0m -> Key s stored in cache
+2026-09-14T17:44:14.964991800Z [34m2026-09-14 17:44:14.964 UTC 0127 INFO[0m [kvledger] [34;1mcommit[0m -> [mychannel] Committed block [17] with 102 transaction(s) in 131ms (state_validation=1ms block_and_pvtdata_commit=31ms state_commit=86ms) commitHash=[563f42ec617ea0daa3a8aa09b915ce3895132b95af7332496ad36408dd3bc397]
+2026-09-14T17:44:14.965113090Z [34m2026-09-14 17:44:14.965 UTC 0128 INFO[0m [gossip.state] [34;1mdeliverPayloads[0m -> [0;32m[mychannel] Total time taken to process block 17 with transaction(s) 102 is: 157.991377ms[0m
+2026-09-14T17:44:16.846034093Z [34m2026-09-14 17:44:16.845 UTC 0129 INFO[0m [gossip.privdata] [34;1mStoreBlock[0m -> Received block [18] from buffer channel=mychannel
+2026-09-14T17:44:16.870435716Z [34m2026-09-14 17:44:16.870 UTC 012a INFO[0m [committer.txvalidator] [34;1mValidate[0m -> [mychannel] Validated block [18] in 24ms
+2026-09-14T17:44:16.871683001Z [34m2026-09-14 17:44:16.871 UTC 012b INFO[0m [gossip.privdata] [34;1mStoreBlock[0m -> [mychannel] Pvt Data Fetch for block [18] with 100 transactions in 1ms
+2026-09-14T17:44:16.984088038Z [34m2026-09-14 17:44:16.984 UTC 012c INFO[0m [sqldb] [34;1mSet[0m -> Key s stored in cache
+2026-09-14T17:44:16.990866928Z [34m2026-09-14 17:44:16.990 UTC 012d INFO[0m [kvledger] [34;1mcommit[0m -> [mychannel] Committed block [18] with 100 transaction(s) in 119ms (state_validation=2ms block_and_pvtdata_commit=26ms state_commit=83ms) commitHash=[9c5cad05108adee43a1fdb3a937e230fa9d1ebf6a5fc4160e3579190a2596108]
+2026-09-14T17:44:16.990997906Z [34m2026-09-14 17:44:16.990 UTC 012e INFO[0m [gossip.state] [34;1mdeliverPayloads[0m -> [0;32m[mychannel] Total time taken to process block 18 with transaction(s) 100 is: 145.129597ms[0m
+2026-09-14T17:44:18.847673829Z [34m2026-09-14 17:44:18.847 UTC 012f INFO[0m [gossip.privdata] [34;1mStoreBlock[0m -> Received block [19] from buffer channel=mychannel
+2026-09-14T17:44:18.869302507Z [34m2026-09-14 17:44:18.869 UTC 0130 INFO[0m [committer.txvalidator] [34;1mValidate[0m -> [mychannel] Validated block [19] in 21ms
+2026-09-14T17:44:18.870865700Z [34m2026-09-14 17:44:18.870 UTC 0131 INFO[0m [gossip.privdata] [34;1mStoreBlock[0m -> [mychannel] Pvt Data Fetch for block [19] with 102 transactions in 1ms
+2026-09-14T17:44:18.991864587Z [34m2026-09-14 17:44:18.991 UTC 0132 INFO[0m [sqldb] [34;1mSet[0m -> Key s stored in cache
+2026-09-14T17:44:19.001913876Z [34m2026-09-14 17:44:19.001 UTC 0133 INFO[0m [kvledger] [34;1mcommit[0m -> [mychannel] Committed block [19] with 102 transaction(s) in 131ms (state_validation=1ms block_and_pvtdata_commit=24ms state_commit=94ms) commitHash=[f69540c932e3be57aec39a7f277fb1a5563cf7b7ec6fca89ec4d23a18d81e84c]
+2026-09-14T17:44:19.002034876Z [34m2026-09-14 17:44:19.002 UTC 0134 INFO[0m [gossip.state] [34;1mdeliverPayloads[0m -> [0;32m[mychannel] Total time taken to process block 19 with transaction(s) 102 is: 154.511402ms[0m
+2026-09-14T17:44:20.893893596Z [34m2026-09-14 17:44:20.893 UTC 0135 INFO[0m [gossip.privdata] [34;1mStoreBlock[0m -> Received block [20] from buffer channel=mychannel
+2026-09-14T17:44:20.916587553Z [34m2026-09-14 17:44:20.916 UTC 0136 INFO[0m [committer.txvalidator] [34;1mValidate[0m -> [mychannel] Validated block [20] in 22ms
+2026-09-14T17:44:20.917649967Z [34m2026-09-14 17:44:20.917 UTC 0137 INFO[0m [gossip.privdata] [34;1mStoreBlock[0m -> [mychannel] Pvt Data Fetch for block [20] with 84 transactions in 1ms
+2026-09-14T17:44:21.018291928Z [34m2026-09-14 17:44:21.018 UTC 0138 INFO[0m [sqldb] [34;1mSet[0m -> Key s stored in cache
+2026-09-14T17:44:21.024714282Z [34m2026-09-14 17:44:21.024 UTC 0139 INFO[0m [kvledger] [34;1mcommit[0m -> [mychannel] Committed block [20] with 84 transaction(s) in 107ms (state_validation=4ms block_and_pvtdata_commit=28ms state_commit=67ms) commitHash=[75757781db8a3d7326796f89ca0dff331d44ad3391f7f247ef1626f816de1b41]
+2026-09-14T17:44:21.024846112Z [34m2026-09-14 17:44:21.024 UTC 013a INFO[0m [gossip.state] [34;1mdeliverPayloads[0m -> [0;32m[mychannel] Total time taken to process block 20 with transaction(s) 84 is: 131.082191ms[0m
+2026-09-14T17:44:21.031256914Z [34m2026-09-14 17:44:21.031 UTC 013b INFO[0m [comm.grpc.server] [34;1m1[0m -> streaming call completed grpc.service=protos.Deliver grpc.method=DeliverFiltered grpc.peer_address=172.18.0.1:54528 error="context finished before block retrieved: context canceled" grpc.code=Unknown grpc.call_duration=30.539579976s

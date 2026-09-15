@@ -1,0 +1,146 @@
+time=2026-09-14T23:17:21.168+05:30 level=INFO msg="run starting" platform=fabric-cft run=probe-sweep workload=kv-write profile=local-small normalized=true out_dir=results/fabric-cft/20260914-231721
+time=2026-09-14T23:17:21.168+05:30 level=INFO msg="adapter setup" platform=fabric-cft run=probe-sweep
+[34m2026-09-14 23:17:21.168 IST 0001 INFO[0m [grpc] [34;1mInfof[0m -> [core] original dial target is: "localhost:7051"
+[34m2026-09-14 23:17:21.168 IST 0002 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1] Channel created for target "localhost:7051"
+[34m2026-09-14 23:17:21.168 IST 0003 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1] parsed dial target is: resolver.Target{URL:url.URL{Scheme:"dns", Opaque:"", User:(*url.Userinfo)(nil), Host:"", Path:"/localhost:7051", Fragment:"", RawQuery:"", RawPath:"", RawFragment:"", ForceQuery:false, OmitHost:false}}
+[34m2026-09-14 23:17:21.168 IST 0004 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1] Channel authority set to "peer0.org1.example.com"
+[34m2026-09-14 23:17:21.168 IST 0005 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1] Channel Connectivity change to CONNECTING
+[34m2026-09-14 23:17:21.168 IST 0006 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1] Channel exiting idle mode
+[34m2026-09-14 23:17:21.170 IST 0007 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1] Resolver state updated: {
+  "Addresses": [
+    {
+      "Addr": "[::1]:7051",
+      "ServerName": "",
+      "Attributes": null,
+      "BalancerAttributes": null,
+      "Metadata": null
+    },
+    {
+      "Addr": "127.0.0.1:7051",
+      "ServerName": "",
+      "Attributes": null,
+      "BalancerAttributes": null,
+      "Metadata": null
+    }
+  ],
+  "Endpoints": [
+    {
+      "Addresses": [
+        {
+          "Addr": "[::1]:7051",
+          "ServerName": "",
+          "Attributes": null,
+          "BalancerAttributes": null,
+          "Metadata": null
+        }
+      ],
+      "Attributes": null
+    },
+    {
+      "Addresses": [
+        {
+          "Addr": "127.0.0.1:7051",
+          "ServerName": "",
+          "Attributes": null,
+          "BalancerAttributes": null,
+          "Metadata": null
+        }
+      ],
+      "Attributes": null
+    }
+  ],
+  "ServiceConfig": null,
+  "Attributes": null
+} (resolver returned new addresses)
+[34m2026-09-14 23:17:21.170 IST 0008 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1] Channel switches to new LB policy "pick_first"
+[34m2026-09-14 23:17:21.170 IST 0009 INFO[0m [grpc] [34;1mInfof[0m -> [pick-first-leaf-lb] [pick-first-leaf-lb 0x38f191a8c000] Received new config {
+  "shuffleAddressList": false
+}, resolver state {
+  "Addresses": [
+    {
+      "Addr": "[::1]:7051",
+      "ServerName": "",
+      "Attributes": null,
+      "BalancerAttributes": null,
+      "Metadata": null
+    },
+    {
+      "Addr": "127.0.0.1:7051",
+      "ServerName": "",
+      "Attributes": null,
+      "BalancerAttributes": null,
+      "Metadata": null
+    }
+  ],
+  "Endpoints": [
+    {
+      "Addresses": [
+        {
+          "Addr": "[::1]:7051",
+          "ServerName": "",
+          "Attributes": null,
+          "BalancerAttributes": null,
+          "Metadata": null
+        }
+      ],
+      "Attributes": null
+    },
+    {
+      "Addresses": [
+        {
+          "Addr": "127.0.0.1:7051",
+          "ServerName": "",
+          "Attributes": null,
+          "BalancerAttributes": null,
+          "Metadata": null
+        }
+      ],
+      "Attributes": null
+    }
+  ],
+  "ServiceConfig": null,
+  "Attributes": null
+}
+[34m2026-09-14 23:17:21.170 IST 000a INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1 SubChannel #2] Subchannel created
+[34m2026-09-14 23:17:21.170 IST 000b INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1 SubChannel #2] Subchannel Connectivity change to CONNECTING
+[34m2026-09-14 23:17:21.170 IST 000c INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1 SubChannel #2] Subchannel picks a new address "[::1]:7051" to connect
+[34m2026-09-14 23:17:21.171 IST 000d INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1 SubChannel #2] Subchannel Connectivity change to READY
+[34m2026-09-14 23:17:21.171 IST 000e INFO[0m [grpc] [34;1mInfof[0m -> [pick-first-leaf-lb] [pick-first-leaf-lb 0x38f191a8c000] SubConn 0x38f19175a410 reported connectivity state READY and the health listener is disabled. Transitioning SubConn to READY.
+[34m2026-09-14 23:17:21.171 IST 000f INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1] Channel Connectivity change to READY
+time=2026-09-14T23:17:21.173+05:30 level=INFO msg="setup complete" platform=fabric-cft run=probe-sweep component=adapter gateway=localhost:7051 finality_from=localhost:7051
+time=2026-09-14T23:17:21.174+05:30 level=INFO msg="phase start" platform=fabric-cft run=probe-sweep phase=probe offered_tps=10 workers=0 duration=30s
+time=2026-09-14T23:17:52.027+05:30 level=INFO msg="phase end" platform=fabric-cft run=probe-sweep phase=probe submitted=300 committed=300 confirmed_tps=10.0 fail_rate=0.0000 e2e_p99_ms=1086.46
+time=2026-09-14T23:17:52.027+05:30 level=INFO msg="phase start" platform=fabric-cft run=probe-sweep phase=sweep-100 offered_tps=100 workers=0 duration=1m0s
+time=2026-09-14T23:18:53.092+05:30 level=INFO msg="phase end" platform=fabric-cft run=probe-sweep phase=sweep-100 submitted=1500 committed=1500 confirmed_tps=100.0 fail_rate=0.0000 e2e_p99_ms=1085.44
+time=2026-09-14T23:18:53.092+05:30 level=INFO msg="phase start" platform=fabric-cft run=probe-sweep phase=sweep-250 offered_tps=250 workers=0 duration=1m0s
+time=2026-09-14T23:19:54.158+05:30 level=INFO msg="phase end" platform=fabric-cft run=probe-sweep phase=sweep-250 submitted=3750 committed=3750 confirmed_tps=250.0 fail_rate=0.0000 e2e_p99_ms=499.20
+time=2026-09-14T23:19:54.158+05:30 level=INFO msg="phase start" platform=fabric-cft run=probe-sweep phase=sweep-500 offered_tps=500 workers=0 duration=1m0s
+time=2026-09-14T23:20:55.226+05:30 level=INFO msg="phase end" platform=fabric-cft run=probe-sweep phase=sweep-500 submitted=7500 committed=7500 confirmed_tps=500.0 fail_rate=0.0000 e2e_p99_ms=308.22
+time=2026-09-14T23:20:55.226+05:30 level=INFO msg="phase start" platform=fabric-cft run=probe-sweep phase=sweep-1000 offered_tps=1000 workers=0 duration=1m0s
+time=2026-09-14T23:21:56.336+05:30 level=INFO msg="phase end" platform=fabric-cft run=probe-sweep phase=sweep-1000 submitted=15000 committed=15000 confirmed_tps=1000.0 fail_rate=0.0000 e2e_p99_ms=334.85
+time=2026-09-14T23:21:56.336+05:30 level=INFO msg="phase start" platform=fabric-cft run=probe-sweep phase=sweep-2000 offered_tps=2000 workers=0 duration=1m0s
+time=2026-09-14T23:23:05.485+05:30 level=INFO msg="phase end" platform=fabric-cft run=probe-sweep phase=sweep-2000 submitted=30000 committed=16043 confirmed_tps=1069.5 fail_rate=0.4652 e2e_p99_ms=14917.63
+time=2026-09-14T23:23:05.485+05:30 level=WARN msg="phase errors" platform=fabric-cft run=probe-sweep phase=sweep-2000 count=13957 message="not sent: N transactions already in flight (platform is not finalizing)"
+time=2026-09-14T23:23:05.485+05:30 level=INFO msg="phase start" platform=fabric-cft run=probe-sweep phase=sweep-3500 offered_tps=3500 workers=0 duration=1m0s
+time=2026-09-14T23:24:14.253+05:30 level=INFO msg="phase end" platform=fabric-cft run=probe-sweep phase=sweep-3500 submitted=52500 committed=0 confirmed_tps=0.0 fail_rate=1.0000 e2e_p99_ms=0.00
+time=2026-09-14T23:24:14.253+05:30 level=WARN msg="phase errors" platform=fabric-cft run=probe-sweep phase=sweep-3500 count=36576 message="endorse Put: rpc error: code = FailedPrecondition desc = no combination of peers can be derived which satisfy the endorsement policy: no peer combination can satisfy the endorsement policy"
+time=2026-09-14T23:24:14.253+05:30 level=WARN msg="phase errors" platform=fabric-cft run=probe-sweep phase=sweep-3500 count=15924 message="not sent: N transactions already in flight (platform is not finalizing)"
+time=2026-09-14T23:24:14.253+05:30 level=WARN msg=caveat platform=fabric-cft run=probe-sweep text="platform container dev-peer0.org2.example.com-kvstore_1.0-2ea7b22cef577b6fa4ca655d0dab5283b6734bee9c35f654d050c69a24ed4de2 exited (after 23:23:14, status exited, exit code 2)"
+time=2026-09-14T23:24:14.262+05:30 level=INFO msg="captured container log" platform=fabric-cft run=probe-sweep container=dev-peer0.org2.example.com-kvstore_1.0-2ea7b22cef577b6fa4ca655d0dab5283b6734bee9c35f654d050c69a24ed4de2 path=results/fabric-cft/20260914-231721/container-logs/dev-peer0.org2.example.com-kvstore_1.0-2ea7b22cef577b6fa4ca655d0dab5283b6734bee9c35f654d050c69a24ed4de2.log
+time=2026-09-14T23:24:14.262+05:30 level=WARN msg=caveat platform=fabric-cft run=probe-sweep text="platform container peer0.org2.example.com exited (after 23:23:14, status exited, exit code 2)"
+time=2026-09-14T23:24:14.290+05:30 level=INFO msg="captured container log" platform=fabric-cft run=probe-sweep container=peer0.org2.example.com path=results/fabric-cft/20260914-231721/container-logs/peer0.org2.example.com.log
+time=2026-09-14T23:24:14.290+05:30 level=WARN msg=caveat platform=fabric-cft run=probe-sweep text="run stopped during sweep-3500 because a platform container failed; phases never run: sweep-5000, sweep-7500, sweep-10000, hold"
+time=2026-09-14T23:24:14.328+05:30 level=WARN msg=caveat platform=fabric-cft run=probe-sweep text="native metrics scrape of http://localhost:9443/metrics failed: scrape http://localhost:9443/metrics: parser panic: Invalid name validation scheme requested: unset (informational metrics only; harness numbers unaffected)"
+time=2026-09-14T23:24:14.329+05:30 level=WARN msg="run has no headline: it did not complete a headline phase on a healthy platform; see caveats in summary.txt" platform=fabric-cft run=probe-sweep dir=results/fabric-cft/20260914-231721
+time=2026-09-14T23:24:14.329+05:30 level=INFO msg="run finished" platform=fabric-cft run=probe-sweep out_dir=results/fabric-cft/20260914-231721 caveats=4
+results written to results/fabric-cft/20260914-231721
+[34m2026-09-14 23:24:14.329 IST 0010 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1] Channel Connectivity change to SHUTDOWN
+[34m2026-09-14 23:24:14.329 IST 0011 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1] Closing the name resolver
+[34m2026-09-14 23:24:14.329 IST 0012 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1] ccBalancerWrapper: closing
+[34m2026-09-14 23:24:14.329 IST 0013 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1 SubChannel #2] Subchannel Connectivity change to SHUTDOWN
+[34m2026-09-14 23:24:14.329 IST 0014 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1 SubChannel #2] Subchannel deleted
+[34m2026-09-14 23:24:14.329 IST 0015 INFO[0m [grpc] [34;1mInfof[0m -> [transport] [client-transport 0x38f191b3a008] Closing: rpc error: code = Canceled desc = grpc: the client connection is closing
+[34m2026-09-14 23:24:14.329 IST 0016 INFO[0m [grpc] [34;1mInfof[0m -> [transport] [client-transport 0x38f191b3a008] loopyWriter exiting with error: rpc error: code = Canceled desc = grpc: the client connection is closing
+[34m2026-09-14 23:24:14.329 IST 0017 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1] Channel deleted
+monitoring report: results/fabric-cft/20260914-231721/monitoring-report.html
+error: platform container failed during the run: dev-peer0.org2.example.com-kvstore_1.0-2ea7b22cef577b6fa4ca655d0dab5283b6734bee9c35f654d050c69a24ed4de2 exited (after 23:23:14, status exited, exit code 2); peer0.org2.example.com exited (after 23:23:14, status exited, exit code 2) (results written to results/fabric-cft/20260914-231721)
