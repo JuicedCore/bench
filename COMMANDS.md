@@ -1,7 +1,10 @@
 # Real (non-mock) local runs per platform + Grafana viewing
 
 ## Context
-User wants exact commands to run REAL local networks (not the `platform: mock` no-network smoke test) for five platforms in this repo, run separately, plus how to view results — including a beginner walkthrough of Grafana. Repo already has per-platform deploy scripts (`deploy/docker/<platform>/{up.sh,down.sh}`) and a `benchrunner` CLI. One platform is gated (NeuChain needs a slow local C++ build); Drunix's write path was previously blocked but is now fixed (client-side JSON-wrap workaround for a YugabyteDB statedb bug, disclosed as a manifest caveat) and verified working. This is a reference answer, not a code change — no files will be modified.
+Exact commands to bring up each platform's real network, run a benchmark against
+it, tear it down, and view the results (including Grafana). For the full guide
+(methodology, fairness, every config and profile, reading results), start at
+[README.md](README.md). Run definitions are described in [CONFIGS.md](CONFIGS.md).
 
 ## Commands per platform
 
@@ -46,35 +49,36 @@ Rebuild `bin/benchrunner` (`go build -o bin/benchrunner ./cmd/benchrunner`)
 before relying on this — a stale binary predating the fix will silently
 reproduce the old panic.
 
-### 4) Fabric-X — version-skew root cause fixed; blocked on namespace bootstrap
+### 4) Fabric-X (committer v1.0.5 / Arma orderer v1.0.6) — fully working
 ```bash
-bash deploy/docker/fabricx/up.sh local
+go build -o bin/benchrunner ./cmd/benchrunner
+bash deploy/docker/fabricx/up.sh local-small
 set -a; source deploy/docker/fabricx/connection.env; set +a
-./bin/benchrunner run --config configs/native/quick-smoke-fabricx.yaml --platform fabricx
+./bin/benchrunner run --config configs/normalized/quick-smoke.yaml --platform fabricx --profile local-small
 bash deploy/docker/fabricx/down.sh
 ```
-**Currently still fails `endorser/init`** — `up.sh` will run to completion showing
-`relation "ns_token_namespace" does not exist`, a *different* error than
-before. `kv-write`/`kv-read` remain separately blocked by the `/kv` FSC view
-superseded: Fabric-X now runs on its native gRPC path (adr-016).
+Builds from pinned `fabric-x-committer` / `fabric-x-orderer` source (not
+`fabric-x-samples`) over the native gRPC path (adr-016), so the first `up.sh`
+compiles for several minutes. Uses the shared normalized configs; there is no
+`configs/native/` directory, so any `quick-smoke-fabricx.yaml` command is stale.
 
-Three real bugs were found and fixed in `up.sh` (stale `FXS_REF` never
-re-cloning, `endorser/init` silently swallowing failures, `tokens/`'s own
-inventory missing base-path variables its roles need) — the devnet now comes
-up cleanly and reliably every time. The original blocker
-(`unknown service committerpb.QueryService`, a version-skew bug inside
-`fabric-x-samples` itself between its bundled endorser app and the
-`fabric-x-committer:0.1.7` its Ansible role deploys) is **fixed and confirmed**:
-`up.sh` now builds a replacement committer+orderer backend from source
-(`deploy/docker/fabricx/backend/`) instead of using the Ansible-deployed one.
-What's left is a **new, separate, well-evidenced blocker**: bootstrapping a
-namespace on this from-scratch network fails signature validation
-(`ABORTED_SIGNATURE_INVALID`) — full repro trail, every identity/command tried,
-and exact source pointers for whoever picks this up:
-[`docs/platforms/fabricx-comparability.md`](docs/platforms/fabricx-comparability.md)
-("Lever C" section).
+Verified on `local-small`: `confirmed_tps=50.0`, `fail_rate=0.0000`, e2e
+p50/p99 ≈ 0.9 / 1.5 s. Expected caveats in the summary:
+`state-db parity not held` (Fabric-X only runs on PostgreSQL) and a failed
+native metrics scrape (informational only; harness numbers unaffected).
 
-Five transfer-workload run configs (`configs/native/{contention,probe-sweep,throughput-scan,latency-profile,multi-client}-fabricx.yaml`) are written, matching the pattern of the Fabric-family configs, ready to use once this is fixed — but **none could be live-verified**, and neither could the pre-existing `quick-smoke-fabricx.yaml`.
+Things that look like errors but are not:
+- The first 1–2 progress lines show `confirmed 0 tps`. A 1s block timeout means
+  the first commits land about a second in.
+- `up.sh` checks namespace registration in the state DB, not by loadgen's exit
+  code. Upstream loadgen exits 1 (`receiver done: context canceled`) even when
+  it succeeds.
+
+Re-run `up.sh` after pulling adapter/deploy changes. `connection.env` must list
+all four routers (`localhost:6022,6122,6222,6322`). An old one with only
+`:6022` still runs, but every transaction then waits ~10s for Arma's
+first-strike forward to the primary batcher. Any fabricx results produced
+before this fix are invalid. Details: `docs/platforms/fabricx-integration.md`.
 
 ### 5) NeuChain — not runnable here yet (compute-gated, not code-gated)
 ```bash
@@ -105,6 +109,7 @@ Every run writes `results/<platform>/<timestamp>/`:
 ```bash
 cat results/fabric-cft/<timestamp>/summary.txt
 python3 scripts/plot.py results/fabric-cft/<timestamp>/phases.csv     # -> curve.png
+./bin/benchrunner runbook --results-dir results                      # -> results/index.html, one page per run (auto after every run)
 ./bin/benchrunner report --results-dir ./results --output docs/reports/comparison.html --since 2026-09-13
 # --since scopes the report to one campaign. Runs that fail the rejection rules in
 # docs/architecture/fairness-guarantees.md are listed with the reason, never averaged in;
@@ -124,4 +129,5 @@ python3 scripts/plot.py results/fabric-cft/<timestamp>/phases.csv     # -> curve
 8. Tear down when done: `bash deploy/docker/monitoring/down.sh` (or it's included in `make down-all`).
 
 ## Verification
-No code changes — this is a reference of existing scripts. To confirm accuracy before relying on it, the user can run the Fabric CFT commands (the fully-working path) end to end and check `results/fabric-cft/<timestamp>/summary.txt` gets produced, then open Grafana per the walkthrough.
+The fastest end-to-end check is section 1 (Fabric CFT): `summary.txt` should show
+`fail_rate=0.0000` and `invariant_ok=true`. Then open Grafana per the walkthrough.

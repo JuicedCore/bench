@@ -13,7 +13,7 @@ PROJECT   ?=
 GCP_PROFILE ?= gcp-small
 
 .PHONY: all build test vet fmt tidy smoke clean clean-images monitoring-up monitoring-down \
-        chaincode integration up-all down-all help deps preflight bench report lint \
+        chaincode integration up-all down-all help deps preflight bench report runbook images-export images-import lint \
         gcp-plan gcp
 
 all: build test vet ## build + test + vet
@@ -55,6 +55,16 @@ bench: ## deploy, run CONFIGS on PLATFORMS sequentially, report (PROFILE, PLATFO
 report: build ## comparison report of runs since SINCE (date, RFC3339, or duration)
 	./$(BIN) report --results-dir results --output docs/reports/comparison.html --since $(SINCE)
 	@echo "wrote docs/reports/comparison.html"
+
+runbook: build ## rebuild results/index.html: one page per run (also rebuilt after every run)
+	./$(BIN) runbook --results-dir results
+	@echo "open results/index.html"
+
+images-export: ## save images a clone cannot pull (bench/neuchain:ev) to images/; ALL=1 adds pinned public images
+	bash scripts/images.sh export $(if $(ALL),--all) images
+
+images-import: ## load images/ saved by images-export on another machine
+	bash scripts/images.sh import images
 
 lint: ## shellcheck + terraform fmt/validate (uses local tools, else their Docker images)
 	@if command -v shellcheck >/dev/null; then SC=shellcheck; else SC="docker run --rm -v $(CURDIR):/mnt -w /mnt koalaman/shellcheck:stable"; fi; \

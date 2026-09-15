@@ -1,106 +1,78 @@
 # Remaining work
 
-Status as of 2026-09-13. The harness, three platforms and the GCP tooling are
-done; what is left needs a live run, a long build, or cloud credentials.
+Status as of 2026-09-14. The harness, four platforms and the GCP tooling are
+done and run live on `local-small`; what is left needs a long build, cloud
+credentials, or an overload failure explained. The latest campaign's results are
+in `Final_runs/` (linked from the top-level README).
 
 | Area | State |
 | ---- | ----- |
 | Core harness (`pkg/…`), CLI, workloads, load gen, metrics, manifest, reporters | done; `go test ./...` green, `go vet` clean |
 | Platform-failure detection (container exit / OOM kill, per-phase errors, report exclusion) | done; verified live on Fabric and Drunix |
-| `fabric-cft`, `fabric-bft` | **benchmarked live** on local-small: smoke + probe-sweep, knee ~1000 / ~500 TPS |
-| `drunix` | smoke live; probe-sweep held to ~500 TPS, then a Committing Peer exited (see [§3](#3-drunix-committing-peer-exit-under-overload)) |
-| `fabricx` | deploy + native gRPC adapter written; **never run live** ([§4](#4-fabric-x--rebuilt-on-the-native-path-not-yet-live-verified)) |
-| `neuchain` | adapter unit-tested; server image **not built** ([§1](#1-neuchain-c-build--compute-gated)) |
+| `fabric-cft`, `fabric-bft` | **benchmarked live** on local-small: smoke + probe-sweep, knee ~1000 / ~500 TPS. 2026-09-14: fabric-cft's peer panicked on a host disk write during overload ([§5](#5-fabric-cft-peer-panic-on-a-failed-disk-write)) |
+| `drunix` | smoke live; probe-sweep held to 500 TPS, then platform containers died under overload: a Committing Peer on 2026-09-13, a Lite Peer OOM-killed on 2026-09-14 (see [§3](#3-drunix-committing-peer-exit-under-overload)) |
+| `fabricx` | **live-verified** on local-small: smoke + probe-sweep on the native gRPC path ([§4](#4-fabric-x--live-on-the-native-grpc-path)) |
+| `neuchain` | live on local-small with a **patched** image: smoke + probe-sweep to 10k TPS; every node segfaults at epoch 10 000 (upstream bug), so runs longer than ~10 min die ([§1](#1-neuchain--live-patched-image-10-000-epoch-crash)) |
 | Portability | `scripts/install-deps.sh` tested in clean Debian 12, Ubuntu 24.04, Fedora 42, Rocky 9, Arch; upstream sources pinned by commit/tag |
 | GCP | Terraform + `scripts/gcp-run.sh` written and validated; **not yet applied to a real project** ([§2](#2-gcp-campaign--credential-gated)) |
 | CI | `.github/workflows/ci.yml`; no git remote configured yet, so it has not run |
 
 ---
 
-## 1. NeuChain C++ build — COMPUTE-GATED
+## 1. NeuChain — live (patched image), 10 000-epoch crash
 
-### What is left
+### State
 
-Produce three Docker images, then fill in the run flags:
+`bench/neuchain:ev` is a retag of a patched build from a separate NeuChain harness
+([deploy/docker/neuchain/patched/README.md](../deploy/docker/neuchain/patched/README.md)).
+Deploy, crypto-init, adapter and harness work end to end on local-small
+(2026-09-15, `results/neuchain/20260915-123252`):
 
-1. `bench/neuchain-deps:ev` — the build environment.
-2. `bench/neuchain-build:ev` — `block_server_test_comm`, `epoch_server`, `user`
-   compiled.
-3. `bench/neuchain:ev` — slim runtime with just those binaries.
+| phase | confirmed TPS | fail | e2e p99 |
+| ----- | ------------- | ---- | ------- |
+| sweep-1000 | 999.9 | 0.01 % | 188 ms |
+| sweep-2000 | 1999.3 | 0.03 % | 186 ms |
+| sweep-5000 | 4996.9 | 0.06 % | 190 ms |
+| sweep-7500 | 7492.5 | 0.10 % | 193 ms |
+| sweep-10000 | 9982.1 | 0.18 % | 366 ms |
+| hold (9000) | 0 | 100 % | all 4 nodes exited 139 at hold start |
 
-Then:
+Adapter fixes made to get there: YCSB chaincode encoding (`write`/`read` headers,
+`[key, record]` args; the old `ycsb` header aborted every tx), legacy
+`DES-EDE3-OFB` key decryption, poller starting at tip+1, and a heartbeat (NeuChain
+emits a block only when later epochs carry traffic).
 
-4. Extract NeuChain's own config templates (`doc/config_template_4_servers.yaml`,
-   `doc/config_local.yaml`, `doc/init_crypto.yaml`) into `deploy/docker/neuchain/conf/`.
-5. Initialise the deterministic database once
-   (`src/block_server/server.cpp` lines 48-49 uncommented → run the binary as
-   `db_init` → back up `small_bank` / `ycsb`) and bake the pre-initialised DBs
-   into the runtime image so every node starts byte-identical.
-6. Generate the user RSA-1024 keypair: `./user -b 1 1 1` with the crypto config
-   → copy `crypto/user_0.{pri,pub}` to `deploy/docker/neuchain/.cache/crypto/`.
-7. Replace the **PLACEHOLDER** ports / CLI args / config paths in
-   `deploy/docker/neuchain/docker-compose.yml` with the real ones from the
-   repo's run scripts (the compose has `# PLACEHOLDER` on every such line).
+### Blocker: nodes crash at epoch 10 000
 
-### The pluggable entry point
+`src/block_server/database/block_broadcaster.cpp` sizes `validatedBlockNumber` to
+10 000 and indexes it by epoch number without a bounds check. Every node
+segfaults together once the chain reaches epoch ~10 000, whatever the load.
+Epochs run ~15/s under load (fewer when idle), so a network lives ~10-30 min
+from `up.sh`. The paper's 150 s runs never reach it; `probe-sweep` (~17 min) does.
+The patched image has the same bug.
 
-```
-bash deploy/docker/neuchain/build.sh          # NEUCHAIN_REF=ev, BUILD_JOBS=4
-```
+Options:
 
-`build.sh` clones `iDC-NEU/NeuChain@ev`, builds the repo's own `Dockerfile`
-(which runs `install_deps.sh`), then the compile image (`Dockerfile.build`), then
-the runtime image (`Dockerfile.run`). After it finishes, do steps 4-7 above, then
-`bash deploy/docker/neuchain/up.sh local`.
+1. Patch it (e.g. grow the vector or use a map) and rebuild. The build is
+   45-90 min, ~25-30 GB disk (34 GB free on the dev host). This is one more
+   patch over upstream, to disclose like the others.
+2. No rebuild: bring the network up fresh (`down.sh` + `up.sh`) right before
+   each run, and keep runs under ~10 min (drop or shorten the `hold` phase for
+   NeuChain). The sweep phases up to 10k TPS fit.
 
-### Why it cannot be done here
+### Decided (2026-09-15)
 
-`install_deps.sh` compiles **~15 C++ libraries from source**, each pinned to a
-specific tag, on Ubuntu 20.04:
+No rebuild for now. NeuChain runs must finish within ~10 minutes of `up.sh`
+(bring the network up fresh before each run; `quick-smoke` and sweep steps fit,
+`probe-sweep`'s 5-minute hold does not). Other machines get the image with
+`make images-export` here and `make images-import` there.
 
-```
-gperftools 2.9.1   leveldb 1.23   gflags 2.2.2   googletest 1.11
-glog 0.5.0   zlib   zlib-ng   protobuf 3.19.4 (autotools ./configure && make)
-brpc 4839ec2   braft c8e6848   yaml-cpp 0.7.0   libzmq 4b48007   cppzmq 4.8.1
-libpqxx 7.3.1
-```
+### Still pending
 
-- **Time**: measured cold-build for this dependency set is **45-90 minutes**
-  (protobuf's autotools build and brpc/braft dominate). It is not something to
-  run interleaved with a benchmark session.
-- **Disk**: the build image plus intermediate objects need **~25-30 GB** free.
-- **RAM**: parallel compiles of brpc / protobuf spike to **6-10 GB**; on the
-  13 GB host used for the live Fabric runs, running this alongside anything else
-  risks the OOM killer. `Dockerfile.build` caps `BUILD_JOBS=4` to bound this, at
-  the cost of more wall-clock.
-- **Toolchain pinning**: the repo explicitly requires cmake 3.16.3 / gcc 9.4.0
-  (Ubuntu 20.04). The Dockerfiles isolate that; a host build would need those
-  exact versions.
-
-Everything the Go side needs is already done and unit-tested: the protobuf
-message subset (`pkg/adapters/neuchain/proto/neuchain.proto` + generated stubs,
-field-number-exact, `proto/ORIGIN` records the commit), the RSA-1024 /
-SHA-256 signer, the hand-rolled block-result-frame decoder, the ZeroMQ PUB/REQ
-client, and the finality poller. The wire protocol is fully documented in
-[platforms/neuchain-client-implementation.md](platforms/neuchain-client-implementation.md).
-Only the server binaries are missing, and only because building them is a
-multi-hour compute job.
-
-### How to verify once built
-
-```
-bash deploy/docker/neuchain/up.sh local
-set -a; source deploy/docker/neuchain/connection.env; set +a
-go test -tags integration -run Integration -v ./pkg/adapters/neuchain/   # 10 writes -> finality
-./bin/benchrunner run --config configs/normalized/quick-smoke.yaml --platform neuchain
-```
-
-Cross-check: the harness confirmed-TPS against NeuChain's own `StatusThread`
-KTPS log over the same window (within ~10%). Confirm on a live node that
-`tip_query` returns a bare ASCII integer and `block_query` returns a serialized
-`block.Block` (matches the source read; not yet seen on a running node).
-
----
+- Clean upstream build (`deploy/docker/neuchain/build.sh`) to replace the
+  patched image; unpatched upstream crashed in the other harness.
+- Cross-check harness TPS against NeuChain's `transaction_manager_impl.cpp`
+  commit counts in `node-logs/`.
 
 ## 2. GCP campaign — CREDENTIAL-GATED
 
@@ -154,6 +126,23 @@ teardown, so the cause is unknown.
 Next step: capture the last log lines of a failed container into `result.json`
 before teardown, then rerun the Drunix probe-sweep. On GCP, `--keep` leaves the
 VM up with the container for inspection.
+
+Campaigns now capture container logs before teardown, so the next
+reproduction's cause will be in
+`results/_campaigns/<id>/drunix/<config>/capture/logs/cp.org2.log` and
+`results/drunix/<ts>/container-logs/cp.org2.log`.
+
+**2026-09-14 reproduction, different container.** Same shape: 100–500 held, 1000
+failed (47% failures, `not sent ... in flight`), then during sweep-2000 `lp1.org1`
+(a Lite Peer) was **OOM-killed at its memory limit** (exit 137) and its chaincode
+container exited. Capture:
+`results/_campaigns/20260914T173528Z-local-small/drunix/probe-sweep/capture/`.
+Past the knee the in-flight backlog grows until the Lite Peer exceeds its share of
+the 8 GB budget (`memory_role` weights in `deploy/docker/lib.sh`). Below the knee
+Drunix is stable, and the knee and hold figures are unaffected, but the run is
+recorded as `container-failed` and has no headline. Open question: whether the
+Lite Peer role deserves the peer weight (4) rather than being treated as the
+same role as a Committing Peer.
 
 ## 3a. Drunix write path — resolved (history)
 
@@ -287,52 +276,56 @@ go test -tags integration -run Integration ./pkg/adapters/drunix/
 
 ---
 
-## 4. Fabric-X — REBUILT ON THE NATIVE PATH, NOT YET LIVE-VERIFIED
+## 4. Fabric-X — live on the native gRPC path
 
 The REST/token integration is gone. It was built on `fabric-x-samples/tokens`, a
 Token-SDK demo app, so it would have measured Fabric Smart Client and ZKP
-generation rather than Fabric-X — and it never produced a number. Post-mortem in
+generation rather than Fabric-X. Post-mortem in
 [adr-003](decisions/adr-003-fabricx-fsc-view-and-rest.md); the replacement is
-[adr-016](decisions/adr-016-fabricx-native-grpc.md), with the research trail in
+[adr-016](decisions/adr-016-fabricx-native-grpc.md), with the research trail and
+every bring-up gotcha in
 [platforms/fabricx-integration.md](platforms/fabricx-integration.md).
 
-What exists now: the adapter broadcasts to an Arma router and reads finality from
-the sidecar deliver stream, and `deploy/docker/fabricx/up.sh` builds Arma +
-committer from pinned upstream tags, starts four containers, and bootstraps the
-namespace. Unit tests cover the signing path against upstream's exact
-verification rule.
+**Verified 2026-09-14 on local-small:**
+- `up.sh` builds Arma + committer from pinned tags (committer v1.0.5, orderer
+  v1.0.6), registers the namespace, and checks the key in the state DB.
+- The adapter broadcasts to all four routers and reads finality and
+  `committerpb.Status` codes from the sidecar.
+- quick-smoke: 50 TPS, 0% failures, e2e p50 ~0.9 s.
+- probe-sweep: held every step up to 3500 TPS (p50 ≈ 0.5 s up to 2000, 5.4 s at
+  3500), failed 5000, then the `fabricx-arma` container, holding all 16 Arma
+  processes, was OOM-killed at its 2 GB share during 7500. No headline.
+  `Final_runs/2026-09-14-local-small/`.
+
+Fabric-X results recorded before 2026-09-14 are invalid: single-router submits
+added ~10 s to every transaction.
 
 ### What is left
 
-A live run. Specifically:
-
-```
-bash deploy/docker/fabricx/up.sh local-small
-set -a; source deploy/docker/fabricx/connection.env; set +a
-./bin/benchrunner run --config configs/normalized/quick-smoke.yaml --platform fabricx --profile local-small
-```
-
-Unverified until that happens:
-
-- the first image build (15-20 min; compiles Arma and the committer),
-- whether `loadgen --only-namespace` satisfies the MAJORITY `LifecycleEndorsement`
-  policy in this exact 4-party configuration,
-- whether the sidecar's deliver stream is reachable on `:4001` from the host and
-  carries `TRANSACTIONS_FILTER` metadata in the shape the adapter decodes,
-- whether the exported namespace key is the one the committer validates against.
-
-A known-good reference deployment lives at
-a separate NeuChain research harness (`harness/fabric-x/` in that repo; ~69 recorded runs,
-saturation knee around 1500 offered TPS on this host). Its workload is Blockbench
-SmallBank and it tunes blocks to 50 ms / 50 tx to match NeuChain, so its numbers
-are not ours — but it is the recipe this was rebuilt from and the place to check
-against when something does not come up.
+- **Scale.** `local-small` starves a scale-out design; meaningful Fabric-X
+  ceilings need `gcp-full` (§2).
+- **Block byte limits.** They are not applied to Arma (normalization-status.md).
+- **Native workload.** There is none yet: Token SDK issue/transfer would need a
+  token client on the gRPC path.
 
 ### Out of scope
 
-`kv-*` through an FSC view. The old `kvview` stub is deleted; the normalized KV
-workloads now map onto namespace read/write sets directly, which is both simpler
-and closer to what the platform actually does.
+`kv-*` through an FSC view. The normalized KV workloads map onto namespace
+read/write sets directly, which is both simpler and closer to what the platform
+actually does.
+
+## 5. fabric-cft peer panic on a failed disk write
+
+2026-09-14, probe-sweep on local-small. The sweep held 100–1000 TPS and saturated
+at ~1070 TPS at offered 2000. Then `peer0.org2` panicked:
+`Cannot commit block to the ledger due to write .../blockfile_000011: input/output error`.
+
+This was not the memory limit (it used ~374 MB of 2.73 GB, no OOM kill), not disk
+space (34 GB free), and nothing was logged by the kernel (`journalctl -k`). Root
+filesystem is btrfs with Docker's overlay snapshotter. Cause unknown. The knee
+measured before it is unaffected; the run is `container-failed`. Capture:
+`results/_campaigns/20260914T173528Z-local-small/fabric-cft/probe-sweep/capture/`.
+Rerun to see whether it reproduces.
 
 ## Local lifecycle scripts
 
@@ -341,7 +334,7 @@ and closer to what the platform actually does.
 | `make up-all` / `scripts/up-all.sh local [fabric-variant]` | monitoring + one Fabric-family net (they share ports) + `fabricx`/`neuchain` if their images exist |
 | `make down-all` / `scripts/down-all.sh local` | stop + remove every platform + monitoring; keeps images, caches, results |
 | `make clean` / `scripts/clean.sh` | down-all + generated chaincode images, dangling volumes, `.cache/` clones, `connection.env`, `results/*`, `docs/reports/*` (prompts; `-y` to skip) |
-| `make clean-images` / `scripts/clean.sh --images` | clean + pulled platform images (Fabric, `npcioss/drunix-*`, yugabyte, keydb, `bench/neuchain*`, `bench/fabricx-rest`) |
+| `make clean-images` / `scripts/clean.sh --images` | clean + pulled platform images (Fabric, `npcioss/drunix-*`, yugabyte, keydb, `bench/neuchain*`, `bench/fabricx`) |
 
 Never touches containers / images / volumes the harness did not create.
 
