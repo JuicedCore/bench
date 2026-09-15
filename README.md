@@ -411,7 +411,7 @@ make monitoring-up                  # optional: Prometheus :9090, Grafana :3000 
   `install-deps.sh` is safe to re-run.
 - **NeuChain needs one image copied in.** `bench/neuchain:ev` is a patched build that
   no registry has. On a machine that has it: `make images-export` (writes
-  `images/bench-neuchain-ev.tar.gz`, ~700 MB, plus `SHA256SUMS`). Copy `images/` over,
+  `images/bench_neuchain_ev.tar.gz`, ~320 MB, plus `SHA256SUMS`). Copy `images/` over,
   then `make images-import`. `make images-export ALL=1` also saves every pinned public
   image, for machines without internet. Every other image is pulled or built by `up.sh`.
 - **Expected smoke result:** about 200 TPS, `invariant_ok=true`.
