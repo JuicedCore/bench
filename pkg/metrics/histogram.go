@@ -16,6 +16,10 @@ import (
 // Kept as a package var so the reporter and tests agree.
 var reported = []float64{1, 5, 10, 25, 50, 75, 90, 95, 99, 99.9, 99.99}
 
+// maxLatency is the top of every latency histogram's range; larger values are
+// clamped to it (see Collector.ClampedLatencies).
+const maxLatency = 5 * time.Minute
+
 // Latency wraps an HDR histogram with a mutex so many load-generator goroutines
 // can record concurrently. Values are stored in microseconds.
 type Latency struct {
@@ -28,7 +32,7 @@ type Latency struct {
 // figures, which is ample for blockchain commit latencies.
 func NewLatency(name string) *Latency {
 	return &Latency{
-		h:    hdr.New(1, int64(5*time.Minute/time.Microsecond), 3),
+		h:    hdr.New(1, int64(maxLatency/time.Microsecond), 3),
 		name: name,
 	}
 }

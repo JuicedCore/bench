@@ -9,7 +9,7 @@ package drunix
 
 import (
 	"context"
-	"errors"
+	"fmt"
 	"time"
 
 	"github.com/juicedcore/bench/pkg/adapters"
@@ -53,10 +53,10 @@ func (a *Adapter) Setup(ctx context.Context, ac adapters.AdapterConfig) error {
 }
 
 // errNotSetUp guards the delegating methods below. The PlatformAdapter contract
-// requires Teardown to be safe after a failed or skipped Setup, and the engine's
-// deferred Teardown runs on exactly that path; without the guard every one of
-// these nil-derefs a.inner.
-var errNotSetUp = errors.New("drunix: adapter not set up")
+// requires Teardown to be safe after a failed or skipped Setup, and the engine
+// calls Teardown on exactly that path; without the guard every one of these
+// nil-derefs a.inner (a.inner is nil when the config itself was rejected).
+var errNotSetUp = fmt.Errorf("drunix: %w", adapters.ErrNotSetUp)
 
 func (a *Adapter) Teardown(ctx context.Context) error {
 	if a.inner == nil {

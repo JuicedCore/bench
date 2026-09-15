@@ -8,8 +8,23 @@ package adapters
 
 import (
 	"context"
+	"errors"
+	"log/slog"
 	"time"
 )
+
+// ErrFinalityTimeout is wrapped by adapters when WaitForFinality gave up because
+// the per-transaction timeout elapsed. The load generator counts it as timed out.
+var ErrFinalityTimeout = errors.New("finality timeout")
+
+// ErrFinalityStreamDown is wrapped by adapters when WaitForFinality cannot
+// succeed because the block/commit stream that observes finality has failed and
+// could not be re-established. The load generator counts it as an error, not a
+// timeout, so a dead listener is not mistaken for a slow platform.
+var ErrFinalityStreamDown = errors.New("finality stream down")
+
+// ErrNotSetUp is returned by adapter methods called before a successful Setup.
+var ErrNotSetUp = errors.New("adapter not set up (Setup failed or was not called)")
 
 // PlatformAdapter is the single abstraction that makes cross-architecture
 // benchmarking fair: every platform exposes the same submit -> wait-for-finality
@@ -30,7 +45,8 @@ type PlatformAdapter interface {
 	Setup(ctx context.Context, cfg AdapterConfig) error
 
 	// Teardown releases all client-side resources. It MUST NOT tear down the
-	// network. Safe to call even if Setup partially failed.
+	// network. Safe to call even if Setup partially failed, and safe to call
+	// more than once. The engine calls it after a failed Setup too.
 	Teardown(ctx context.Context) error
 
 	// Submit hands one transaction to the platform. It MUST return as soon as the
@@ -130,6 +146,20 @@ type AdapterConfig struct {
 
 	// Extra carries platform-specific keys verbatim from YAML.
 	Extra map[string]any
+
+	// Logger receives adapter diagnostics that cannot be returned as an error:
+	// background stream failures, reconnects, ignored config keys. It already
+	// carries the platform attribute and is teed into the run's run.log. nil
+	// means slog.Default().
+	Logger *slog.Logger
+}
+
+// Log returns cfg.Logger, or slog.Default() when unset.
+func (cfg AdapterConfig) Log() *slog.Logger {
+	if cfg.Logger != nil {
+		return cfg.Logger
+	}
+	return slog.Default()
 }
 
 // SubmitResult records the two client-observable timestamps around submission.
@@ -165,6 +195,11 @@ type FinalityResult struct {
 	// Valid is false if the transaction committed but was marked invalid by
 	// validation (MVCC conflict, endorsement policy failure, double-spend).
 	Valid bool
+
+	// InvalidReason, when Valid is false, is the platform's validation code or
+	// message (e.g. "MVCC_READ_CONFLICT"), so failed phases group invalid
+	// transactions by cause rather than as one opaque "committed invalid".
+	InvalidReason string
 }
 
 // QueryResult is the outcome of a state read.

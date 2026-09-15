@@ -53,9 +53,30 @@ yaml="$ARMA_OUT/bootstrap/shared_config.yaml"
 : "${BENCH_BATCH_TIMEOUT:?generate-arma.sh needs BENCH_BATCH_TIMEOUT}"
 : "${BENCH_BATCH_MAX_MESSAGE_COUNT:?generate-arma.sh needs BENCH_BATCH_MAX_MESSAGE_COUNT}"
 echo "applying profile orderer_batch: timeout=${BENCH_BATCH_TIMEOUT} maxMessageCount=${BENCH_BATCH_MAX_MESSAGE_COUNT}"
-sed -i "s/BatchCreationTimeout: 500ms/BatchCreationTimeout: ${BENCH_BATCH_TIMEOUT}/" "$yaml"
-sed -i "s/MaxMessageCount: 10000/MaxMessageCount: ${BENCH_BATCH_MAX_MESSAGE_COUNT}/" "$yaml"
-sed -i "s/RequestBatchMaxInterval: 200ms/RequestBatchMaxInterval: ${BENCH_BATCH_TIMEOUT}/" "$yaml"
+# Replace whatever value armageddon wrote rather than a hardcoded upstream
+# default, so a changed default cannot leave Arma on upstream's value while the
+# manifest claims the profile's. Each key must appear exactly once and must hold
+# the profile value afterwards.
+pin() { # pin <key> <value>
+  n="$(grep -cE "^[[:space:]]*$1:" "$yaml" || true)"
+  [ "$n" = 1 ] || {
+    echo "ERROR: generate-arma.sh: expected exactly one '$1:' in $yaml, found ${n} - armageddon's config layout changed; update this script (adr-011)" >&2
+    grep -n "$1" "$yaml" >&2 || true
+    exit 1
+  }
+  sed -i -E "s/^([[:space:]]*$1:).*/\1 $2/" "$yaml"
+  grep -qE "^[[:space:]]*$1: $2\$" "$yaml" || { echo "ERROR: generate-arma.sh: failed to set $1 to $2 in $yaml" >&2; exit 1; }
+  echo "  $1 = $2"
+}
+pin BatchCreationTimeout "${BENCH_BATCH_TIMEOUT}"
+pin MaxMessageCount "${BENCH_BATCH_MAX_MESSAGE_COUNT}"
+# Consensus.BFTConfig.requestbatchmaxinterval is deliberately NOT set from the
+# profile. The batcher above is Arma's block cutter: its batches are the blocks,
+# and they are what adr-011 equalises with Fabric's BatchTimeout/MaxMessageCount.
+# SmartBFT's interval is a second, separate layer that batches batch
+# *attestations* into consensus proposals; classic Fabric's Raft orderer has no
+# counterpart, so pinning it to the block timeout equalises nothing and only adds
+# a second wait on top of the batcher's. It stays at the upstream default.
 
 "$ARMAGEDDON" createSharedConfigProto --sharedConfigYaml "$yaml" --output "$ARMA_OUT/bootstrap"
 "$ARMAGEDDON" createBlock --sharedConfigYaml "$yaml" --blockOutput "$ARMA_OUT/bootstrap" \

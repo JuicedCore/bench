@@ -17,8 +17,9 @@ scheduled      T1            T2                         T3
 - **T1** — captured by the generator immediately before `adapter.Submit`. Measured
   identically for every platform.
 - **T2** — the platform acknowledges receipt: Fabric/Drunix after the orderer
-  accepts the broadcast; Fabric-X after the FSC view accepts; NeuChain after the
-  submit RPC returns.
+  accepts the broadcast; Fabric-X when the first of the four Arma routers replies
+  SUCCESS to the envelope (it is sent to all of them); NeuChain after the submit
+  call returns (a local return only — see fairness-guarantees.md).
 - **T3** — the adapter observes the transaction in a validated/committed block.
 
 Reporting only T1→T2 (as some blockchain benchmarks do) understates real latency
@@ -92,7 +93,7 @@ Set `load.sweep.enabled: true`.
 | Phase | Default | Measures |
 | ----- | ------- | -------- |
 | **probe** | 10 TPS for 30 s | Floor latency — the architectural cost with no load. |
-| **sweep-N** | 100, 500, 1 000, 2 000, 5 000, 10 000, 20 000 TPS, 60 s each | Confirmed TPS + full percentile latency at each offered rate. |
+| **sweep-N** | the config's `steps`, 60 s each (normalized ladder: 100, 250, 500, 1 000, 2 000, 3 500, 5 000, 7 500, 10 000 TPS; code default if `steps` is omitted: 100 … 20 000) | Confirmed TPS + full percentile latency at each offered rate. |
 | **hold** | 90% of the highest sweep step that **held** (below), for 5 min | Stability under sustained near-peak load. |
 
 `result.json` carries every phase; `saturation_tps` is the detected knee; the

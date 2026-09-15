@@ -13,14 +13,14 @@ samples: `github.com/hyperledger/fabric-x-samples`.
 
 ## No chaincode
 
-Fabric-X replaces the chaincode execution model with **peer-to-peer transaction
-negotiation** built on **Fabric-Smart-Client (FSC)** views/sessions and the
-**Fabric-Token-SDK** (UTXO model). There is no `PutState`/`GetState` chaincode to
-deploy. Confirmed by the LF Fabric-X roadmap.
+Fabric-X has no chaincode to deploy and no `PutState`/`GetState`. A transaction
+carries **client-signed read/write sets per namespace**. The committer's verifier
+checks each namespace's signature against the policy registered in the `_meta`
+namespace, then validates (MVCC) and commits to its state store (PostgreSQL).
 
-Consequence: the *same* smart contract cannot be deployed across all four
-platforms. The harness defines **functionally equivalent workloads** implemented
-natively per platform ([adr-009](../decisions/adr-009-workload-strategy.md)).
+Consequence: the *same* smart contract cannot be deployed across all platforms.
+The harness defines **functionally equivalent workloads** implemented natively per
+platform ([adr-009](../decisions/adr-009-workload-strategy.md)).
 
 ## Arma ordering
 
@@ -29,22 +29,14 @@ Four server roles: **routers** (accept + dispatch), **batchers** (form batches),
 (reconstruct full blocks). Ordering digests instead of payloads is where the
 throughput comes from.
 
-## Real REST API (verified — `fabric-x-samples/tokens/swagger.yaml`)
+## Why not the REST / Token SDK samples
 
-Token-only. **No KV route.**
-
-| Route | Port | Body | Reply | Synchronous? |
-| ----- | ---- | ---- | ----- | ------------ |
-| `POST /issuer/issue` | 9100 | `TransferRequest{amount{code,value},counterparty{node,account},message?}` | `{message,payload:"<txid>"}` | **to finality** |
-| `POST /owner/accounts/{id}/transfer` | 9500 / 9600 | same | same | **to finality** |
-| `POST /owner/accounts/{id}/redeem` | 9500 | `RedeemRequest` | `{message,payload:"<txid>"}` | to finality |
-| `GET /owner/accounts/{id}?code=<type>` | 9500 | — | `{message,payload:Account{id,balance[]}}` | — |
-| `POST /endorser/init` | 9300 | — | health | one-time network init |
-| `GET /healthz` `/readyz` | all | — | `{message}` | — |
-
-`tokens/owner/service/fsc.go` runs `ttx.NewOrderingAndFinalityView(tx)` before
-the POST returns → the call blocks to finality. **Fabric-X has no separable
-submit-ack (T2).**
+An earlier integration drove `fabric-x-samples/tokens` over REST. Those calls block
+to finality (no separable T2) and spend most of their time in Fabric Smart Client
+and ZKP generation, so they measure the demo app rather than Fabric-X. It never
+produced a number and was removed: post-mortem in
+[adr-003](../decisions/adr-003-fabricx-fsc-view-and-rest.md) (superseded), the
+replacement in [adr-016](../decisions/adr-016-fabricx-native-grpc.md).
 
 ## Adapter
 
@@ -54,7 +46,7 @@ the decision.
 
 | | |
 | --- | --- |
-| Submit | broadcast a signed `common.Envelope` to the Arma router (`:6022`) and wait for its reply; a pool of streams, one unacknowledged envelope each |
+| Submit | broadcast a signed `common.Envelope` to every party's Arma router (`:6022`, `:6122`, `:6222`, `:6322`) and take the first reply as T2; a pool of streams per router, one unacknowledged envelope each. A single router is ~10s slower: only the primary batcher cuts batches, and a secondary forwards requests to it only after `FirstStrikeThreshold` |
 | Finality | sidecar deliver stream (`:4001`); per-transaction validation codes from the block's `TRANSACTIONS_FILTER` metadata |
 | Signing | ECDSA-P256 over the namespace's ASN.1 marshalling, sha256-digested — upstream's own encoding via `fabric-x-common` |
 | Config keys | `broadcast_endpoint`, `deliver_endpoint`, `channel_id`, `namespace`, `signing_key_path`, `metrics_endpoint` |
@@ -64,9 +56,9 @@ read-modify-write; `kv-read` → a read plus a **unique dummy blind write**,
 because the validator rejects read-only transactions (`MALFORMED_NO_WRITES`).
 That last one is disclosed in [../workloads/mismatches.md](../workloads/mismatches.md).
 
-Submit and commit are separate operations, so unlike the previous REST
-integration Fabric-X reports a genuine submit latency: T2 is the Arma router's
-reply to each envelope, matched one-per-stream because replies carry no ID.
+Submit and commit are separate operations, so Fabric-X reports a genuine submit
+latency: T2 is the first reply from the four Arma routers the envelope was sent
+to, matched one-per-stream because replies carry no ID.
 
 ## Deployment
 
@@ -82,5 +74,20 @@ four identities, so it signs with all of them. The namespace's ECDSA verificatio
 key is registered at the same time and the matching private key is exported to
 the host for the adapter.
 
-Block-cutting parameters come from the profile's shared `orderer_batch` anchor,
-so Fabric-X cuts blocks identically to the Fabric family.
+Block-cutting parameters (`BatchCreationTimeout`, `MaxMessageCount`) come from the
+profile's shared `orderer_batch` anchor, so Arma's batcher cuts blocks like the
+Fabric family's orderer. The byte limits are not applied, and SmartBFT's
+`requestbatchmaxinterval` stays at the upstream default: it batches batch
+attestations into consensus proposals and has no Raft counterpart.
+
+| | |
+| --- | --- |
+| Versions | `fabric-x-committer` v1.0.5, `fabric-x-orderer` v1.0.6 (`COMMITTER_REF` / `ORDERER_REF` in `up.sh`) |
+| Containers | `fabricx-arma` (4 parties × router, batcher, consenter, assembler), `fabricx-db` (PostgreSQL), `fabricx-pipeline` (sidecar, verifier, coordinator), `fabricx-committer` (validator-committer, query) |
+| Host ports | routers 6022 / 6122 / 6222 / 6322, assembler 6023, sidecar deliver 4001, committer metrics 9643 |
+| First deploy | compiles Arma and the committer from source: several minutes and several GB |
+| Namespace check | `up.sh` confirms the `ns__meta` row holds the exported key; it does not trust loadgen's exit code (upstream exits 1 on success) |
+
+The deployment gotchas found on the way to the first live run (TLS modes, the
+sidecar's peer Deliver service, committer status codes, single-router latency) are
+written up in [fabricx-integration.md](fabricx-integration.md).

@@ -1,5 +1,10 @@
 # Platform-native workloads
 
+> **Status:** design only. No `normalized: false` configs exist in the repo
+> today, and the harness has only been run on the normalized set. The table
+> below is the intended native workload per platform, not something you can run
+> yet.
+
 Each platform also runs the workload it is *built for*, tuned to its best
 configuration (`normalized: false`). These numbers show ceiling behaviour. They
 are **never** placed in the same comparison table as normalized numbers, and
@@ -12,7 +17,7 @@ batch params — all recorded in the manifest
 | Fabric CFT | `kv-write` on LevelDB, single-org endorsement policy, batch tuned for throughput | minimal endorsement + validation overhead |
 | Fabric BFT | same, SmartBFT tuned (batch size / timeout) | isolates BFT ordering cost |
 | Drunix | `transfer` on YugabyteDB, LP/CP scaled out, Validation Service replicas | exercises the disaggregated-peer design + SQL state |
-| Fabric-X | Token SDK `Issue` + `Transfer` + `Redeem` (UTXO), Arma sharded | the workload the 200k-TPS benchmark used |
+| Fabric-X | Token SDK `Issue` + `Transfer` + `Redeem` (UTXO), Arma sharded — would need a token client on the native gRPC path ([adr-016](../decisions/adr-016-fabricx-native-grpc.md)); the old REST route was removed | the workload the 200k-TPS benchmark used |
 | NeuChain | native KV + transfer at high concurrency, epoch/batch tuned per paper | deterministic-execution pipeline at full width |
 
 ## Tuning record

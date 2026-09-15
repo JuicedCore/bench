@@ -44,7 +44,7 @@ func (c *Client) Ping(ctx context.Context) error {
 	}
 	defer resp.Body.Close()
 	if resp.StatusCode != http.StatusOK {
-		return fmt.Errorf("prometheus healthy check: status %d", resp.StatusCode)
+		return fmt.Errorf("prometheus healthy check at %s: status %d (is the monitoring stack up? deploy/docker/monitoring/up.sh)", c.BaseURL, resp.StatusCode)
 	}
 	return nil
 }
@@ -74,7 +74,11 @@ func (c *Client) QueryRange(ctx context.Context, promql, legendFormat string, st
 		return nil, err
 	}
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("prometheus query_range: status %d: %s", resp.StatusCode, string(body))
+		msg := strings.TrimSpace(string(body))
+		if len(msg) > 512 {
+			msg = msg[:512] + "...(truncated)"
+		}
+		return nil, fmt.Errorf("prometheus query_range at %s: status %d: %s", c.BaseURL, resp.StatusCode, msg)
 	}
 
 	var parsed struct {
@@ -89,7 +93,7 @@ func (c *Client) QueryRange(ctx context.Context, promql, legendFormat string, st
 		} `json:"data"`
 	}
 	if err := json.Unmarshal(body, &parsed); err != nil {
-		return nil, fmt.Errorf("decode prometheus response: %w", err)
+		return nil, fmt.Errorf("decode prometheus response from %s: %w", c.BaseURL, err)
 	}
 	if parsed.Status != "success" {
 		return nil, fmt.Errorf("prometheus query error: %s", parsed.Error)

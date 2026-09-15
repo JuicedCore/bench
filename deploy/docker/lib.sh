@@ -2,16 +2,24 @@
 # Shared helpers for platform deploy scripts. Source this from each
 # deploy/docker/<platform>/up.sh and down.sh.
 set -euo pipefail
+# Without this, bash turns errexit off inside $(...): a failing tar or docker
+# tag inside SAMPLES="$(fabric_samples_bootstrap ...)" would be ignored.
+shopt -s inherit_errexit
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 PROFILE="${1:-${BENCH_PROFILE:-local}}"
 PROFILE_FILE="${REPO_ROOT}/deploy/profiles/${PROFILE}.yaml"
 
-log()  { printf '\033[1;34m[deploy]\033[0m %s\n' "$*" >&2; }
-warn() { printf '\033[1;33m[deploy]\033[0m %s\n' "$*" >&2; }
-die()  { printf '\033[1;31m[deploy]\033[0m %s\n' "$*" >&2; exit 1; }
+# log / warn / die / need / wait_for / dump_containers / on_error_dump
+LOG_TAG=deploy
+# shellcheck source=../../scripts/log-lib.sh
+. "${REPO_ROOT}/scripts/log-lib.sh"
 
-need() { command -v "$1" >/dev/null 2>&1 || die "missing required tool: $1"; }
+if [ ! -f "$PROFILE_FILE" ]; then
+  die "profile '${PROFILE}' not found: ${PROFILE_FILE}" \
+      "available: $(cd "${REPO_ROOT}/deploy/profiles" && ls ./*.yaml 2>/dev/null | sed 's#^\./##; s/\.yaml$//' | tr '\n' ' ')" \
+      "pass it as the first argument (up.sh local-small) or set BENCH_PROFILE"
+fi
 
 # _yq — resolve a usable yq: system yq, else a cached static mikefarah binary,
 # else python3+PyYAML. Echoes the command to run ("yq" or a path or "pyyaml").
@@ -26,34 +34,53 @@ _yq() {
   if curl -sSfL "https://github.com/mikefarah/yq/releases/download/${ver}/yq_linux_${arch}" -o "${cache}/yq" 2>/dev/null; then
     chmod +x "${cache}/yq"; echo "${cache}/yq"; return
   fi
-  echo none
+  die "cannot read YAML profiles: no yq, no python3 with PyYAML, and downloading yq ${ver} failed" \
+      "install one: scripts/install-deps.sh, or pip install pyyaml"
 }
 
 # yaml_get <file> <yq-expression> — YAML anchors are resolved (yq / PyYAML).
+# Prints the value and returns 0, or prints nothing and returns 1 when the path
+# is missing or null (mikefarah yq prints "null" and exits 0 for a missing path,
+# which used to flow into configtx as the literal string "null").
 yaml_get() {
-  local file="$1" expr="$2" tool
+  local file="$1" expr="$2" tool out
   tool="$(_yq)"
   case "$tool" in
-    none)   return 1 ;;
     pyyaml)
-      python3 - "$file" "$expr" <<'PY'
+      out="$(python3 - "$file" "$expr" <<'PY'
 import sys, yaml
-doc = yaml.safe_load(open(sys.argv[1]))
-cur = doc
+cur = yaml.safe_load(open(sys.argv[1]))
 for part in sys.argv[2].lstrip('.').split('.'):
-    if part == "": continue
+    if part == "":
+        continue
+    if not isinstance(cur, dict) or part not in cur:
+        sys.exit(1)
     cur = cur[part]
+if cur is None:
+    sys.exit(1)
 print(cur)
 PY
+)" || return 1
       ;;
-    *)      "$tool" -r "$expr" "$file" ;;
+    *) out="$("$tool" -r "$expr" "$file")" || return 1 ;;
   esac
+  [ -n "$out" ] && [ "$out" != "null" ] || return 1
+  printf '%s\n' "$out"
 }
 
 # platform_field <platform> <field-path-under-platform> — e.g. orderer_batch.batch_timeout
+# Returns 1 (no output) when the field is absent.
 platform_field() {
   local platform="$1" path="$2"
   yaml_get "$PROFILE_FILE" ".platforms.${platform}.${path}"
+}
+
+# require_platform_field <platform> <field-path> — like platform_field, but a
+# missing value is fatal. Use it for fairness levers (orderer batch parameters):
+# a silent default would make the platforms' configs differ without a trace.
+require_platform_field() {
+  platform_field "$1" "$2" || die "profile ${PROFILE_FILE} has no platforms.$1.$2" \
+    "every Fabric-family platform must pin orderer_batch (docs/decisions/adr-011-orderer-batch-params.md)"
 }
 
 # git_checkout_pinned <url> <dir> <ref>
@@ -122,8 +149,16 @@ fabric_samples_bootstrap() {
     [ -f "${samples}/config/core.yaml" ] || die "fabric ${fver} tarball did not contain config/core.yaml"
     # Docker images (per-layer resume is robust); tolerate transient failure.
     log "pulling Fabric ${fver} docker images"
-    ( cd "$samples" && curl -sSL "https://raw.githubusercontent.com/hyperledger/fabric/v${fver}/scripts/install-fabric.sh" \
-        | bash -s -- --fabric-version "$fver" --ca-version "$caver" docker ) >&2 || warn "image pull returned non-zero; continuing"
+    # pin_fabric_images below pulls anything still missing and dies if it cannot,
+    # so a failure here is survivable - but say what failed.
+    local installer="${dl}/install-fabric-${fver}.sh"
+    if curl -fsSL --retry 3 --connect-timeout 20 -o "$installer" \
+         "https://raw.githubusercontent.com/hyperledger/fabric/v${fver}/scripts/install-fabric.sh"; then
+      ( cd "$samples" && bash "$installer" --fabric-version "$fver" --ca-version "$caver" docker ) >&2 \
+        || warn "install-fabric.sh docker pull exited non-zero; missing images are pulled individually next"
+    else
+      warn "could not download install-fabric.sh (curl exit $?); missing images are pulled individually next"
+    fi
     echo "$fver" > "${samples}/bin/.fabricver"
   fi
   pin_fabric_images "$fver" "$caver"
@@ -166,27 +201,31 @@ pin_fabric_images() {
     fi
   done
 
-  local got
-  got="$(docker run --rm hyperledger/fabric-peer:latest peer version 2>/dev/null | sed -ne 's/^ *Version: v\{0,1\}//p' | head -1)"
-  [ "$got" = "$fver" ] || die "fabric-peer:latest reports ${got:-nothing}, wanted ${fver}"
-  got="$(docker run --rm hyperledger/fabric-orderer:latest orderer version 2>/dev/null | sed -ne 's/^ *Version: v\{0,1\}//p' | head -1)"
-  [ "$got" = "$fver" ] || die "fabric-orderer:latest reports ${got:-nothing}, wanted ${fver}"
+  local got raw bin
+  for bin in peer orderer; do
+    raw="$(docker run --rm "hyperledger/fabric-${bin}:latest" "$bin" version 2>&1)" || true
+    got="$(printf '%s\n' "$raw" | sed -ne 's/^ *Version: v\{0,1\}//p' | head -1)"
+    [ "$got" = "$fver" ] || die "fabric-${bin}:latest reports version '${got:-nothing}', wanted ${fver}" \
+      "docker run output: $(printf '%s' "$raw" | tr '\n' ' ' | cut -c1-300)" \
+      "remove stale tags (docker rmi hyperledger/fabric-${bin}:latest) and rerun"
+  done
   log "fabric images pinned to ${fver} (ca ${caver}); peer and orderer verified"
 }
 
 # _resume_get <url> <dest> — download with resume + aggressive retry.
 _resume_get() {
-  local url="$1" dest="$2" n
+  local url="$1" dest="$2" n rc
   for n in 1 2 3 4 5 6; do
-    if curl -fL -C - --retry 5 --retry-delay 5 --retry-all-errors \
+    rc=0
+    curl -fsSL -C - --retry 5 --retry-delay 5 --retry-all-errors \
          --connect-timeout 20 --speed-time 30 --speed-limit 1024 \
-         -o "$dest" "$url"; then
-      return 0
-    fi
-    warn "download ${url##*/} attempt ${n} failed; retrying"
+         -o "$dest" "$url" || rc=$?
+    [ "$rc" -eq 0 ] && return 0
+    warn "download ${url##*/} attempt ${n}/6 failed (curl exit ${rc}); retrying in 5s"
     sleep 5
   done
-  die "failed to download ${url}"
+  die "failed to download ${url} after 6 attempts" \
+      "check network/proxy access to $(printf '%s' "$url" | cut -d/ -f3); a partial file is kept at ${dest} and resumed next time"
 }
 
 # drop_caches — best effort page-cache drop for inter-run isolation.
@@ -205,9 +244,7 @@ drop_caches() {
 # deploy scripts default to the profile value and the run itself asserts parity.
 state_db() {
   local platform="$1"
-  local v
-  v="$(platform_field "$platform" state_db 2>/dev/null || echo leveldb)"
-  [ -n "$v" ] && [ "$v" != "null" ] && echo "$v" || echo leveldb
+  platform_field "$platform" state_db || echo leveldb
 }
 
 export REPO_ROOT PROFILE PROFILE_FILE
@@ -325,9 +362,13 @@ ENV
 warm_chaincode() {
   local dir="$1" channel="$2" cc="$3"; shift 3
   local org
+  local out
   for org in "$@"; do
-    ( cd "$dir" && ./network.sh cc query -org "$org" -c "$channel" -ccn "$cc" \
-        -ccqc '{"Args":["Get","__bench_warmup__"]}' >/dev/null 2>&1 ) || true
+    # A failed warm-up query is not fatal - the wait below reports what matters
+    # (containers without limits) - but its output is the only clue why.
+    out="$( cd "$dir" && ./network.sh cc query -org "$org" -c "$channel" -ccn "$cc" \
+        -ccqc '{"Args":["Get","__bench_warmup__"]}' 2>&1 )" \
+      || warn "warm-up query for org ${org} failed: $(printf '%s' "$out" | tail -3 | tr '\n' ' ' | cut -c1-300)"
   done
   local i=0
   while [ "$i" -lt 60 ]; do
@@ -335,4 +376,89 @@ warm_chaincode() {
     i=$((i+1)); sleep 1
   done
   warn "only $(docker ps --format '{{.Names}}' | grep -c '^dev-') of $# chaincode containers started; they will run without resource limits"
+}
+
+# patch_orderer_batch <platform> <configtx.yaml> [bft]
+#
+# Write the profile's orderer_batch into a configtx file. Every substitution must
+# match: if upstream renames or reformats a key, the patch fails loudly instead
+# of benchmarking with upstream's default block cutting while the manifest
+# claims the pinned values (adr-011). With "bft", SmartBFT's request batching is
+# aligned to the same values (it may be absent, so it is not required).
+patch_orderer_batch() {
+  local platform="$1" configtx="$2" bft="${3:-}"
+  local bt mmc pmb amb
+  bt="$(require_platform_field "$platform" orderer_batch.batch_timeout)"
+  mmc="$(require_platform_field "$platform" orderer_batch.max_message_count)"
+  pmb="$(require_platform_field "$platform" orderer_batch.preferred_max_bytes)"
+  amb="$(require_platform_field "$platform" orderer_batch.absolute_max_bytes)"
+  [ -f "$configtx" ] || die "cannot pin orderer batch: ${configtx} does not exist (upstream layout changed?)"
+  log "pinning orderer batch in ${configtx##*/}: timeout=${bt} maxMsgCount=${mmc} preferred=${pmb} absolute=${amb}"
+  python3 - "$configtx" "$bt" "$mmc" "$pmb" "$amb" "$bft" <<'PY' || die "orderer batch patch failed for ${configtx} (see message above)"
+import re, sys
+path, bt, mmc, pmb, amb, bft = sys.argv[1:7]
+s = open(path).read()
+required = [
+    (r'BatchTimeout:\s*\S+',         f'BatchTimeout: {bt}',          1),
+    (r'MaxMessageCount:\s*\d+',      f'MaxMessageCount: {mmc}',      1),
+    (r'PreferredMaxBytes:\s*[^\n]+', f'PreferredMaxBytes: {pmb}',    1),
+    (r'AbsoluteMaxBytes:\s*[^\n]+',  f'AbsoluteMaxBytes: {amb}',     1),
+]
+missing = []
+for pat, rep, count in required:
+    s, n = re.subn(pat, rep, s, count=count)
+    if n == 0:
+        missing.append(pat.split(':')[0])
+if bft:
+    s = re.sub(r'RequestBatchMaxCount:\s*\d+',    f'RequestBatchMaxCount: {mmc}', s)
+    s = re.sub(r'RequestBatchMaxInterval:\s*\S+', f'RequestBatchMaxInterval: {bt}', s)
+if missing:
+    sys.stderr.write(f"orderer batch keys not found in {path}: {', '.join(missing)}\n")
+    sys.exit(1)
+open(path, 'w').write(s)
+PY
+}
+
+# user_signcert <msp-dir> - echo the one signing certificate in <msp>/signcerts,
+# or die saying where it looked (the network's crypto material was not generated).
+user_signcert() {
+  local msp="$1" f
+  for f in "${msp}"/signcerts/*; do
+    [ -f "$f" ] && { printf '%s\n' "$f"; return 0; }
+  done
+  die "no signing certificate in ${msp}/signcerts" \
+      "the network's crypto material was not generated - look for an earlier cryptogen/CA error above"
+}
+
+# check_paths <path>... - die naming every connection-material path that does
+# not exist, before connection.env points the harness at it.
+check_paths() {
+  local p missing=()
+  for p in "$@"; do [ -e "$p" ] || missing+=("$p"); done
+  [ "${#missing[@]}" -eq 0 ] || die "connection material missing: ${missing[*]}" \
+    "the network came up without the expected organizations/ layout; rerun up.sh and read its output"
+}
+
+# pull_image <image> [attempts] - docker pull with retries; dies after the last.
+pull_image() {
+  local img="$1" attempts="${2:-4}" n
+  for n in $(seq 1 "$attempts"); do
+    docker pull -q "$img" >/dev/null && return 0
+    warn "docker pull ${img} failed (attempt ${n}/${attempts})"
+    [ "$n" -lt "$attempts" ] && sleep 5
+  done
+  die "cannot pull ${img}" "check registry access (docker login / proxy) and disk space (docker system df)"
+}
+
+# port_open <host> <port> - true when a TCP connect succeeds (no nc needed).
+port_open() { timeout 2 bash -c ">/dev/tcp/$1/$2" 2>/dev/null; }
+
+# compose_dump [lines] - `docker compose ps` and log tails for the compose
+# project in the current directory. For WAIT_FOR_ON_TIMEOUT.
+compose_dump() {
+  local lines="${1:-80}"
+  printf '\n----- docker compose ps -----\n' >&2
+  docker compose ps -a >&2 2>&1 || true
+  printf '\n----- docker compose logs --tail %s -----\n' "$lines" >&2
+  docker compose logs --no-color --tail "$lines" >&2 2>&1 || true
 }

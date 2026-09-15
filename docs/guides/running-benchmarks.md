@@ -15,7 +15,7 @@ setup (deploy)  ->  source connection.env  ->  run  ->  inspect  ->  teardown
 | `make up-all` (or `bash scripts/up-all.sh local [fabric-cft\|fabric-bft\|drunix]`) | monitoring stack + **one** Fabric-family network (they share :7051/:7050 — mutually exclusive) + `fabricx` and `neuchain` if their images exist |
 | `make down-all` (or `bash scripts/down-all.sh local`) | stop + remove every platform's containers/volumes + monitoring. Keeps images, `.cache/` clones, and `results/`. |
 | `make clean` (or `bash scripts/clean.sh`) | `down-all` **plus** generated chaincode images, dangling bench volumes, `deploy/docker/**/.cache/`, `connection.env` files, `results/*`, `docs/reports/*.html\|png`. Prompts first (`-y` to skip). |
-| `make clean-images` (or `scripts/clean.sh --images`) | `clean` + removes the pulled platform images too (Fabric, `npcioss/drunix-*`, `yugabytedb/yugabyte`, `eqalpha/keydb`, `bench/neuchain*`, `bench/fabricx-rest` — ~4–6 GB) |
+| `make clean-images` (or `scripts/clean.sh --images`) | `clean` + removes the pulled platform images too (Fabric, `npcioss/drunix-*`, `yugabytedb/yugabyte`, `eqalpha/keydb`, `bench/neuchain*`, `bench/fabricx` — ~4–6 GB) |
 
 None of these touch containers/images/volumes the harness did not create.
 
@@ -48,6 +48,14 @@ CLI. Key blocks:
 | clean tail latency below saturation | `latency-profile.yaml` (set `target_tps` ≈ 60% of the knee) |
 | MVCC / conflict behaviour | `contention.yaml` (Zipfian + transfer) |
 | many concurrent clients | `multi-client.yaml` (closed-loop, 256 workers) |
+| read path | `read-profile.yaml` (kv-read) — needs a populated ledger; see below |
+
+To run every config on every platform, or on the GCP profiles, see the top-level
+[README → Running every combination](../../README.md#running-every-combination).
+`run-all.sh` deploys each platform fresh for **each** config, so `read-profile`
+there reads an empty ledger: absent keys return an empty value and count as
+successful reads. Do not quote `read-profile` from such a campaign; run it by hand
+right after a write mode on the same deployment.
 
 ## Output
 
@@ -59,6 +67,10 @@ CLI. Key blocks:
 | `result.json` | all phases, headline, full HDR snapshots, system samples, native scrape |
 | `summary.txt` | human-readable table + warnings |
 | `phases.csv` | one row per phase (when `output_format: csv`) — feed to `scripts/plot.py` |
+| `run.log` | the full run log |
+| `monitoring-report.html` | per-run charts from Prometheus (needs the monitoring stack up) |
+| `container-logs/` | only on exit 3: tail of each platform container's log |
+| `error.txt` | only when adapter setup failed: the error plus what to check |
 
 ## Validating a run
 
@@ -72,6 +84,85 @@ Reject the run if `summary.txt` shows any of:
 
 Cross-check headline TPS against the platform's own block height / logs over the
 run window.
+
+## Logs and failure captures
+
+Every campaign (`scripts/run-all.sh` local, `scripts/gcp-run.sh` GCP) writes,
+under `results/_campaigns/<id>/`:
+
+```
+results/_campaigns/<id>/
+├── run-all.log                        # or gcp-run.log — full interleaved log
+├── SUMMARY.tsv                        # one row per platform x config
+├── drunix/
+│   └── probe-sweep/
+│       ├── deploy.log
+│       ├── run.log
+│       ├── teardown.log
+│       └── capture/                   # taken right before teardown, every run
+│           ├── ps.txt                 # docker ps -a
+│           ├── inspect/<container>.json
+│           ├── logs/<container>.log   # last 5000 lines, timestamps
+│           ├── events.txt             # docker die/oom/kill/restart since deploy start
+│           └── host.txt               # free, df, docker system df, dmesg OOM/segfault
+└── ...                                # one dir per platform/config-stem
+```
+
+`SUMMARY.tsv` columns: `platform`, `config`, `stage`, `status`, `reason`, `dir`.
+`status` is one of:
+
+| status | meaning |
+| ------ | ------- |
+| `ok` | run completed and produced a headline |
+| `no-measurement` | benchrunner exited 0 but logged `FAILED RUN`: the headline committed nothing, so the run is not a measurement |
+| `deploy-failed` | the platform never came up |
+| `run-failed` | benchrunner exited non-zero for a reason other than a container failure |
+| `container-failed` | a platform container exited or was OOM-killed mid-run |
+
+`reason` is a one-line extract from the step log (last `error:` line, etc).
+
+`benchrunner run` exit codes:
+
+| Code | Meaning |
+| ---- | ------- |
+| 0 | ok |
+| 1 | harness error |
+| 3 | a platform container exited or was OOM-killed mid-run — results are still written, just no headline |
+
+On exit 3, the result dir (`results/<platform>/<ts>/`) gains
+`container-logs/<container>.log` (tail 5000). If the run instead aborted during
+adapter setup, the result dir gets `error.txt` instead.
+
+On GCP, `capture/` is taken on the platform VM and pulled back before the VMs
+are destroyed. If a VM fails provisioning, its `/var/log/bench-install.log` is
+saved as `results/_campaigns/<id>/<vm>-install.log`.
+
+`scripts/capture.sh <out-dir> [since]` can also be run by hand against a live
+network — same layout as the per-step `capture/` above.
+
+Triage recipe:
+
+```
+cd results/_campaigns/<id>
+column -t -s $'\t' SUMMARY.tsv                  # what failed, where, one-line reason
+less drunix/probe-sweep/run.log                 # full step output
+grep -rlE 'panic|fatal|FATAL|OOM' */*/capture/logs/   # which container logged the crash
+jq '.state | {ExitCode, OOMKilled, Error, FinishedAt}' drunix/probe-sweep/capture/inspect/cp.org2.json
+cat drunix/probe-sweep/capture/events.txt       # order of die/oom events
+grep -A50 dmesg drunix/probe-sweep/capture/host.txt   # kernel OOM kills
+```
+
+- exit code 137 + `OOMKilled=true` → memory cap (see `apply_budget` weights in
+  `deploy/docker/lib.sh`), not a bug in the platform.
+- exit code 2 with `panic:` in the log → a Go panic in the platform; read the
+  stack trace in `capture/logs/<container>.log`.
+- exit code 0/143 during the run → something else stopped the container; check
+  `capture/events.txt` for a `kill`.
+- `deploy-failed` → read the tail of `deploy.log`, then `capture/logs/` for any
+  container that never became healthy.
+
+The NeuChain image build logs separately, to
+`deploy/docker/neuchain/.cache/build-<UTC timestamp>.log`.
 
 ## Comparing
 

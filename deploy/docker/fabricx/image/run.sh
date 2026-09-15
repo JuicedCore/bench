@@ -1,31 +1,13 @@
 #!/bin/sh
 # Role supervisor adapted from fabric-x-committer docker/images/test_node/run.
-# Lab default is TLS none (private Docker bridge).
+# TLS modes (all none) come from deploy/docker/fabricx/endpoints.env so that
+# processes started with `docker compose exec` get them too.
 set -eu
 
-insecure_tls() {
-  export SC_COORDINATOR_SERVER_TLS_MODE="none"
-  export SC_COORDINATOR_VERIFIER_TLS_MODE="none"
-  export SC_COORDINATOR_VALIDATOR_COMMITTER_TLS_MODE="none"
-  export SC_COORDINATOR_MONITORING_TLS_MODE="none"
-  export SC_QUERY_SERVER_TLS_MODE="none"
-  export SC_QUERY_MONITORING_TLS_MODE="none"
-  export SC_SIDECAR_SERVER_TLS_MODE="none"
-  export SC_SIDECAR_MONITORING_TLS_MODE="none"
-  export SC_SIDECAR_COMMITTER_TLS_MODE="none"
-  export SC_SIDECAR_ORDERER_TLS_MODE="none"
-  export SC_VC_SERVER_TLS_MODE="none"
-  export SC_VC_MONITORING_TLS_MODE="none"
-  export SC_VERIFIER_SERVER_TLS_MODE="none"
-  export SC_VERIFIER_MONITORING_TLS_MODE="none"
-  export SC_ORDERER_SERVER_TLS_MODE="none"
-  export SC_LOADGEN_SERVER_TLS_MODE="none"
-  export SC_LOADGEN_MONITORING_TLS_MODE="none"
-  export SC_LOADGEN_ORDERER_CLIENT_SIDECAR_CLIENT_TLS_MODE="none"
-  export SC_LOADGEN_ORDERER_CLIENT_ORDERER_TLS_MODE="none"
+[ "${SC_LOADGEN_ORDERER_CLIENT_ORDERER_TLS_MODE:-}" = none ] || {
+  echo "run.sh: SC_*_TLS_MODE not set; start this image through deploy/docker/fabricx (env_file endpoints.env)" >&2
+  exit 1
 }
-
-insecure_tls
 
 BINS="${BINS_PATH:-/root/bin}"
 CONFIG="${CONFIGS_PATH:-/root/config}"

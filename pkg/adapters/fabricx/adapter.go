@@ -4,11 +4,14 @@ import (
 	"context"
 	"crypto/rand"
 	"fmt"
+	"log/slog"
+	"strings"
 	"sync"
 	"time"
 
 	fxcommon "github.com/hyperledger/fabric-protos-go-apiv2/common"
 	"github.com/hyperledger/fabric-x-common/api/applicationpb"
+	"github.com/hyperledger/fabric-x-common/api/committerpb"
 	"github.com/hyperledger/fabric-x-common/protoutil"
 	"google.golang.org/protobuf/proto"
 
@@ -26,12 +29,15 @@ func init() {
 type Adapter struct {
 	cfg    *Config
 	signer *nsSigner
-	bc     *broadcaster
+	bc     *routerSet
 	dl     *deliverer
 
-	mu       sync.Mutex
-	waiters  map[string]chan blockOutcome
-	resolved map[string]blockOutcome
+	log *slog.Logger
+
+	mu        sync.Mutex
+	waiters   map[string]chan blockOutcome
+	resolved  map[string]blockOutcome
+	lastPrune time.Time
 }
 
 func (a *Adapter) Name() string            { return platformName }
@@ -59,6 +65,7 @@ func (a *Adapter) CryptoInfo() adapters.CryptoInfo {
 }
 
 func (a *Adapter) Setup(ctx context.Context, ac adapters.AdapterConfig) error {
+	a.log = ac.Log()
 	cfg, err := configFromExtra(ac.Extra)
 	if err != nil {
 		return err
@@ -66,7 +73,7 @@ func (a *Adapter) Setup(ctx context.Context, ac adapters.AdapterConfig) error {
 	a.cfg = cfg
 
 	if a.signer, err = loadNsSigner(cfg.SigningKeyPath); err != nil {
-		return err
+		return fmt.Errorf("%w (signing_key_path must be the key deploy/docker/fabricx/up.sh registered for namespace %q)", err, cfg.Namespace)
 	}
 	a.waiters = map[string]chan blockOutcome{}
 	a.resolved = map[string]blockOutcome{}
@@ -76,14 +83,18 @@ func (a *Adapter) Setup(ctx context.Context, ac adapters.AdapterConfig) error {
 
 	// Deliver first: a transaction broadcast before the stream is live would
 	// never be observed and would time out for no visible reason.
-	if a.dl, err = newDeliverer(cfg.DeliverEndpoint, cfg.ChannelID, a.onOutcomes); err != nil {
+	if a.dl, err = newDeliverer(dctx, cfg.DeliverEndpoint, cfg.ChannelID, a.onOutcomes, a.log); err != nil {
 		return err
 	}
-	if a.bc, err = newBroadcaster(dctx, cfg.BroadcastEndpoint, cfg.BroadcastStreams, cfg.AckTimeout); err != nil {
+	bctx, bcancel := context.WithTimeout(ctx, cfg.DialTimeout)
+	defer bcancel()
+	if a.bc, err = newRouterSet(bctx, cfg.BroadcastEndpoints, cfg.BroadcastStreams, cfg.AckTimeout, a.log); err != nil {
 		a.dl.close()
 		a.dl = nil
 		return err
 	}
+	a.log.Info("setup complete", "routers", strings.Join(cfg.BroadcastEndpoints, ","), "deliver", cfg.DeliverEndpoint,
+		"channel", cfg.ChannelID, "namespace", cfg.Namespace, "broadcast_streams", cfg.BroadcastStreams)
 	return nil
 }
 
@@ -118,21 +129,39 @@ func (a *Adapter) onOutcomes(outs []blockOutcome) {
 		}
 		a.resolved[o.txID] = o
 	}
+	// Bound outcomes nobody waits for (other clients' transactions, or ours whose
+	// submit failed but which committed anyway).
+	if n := len(a.resolved); n > maxResolved && len(outs) > 0 && outs[0].observedAt.Sub(a.lastPrune) > 10*time.Second {
+		now := outs[0].observedAt
+		a.lastPrune = now
+		for id, o := range a.resolved {
+			if now.Sub(o.observedAt) > resolvedTTL {
+				delete(a.resolved, id)
+			}
+		}
+		a.log.Debug("pruned unclaimed finality results", "before", n, "after", len(a.resolved))
+	}
 }
 
-// Submit builds, signs and broadcasts one transaction, and returns once the Arma
-// router has acknowledged it. T2 is the moment that acknowledgement arrived: the
-// router accepted the envelope and forwarded it for ordering, strictly before
-// commit - the same point at which the Fabric gateway's Submit returns.
+const (
+	maxResolved = 200_000
+	resolvedTTL = 5 * time.Minute
+)
+
+// Submit builds, signs and broadcasts one transaction to every Arma router, and
+// returns once the first router has acknowledged it. T2 is the moment that
+// acknowledgement arrived: a router accepted the envelope and forwarded it for
+// ordering, strictly before commit - the same point at which the Fabric
+// gateway's Submit returns.
 func (a *Adapter) Submit(ctx context.Context, tx *adapters.Transaction) (*adapters.SubmitResult, error) {
 	if a.bc == nil {
-		return nil, fmt.Errorf("fabricx: adapter not set up")
+		return nil, fmt.Errorf("fabricx: %w", adapters.ErrNotSetUp)
 	}
 	t1 := time.Now()
 
 	txID, env, err := a.buildEnvelope(tx)
 	if err != nil {
-		return &adapters.SubmitResult{SubmitTime: t1}, err
+		return &adapters.SubmitResult{SubmitTime: t1}, fmt.Errorf("fabricx: build envelope: %w", err)
 	}
 
 	// Register before sending so the deliver stream can never resolve a
@@ -157,6 +186,9 @@ func (a *Adapter) Submit(ctx context.Context, tx *adapters.Transaction) (*adapte
 }
 
 func (a *Adapter) WaitForFinality(ctx context.Context, txID string, timeout time.Duration) (*adapters.FinalityResult, error) {
+	if a.waiters == nil {
+		return nil, fmt.Errorf("fabricx: %w", adapters.ErrNotSetUp)
+	}
 	a.mu.Lock()
 	if o, ok := a.resolved[txID]; ok {
 		delete(a.resolved, txID)
@@ -178,27 +210,41 @@ func (a *Adapter) WaitForFinality(ctx context.Context, txID string, timeout time
 		a.mu.Unlock()
 	}()
 
+	var down <-chan struct{}
+	if a.dl != nil {
+		down = a.dl.down
+		if err := a.dl.err(); err != nil {
+			return nil, err
+		}
+	}
 	select {
 	case o := <-ch:
 		return finality(o), nil
+	case <-down:
+		return nil, a.dl.err()
 	case <-time.After(timeout):
-		return nil, fmt.Errorf("fabricx: finality timeout for %s", txID)
+		return nil, fmt.Errorf("fabricx: %w: tx %s not seen on the deliver stream from %s within %s",
+			adapters.ErrFinalityTimeout, txID, a.cfg.DeliverEndpoint, timeout)
 	case <-ctx.Done():
 		return nil, ctx.Err()
 	}
 }
 
 // finality reports T3 as the instant the block was observed on the deliver
-// stream. A non-VALID validation code is a platform verdict, so it comes back as
+// stream. A non-COMMITTED status is a platform verdict, so it comes back as
 // a terminal result with Valid=false rather than an error - that is what lets the
 // failure breakdown separate a rejected transaction from an unreachable platform.
 func finality(o blockOutcome) *adapters.FinalityResult {
-	return &adapters.FinalityResult{
+	r := &adapters.FinalityResult{
 		TxID:         o.txID,
 		FinalityTime: o.observedAt,
 		BlockNum:     o.blockNum,
 		Valid:        o.valid,
 	}
+	if !o.valid {
+		r.InvalidReason = fmt.Sprintf("fabricx status %s", committerpb.Status(o.code))
+	}
+	return r
 }
 
 // Query is not wired: Fabric-X's query service is a separate endpoint from the

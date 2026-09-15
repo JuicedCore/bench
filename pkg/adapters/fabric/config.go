@@ -1,14 +1,18 @@
 package fabric
 
 import (
+	"errors"
 	"fmt"
+	"log/slog"
 	"os"
+	"strconv"
 	"time"
 )
 
 // Config is the connection material the Fabric / Drunix adapters need. Every
-// field can be supplied via the run config's `adapter:` map; a connection
-// profile file (adapter.conn_profile) may set the same keys as YAML.
+// field is supplied via the run config's `adapter:` map, normally from the
+// BENCH_ADAPTER_* variables in deploy/docker/<platform>/connection.env. Duration
+// keys take Go duration strings ("15s", "2m").
 type Config struct {
 	// PeerEndpoint is the gRPC address used for BOTH endorsement and the gateway
 	// (Fabric). For Drunix, EndorseEndpoint / CommitEndpoint override this to
@@ -92,22 +96,39 @@ func (c *Config) applyDefaults() {
 	}
 }
 
+// envHint is appended to config errors: an empty required key almost always
+// means the platform's connection.env was not sourced into the environment.
+const envHint = "is connection.env sourced? set -a; source deploy/docker/<platform>/connection.env; set +a"
+
 func (c *Config) validate() error {
+	p := c.PlatformName
+	if p == "" {
+		p = "fabric"
+	}
+	var errs []error
 	if c.EndorseEndpoint == "" {
-		return fmt.Errorf("fabric: peer_endpoint (or endorse_endpoint) is required")
+		errs = append(errs, fmt.Errorf("%s: adapter.peer_endpoint (or endorse_endpoint) is empty (%s)", p, envHint))
 	}
 	if c.CertPath == "" || c.KeyPath == "" {
-		return fmt.Errorf("fabric: cert_path and key_path are required")
+		errs = append(errs, fmt.Errorf("%s: adapter.cert_path and adapter.key_path are required (%s)", p, envHint))
 	}
 	if c.TLSCACertPath == "" {
-		return fmt.Errorf("fabric: tls_ca_cert_path is required")
+		errs = append(errs, fmt.Errorf("%s: adapter.tls_ca_cert_path is required (%s)", p, envHint))
 	}
-	for _, p := range []string{c.CertPath, c.TLSCACertPath} {
-		if _, err := os.Stat(p); err != nil {
-			return fmt.Errorf("fabric: %s: %w", p, err)
+	for key, path := range map[string]string{"cert_path": c.CertPath, "key_path": c.KeyPath, "tls_ca_cert_path": c.TLSCACertPath} {
+		if path == "" {
+			continue
+		}
+		if _, err := os.Stat(path); err != nil {
+			errs = append(errs, fmt.Errorf("%s: adapter.%s %s: %w (crypto material is regenerated on every deploy; re-source connection.env after redeploying)", p, key, path, err))
 		}
 	}
-	return nil
+	for key, d := range map[string]time.Duration{"endorse_timeout": c.EndorseTimeout, "submit_timeout": c.SubmitTimeout, "commit_status_timeout": c.CommitStatusTimeout} {
+		if d < 0 {
+			errs = append(errs, fmt.Errorf("%s: adapter.%s must not be negative, got %s", p, key, d))
+		}
+	}
+	return errors.Join(errs...)
 }
 
 // ConfigFor decodes an adapter map into a validated Config. Exported for adapters
@@ -119,12 +140,52 @@ func ConfigFor(name string, extra map[string]any) (*Config, error) {
 // configFromExtra decodes the adapter map from the run config into a Config.
 func configFromExtra(name string, extra map[string]any) (*Config, error) {
 	c := &Config{PlatformName: name}
+	var errs []error
 	get := func(k string) (string, bool) {
-		if extra == nil {
+		raw, present := extra[k]
+		if !present || raw == nil {
 			return "", false
 		}
-		v, ok := extra[k].(string)
-		return v, ok
+		v, ok := raw.(string)
+		if !ok {
+			// YAML turned it into a number/bool; take its text form rather than
+			// silently dropping the key.
+			v = fmt.Sprint(raw)
+			slog.Debug("adapter key is not a string; using its text form", "platform", name, "key", k, "value", v)
+		}
+		return v, true
+	}
+	getDur := func(k string, dst *time.Duration) {
+		if v, ok := get(k); ok && v != "" {
+			d, err := time.ParseDuration(v)
+			if err != nil {
+				errs = append(errs, fmt.Errorf("%s: adapter.%s %q: %w (want e.g. 15s)", name, k, v, err))
+				return
+			}
+			*dst = d
+		}
+	}
+	if v, ok := get("fn_put"); ok && v != "" {
+		c.FnPut = v
+	}
+	if v, ok := get("fn_get"); ok && v != "" {
+		c.FnGet = v
+	}
+	if v, ok := get("fn_transfer"); ok && v != "" {
+		c.FnTransfer = v
+	}
+	getDur("endorse_timeout", &c.EndorseTimeout)
+	getDur("submit_timeout", &c.SubmitTimeout)
+	getDur("commit_status_timeout", &c.CommitStatusTimeout)
+	if v, ok := get("use_commit_peer_events"); ok && v != "" {
+		b, err := strconv.ParseBool(v)
+		if err != nil {
+			errs = append(errs, fmt.Errorf("%s: adapter.use_commit_peer_events %q: want true or false", name, v))
+		}
+		c.UseCommitPeerEvents = b
+	}
+	if v, ok := get("commit_peer_gateway"); ok {
+		c.CommitPeerGateway = v
 	}
 	if v, ok := get("peer_endpoint"); ok {
 		c.PeerEndpoint = v
@@ -158,6 +219,9 @@ func configFromExtra(name string, extra map[string]any) (*Config, error) {
 	}
 	if v, ok := get("metrics_endpoint"); ok {
 		c.MetricsEndpointURL = v
+	}
+	if len(errs) > 0 {
+		return nil, errors.Join(errs...)
 	}
 	c.applyDefaults()
 	if err := c.validate(); err != nil {

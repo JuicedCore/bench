@@ -3,6 +3,7 @@ package metrics
 import (
 	"regexp"
 	"sort"
+	"strings"
 	"sync"
 	"time"
 )
@@ -164,16 +165,67 @@ type ErrorCount struct {
 // maxErrorKinds caps Result.Errors.
 const maxErrorKinds = 5
 
-// volatile matches the per-transaction parts of an error message - tx ids,
-// hashes, sequence numbers, addresses - so one failure cause collapses into one
-// ErrorCount instead of one per transaction.
-var volatile = regexp.MustCompile(`[0-9a-fA-F]{16,}|\b\d+\b`)
+// hexID and number match the per-transaction parts of an error message - tx
+// ids, hashes, sequence and block numbers - so one failure cause collapses into
+// one ErrorCount instead of one per transaction.
+var (
+	hexID  = regexp.MustCompile(`[0-9a-fA-F]{16,}`)
+	number = regexp.MustCompile(`\b\d+\b`)
+)
+
+// maxErrorLen bounds a grouped message. Gateway errors put the useful part (the
+// peer address and the chaincode's own message) a couple of hundred characters
+// in, so this must be generous.
+const maxErrorLen = 1000
 
 func errorKey(msg string) string {
-	if len(msg) > 300 {
-		msg = msg[:300]
+	if len(msg) > maxErrorLen {
+		msg = msg[:maxErrorLen] + "...(truncated)"
 	}
-	return volatile.ReplaceAllString(msg, "N")
+	msg = hexID.ReplaceAllString(msg, "N")
+	// Keep numbers that are part of an address (10.0.0.4, peer0.org1:7051):
+	// which endpoint failed is exactly what the reader needs. A number joined to
+	// its neighbour by '.' or ':' is treated as address-like.
+	var b strings.Builder
+	last := 0
+	for _, loc := range number.FindAllStringIndex(msg, -1) {
+		i, j := loc[0], loc[1]
+		addr := (i > 0 && (msg[i-1] == '.' || msg[i-1] == ':')) ||
+			(j < len(msg)-1 && (msg[j] == '.' || msg[j] == ':') && isDigitOrAlpha(msg[j+1]))
+		b.WriteString(msg[last:i])
+		if addr {
+			b.WriteString(msg[i:j])
+		} else {
+			b.WriteString("N")
+		}
+		last = j
+	}
+	b.WriteString(msg[last:])
+	return b.String()
+}
+
+func isDigitOrAlpha(c byte) bool {
+	return (c >= '0' && c <= '9') || (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z')
+}
+
+// ClampedLatencies counts committed transactions whose timestamps cannot be
+// recorded as-is: T3 before T2/T1 or T1 before the scheduled send (negative
+// deltas, usually an adapter taking FinalityTime from a block timestamp on a
+// skewed clock), or an end-to-end latency above the histogram's 5 minute range.
+// The histograms clamp these; the engine discloses the count.
+func (c *Collector) ClampedLatencies() int {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	n := 0
+	for _, r := range c.recs {
+		if r.Outcome != OutcomeCommitted || r.T3.IsZero() || r.T1.IsZero() {
+			continue
+		}
+		if r.e2e() < 0 || r.submit() < 0 || r.commit() < 0 || r.sendGap() < 0 || r.e2e() > maxLatency {
+			n++
+		}
+	}
+	return n
 }
 
 // Aggregate reduces the collected records over the given window.

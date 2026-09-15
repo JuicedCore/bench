@@ -2,6 +2,7 @@ package fabricx
 
 import (
 	"context"
+	"log/slog"
 	"net"
 	"strconv"
 	"strings"
@@ -22,8 +23,10 @@ import (
 // client ever put two on one stream - which is what overlap records.
 type fakeRouter struct {
 	orderer.UnimplementedAtomicBroadcastServer
-	overlap atomic.Int32 // times a stream had >1 envelope awaiting a reply
-	streams atomic.Int32
+	overlap   atomic.Int32 // times a stream had >1 envelope awaiting a reply
+	streams   atomic.Int32
+	rejectAll atomic.Bool  // answer every envelope "reject", whatever it says
+	received  atomic.Int32 // envelopes received
 }
 
 func (f *fakeRouter) Broadcast(stream orderer.AtomicBroadcast_BroadcastServer) error {
@@ -38,7 +41,11 @@ func (f *fakeRouter) Broadcast(stream orderer.AtomicBroadcast_BroadcastServer) e
 		if outstanding.Add(1) > 1 {
 			f.overlap.Add(1)
 		}
+		f.received.Add(1)
 		cmd := string(env.GetPayload())
+		if f.rejectAll.Load() {
+			cmd = "reject"
+		}
 		go func() {
 			switch {
 			case cmd == "hang":
@@ -171,5 +178,44 @@ func TestBroadcastTimeoutReplacesTheStream(t *testing.T) {
 	}
 	if n := f.overlap.Load(); n > 0 {
 		t.Errorf("replacement reused the hung stream: overlap=%d", n)
+	}
+}
+
+// Every router gets the envelope, and one accepting is enough: a secondary
+// party's router refusing must not fail a transaction the primary's took.
+func TestRouterSetSendsToAllAndSucceedsOnAnyAck(t *testing.T) {
+	bad, badAddr := startFakeRouter(t)
+	bad.rejectAll.Store(true)
+	good, goodAddr := startFakeRouter(t)
+	rs, err := newRouterSet(context.Background(), []string{badAddr, goodAddr}, 2, 5*time.Second, slog.Default())
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer rs.close()
+
+	if _, err := rs.submit(context.Background(), env("ok:0")); err != nil {
+		t.Fatalf("one router accepted, want success, got %v", err)
+	}
+	deadline := time.Now().Add(2 * time.Second)
+	for (bad.received.Load() == 0 || good.received.Load() == 0) && time.Now().Before(deadline) {
+		time.Sleep(5 * time.Millisecond)
+	}
+	if bad.received.Load() != 1 || good.received.Load() != 1 {
+		t.Errorf("received bad=%d good=%d, want 1 each", bad.received.Load(), good.received.Load())
+	}
+}
+
+func TestRouterSetFailsWhenNoRouterAccepts(t *testing.T) {
+	a, aAddr := startFakeRouter(t)
+	b, bAddr := startFakeRouter(t)
+	a.rejectAll.Store(true)
+	b.rejectAll.Store(true)
+	rs, err := newRouterSet(context.Background(), []string{aAddr, bAddr}, 1, 5*time.Second, slog.Default())
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer rs.close()
+	if _, err := rs.submit(context.Background(), env("ok:0")); err == nil || !strings.Contains(err.Error(), "no router accepted") {
+		t.Fatalf("want no-router-accepted error, got %v", err)
 	}
 }

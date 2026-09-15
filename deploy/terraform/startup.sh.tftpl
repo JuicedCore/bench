@@ -4,12 +4,16 @@
 # survive a reboot (transparent huge pages).
 set -euo pipefail
 mkdir -p /var/lib/bench
-rm -f /var/lib/bench/ready
+# Clear both markers: a stale "failed" from an earlier boot would make
+# scripts/gcp-run.sh give up while this boot's install is still running.
+rm -f /var/lib/bench/ready /var/lib/bench/failed
 cat > /var/lib/bench/install-deps.sh <<'INSTALL_DEPS_EOF'
 ${install_deps}
 INSTALL_DEPS_EOF
-if bash /var/lib/bench/install-deps.sh --tune > /var/log/bench-install.log 2>&1; then
+echo "bench install started $(date -u +%FT%TZ)" > /var/log/bench-install.log
+if bash /var/lib/bench/install-deps.sh --tune >> /var/log/bench-install.log 2>&1; then
   date -u +%FT%TZ > /var/lib/bench/ready
 else
-  echo "install-deps failed; see /var/log/bench-install.log" > /var/lib/bench/failed
+  rc=$?
+  echo "install-deps failed with exit $rc at $(date -u +%FT%TZ); last line: $(tail -1 /var/log/bench-install.log)" > /var/lib/bench/failed
 fi

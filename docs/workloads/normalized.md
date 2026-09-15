@@ -9,10 +9,10 @@ Source: `pkg/workloads/workload.go`.
 
 | Name | Transaction kind(s) | Fabric / Drunix | Fabric-X | NeuChain |
 | ---- | ------------------- | --------------- | -------- | -------- |
-| `kv-write` | all `TxWrite` | chaincode `Put(key,value)` | custom FSC KV-write view | native KV write RPC |
-| `kv-read` | all `TxRead` | chaincode `Get(key)` (Evaluate) | FSC read view | native KV read RPC |
-| `kv-mixed` | `TxRead`/`TxWrite` per `read_write_ratio` | `Get` / `Put` | read / write view | read / write RPC |
-| `transfer` | all `TxTransfer` | chaincode `Transfer(from,to,amount)` (RMW two accounts) | Token SDK `Transfer` (native) *or* FSC transfer view (normalized) | native transfer RPC |
+| `kv-write` | all `TxWrite` | chaincode `Put(key,value)` | blind write in the application namespace, ordered by Arma | YCSB update |
+| `kv-read` | all `TxRead` | chaincode `Get(key)` (Evaluate on one peer) | read set **plus a unique dummy blind write** (read-only txs are rejected), ordered and committed | transaction with a read set, through commit |
+| `kv-mixed` | `TxRead`/`TxWrite` per `read_write_ratio` | `Get` / `Put` | as the two rows above | as the two rows above |
+| `transfer` | all `TxTransfer` | chaincode `Transfer(from,to,amount)` (RMW two accounts, balance computed) | two-key read/write set carrying the workload's values (no computed balance) | two-key read + update set |
 
 ## Keys
 
@@ -34,7 +34,7 @@ Not "identical bytes on the wire" — that is impossible across three transactio
 models. It means: **the same logical state effect** (set one key; move value
 between two accounts), driven by **the same key-selection process**, measured at
 **the same two points** (T2 acknowledge, T3 finality). Where a platform's native
-primitive is a poor fit (Fabric-X KV), that is documented in
+primitive is a poor fit (Fabric-X reads and transfers), that is documented in
 [mismatches.md](mismatches.md) and the run is caveated, not silently dropped
 ([adr-010](../decisions/adr-010-mismatch-report.md)).
 
@@ -47,7 +47,8 @@ structural rather than a convention someone has to maintain. Platform-specific
 settings live only in the union `adapter:` block, whose irrelevant keys each
 adapter ignores. `pkg/harness/configparity_test.go` enforces it.
 
-Per-platform tuned runs live in `configs/native/` and are never mixed with these.
+Per-platform tuned (`normalized: false`) runs would never be mixed with these;
+there are no native configs in the repo today.
 
 ## Config knobs (run config `load:` block)
 

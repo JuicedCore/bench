@@ -9,6 +9,7 @@ import (
 	"encoding/pem"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"github.com/hyperledger/fabric-x-common/api/applicationpb"
@@ -172,5 +173,20 @@ func TestConfigIgnoresForeignKeys(t *testing.T) {
 	}
 	if cfg.ChannelID != "arma" || cfg.Namespace != "0" {
 		t.Errorf("defaults not applied: channel=%q ns=%q", cfg.ChannelID, cfg.Namespace)
+	}
+}
+
+func TestConfigSplitsBroadcastEndpoints(t *testing.T) {
+	cfg, err := configFromExtra(map[string]any{
+		"broadcast_endpoint": "localhost:6022, localhost:6122,,localhost:6222",
+		"deliver_endpoint":   "localhost:4001",
+		"signing_key_path":   "/tmp/k.pem",
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	want := []string{"localhost:6022", "localhost:6122", "localhost:6222"}
+	if strings.Join(cfg.BroadcastEndpoints, "|") != strings.Join(want, "|") {
+		t.Errorf("BroadcastEndpoints = %q, want %q", cfg.BroadcastEndpoints, want)
 	}
 }

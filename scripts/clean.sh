@@ -6,7 +6,7 @@
 #   scripts/clean.sh                 # containers, volumes, caches, results
 #   scripts/clean.sh --images        # ALSO remove pulled platform images
 #                                    #   (Fabric, npcioss/drunix-*, yugabyte,
-#                                    #    keydb, bench/neuchain*, bench/fabricx-rest)
+#                                    #    keydb, bench/neuchain*, bench/fabricx)
 #   scripts/clean.sh -y [--images]   # no prompt
 #
 # What it NEVER touches: containers/images/volumes this project did not create
@@ -36,7 +36,7 @@ This will remove, for the blockchain benchmark harness only:
   - run outputs               results/*   (keeps results/.gitkeep)
   - generated reports         docs/reports/*.html , *.png
 EOF
-[ "$IMAGES" = 1 ] && echo "  - pulled platform images    (Fabric, npcioss/drunix-*, yugabyte, keydb, bench/neuchain*, bench/fabricx-rest)"
+[ "$IMAGES" = 1 ] && echo "  - pulled platform images    (Fabric, npcioss/drunix-*, yugabyte, keydb, bench/neuchain*, bench/fabricx)"
 echo
 if [ "$YES" != 1 ]; then
   read -r -p "proceed? [y/N] " ans
@@ -79,7 +79,7 @@ find docs/reports -maxdepth 1 -type f \( -name '*.html' -o -name '*.png' \) -del
 if [ "$IMAGES" = 1 ]; then
   log "removing pulled platform images"
   docker images --format '{{.Repository}}:{{.Tag}}' \
-    | grep -E '^(ghcr\.io/)?hyperledger/fabric-(peer|orderer|ccenv|baseos|ca)|^hyperledger/fabric-(peer|orderer|ccenv|baseos|ca)|^npcioss/drunix-|^yugabytedb/yugabyte|^eqalpha/keydb|^bench/(neuchain|neuchain-build|neuchain-deps|fabricx-rest)' \
+    | grep -E '^(ghcr\.io/)?hyperledger/fabric-(peer|orderer|ccenv|baseos|ca)|^hyperledger/fabric-(peer|orderer|ccenv|baseos|ca)|^npcioss/drunix-|^yugabytedb/yugabyte|^eqalpha/keydb|^bench/(neuchain|neuchain-build|neuchain-deps|fabricx)' \
     | sort -u | xargs -r docker rmi -f >/dev/null 2>&1 || true
 fi
 

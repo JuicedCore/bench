@@ -91,7 +91,6 @@ budget:
 platforms:
   kneemock:
     nodes: {node: 1}
-    per_container: {cpus: 1.0, memory: "1g"}
 `
 
 func writeKneeProfile(t *testing.T) string {

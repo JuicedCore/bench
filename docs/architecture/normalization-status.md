@@ -54,7 +54,7 @@ Adapters: `pkg/adapters/fabric`, `pkg/adapters/drunix`, `pkg/adapters/fabricx`,
 | **State DB** | LevelDB is requested for every normalized run. fabric-cft, fabric-bft and NeuChain use it. Drunix runs YugabyteDB (its shipped network cannot run LevelDB). Fabric-X runs PostgreSQL, its only state store. | Different storage engines under the same workload; write-heavy numbers are the most exposed. | Automatic: manifest `state_db` vs `state_db_requested`, plus a caveat on the run and in the report. |
 | **Block cutting** | The Fabric family applies the full shared setting: 100 messages, 1 s, 2 MB preferred / 10 MB absolute. Fabric-X applies the message count and timeout but **not the byte limits**. NeuChain applies **nothing** — its batching is not wired to the profile, and its deploy is still placeholder. | Block formation, and so throughput and latency, is only truly matched within the Fabric family. | **Not caveated automatically.** Treat cross-family throughput as carrying this. |
 | **Cryptography** | Fabric and Drunix verify an ECDSA-P256 endorsement on every transaction. Fabric-X verifies a client-signed ECDSA-P256 endorsement, with no peer endorsement round-trip. NeuChain signs with RSA-1024 and has no endorsement phase. | Per-transaction verification cost differs by architecture. This is disclosed, not equalized, by design. | Manifest `crypto`; footnoted under every table in the report. |
-| **Submit latency** | Fabric family: T2 is the gateway's return after the orderer accepted the transaction. Fabric-X: T2 is the Arma router's reply to that envelope (it accepted it and forwarded it to a batcher, strictly before ordering and commit — the same point the Fabric gateway's Submit returns). NeuChain: ZeroMQ publish is fire-and-forget, so T2 is only a local call return. | Submit and commit latency are meaningful for the Fabric family and Fabric-X; for NeuChain compare end-to-end latency only. | Documented in fairness-guarantees.md; not caveated per run. |
+| **Submit latency** | Fabric family: T2 is the gateway's return after the orderer accepted the transaction. Fabric-X: T2 is the first Arma router's reply to that envelope (it goes to all four) (it accepted it and forwarded it to a batcher, strictly before ordering and commit — the same point the Fabric gateway's Submit returns). NeuChain: ZeroMQ publish is fire-and-forget, so T2 is only a local call return. | Submit and commit latency are meaningful for the Fabric family and Fabric-X; for NeuChain compare end-to-end latency only. | Documented in fairness-guarantees.md; not caveated per run. |
 | **Payload size** | Drunix JSON-wraps every write value client-side to survive a YugabyteDB statedb bug. | Drunix's on-wire payload is slightly larger than 64 bytes. | Automatic caveat on Drunix runs. |
 
 ## What can be quoted today
@@ -69,10 +69,13 @@ Adapters: `pkg/adapters/fabric`, `pkg/adapters/drunix`, `pkg/adapters/fabricx`,
 Always subject to the per-run rejection rules in fairness-guarantees.md: the
 comparison report excludes runs that fail them and says why.
 
-## Not yet verified live
+## Verified live
 
-As of this writing no run has exercised any of the following on a real network:
-the measurement fixes (saturation rule, generator back-pressure, Fabric T3 from
-block events), the resource-budget enforcement, the Fabric-X gRPC rebuild, or a
-working NeuChain deployment. Every result recorded before 2026-09-13 predates
-them and the report rejects it.
+The 2026-09-14 `local-small` campaign (smoke + probe-sweep on fabric-cft,
+fabric-bft, drunix and fabricx) exercised the saturation rule, generator
+back-pressure, block-event T3, resource-budget enforcement and the Fabric-X gRPC
+path on real networks. Results and caveats: `Final_runs/` (linked from the
+top-level README). NeuChain has still never run: its images are not built.
+Every result recorded before 2026-09-13 predates the measurement fixes and the
+report rejects it; Fabric-X results from before 2026-09-14 predate the
+multi-router submit fix and are invalid (~10 s of artificial latency).

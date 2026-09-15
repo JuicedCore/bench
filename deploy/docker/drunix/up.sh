@@ -17,8 +17,10 @@
 # for state_db=leveldb this script patches compose-test-net.yaml to drop the SQL
 # env (peer then falls back to goleveldb from core.yaml).
 source "$(dirname "${BASH_SOURCE[0]}")/../lib.sh"
-need docker; need git; need jq
+need docker; need git; need jq; need python3
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+on_error_dump '^(lp1|cp\.|vs1|orderer|hlf_keydb|yugabyte|dev-)'
+
 
 DRUNIX_REPO="${BENCH_DRUNIX_REPO:-https://github.com/npci/drunix.git}"
 # Pinned by commit: Drunix publishes no release tags, and main moves.
@@ -44,24 +46,7 @@ STATE_DB="$(state_db drunix)"          # "leveldb" for normalized runs, else pro
 log "drunix state_db=${STATE_DB}"
 
 # --- pin orderer batch params (ADR-011) -----------------------------------
-CONFIGTX="${NET}/configtx/configtx.yaml"
-if [ -f "$CONFIGTX" ]; then
-  BT="$(platform_field drunix orderer_batch.batch_timeout       || echo 1s)"
-  MMC="$(platform_field drunix orderer_batch.max_message_count   || echo 100)"
-  PMB="$(platform_field drunix orderer_batch.preferred_max_bytes || echo '2 MB')"
-  AMB="$(platform_field drunix orderer_batch.absolute_max_bytes  || echo '10 MB')"
-  log "pinning orderer batch: timeout=${BT} maxMsgCount=${MMC} preferred=${PMB} absolute=${AMB}"
-  python3 - "$CONFIGTX" "$BT" "$MMC" "$PMB" "$AMB" <<'PY'
-import re, sys
-path, bt, mmc, pmb, amb = sys.argv[1:6]
-s = open(path).read()
-s = re.sub(r'BatchTimeout:\s*\S+',        f'BatchTimeout: {bt}', s, count=1)
-s = re.sub(r'MaxMessageCount:\s*\d+',     f'MaxMessageCount: {mmc}', s, count=1)
-s = re.sub(r'PreferredMaxBytes:\s*[^\n]+',f'PreferredMaxBytes: {pmb}', s, count=1)
-s = re.sub(r'AbsoluteMaxBytes:\s*[^\n]+', f'AbsoluteMaxBytes: {amb}', s, count=1)
-open(path,'w').write(s)
-PY
-fi
+patch_orderer_batch drunix "${NET}/configtx/configtx.yaml"
 
 # --- state DB -----------------------------------------------------------
 # Drunix's shipped test-network runs on YugabyteDB and its network.sh only
@@ -105,12 +90,13 @@ done
 if [ "$have_bins" != true ] || [ "$have_imgs" != true ]; then
   # Pull the Drunix images directly (docker per-layer resume beats prereq's curl).
   for img in npcioss/drunix-orderer:1.0.0 npcioss/drunix-peer:1.0.0 npcioss/drunix-vscc:1.0.0 npcioss/drunix-ccenv:1.0 npcioss/drunix-baseos:1.0; do
-    for n in 1 2 3 4; do docker pull "$img" && break; warn "retry pull $img ($n)"; sleep 5; done
+    docker image inspect "$img" >/dev/null 2>&1 || pull_image "$img" 4
   done
   # Reuse the shared fabric-samples CLI binaries if Drunix didn't fetch its own.
   if [ "$have_bins" != true ] && [ -x "${REPO_ROOT}/deploy/docker/.cache/fabric-samples/bin/peer" ]; then
     mkdir -p "${NET}/bin"
-    cp "${REPO_ROOT}/deploy/docker/.cache/fabric-samples/bin/"* "${NET}/bin/" 2>/dev/null || true
+    cp "${REPO_ROOT}/deploy/docker/.cache/fabric-samples/bin/"* "${NET}/bin/" \
+      || warn "could not copy shared Fabric CLI binaries into ${NET}/bin; falling back to network.sh prereq"
   fi
   { [ -x "${NET}/../bin/peer" ] || [ -x "${NET}/bin/peer" ]; } || \
     ( log "running network.sh prereq for Fabric binaries"; ./network.sh prereq || warn "prereq non-zero; continuing" )
@@ -150,10 +136,11 @@ fi
 [ -f "$KEYDB_COMPOSE" ] && docker compose -f "$KEYDB_COMPOSE" down 2>/dev/null || true
 drop_caches
 if [ "$NETWORK_SH_DB" = "leveldb" ]; then
-  for n in 1 2 3; do docker pull eqalpha/keydb && break; sleep 5; done
-  docker network create drunix_test 2>/dev/null || true
-  docker compose -f "$KEYDB_COMPOSE" up -d
-  sleep 4
+  pull_image eqalpha/keydb 3
+  docker network inspect drunix_test >/dev/null 2>&1 || docker network create drunix_test >/dev/null
+  docker compose -f "$KEYDB_COMPOSE" up -d || die "drunix: KeyDB compose up failed"
+  wait_for "KeyDB containers running" 60 sh -c '[ "$(docker ps --filter name=hlf_keydb_org --format x | wc -l)" -ge 2 ]' \
+    || die "drunix: KeyDB did not start" "docker compose -f ${KEYDB_COMPOSE} logs"
 fi
 # network.sh starts YugabyteDB and the peers together, and a peer whose ledger
 # provider cannot reach YSQL (:5433) panics instead of waiting - seen as
@@ -161,7 +148,11 @@ fi
 # Exited (2). Retry the bring-up rather than failing the whole run on that race.
 for attempt in 1 2 3; do
   ./network.sh up createChannel -c "$CHANNEL" -s "$NETWORK_SH_DB" && break
-  [ "$attempt" = 3 ] && die "drunix network did not come up after 3 attempts"
+  if [ "$attempt" = 3 ]; then
+    dump_containers '^(lp1|cp\.|vs1|orderer|yugabyte)' 60
+    die "drunix network did not come up after 3 attempts" \
+        "exited peers with 'connection refused' on :5433 = YugabyteDB not ready; OOM (exit 137) = raise the profile's memory budget"
+  fi
   warn "drunix bring-up attempt ${attempt} failed (peers racing YugabyteDB start-up?); retrying"
   ./network.sh down || true
   sleep 10
@@ -174,7 +165,8 @@ done
 # give deployCC more retries / delay.
 export CORE_PEER_CLIENT_CONNTIMEOUT=120s
 log "deploying ${CC_NAME} from ${CC_SRC} (connTimeout=120s, retries=10)"
-./network.sh deployCC -c "$CHANNEL" -ccn "$CC_NAME" -ccp "$CC_SRC" -ccl go -r 10 -d 10
+./network.sh deployCC -c "$CHANNEL" -ccn "$CC_NAME" -ccp "$CC_SRC" -ccl go -r 10 -d 10 \
+  || die "drunix: chaincode deploy failed" "'docker logs lp1.org1.example.com' and 'docker logs cp.org1.example.com' have lifecycle errors"
 
 # --- resource budget (equal total across platforms, split evenly) ------------
 # Every Drunix node counts: Lite/Committing Peers, VSCC, orderer, and the KeyDB +
@@ -185,7 +177,8 @@ RES_ENV="$(apply_budget drunix '^(lp1\.org[12]|cp\.org[12]|vs1\.org[12]|orderer\
 # --- emit connection.env ----------------------------------------------
 ORG1="${NET}/organizations/peerOrganizations/org1.example.com"
 USER_MSP="${ORG1}/users/User1@org1.example.com/msp"
-CERT="$(ls "${USER_MSP}"/signcerts/* 2>/dev/null | head -1)"
+CERT="$(user_signcert "$USER_MSP")"
+check_paths "$CERT" "${USER_MSP}/keystore" "${ORG1}/peers/peer0.org1.example.com/tls/ca.crt"
 cat > "${HERE}/connection.env" <<EOF
 # generated by deploy/docker/drunix/up.sh  ($(date -u +%FT%TZ))
 # endorse against the Lite Peer (:7051); its gateway federates commit-status
@@ -195,7 +188,7 @@ BENCH_ADAPTER_ENDORSE_ENDPOINT=localhost:7051
 BENCH_ADAPTER_COMMIT_ENDPOINT=localhost:7061
 BENCH_ADAPTER_GATEWAY_PEER=peer0.org1.example.com
 BENCH_ADAPTER_MSP_ID=Org1MSP
-BENCH_ADAPTER_CERT_PATH=${CERT:-${USER_MSP}/signcerts/User1@org1.example.com-cert.pem}
+BENCH_ADAPTER_CERT_PATH=${CERT}
 BENCH_ADAPTER_KEY_PATH=${USER_MSP}/keystore
 BENCH_ADAPTER_TLS_CA_CERT_PATH=${ORG1}/peers/peer0.org1.example.com/tls/ca.crt
 BENCH_ADAPTER_CHANNEL=${CHANNEL}

@@ -181,7 +181,16 @@ for inspection; `terraform destroy` is printed for you.
   had uncommitted changes.
 - `results/_campaigns/<id>/`: the campaign log, each platform's hardware record,
   and `comparison.html` for this campaign's runs only.
+- `results/_campaigns/<id>/SUMMARY.tsv`: one row per platform×config with
+  status and failure reason.
+- `results/_campaigns/<id>/<platform>/<config>/{deploy,run,teardown}.log` and
+  `capture/`: per-step logs and the pre-teardown diagnostic capture, taken on
+  the platform VM and pulled back before it is destroyed.
+- `results/_campaigns/<id>/<vm>-install.log`: saved if a VM fails provisioning.
 - `gs://<results-bucket>/<id>/results/` if `--results-bucket` was given.
+
+See [running-benchmarks.md#logs-and-failure-captures](running-benchmarks.md#logs-and-failure-captures)
+for the layout and a triage recipe.
 
 ### Looking at a live run
 

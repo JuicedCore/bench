@@ -107,23 +107,31 @@ func pctl(s metrics.Snapshot, key string) float64 {
 	return s.Percentiles[key]
 }
 
-func writePhaseCSV(path string, rr *RunResult) error {
+// writePhaseCSV writes phases.csv. Every write, the flush and the close are
+// checked: a full disk must fail the run's result write, not leave a silently
+// truncated CSV that scripts/plot.py then plots.
+func writePhaseCSV(path string, rr *RunResult) (err error) {
 	f, err := os.Create(path)
 	if err != nil {
 		return err
 	}
-	defer f.Close()
+	defer func() {
+		if cerr := f.Close(); cerr != nil && err == nil {
+			err = fmt.Errorf("close %s: %w", path, cerr)
+		}
+	}()
 	w := csv.NewWriter(f)
-	defer w.Flush()
-	_ = w.Write([]string{"phase", "offered_tps", "confirmed_tps", "offered_tps_actual", "fail_rate",
+	if err := w.Write([]string{"phase", "offered_tps", "confirmed_tps", "offered_tps_actual", "fail_rate",
 		"committed", "submitted", "invalid", "errored", "timed_out",
 		"e2e_p50_ms", "e2e_p95_ms", "e2e_p99_ms", "e2e_p99.9_ms", "submit_p50_ms", "commit_p50_ms",
 		// Appended, so existing positional readers keep working. These are what
 		// tell a real saturation reading from a broken run.
-		"goodput_ratio", "send_gap_p99_ms", "invariant_ok", "verdict"})
+		"goodput_ratio", "send_gap_p99_ms", "invariant_ok", "verdict"}); err != nil {
+		return fmt.Errorf("write %s header: %w", path, err)
+	}
 	for _, ph := range rr.Phases {
 		r := ph.Result
-		_ = w.Write([]string{
+		if err := w.Write([]string{
 			ph.Name,
 			strconv.Itoa(ph.OfferedTPS),
 			f2(r.ConfirmedTPS), f2(r.OfferedTPS), f4(r.FailureRate),
@@ -131,7 +139,13 @@ func writePhaseCSV(path string, rr *RunResult) error {
 			f2(pctl(r.E2E, "p50")), f2(pctl(r.E2E, "p95")), f2(pctl(r.E2E, "p99")), f2(pctl(r.E2E, "p99.9")),
 			f2(pctl(r.Submit, "p50")), f2(pctl(r.Commit, "p50")),
 			f4(goodput(ph)), f2(pctl(r.SendGap, "p99")), strconv.FormatBool(r.InvariantOK), ph.Verdict,
-		})
+		}); err != nil {
+			return fmt.Errorf("write %s row %s: %w", path, ph.Name, err)
+		}
+	}
+	w.Flush()
+	if err := w.Error(); err != nil {
+		return fmt.Errorf("flush %s: %w", path, err)
 	}
 	return nil
 }

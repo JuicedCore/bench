@@ -1,7 +1,9 @@
 package harness
 
 import (
+	"context"
 	"encoding/json"
+	"log/slog"
 	"os"
 	"os/exec"
 	"strings"
@@ -102,8 +104,12 @@ func harnessGitSHA() string {
 	if v := strings.TrimSpace(os.Getenv("BENCH_HARNESS_GIT_SHA")); v != "" {
 		return v
 	}
-	out, err := exec.Command("git", "rev-parse", "--short", "HEAD").Output()
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	out, err := exec.CommandContext(ctx, "git", "rev-parse", "--short", "HEAD").Output()
 	if err != nil {
+		// Not fatal, but the manifest loses traceability to the harness code.
+		slog.Debug("harness git SHA unavailable (not a git checkout? set BENCH_HARNESS_GIT_SHA)", "err", err)
 		return "unknown"
 	}
 	return strings.TrimSpace(string(out))

@@ -2,6 +2,7 @@ package loadgen
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"sync"
 	"time"
@@ -52,6 +53,11 @@ type LoadProfile struct {
 
 // Generator drives one adapter with one workload for the duration of a phase.
 type Generator struct {
+	// ID distinguishes generators sharing one Collector. It prefixes the
+	// synthetic ids of transactions that never got a platform id, which would
+	// otherwise collide across generators (each numbers its seq from 1) and
+	// overwrite each other's failure records, under-counting failures.
+	ID        int
 	Adapter   adapters.PlatformAdapter
 	Source    TxSource
 	Collector *metrics.Collector
@@ -142,7 +148,7 @@ func (g *Generator) runOpen(ctx context.Context, p LoadProfile) error {
 		select {
 		case inflight <- struct{}{}:
 		default:
-			g.Collector.Add(tx.Seq, fmt.Sprintf("seq-%d-unsent", tx.Seq), scheduled, scheduled, scheduled,
+			g.Collector.Add(tx.Seq, fmt.Sprintf("g%d-seq-%d-unsent", g.ID, tx.Seq), scheduled, scheduled, scheduled,
 				fmt.Sprintf("not sent: %d transactions already in flight (platform is not finalizing)", cap(inflight)))
 			continue
 		}
@@ -244,13 +250,27 @@ func (g *Generator) runClosed(ctx context.Context, p LoadProfile) error {
 func (g *Generator) submit(ctx context.Context, tx *adapters.Transaction, scheduled time.Time) (string, bool) {
 	t1 := time.Now()
 	res, err := g.Adapter.Submit(ctx, tx)
+	failedID := fmt.Sprintf("g%d-seq-%d-failed", g.ID, tx.Seq)
 	if err != nil {
-		id := fmt.Sprintf("seq-%d-failed", tx.Seq)
+		id := failedID
 		if res != nil && res.TxID != "" {
 			id = res.TxID
 		}
 		g.Collector.Add(tx.Seq, id, scheduled, t1, time.Now(), err.Error())
 		return id, false
+	}
+	// Contract violations by the adapter: record them as failures with a message
+	// that names the bug, instead of panicking the run (nil) or merging every
+	// transaction into one record keyed "" (empty id).
+	if res == nil {
+		g.Collector.Add(tx.Seq, failedID, scheduled, t1, time.Now(),
+			fmt.Sprintf("adapter %s bug: Submit returned nil result and nil error", g.Adapter.Name()))
+		return failedID, false
+	}
+	if res.TxID == "" {
+		g.Collector.Add(tx.Seq, failedID, scheduled, t1, time.Now(),
+			fmt.Sprintf("adapter %s bug: Submit returned an empty TxID", g.Adapter.Name()))
+		return failedID, false
 	}
 	t2 := res.AckTime
 	if t2.IsZero() {
@@ -266,12 +286,21 @@ func (g *Generator) awaitFinality(ctx context.Context, id string, wait time.Dura
 	fr, err := g.Adapter.WaitForFinality(ctx, id, wait)
 	now := time.Now()
 	switch {
+	case err != nil && errors.Is(err, adapters.ErrFinalityStreamDown):
+		// The observer is dead, not the transaction slow: count it as an error
+		// so a failed phase reads "stream down", not "timed out".
+		g.Collector.Complete(id, now, 0, metrics.OutcomeError, err.Error())
 	case err != nil:
 		g.Collector.Complete(id, now, 0, metrics.OutcomeTimeout, err.Error())
 	case fr == nil:
-		g.Collector.Complete(id, now, 0, metrics.OutcomeTimeout, "nil finality result")
+		g.Collector.Complete(id, now, 0, metrics.OutcomeTimeout,
+			fmt.Sprintf("adapter %s bug: WaitForFinality returned nil result and nil error", g.Adapter.Name()))
 	case !fr.Valid:
-		g.Collector.Complete(id, tsOr(fr.FinalityTime, now), fr.BlockNum, metrics.OutcomeInvalid, "")
+		msg := "committed invalid"
+		if fr.InvalidReason != "" {
+			msg = "committed invalid: " + fr.InvalidReason
+		}
+		g.Collector.Complete(id, tsOr(fr.FinalityTime, now), fr.BlockNum, metrics.OutcomeInvalid, msg)
 	default:
 		g.Collector.Complete(id, tsOr(fr.FinalityTime, now), fr.BlockNum, metrics.OutcomeCommitted, "")
 	}

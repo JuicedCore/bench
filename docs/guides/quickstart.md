@@ -54,10 +54,13 @@ make bench PROFILE=local-small
 ```
 
 This runs quick-smoke and probe-sweep on fabric-cft, fabric-bft and drunix, each
-deployed fresh and torn down in turn. It takes a little over an hour. The
+deployed fresh and torn down in turn. It takes a little over an hour. Fabric-X is
+opt-in because its first deploy compiles from source:
+`make bench PROFILE=local-small PLATFORMS="fabric-cft fabric-bft drunix fabricx"`. The
 comparison of this campaign's runs is written to
-`results/_campaigns/<id>/comparison.html`. Choose what runs with
-`PLATFORMS="..."` and `CONFIGS=a.yaml,b.yaml`.
+`results/_campaigns/<id>/comparison.html`, plus `SUMMARY.tsv` and per-step logs
+(see [running-benchmarks.md#logs-and-failure-captures](running-benchmarks.md#logs-and-failure-captures)).
+Choose what runs with `PLATFORMS="..."` and `CONFIGS=a.yaml,b.yaml`.
 
 `summary.txt` in each run directory is the quickest read. A run that failed says
 so: `PLATFORM FAILURE` lines, per-phase `errors`, and `HEADLINE none`. The

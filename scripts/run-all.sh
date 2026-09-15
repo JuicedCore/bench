@@ -9,46 +9,69 @@
 # Use configs from configs/normalized/ for a comparison: one file serves every
 # platform, which is what makes running the same bytes against each meaningful.
 #
-# Default platforms: fabric-cft fabric-bft drunix. fabricx is supported but not
-# yet verified on a live network, and neuchain needs its image built first (see
-# docs/REMAINING-WORK.md); name them explicitly to include them.
+# Default platforms: fabric-cft fabric-bft drunix. fabricx works (verified on
+# local-small) but compiles from source on first deploy, and neuchain needs its
+# image built first (see docs/REMAINING-WORK.md); name them explicitly to include
+# them.
 #
 # Every platform is deployed fresh for every config and torn down afterwards. The
 # log and a comparison report covering only this campaign's runs go to
 # results/_campaigns/<timestamp>-<profile>/. Exits non-zero if any deploy or run
 # failed.
+#
+# Per-(platform,config) deploy/run/teardown logs and a pre-teardown container
+# capture land under results/_campaigns/<...>/<platform>/<config>/, and every
+# step's outcome is appended as a row to results/_campaigns/<...>/SUMMARY.tsv.
+# See docs/guides/running-benchmarks.md#logs-and-failure-captures.
 set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT"
+# shellcheck source=scripts/campaign-lib.sh
+source "$ROOT/scripts/campaign-lib.sh"
+LOG_TAG=run-all
+# shellcheck source=scripts/log-lib.sh
+source "$ROOT/scripts/log-lib.sh"
 
-CONFIGS="${1:?usage: run-all.sh <config.yaml[,config.yaml...]> [profile] [platform ...]}"
+[ $# -ge 1 ] || die "usage: run-all.sh <config.yaml[,config.yaml...]> [profile] [platform ...]"
+CONFIGS="$1"
 PROFILE="${2:-local}"
 shift $(( $# >= 2 ? 2 : 1 ))
 PLATFORMS=("$@")
 [ ${#PLATFORMS[@]} -gt 0 ] || PLATFORMS=(fabric-cft fabric-bft drunix)
 
 IFS=, read -r -a CONFIG_LIST <<< "$CONFIGS"
-for c in "${CONFIG_LIST[@]}"; do [ -f "$c" ] || { echo "no such config: $c" >&2; exit 1; }; done
-for p in "${PLATFORMS[@]}"; do [ -f "deploy/docker/$p/up.sh" ] || { echo "no deploy script for platform: $p" >&2; exit 1; }; done
+for c in "${CONFIG_LIST[@]}"; do [ -f "$c" ] || die "no such config: $c" "configs live in configs/normalized/ (see CONFIGS.md)"; done
+for p in "${PLATFORMS[@]}"; do
+  [ -f "deploy/docker/$p/up.sh" ] || die "no deploy script for platform: $p" \
+    "available: $(ls deploy/docker/*/up.sh | cut -d/ -f3 | grep -v monitoring | tr '\n' ' ')"
+done
+[ -f "deploy/profiles/${PROFILE}.yaml" ] || die "no such profile: ${PROFILE}" \
+  "available: $(ls deploy/profiles/*.yaml | xargs -n1 basename | sed 's/\.yaml$//' | tr '\n' ' ')"
+need go; need docker
 
 CAMPAIGN_START="$(date +%Y-%m-%dT%H:%M:%S%:z)"
 CAMPAIGN_DIR="$ROOT/results/_campaigns/$(date -u +%Y%m%dT%H%M%SZ)-${PROFILE}"
 mkdir -p "$CAMPAIGN_DIR"
 exec > >(tee -a "$CAMPAIGN_DIR/run-all.log") 2>&1
 
+log "campaign dir: $CAMPAIGN_DIR"
 echo "==================== preflight (${PROFILE}) ===================="
 pf=0
 bash scripts/preflight.sh "$PROFILE" || pf=$?
-[ "$pf" -ne 1 ] || { echo "preflight found blockers; not running"; exit 1; }
-[ "$pf" -ne 2 ] || echo "!! preflight warnings above - numbers from this host may not be trustworthy"
+case "$pf" in
+  0) ;;
+  2) warn "preflight warnings above - numbers from this host may not be trustworthy" ;;
+  1) die "preflight found blockers (above); not running" ;;
+  *) die "preflight itself crashed (exit $pf) - not running on an unchecked host" "run: bash scripts/preflight.sh $PROFILE" ;;
+esac
 
 BR="$ROOT/bin/benchrunner"
-go build -o "$BR" ./cmd/benchrunner
+go build -o "$BR" ./cmd/benchrunner || die "go build of benchrunner failed (compiler output above)"
 
 isolate() {
   echo "-- isolation: prune stopped containers + drop page cache"
-  docker container prune -f >/dev/null 2>&1 || true
-  docker network prune -f >/dev/null 2>&1 || true
+  docker container prune -f >/dev/null 2>&1 || warn "docker container prune failed; leftover containers may share the host"
+  docker network prune -f >/dev/null 2>&1 || true   # fails harmlessly while a network is in use
   sync
   # -n: never block an unattended run on a password prompt.
   sudo -n sh -c 'echo 3 > /proc/sys/vm/drop_caches' 2>/dev/null \
@@ -62,41 +85,75 @@ for CONFIG in "${CONFIG_LIST[@]}"; do
     echo "==================== $p : $CONFIG ===================="
     isolate
 
+    DIR="$(step_dir "$CAMPAIGN_DIR" "$p" "$CONFIG")"
+    SINCE="$(date --rfc-3339=seconds)"
+
     echo "-- deploy $p"
-    if ! bash "deploy/docker/$p/up.sh" "$PROFILE"; then
-      echo "!! deploy failed for $p"
+    if ! bash "deploy/docker/$p/up.sh" "$PROFILE" 2>&1 | tee "$DIR/deploy.log"; then
+      warn "deploy failed for $p: $(reason_of "$DIR/deploy.log")"
       FAILED+=("$p:$CONFIG:deploy")
-      bash "deploy/docker/$p/down.sh" "$PROFILE" || true
+      bash scripts/capture.sh "$DIR/capture" "$SINCE"
+      record "$CAMPAIGN_DIR" "$p" "$CONFIG" deploy deploy-failed "$(reason_of "$DIR/deploy.log")" "$DIR"
+      bash "deploy/docker/$p/down.sh" "$PROFILE" 2>&1 | tee "$DIR/teardown.log" || true
       continue
     fi
 
     ENVF="deploy/docker/$p/connection.env"
     if [ ! -f "$ENVF" ]; then
-      echo "!! $ENVF missing - deploy did not emit connection info"
+      warn "$ENVF missing - deploy did not emit connection info"
       FAILED+=("$p:$CONFIG:deploy")
-      bash "deploy/docker/$p/down.sh" "$PROFILE" || true
+      bash scripts/capture.sh "$DIR/capture" "$SINCE"
+      record "$CAMPAIGN_DIR" "$p" "$CONFIG" deploy deploy-failed "deploy did not emit connection.env" "$DIR"
+      bash "deploy/docker/$p/down.sh" "$PROFILE" 2>&1 | tee "$DIR/teardown.log" || true
       continue
     fi
 
     echo "-- run $CONFIG on $p"
     # Subshell: one platform's connection.env must not leak into the next.
+    set +e
     # shellcheck disable=SC1090  # generated per platform by its up.sh
-    if ! ( set -a; . "$ENVF"; set +a
-           "$BR" run --config "$CONFIG" --platform "$p" --profile "$PROFILE" ); then
-      echo "!! run failed for $p"
-      FAILED+=("$p:$CONFIG:run")
-    fi
+    ( set -a; . "$ENVF"; set +a
+      "$BR" run --config "$CONFIG" --platform "$p" --profile "$PROFILE" ) 2>&1 | tee "$DIR/run.log"
+    rc=${PIPESTATUS[0]}
+    set -e
+    case "$rc" in
+      0) if grep -q 'FAILED RUN' "$DIR/run.log"; then
+           warn "run for $p completed but is not a measurement: $(reason_of "$DIR/run.log")"
+           FAILED+=("$p:$CONFIG:no-measurement")
+           record "$CAMPAIGN_DIR" "$p" "$CONFIG" run no-measurement "$(reason_of "$DIR/run.log")" "$DIR"
+         else
+           record "$CAMPAIGN_DIR" "$p" "$CONFIG" run ok "" "$DIR"
+         fi ;;
+      3) warn "platform container failed during run for $p"
+         FAILED+=("$p:$CONFIG:container")
+         record "$CAMPAIGN_DIR" "$p" "$CONFIG" run container-failed "$(reason_of "$DIR/run.log")" "$DIR" ;;
+      *) warn "run failed for $p (exit $rc): $(reason_of "$DIR/run.log")"
+         FAILED+=("$p:$CONFIG:run")
+         record "$CAMPAIGN_DIR" "$p" "$CONFIG" run run-failed "$(reason_of "$DIR/run.log")" "$DIR" ;;
+    esac
+
+    echo "-- capture $p"
+    bash scripts/capture.sh "$DIR/capture" "$SINCE"
 
     echo "-- teardown $p"
-    bash "deploy/docker/$p/down.sh" "$PROFILE" || echo "!! teardown reported an error for $p"
+    bash "deploy/docker/$p/down.sh" "$PROFILE" 2>&1 | tee "$DIR/teardown.log" \
+      || warn "teardown reported an error for $p (see $DIR/teardown.log); the next platform may start on a dirty host"
   done
 done
 
 echo "==================== report ===================="
-"$BR" report --results-dir "$ROOT/results" --output "$CAMPAIGN_DIR/comparison.html" --since "$CAMPAIGN_START"
-echo "wrote $CAMPAIGN_DIR/comparison.html (this campaign's runs only)"
+if "$BR" report --results-dir "$ROOT/results" --output "$CAMPAIGN_DIR/comparison.html" --since "$CAMPAIGN_START"; then
+  log "wrote $CAMPAIGN_DIR/comparison.html (this campaign's runs only)"
+else
+  warn "comparison report failed (above); per-run results are still under results/<platform>/"
+  FAILED+=("report")
+fi
+
+print_summary "$CAMPAIGN_DIR"
 
 if [ ${#FAILED[@]} -gt 0 ]; then
-  echo "!! failures: ${FAILED[*]}"
+  warn "failures: ${FAILED[*]}"
+  warn "triage: column -t -s \$'\\t' $CAMPAIGN_DIR/SUMMARY.tsv; then docs/README.md#troubleshooting"
   exit 1
 fi
+log "campaign finished with no failures"

@@ -4,9 +4,11 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"math"
 	"os/exec"
+	"strings"
 	"time"
 )
 
@@ -47,7 +49,22 @@ func renderCharts(ctx context.Context, req chartRequest) (map[string]string, err
 	cmd.Stderr = &stderr
 
 	if err := cmd.Run(); err != nil {
-		return nil, fmt.Errorf("render_run_report.py: %w: %s", err, stderr.String())
+		msg := strings.TrimSpace(stderr.String())
+		if len(msg) > 800 {
+			msg = "..." + msg[len(msg)-800:]
+		}
+		hint := ""
+		switch {
+		case errors.Is(err, exec.ErrNotFound):
+			hint = " (python3 not on PATH)"
+		case strings.Contains(msg, "No module named"):
+			hint = " (install matplotlib: scripts/install-deps.sh, or pip install matplotlib)"
+		case strings.Contains(msg, "can't open file"):
+			hint = " (run benchrunner from the repository root)"
+		case rctx.Err() == context.DeadlineExceeded:
+			hint = " (timed out after 20s)"
+		}
+		return nil, fmt.Errorf("scripts/render_run_report.py: %w%s: %s", err, hint, msg)
 	}
 
 	var out map[string]string

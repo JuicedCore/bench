@@ -38,13 +38,14 @@ deterministic transaction. Any such composition is recorded in
 
 ## kv-read on every platform
 
-`kv-read` is in the normalized set (adr-009) but a read is not a commit anywhere,
-so its latency is not comparable to the write modes:
+`kv-read` is in the normalized set (adr-009), but reads take a different path on
+each platform family, so its latency is not comparable to the write modes:
 
 - **fabric / drunix** — `Evaluate` against one peer; `WaitForFinality` returns
   immediately with `Valid: true` and nothing reaches the ledger. The number is a
   client-observed evaluate round-trip.
-- **fabricx** — the same synchronous FSC-view POST as a write.
+- **fabricx** — a full transaction through Arma ordering and the committer,
+  carrying a unique dummy blind write (see above).
 - **neuchain** — a real submitted transaction carrying a read set, through the
   full commit path (`txbuild.go` maps `TxRead` to a read-set-only YCSB payload).
 
@@ -53,7 +54,7 @@ comparable *to each other* as read paths; `read-profile` numbers must never be s
 beside `kv-write` numbers as though they measured the same thing.
 
 **Caveat wording:** "kv-read is an evaluate round-trip on Fabric/Drunix and a
-committed transaction on NeuChain; read latency is not comparable to write
+committed transaction on NeuChain and Fabric-X; read latency is not comparable to write
 latency, and not uniformly comparable across platforms."
 
 ## NeuChain / Fabric-X on the `local` profile

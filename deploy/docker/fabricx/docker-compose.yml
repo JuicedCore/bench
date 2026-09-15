@@ -42,9 +42,12 @@ services:
       fabricx-db: { condition: service_healthy }
     networks: { fx: { ipv4_address: 172.29.0.10 } }
     volumes: ["fx-arma:/data/arma"]
-    # Party 1 router (broadcast) and assembler (deliver fallback). Chosen to
-    # avoid every port the other platforms and the monitoring stack use.
-    ports: ["6022:6022", "6023:6023"]
+    # All four parties' routers (broadcast) and party 1's assembler (deliver
+    # fallback). The adapter submits to every router, as upstream's BFT client
+    # does: only the primary batcher cuts batches, and a request that reaches it
+    # via a secondary waits FirstStrikeThreshold (10s) first. Chosen to avoid
+    # every port the other platforms and the monitoring stack use.
+    ports: ["6022:6022", "6122:6122", "6222:6222", "6322:6322", "6023:6023"]
 
   fabricx-pipeline:
     <<: *node

@@ -16,17 +16,20 @@
 package fabricx
 
 import (
+	"errors"
 	"fmt"
 	"strconv"
+	"strings"
 	"time"
 )
 
 // Config is the Fabric-X adapter configuration, decoded from the run config's
 // `adapter:` map.
 type Config struct {
-	// BroadcastEndpoint is the Arma router's host:port that accepts
-	// AtomicBroadcast (party 1's router by default).
-	BroadcastEndpoint string `yaml:"broadcast_endpoint"`
+	// BroadcastEndpoints are the Arma routers' host:port, one per party, given as
+	// a comma-separated broadcast_endpoint. Every envelope goes to all of them -
+	// see routerSet in stream.go for why a single router is ~10s slower.
+	BroadcastEndpoints []string `yaml:"broadcast_endpoint"`
 	// DeliverEndpoint is where committed blocks are read from. The sidecar is
 	// preferred: it delivers blocks carrying per-transaction validation codes,
 	// which is what finality is decided on.
@@ -78,16 +81,24 @@ func (c *Config) applyDefaults() {
 }
 
 func (c *Config) validate() error {
-	if c.BroadcastEndpoint == "" {
-		return fmt.Errorf("fabricx: broadcast_endpoint is required (Arma router host:port)")
+	const hint = "is deploy/docker/fabricx/connection.env sourced?"
+	var errs []error
+	if len(c.BroadcastEndpoints) == 0 {
+		errs = append(errs, fmt.Errorf("fabricx: adapter.broadcast_endpoint is required (comma-separated Arma router host:port, one per party; %s)", hint))
 	}
 	if c.DeliverEndpoint == "" {
-		return fmt.Errorf("fabricx: deliver_endpoint is required (sidecar host:port)")
+		errs = append(errs, fmt.Errorf("fabricx: adapter.deliver_endpoint is required (sidecar host:port; %s)", hint))
 	}
 	if c.SigningKeyPath == "" {
-		return fmt.Errorf("fabricx: signing_key_path is required; deploy/docker/fabricx/up.sh emits it")
+		errs = append(errs, fmt.Errorf("fabricx: adapter.signing_key_path is required; deploy/docker/fabricx/up.sh emits it (%s)", hint))
 	}
-	return nil
+	if c.AckTimeout <= 0 {
+		errs = append(errs, fmt.Errorf("fabricx: adapter.ack_timeout must be > 0, got %s", c.AckTimeout))
+	}
+	if c.DialTimeout <= 0 {
+		errs = append(errs, fmt.Errorf("fabricx: adapter.dial_timeout must be > 0, got %s", c.DialTimeout))
+	}
+	return errors.Join(errs...)
 }
 
 // configFromExtra decodes the run config's `adapter:` map. Keys belonging to
@@ -98,7 +109,11 @@ func configFromExtra(extra map[string]any) (*Config, error) {
 	c := &Config{}
 	if extra != nil {
 		str := func(k string) string { s, _ := extra[k].(string); return s }
-		c.BroadcastEndpoint = str("broadcast_endpoint")
+		for _, ep := range strings.Split(str("broadcast_endpoint"), ",") {
+			if ep = strings.TrimSpace(ep); ep != "" {
+				c.BroadcastEndpoints = append(c.BroadcastEndpoints, ep)
+			}
+		}
 		c.DeliverEndpoint = str("deliver_endpoint")
 		c.SigningKeyPath = str("signing_key_path")
 		c.MetricsEndpointURL = str("metrics_endpoint")

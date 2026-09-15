@@ -2,8 +2,10 @@ package harness
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"html"
+	"log/slog"
 	"os"
 	"path/filepath"
 	"sort"
@@ -15,6 +17,10 @@ import (
 type ReportOptions struct {
 	// Since drops runs that started before it. Zero keeps everything.
 	Since time.Time
+
+	// unreadable lists result.json files that could not be read or parsed; set
+	// by BuildReport so the page says how many runs it could not include.
+	unreadable []string
 }
 
 // runRecord is one result.json plus the verdict on whether it may be compared.
@@ -111,18 +117,44 @@ func topSweepStep(rr RunResult) (int, bool) {
 	return top, found
 }
 
-func loadRunRecords(resultsDir string, opt ReportOptions) ([]runRecord, error) {
-	var recs []runRecord
-	err := filepath.WalkDir(resultsDir, func(path string, d os.DirEntry, err error) error {
-		if err != nil || d.IsDir() || d.Name() != "result.json" {
+// errIncompleteReport marks a BuildReport that wrote the page but had to leave
+// some runs out. Callers may treat it as a warning.
+var errIncompleteReport = errors.New("incomplete report")
+
+// IsIncompleteReport reports whether err only means some runs were unreadable.
+func IsIncompleteReport(err error) bool { return errors.Is(err, errIncompleteReport) }
+
+// loadRunRecords reads every result.json under resultsDir. Files that cannot be
+// read or parsed are skipped, logged with their path, and returned in bad so the
+// report can say it is incomplete; a missing or unreadable resultsDir is an error.
+func loadRunRecords(resultsDir string, opt ReportOptions) (recs []runRecord, bad []string, err error) {
+	if fi, serr := os.Stat(resultsDir); serr != nil {
+		return nil, nil, fmt.Errorf("results dir %s: %w", resultsDir, serr)
+	} else if !fi.IsDir() {
+		return nil, nil, fmt.Errorf("results dir %s is not a directory", resultsDir)
+	}
+	err = filepath.WalkDir(resultsDir, func(path string, d os.DirEntry, werr error) error {
+		if werr != nil {
+			slog.Warn("report: cannot read part of the results tree; runs under it are missing from the report", "path", path, "err", werr)
+			bad = append(bad, path)
+			if d != nil && d.IsDir() {
+				return filepath.SkipDir
+			}
+			return nil
+		}
+		if d.IsDir() || d.Name() != "result.json" {
 			return nil
 		}
 		b, rerr := os.ReadFile(path)
 		if rerr != nil {
+			slog.Warn("report: skipping unreadable result", "path", path, "err", rerr)
+			bad = append(bad, path)
 			return nil
 		}
 		var rr RunResult
-		if json.Unmarshal(b, &rr) != nil {
+		if jerr := json.Unmarshal(b, &rr); jerr != nil {
+			slog.Warn("report: skipping corrupt result.json (truncated write or interrupted run?)", "path", path, "err", jerr)
+			bad = append(bad, path)
 			return nil
 		}
 		if !opt.Since.IsZero() && rr.Manifest.StartedAt.Before(opt.Since) {
@@ -131,7 +163,7 @@ func loadRunRecords(resultsDir string, opt ReportOptions) ([]runRecord, error) {
 		recs = append(recs, runRecord{Path: path, RR: rr, Problems: runProblems(rr)})
 		return nil
 	})
-	return recs, err
+	return recs, bad, err
 }
 
 func median(xs []float64) float64 {
@@ -258,11 +290,21 @@ func aggregate(row *platformRow) {
 // with the reason instead of being averaged in. Normalized and platform-native
 // runs are reported in separate sections and never ranked together.
 func BuildReport(resultsDir, out string, opt ReportOptions) error {
-	recs, err := loadRunRecords(resultsDir, opt)
+	recs, bad, err := loadRunRecords(resultsDir, opt)
 	if err != nil {
 		return err
 	}
-	return os.WriteFile(out, []byte(renderComparison(buildComparison(recs), recs, resultsDir, opt)), 0o644)
+	if len(recs) == 0 {
+		slog.Warn("report: no result.json found; the report will be empty", "results_dir", resultsDir, "since", opt.Since)
+	}
+	opt.unreadable = bad
+	if err := os.WriteFile(out, []byte(renderComparison(buildComparison(recs), recs, resultsDir, opt)), 0o644); err != nil {
+		return fmt.Errorf("write report %s: %w", out, err)
+	}
+	if len(bad) > 0 {
+		return errors.Join(fmt.Errorf("report written to %s, but %d result file(s) could not be read and are missing from it (see warnings above)", out, len(bad)), errIncompleteReport)
+	}
+	return nil
 }
 
 func renderComparison(groups []*comparisonGroup, recs []runRecord, resultsDir string, opt ReportOptions) string {
@@ -298,6 +340,10 @@ ul{margin:.3rem 0 .3rem 1.1rem;padding:0}li{margin:.1rem 0}details{margin:.4rem 
 	fmt.Fprintf(&b, `. %d runs found, %d comparable, %d excluded.</p>
 <p class=mute>Harness-level metrics only: confirmed TPS, end-to-end latency (scheduled send to observed commit), failure rate. Platform-native breakdowns are excluded by design. Each figure is the median over comparable replicates; the spread column is min&ndash;max.</p>
 `, len(recs), valid, len(recs)-valid)
+	if n := len(opt.unreadable); n > 0 {
+		fmt.Fprintf(&b, `<p class=bad><strong>%d result file(s) could not be read and are missing from this report:</strong> %s</p>
+`, n, esc(strings.Join(opt.unreadable, ", ")))
+	}
 
 	section := func(norm bool, title, blurb string) {
 		any := false

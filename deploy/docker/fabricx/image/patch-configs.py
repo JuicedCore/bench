@@ -16,6 +16,7 @@ build an NOutOf(4, all) rule, so the client signs with all of them and satisfies
 it. Without this block the transaction is rejected ABORTED_SIGNATURE_INVALID and
 no namespace ever exists.
 """
+import sys
 from pathlib import Path
 
 ARMA_CRYPTO = "/root/arma/crypto/ordererOrganizations"
@@ -27,6 +28,19 @@ NS_SIGNING_KEY = "/root/artifacts/ns-signing-key.pem"
 NS_VERIFICATION_KEY = "/root/artifacts/ns-verification-key.pem"
 
 
+def must_replace(text: str, old: str, new: str, what: str, path: Path) -> str:
+    """Replace old with new once, or stop the image build naming what failed.
+
+    A plain str.replace that matches nothing leaves upstream's sample value in
+    place, and the stack then fails far away (wrong channel, unsigned _meta)."""
+    if new in text:
+        return text  # already patched (idempotent rebuild)
+    if old not in text:
+        sys.exit(f"patch-configs.py: cannot set {what} in {path}: expected text not found "
+                 f"(upstream sample config changed?):\n  {old!r}")
+    return text.replace(old, new, 1)
+
+
 def org_msp_dir(n: int) -> str:
     return f"{ARMA_CRYPTO}/org{n}/users/client@org{n}/msp"
 
@@ -35,7 +49,7 @@ def org_msp_dir(n: int) -> str:
 p = Path("/root/config/loadgen.yaml")
 t = p.read_text()
 
-t = t.replace("    channel-id: mychannel", "    channel-id: arma", 1)
+t = must_replace(t, "    channel-id: mychannel", "    channel-id: arma", "channel-id", p)
 # The application namespace signs with a raw ECDSA key: far cheaper than MSP, and
 # the workload's transactions do not need org identities.
 #
@@ -44,28 +58,34 @@ t = t.replace("    channel-id: mychannel", "    channel-id: arma", 1)
 # host - unable to reproduce it. Pointing both sides at one PEM file means the
 # key registered as the namespace policy is provably the key the adapter signs
 # with; a mismatch shows up as every transaction failing validation.
-t = t.replace(
+t = must_replace(
+    t,
     "        scheme: MSP\n",
     "        scheme: ECDSA\n"
     "        key-path:\n"
     f"          signing-key: {NS_SIGNING_KEY}\n"
     f"          verification-key: {NS_VERIFICATION_KEY}\n",
-    1,
+    "application namespace ECDSA key-path",
+    p,
 )
 # Broadcast goes to party 1's router, deliver comes from its assembler. These are
 # the in-container defaults used by the deploy-time namespace bootstrap
 # (`loadgen --only-namespace`, run by up.sh inside the arma container); compose
 # overrides them for anything else via SC_* environment variables.
-t = t.replace(
+t = must_replace(
+    t,
     "      - id=0,broadcast,deliver,orderer:7050",
     "      - id=1,broadcast,172.29.0.10:6022\n      - id=1,deliver,172.29.0.10:6023",
-    1,
+    "orderer endpoints",
+    p,
 )
-t = t.replace("      msp-id: peer-org-0", "      msp-id: org1", 1)
-t = t.replace(
+t = must_replace(t, "      msp-id: peer-org-0", "      msp-id: org1", "loadgen msp-id", p)
+t = must_replace(
+    t,
     "      msp-dir: /root/artifacts/peerOrganizations/peer-org-0.com/users/client@peer-org-0.com/msp",
     f"      msp-dir: {org_msp_dir(1)}",
-    1,
+    "loadgen msp-dir",
+    p,
 )
 
 if "      _meta:" not in t:
@@ -74,17 +94,19 @@ if "      _meta:" not in t:
         for n in range(1, PARTIES + 1)
     )
     meta = "      _meta:\n        scheme: MSP\n        msp-identities:\n" + ids
-    t = t.replace("    namespace-policies:\n", "    namespace-policies:\n" + meta, 1)
+    t = must_replace(t, "    namespace-policies:\n", "    namespace-policies:\n" + meta, "_meta namespace policy", p)
 
 p.write_text(t)
 
 # --- sidecar.yaml: same identity swap ----------------------------------------
 s = Path("/root/config/sidecar.yaml")
 st = s.read_text()
-st = st.replace("    msp-id: peer-org-0", "    msp-id: org1", 1)
-st = st.replace(
+st = must_replace(st, "    msp-id: peer-org-0", "    msp-id: org1", "sidecar msp-id", s)
+st = must_replace(
+    st,
     "    msp-dir: /root/artifacts/peerOrganizations/peer-org-0.com/users/client@peer-org-0.com/msp",
     f"    msp-dir: {org_msp_dir(1)}",
-    1,
+    "sidecar msp-dir",
+    s,
 )
 s.write_text(st)

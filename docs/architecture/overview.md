@@ -7,7 +7,7 @@ Fabric, Fabric-X, NeuChain and Drunix have three transaction models:
 | Model | Platforms | Shape |
 | ----- | --------- | ----- |
 | EOV with chaincode | Fabric (CFT + BFT), Drunix | Client → endorse → order → validate → commit |
-| EOV without chaincode | Fabric-X | FSC view/session negotiation + Token SDK, Arma ordering |
+| EOV without chaincode | Fabric-X | client-signed namespace read/write sets, Arma sharded BFT ordering, separate committer |
 | Ordering-free EV | NeuChain | Deterministic execution, no dedicated ordering service |
 
 A benchmark that submits a "chaincode invoke" everywhere cannot run on Fabric-X or
@@ -99,5 +99,5 @@ adapter packages.
 | `pkg/harness/` | run config, resource profile, engine, manifest, reporter |
 | `cmd/benchrunner/` | CLI: `run`, `suite`, `report`, `setup`, `teardown`, `list` |
 | `deploy/docker/` | per-platform Compose topologies + `up.sh`/`down.sh` |
-| `deploy/profiles/` | resource budgets and topologies (`local`, `gcp-small`, `gcp-full`) |
+| `deploy/profiles/` | resource budgets and topologies (`local-small`, `local`, `gcp-small`, `gcp-full`) |
 | `chaincodes/kvstore/` | the Go chaincode for Fabric / Drunix normalized workloads |

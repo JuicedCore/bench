@@ -5,8 +5,13 @@
 package harness
 
 import (
+	"bytes"
+	"errors"
 	"fmt"
+	"io"
+	"log/slog"
 	"os"
+	"sort"
 	"strings"
 	"time"
 
@@ -49,6 +54,11 @@ type RunConfig struct {
 
 	// Adapter carries platform-specific keys verbatim.
 	Adapter map[string]any `yaml:"adapter"`
+
+	// explicit* record that a zero-valued sweep threshold was written in the
+	// file, so applyDefaults honours "max_fail_rate: 0" instead of replacing it.
+	explicitMaxFailRate bool
+	explicitGoodput     bool
 }
 
 // LoadConfig is the load section. It supports either a single phase (open/closed
@@ -136,22 +146,74 @@ type SystemConfig struct {
 // LoadRunConfig reads and validates a run config file. `${VAR}` and `$VAR`
 // references in the file are expanded from the environment first, so deploy
 // scripts can emit a connection.env that `scripts/run-all.sh` sources before a
-// run. An undefined variable expands to the empty string.
+// run. An undefined variable expands to the empty string: the normalized configs
+// carry every adapter's keys and rely on that to leave the other platforms' keys
+// inert. The unset names are logged at debug level; a key the adapter actually
+// needs is caught by that adapter's own validation.
+//
+// Decoding is strict: a key that is not part of the schema (a typo such as
+// `warmpu:` or `target_tsp:`) is an error rather than a silently ignored line
+// that leaves a default in place. Every error names the file.
 func LoadRunConfig(path string) (*RunConfig, error) {
+	c, err := loadRunConfig(path)
+	if err != nil {
+		return nil, fmt.Errorf("config %s: %w", path, err)
+	}
+	return c, nil
+}
+
+func loadRunConfig(path string) (*RunConfig, error) {
 	b, err := os.ReadFile(path)
 	if err != nil {
 		return nil, err
 	}
-	b = []byte(os.Expand(string(b), func(k string) string { return os.Getenv(k) }))
-	var c RunConfig
-	if err := yaml.Unmarshal(b, &c); err != nil {
-		return nil, err
+	var unset []string
+	b = []byte(os.Expand(string(b), func(k string) string {
+		v, ok := os.LookupEnv(k)
+		if !ok {
+			unset = append(unset, k)
+		}
+		return v
+	}))
+	if len(unset) > 0 {
+		sort.Strings(unset)
+		slog.Debug("config references unset environment variables (expanded to empty)",
+			"config", path, "vars", strings.Join(dedupe(unset), ","))
 	}
+	var c RunConfig
+	dec := yaml.NewDecoder(bytes.NewReader(b))
+	dec.KnownFields(true)
+	if err := dec.Decode(&c); err != nil && !errors.Is(err, io.EOF) {
+		return nil, fmt.Errorf("parse: %w (keys must match the run-config schema; see CONFIGS.md)", err)
+	}
+	// Explicit zeros that are meaningful must survive applyDefaults.
+	var present struct {
+		Load struct {
+			Sweep struct {
+				MaxFailRate  *float64 `yaml:"max_fail_rate"`
+				GoodputRatio *float64 `yaml:"goodput_ratio"`
+			} `yaml:"sweep"`
+		} `yaml:"load"`
+	}
+	_ = yaml.Unmarshal(b, &present) // already parsed strictly above; cannot fail differently
+	c.explicitMaxFailRate = present.Load.Sweep.MaxFailRate != nil
+	c.explicitGoodput = present.Load.Sweep.GoodputRatio != nil
+
 	c.applyDefaults()
 	if err := c.validate(); err != nil {
 		return nil, err
 	}
 	return &c, nil
+}
+
+func dedupe(sorted []string) []string {
+	out := sorted[:0]
+	for i, s := range sorted {
+		if i == 0 || s != sorted[i-1] {
+			out = append(out, s)
+		}
+	}
+	return out
 }
 
 func (c *RunConfig) applyDefaults() {
@@ -210,10 +272,10 @@ func (c *RunConfig) applyDefaults() {
 		if c.Load.Sweep.HoldDur == 0 {
 			c.Load.Sweep.HoldDur = Duration(5 * time.Minute)
 		}
-		if c.Load.Sweep.MaxFailRate == 0 {
+		if c.Load.Sweep.MaxFailRate == 0 && !c.explicitMaxFailRate {
 			c.Load.Sweep.MaxFailRate = 0.02
 		}
-		if c.Load.Sweep.GoodputRatio == 0 {
+		if c.Load.Sweep.GoodputRatio == 0 && !c.explicitGoodput {
 			c.Load.Sweep.GoodputRatio = 0.95
 		}
 		if c.Load.Sweep.MaxSendGapMs == 0 {
@@ -229,25 +291,118 @@ func (c *RunConfig) applyDefaults() {
 	}
 }
 
+// KnownKeyDistributions lists the accepted load.key_distribution values.
+var KnownKeyDistributions = []string{"uniform", "zipfian", "fixed"}
+
+// validate rejects configs that would otherwise run with a silently corrected or
+// meaningless value. Each message names the offending key as it appears in YAML.
 func (c *RunConfig) validate() error {
+	var errs []error
+	bad := func(format string, a ...any) { errs = append(errs, fmt.Errorf(format, a...)) }
+	l := c.Load
+
 	if c.Platform == "" {
-		return fmt.Errorf("platform is required")
+		bad("platform is required")
 	}
 	if c.Workload == "" {
-		return fmt.Errorf("workload is required")
+		bad("workload is required")
 	}
-	switch c.Load.Mode {
+	switch l.Mode {
 	case "", "open-loop", "closed-loop":
 	default:
-		return fmt.Errorf("load.mode must be open-loop or closed-loop, got %q", c.Load.Mode)
+		bad("load.mode must be open-loop or closed-loop, got %q", l.Mode)
 	}
-	if !c.Load.Sweep.Enabled {
-		if c.Load.Mode == "closed-loop" && c.Load.Workers <= 0 {
-			return fmt.Errorf("closed-loop requires load.workers > 0")
+	if !l.Sweep.Enabled {
+		if l.Mode == "closed-loop" && l.Workers <= 0 {
+			bad("closed-loop requires load.workers > 0")
 		}
-		if c.Load.Mode != "closed-loop" && c.Load.TargetTPS <= 0 && c.Load.RampTo <= 0 {
-			return fmt.Errorf("open-loop requires load.target_tps or load.ramp_to")
+		if l.Mode != "closed-loop" && l.TargetTPS <= 0 && l.RampTo <= 0 {
+			bad("open-loop requires load.target_tps or load.ramp_to")
 		}
 	}
-	return nil
+	if l.TargetTPS > 0 && l.RampTo > 0 {
+		bad("load.target_tps (%d) and load.ramp_to (%d) are both set; ramp_to would silently win - set only one", l.TargetTPS, l.RampTo)
+	}
+	if l.RampTo <= 0 && (l.RampFrom > 0 || l.RampDur > 0) {
+		bad("load.ramp_from / load.ramp_duration have no effect without load.ramp_to")
+	}
+	if l.Mode == "closed-loop" && (l.TargetTPS > 0 || l.RampTo > 0) {
+		bad("load.target_tps / load.ramp_to are open-loop settings; closed-loop is driven by load.workers")
+	}
+	for name, v := range map[string]int{
+		"load.start_tps": l.StartTPS, "load.target_tps": l.TargetTPS, "load.ramp_from": l.RampFrom,
+		"load.ramp_to": l.RampTo, "load.workers": l.Workers, "load.key_space": l.KeySpace,
+		"load.value_size_bytes": l.ValueSizeBytes,
+	} {
+		if v < 0 {
+			bad("%s must not be negative, got %d", name, v)
+		}
+	}
+	for name, d := range map[string]Duration{
+		"load.ramp_duration": l.RampDur, "load.hold_duration": l.HoldDur, "load.finality_wait": l.FinalityWait,
+		"metrics.warmup": c.Metrics.Warmup, "metrics.cooldown": c.Metrics.Cooldown,
+		"system_metrics.sample_interval": c.System.SampleInterval,
+		"load.sweep.probe_duration":      l.Sweep.ProbeDur, "load.sweep.step_duration": l.Sweep.StepDur,
+		"load.sweep.hold_duration": l.Sweep.HoldDur,
+	} {
+		if d < 0 {
+			bad("%s must not be negative, got %s", name, d.D())
+		}
+	}
+	if !contains(KnownKeyDistributions, l.KeyDistribution) {
+		bad("load.key_distribution %q is not one of %s", l.KeyDistribution, strings.Join(KnownKeyDistributions, ", "))
+	}
+	if l.ZipfianConstant != 0 && l.ZipfianConstant <= 1 {
+		bad("load.zipfian_constant must be > 1 (math/rand.Zipf requirement), got %g", l.ZipfianConstant)
+	}
+	if l.ReadWriteRatio < 0 || l.ReadWriteRatio > 1 {
+		bad("load.read_write_ratio must be in [0,1] (1 = all reads), got %g", l.ReadWriteRatio)
+	}
+	switch c.Metrics.OutputFormat {
+	case "json", "csv":
+	default:
+		bad("metrics.output_format must be json or csv, got %q", c.Metrics.OutputFormat)
+	}
+
+	if s := l.Sweep; s.Enabled {
+		if l.Mode == "closed-loop" {
+			bad("load.sweep is an open-loop methodology (it offers TPS steps); remove load.sweep or use mode: open-loop")
+		}
+		if s.ProbeTPS <= 0 {
+			bad("load.sweep.probe_tps must be > 0, got %d", s.ProbeTPS)
+		}
+		for i, st := range s.Steps {
+			if st <= 0 {
+				bad("load.sweep.steps[%d] must be > 0, got %d", i, st)
+			}
+			if i > 0 && st <= s.Steps[i-1] {
+				bad("load.sweep.steps must be strictly ascending: steps[%d]=%d follows %d", i, st, s.Steps[i-1])
+			}
+		}
+		if s.HoldFrac <= 0 || s.HoldFrac > 1 {
+			bad("load.sweep.hold_fraction must be in (0,1], got %g", s.HoldFrac)
+		}
+		if s.MaxFailRate < 0 || s.MaxFailRate > 1 {
+			bad("load.sweep.max_fail_rate must be in [0,1] (a fraction, not a percent), got %g", s.MaxFailRate)
+		}
+		if s.GoodputRatio < 0 || s.GoodputRatio > 1 {
+			bad("load.sweep.goodput_ratio must be in [0,1], got %g", s.GoodputRatio)
+		}
+		if s.MaxSendGapMs <= 0 {
+			bad("load.sweep.max_send_gap_ms must be > 0, got %g", s.MaxSendGapMs)
+		}
+		if s.AbortAfterFailedSteps != nil && *s.AbortAfterFailedSteps < 0 {
+			bad("load.sweep.abort_after_failed_steps must be >= 0 (0 disables), got %d", *s.AbortAfterFailedSteps)
+		}
+	}
+	return errors.Join(errs...)
+}
+
+func contains(xs []string, v string) bool {
+	for _, x := range xs {
+		if x == v {
+			return true
+		}
+	}
+	return false
 }

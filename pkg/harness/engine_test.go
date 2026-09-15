@@ -22,7 +22,6 @@ budget:
 platforms:
   mock:
     nodes: {node: 1}
-    per_container: {cpus: 1.0, memory: "1g"}
     orderer_batch:
       max_message_count: 100
       batch_timeout: "1s"

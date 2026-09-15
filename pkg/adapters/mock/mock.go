@@ -32,6 +32,7 @@ type Adapter struct {
 	commitBase time.Duration
 	jitter     time.Duration
 	conflict   float64
+	failRate   float64
 }
 
 type pendingTx struct {
@@ -40,18 +41,32 @@ type pendingTx struct {
 }
 
 // Setup reads optional knobs from cfg.Extra: submit_ms, commit_ms, jitter_ms,
-// conflict_rate.
+// conflict_rate, fail_rate (fraction of submits that return an error, for
+// exercising failure paths), setup_error (a string: Setup fails with it).
 func (a *Adapter) Setup(_ context.Context, cfg adapters.AdapterConfig) error {
+	if msg, ok := cfg.Extra["setup_error"].(string); ok && msg != "" {
+		return fmt.Errorf("mock: %s", msg)
+	}
 	a.rng = rand.New(rand.NewSource(1))
 	a.state = map[string][]byte{}
 	a.pending = map[string]*pendingTx{}
 	a.submitBase = dur(cfg.Extra, "submit_ms", 2)
 	a.commitBase = dur(cfg.Extra, "commit_ms", 40)
 	a.jitter = dur(cfg.Extra, "jitter_ms", 15)
-	if v, ok := cfg.Extra["conflict_rate"].(float64); ok {
-		a.conflict = v
-	}
+	a.conflict = rate(cfg.Extra, "conflict_rate")
+	a.failRate = rate(cfg.Extra, "fail_rate")
 	return nil
+}
+
+// rate reads a 0..1 knob written as either a float (0.5) or an int (0, 1).
+func rate(m map[string]any, key string) float64 {
+	switch v := m[key].(type) {
+	case float64:
+		return v
+	case int:
+		return float64(v)
+	}
+	return 0
 }
 
 func (a *Adapter) Name() string            { return "mock" }
@@ -68,7 +83,12 @@ func (a *Adapter) Submit(ctx context.Context, tx *adapters.Transaction) (*adapte
 	writePath := tx.Kind == adapters.TxWrite || tx.Kind == adapters.TxTransfer
 	invalid := writePath && a.randFloat() < a.conflict
 
-	sleep(ctx, submitDelay)
+	if !sleep(ctx, submitDelay) {
+		return nil, fmt.Errorf("mock submit: %w", ctx.Err())
+	}
+	if a.failRate > 0 && a.randFloat() < a.failRate {
+		return nil, fmt.Errorf("mock submit rejected (fail_rate=%g)", a.failRate)
+	}
 	id := fmt.Sprintf("mock-%d-%d", tx.Seq, time.Now().UnixNano())
 
 	pt := &pendingTx{done: make(chan struct{})}
@@ -100,7 +120,7 @@ func (a *Adapter) WaitForFinality(ctx context.Context, txID string, timeout time
 	pt, ok := a.pending[txID]
 	a.mu.Unlock()
 	if !ok {
-		return nil, fmt.Errorf("unknown tx %s", txID)
+		return nil, fmt.Errorf("mock: unknown tx %s (never submitted, or already waited on)", txID)
 	}
 	select {
 	case <-pt.done:
@@ -109,10 +129,18 @@ func (a *Adapter) WaitForFinality(ctx context.Context, txID string, timeout time
 		a.mu.Unlock()
 		return pt.result, nil
 	case <-time.After(timeout):
-		return nil, fmt.Errorf("finality timeout")
+		a.forget(txID)
+		return nil, fmt.Errorf("mock %s: %w after %s", txID, adapters.ErrFinalityTimeout, timeout)
 	case <-ctx.Done():
+		a.forget(txID)
 		return nil, ctx.Err()
 	}
+}
+
+func (a *Adapter) forget(txID string) {
+	a.mu.Lock()
+	delete(a.pending, txID)
+	a.mu.Unlock()
 }
 
 // Query reads simulated world state.
@@ -138,15 +166,18 @@ func (a *Adapter) randFloat() float64 {
 	return a.rng.Float64()
 }
 
-func sleep(ctx context.Context, d time.Duration) {
+// sleep waits d or until ctx ends; it reports whether the full wait elapsed.
+func sleep(ctx context.Context, d time.Duration) bool {
 	if d <= 0 {
-		return
+		return ctx.Err() == nil
 	}
 	t := time.NewTimer(d)
 	defer t.Stop()
 	select {
 	case <-t.C:
+		return true
 	case <-ctx.Done():
+		return false
 	}
 }
 

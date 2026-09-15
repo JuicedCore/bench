@@ -3,8 +3,10 @@ package harness
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
+	"log/slog"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -14,6 +16,7 @@ import (
 
 	"github.com/juicedcore/bench/pkg/adapters"
 	"github.com/juicedcore/bench/pkg/loadgen"
+	"github.com/juicedcore/bench/pkg/logx"
 	"github.com/juicedcore/bench/pkg/metrics"
 	"github.com/juicedcore/bench/pkg/workloads"
 )
@@ -25,7 +28,8 @@ type PhaseResult struct {
 	Window     WindowInfo     `json:"window"`
 	Result     metrics.Result `json:"result"`
 	// Verdict, for sweep steps only: "held", or the rule that rejected the step.
-	// Makes a sweep readable without re-deriving the saturation rules.
+	// Makes a sweep readable without re-deriving the saturation rules. A phase
+	// cut short by Ctrl-C or a generator error is marked "interrupted" instead.
 	Verdict string `json:"verdict,omitempty"`
 }
 
@@ -89,13 +93,14 @@ func (Engine) Run(ctx context.Context, cfg *RunConfig, opt Options) (*RunResult,
 	}
 	topo, err := prof.Topo(cfg.Platform)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("load profile: %w", err)
 	}
 
 	ad, err := adapters.New(cfg.Platform)
 	if err != nil {
 		return nil, err
 	}
+	log := slog.Default().With("platform", cfg.Platform, "run", cfg.Name)
 
 	wl, err := workloads.New(cfg.Workload, workloads.Config{
 		KeySpace:        cfg.Load.KeySpace,
@@ -106,7 +111,7 @@ func (Engine) Run(ctx context.Context, cfg *RunConfig, opt Options) (*RunResult,
 		Seed:            cfg.Load.Seed,
 	})
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("workload: %w", err)
 	}
 
 	acfg := adapters.AdapterConfig{
@@ -114,6 +119,7 @@ func (Engine) Run(ctx context.Context, cfg *RunConfig, opt Options) (*RunResult,
 		Workload:   cfg.Workload,
 		Normalized: cfg.Normalized,
 		Extra:      cfg.Adapter,
+		Logger:     log.With("component", "adapter"),
 	}
 	if cfg.Adapter != nil {
 		if v, ok := cfg.Adapter["conn_profile"].(string); ok {
@@ -169,7 +175,20 @@ func (Engine) Run(ctx context.Context, cfg *RunConfig, opt Options) (*RunResult,
 
 	outDir := filepath.Join(cfg.Metrics.OutputDir, cfg.Platform, started.Format("20060102-150405"))
 	if err := os.MkdirAll(outDir, 0o755); err != nil {
-		return nil, err
+		return nil, fmt.Errorf("create result dir (metrics.output_dir=%s): %w", cfg.Metrics.OutputDir, err)
+	}
+	// Everything logged from here on is also kept in <outDir>/run.log, at debug
+	// level, so a failed run can be diagnosed from its result directory alone.
+	if l, closeLog, lerr := logx.WithFile(log, filepath.Join(outDir, "run.log")); lerr != nil {
+		log.Warn("run log unavailable; diagnostics go to stderr only", "err", lerr)
+	} else {
+		log = l
+		acfg.Logger = log.With("component", "adapter")
+		defer func() { _ = closeLog() }()
+	}
+	log.Info("run starting", "workload", cfg.Workload, "profile", cfg.Profile, "normalized", cfg.Normalized, "out_dir", outDir)
+	for _, c := range man.Caveats {
+		log.Warn("caveat", "text", c)
 	}
 
 	if opt.DryRun {
@@ -179,18 +198,34 @@ func (Engine) Run(ctx context.Context, cfg *RunConfig, opt Options) (*RunResult,
 			fmt.Printf("  phase %-10s target=%-7d dur=%s mode=%s\n", ph.name, ph.profile.TargetTPS, ph.profile.Duration, ph.profile.Mode)
 		}
 		man.EndedAt = time.Now()
-		_ = man.Write(filepath.Join(outDir, "manifest.json"))
+		if err := man.Write(filepath.Join(outDir, "manifest.json")); err != nil {
+			return nil, fmt.Errorf("dry run: write manifest: %w", err)
+		}
 		return &RunResult{Manifest: man, OutDir: outDir}, nil
 	}
 
-	if err := ad.Setup(ctx, acfg); err != nil {
-		return nil, fmt.Errorf("adapter setup: %w", err)
-	}
-	defer func() {
+	teardown := func() {
 		tctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 		defer cancel()
-		_ = ad.Teardown(tctx)
-	}()
+		if err := ad.Teardown(tctx); err != nil {
+			log.Warn("adapter teardown failed (client resources may have leaked; the network itself is untouched)", "err", err)
+		}
+	}
+	log.Info("adapter setup")
+	if err := ad.Setup(ctx, acfg); err != nil {
+		// Leave a reason behind: outDir already exists and an aborted run
+		// would otherwise leave an empty result dir with no clue why.
+		msg := fmt.Sprintf("adapter setup failed for platform %s (profile %s)\n\n%v\n\n%s", cfg.Platform, cfg.Profile, err, setupHint)
+		if werr := os.WriteFile(filepath.Join(outDir, "error.txt"), []byte(msg), 0o644); werr != nil {
+			log.Warn("could not write error.txt", "err", werr)
+		}
+		log.Error("adapter setup failed", "err", err, "error_file", filepath.Join(outDir, "error.txt"))
+		// The interface allows Teardown after a partial Setup; release whatever
+		// connections were opened before the failure.
+		teardown()
+		return nil, fmt.Errorf("adapter setup (%s): %w", cfg.Platform, err)
+	}
+	defer teardown()
 
 	collector := metrics.NewCollector()
 
@@ -204,7 +239,7 @@ func (Engine) Run(ctx context.Context, cfg *RunConfig, opt Options) (*RunResult,
 	// One generator + its own workload per instance. Generator 0 reuses wl (so
 	// single-generator runs are byte-identical to before).
 	gens := make([]*loadgen.Generator, ngen)
-	gens[0] = &loadgen.Generator{Adapter: ad, Source: wl, Collector: collector}
+	gens[0] = &loadgen.Generator{ID: 0, Adapter: ad, Source: wl, Collector: collector}
 	for i := 1; i < ngen; i++ {
 		wi, werr := workloads.New(cfg.Workload, workloads.Config{
 			KeySpace:        cfg.Load.KeySpace,
@@ -215,9 +250,9 @@ func (Engine) Run(ctx context.Context, cfg *RunConfig, opt Options) (*RunResult,
 			Seed:            cfg.Load.Seed + int64(i),
 		})
 		if werr != nil {
-			return nil, werr
+			return nil, fmt.Errorf("workload for generator %d: %w", i, werr)
 		}
-		gens[i] = &loadgen.Generator{Adapter: ad, Source: wi, Collector: collector}
+		gens[i] = &loadgen.Generator{ID: i, Adapter: ad, Source: wi, Collector: collector}
 	}
 
 	// System sampling for the whole run.
@@ -227,12 +262,24 @@ func (Engine) Run(ctx context.Context, cfg *RunConfig, opt Options) (*RunResult,
 		sampler = &metrics.SystemSampler{
 			Interval:     cfg.System.SampleInterval.D(),
 			NamePrefixes: cfg.System.ContainerNames,
+			Logger:       log.With("component", "sampler"),
 		}
 		go sampler.Run(sampCtx)
 	}
 
 	phases := buildPhases(cfg)
 	rr := &RunResult{Manifest: man, OutDir: outDir}
+	// caveat records a disclosure next to the numbers and says it out loud now,
+	// so an operator watching the run does not have to open the manifest to learn
+	// something went wrong.
+	caveat := func(format string, a ...any) {
+		c := fmt.Sprintf(format, a...)
+		rr.Manifest.Caveats = append(rr.Manifest.Caveats, c)
+		log.Warn("caveat", "text", c)
+	}
+	if sampler == nil {
+		caveat("system_metrics disabled: no resource trace, and a platform container that dies mid-run will NOT be detected")
+	}
 	warm := cfg.Metrics.Warmup.D()
 	cool := cfg.Metrics.Cooldown.D()
 
@@ -262,6 +309,7 @@ func (Engine) Run(ctx context.Context, cfg *RunConfig, opt Options) (*RunResult,
 		}
 
 		phaseStart := time.Now()
+		log.Info("phase start", "phase", ph.name, "offered_tps", ph.profile.TargetTPS, "workers", ph.profile.Workers, "duration", ph.profile.Duration)
 		var liveProg *progressReporter
 		if opt.Progress != nil {
 			liveProg = newProgressReporter(opt.Progress, opt.ProgressTTY)
@@ -271,8 +319,9 @@ func (Engine) Run(ctx context.Context, cfg *RunConfig, opt Options) (*RunResult,
 		if liveProg != nil {
 			liveProg.stop()
 		}
-		if genErr != nil && ctx.Err() != nil {
-			break
+		interrupted := ctx.Err() != nil
+		if genErr != nil && !interrupted {
+			log.Error("load generator failed", "phase", ph.name, "err", genErr)
 		}
 
 		// The window is cut from the offered-load schedule, not from when the
@@ -288,9 +337,18 @@ func (Engine) Run(ctx context.Context, cfg *RunConfig, opt Options) (*RunResult,
 		if ph.noWindowTrim {
 			w = metrics.Window{Start: phaseStart, End: loadEnd}
 		}
+		headlinePhase := ph.name == "hold" || len(phases) == 1
 		if !w.End.After(w.Start) {
-			// phase shorter than warmup+cooldown: measure the whole thing
+			// Phase shorter than warmup+cooldown: measure the whole thing. The
+			// sweep probe is routinely this short; for a headline phase it means
+			// the headline includes warmup, which must be disclosed.
 			w = metrics.Window{Start: phaseStart, End: loadEnd}
+			if headlinePhase && !interrupted {
+				caveat("phase %s ran %s, not longer than warmup+cooldown (%s+%s): warmup and cooldown were NOT trimmed from the headline",
+					ph.name, loadEnd.Sub(phaseStart).Round(time.Second), warm, cool)
+			} else {
+				log.Debug("phase shorter than warmup+cooldown; measuring whole phase", "phase", ph.name)
+			}
 		}
 		res := collector.Aggregate(w)
 		pr := PhaseResult{
@@ -300,6 +358,31 @@ func (Engine) Run(ctx context.Context, cfg *RunConfig, opt Options) (*RunResult,
 			Result:     res,
 		}
 		rr.Phases = append(rr.Phases, pr)
+		log.Info("phase end", "phase", ph.name, "submitted", res.Submitted, "committed", res.Committed,
+			"confirmed_tps", fmt.Sprintf("%.1f", res.ConfirmedTPS), "fail_rate", fmt.Sprintf("%.4f", res.FailureRate),
+			"e2e_p99_ms", fmt.Sprintf("%.2f", pctl(res.E2E, "p99")))
+		for _, e := range res.Errors {
+			log.Warn("phase errors", "phase", ph.name, "count", e.Count, "message", e.Message)
+		}
+
+		// A phase cut short - Ctrl-C/SIGTERM, or a generator that returned an
+		// error - measured part of its schedule. Keep it, marked, never as a
+		// headline, and do not start the remaining phases.
+		if interrupted || genErr != nil {
+			rr.Phases[len(rr.Phases)-1].Verdict = "interrupted"
+			rest := make([]string, 0, len(phases)-i-1)
+			for _, r := range phases[i+1:] {
+				rest = append(rest, r.name)
+			}
+			reason := "run interrupted (signal or cancelled context)"
+			if !interrupted {
+				reason = fmt.Sprintf("load generator error: %v", genErr)
+			}
+			caveat("%s during phase %s after %s: that phase is partial and not a headline; phases never run: %s",
+				reason, ph.name, time.Since(phaseStart).Round(time.Second), orDefault(strings.Join(rest, ", "), "none"))
+			rr.Headline = nil
+			break
+		}
 
 		if isSweepStep {
 			v := stepVerdict(ph.profile.TargetTPS, res, sweep)
@@ -314,7 +397,7 @@ func (Engine) Run(ctx context.Context, cfg *RunConfig, opt Options) (*RunResult,
 			}
 		}
 
-		if ph.name == "hold" || len(phases) == 1 {
+		if headlinePhase {
 			cp := res
 			rr.Headline = &cp
 		}
@@ -327,15 +410,22 @@ func (Engine) Run(ctx context.Context, cfg *RunConfig, opt Options) (*RunResult,
 			rr.Manifest.ContainerFailures = failures
 			var names []string
 			for _, e := range failures {
-				rr.Manifest.Caveats = append(rr.Manifest.Caveats, "platform container "+e.String())
+				caveat("platform container %s", e.String())
+				// Grab the log now, before teardown removes the container and
+				// the cause with it. Use Background: ctx may already be cancelled.
+				logPath := filepath.Join(outDir, "container-logs", e.Name+".log")
+				if err := metrics.CaptureLogs(context.Background(), e.Name, logPath, 5000); err != nil {
+					caveat("could not capture logs of %s: %v", e.Name, err)
+				} else {
+					log.Info("captured container log", "container", e.Name, "path", logPath)
+				}
 			}
 			for _, rest := range phases[i+1:] {
 				names = append(names, rest.name)
 			}
 			if len(names) > 0 {
-				rr.Manifest.Caveats = append(rr.Manifest.Caveats, fmt.Sprintf(
-					"run stopped during %s because a platform container failed; phases never run: %s",
-					ph.name, strings.Join(names, ", ")))
+				caveat("run stopped during %s because a platform container failed; phases never run: %s",
+					ph.name, strings.Join(names, ", "))
 			}
 			// The phase the container died in measured a half-dead network
 			// and cannot be a headline either.
@@ -351,25 +441,28 @@ func (Engine) Run(ctx context.Context, cfg *RunConfig, opt Options) (*RunResult,
 		// knee is somewhere above the top step, and reporting the top step as
 		// "saturation" would understate the platform.
 		if n := len(sweep.Steps); n > 0 && len(rr.Manifest.SkippedSteps) == 0 && rr.SaturationTPS == sweep.Steps[n-1] {
-			rr.Manifest.Caveats = append(rr.Manifest.Caveats, fmt.Sprintf(
-				"every sweep step held: the platform did not saturate within the ladder, so %d TPS is a lower bound on its knee, not the knee",
-				rr.SaturationTPS))
+			caveat("every sweep step held: the platform did not saturate within the ladder, so %d TPS is a lower bound on its knee, not the knee",
+				rr.SaturationTPS)
 		}
-		if rr.SaturationTPS == 0 {
-			rr.Manifest.Caveats = append(rr.Manifest.Caveats, fmt.Sprintf(
-				"no sweep step held (failure <= %.1f%%, goodput >= %.0f%%, send-gap p99 <= %.0f ms); hold ran at the probe rate (%d TPS) and the headline is a floor, not a saturation figure",
-				sweep.MaxFailRate*100, sweep.GoodputRatio*100, sweep.MaxSendGapMs, sweep.ProbeTPS))
+		if rr.SaturationTPS == 0 && len(rr.Phases) > 0 {
+			caveat("no sweep step held (failure <= %.1f%%, goodput >= %.0f%%, send-gap p99 <= %.0f ms); hold ran at the probe rate (%d TPS) and the headline is a floor, not a saturation figure",
+				sweep.MaxFailRate*100, sweep.GoodputRatio*100, sweep.MaxSendGapMs, sweep.ProbeTPS)
 		}
 		if n := len(rr.Manifest.SkippedSteps); n > 0 {
-			rr.Manifest.Caveats = append(rr.Manifest.Caveats, fmt.Sprintf(
-				"sweep aborted early after %d consecutive failed steps; %d higher step(s) were never offered",
-				abortAfter, n))
+			caveat("sweep aborted early after %d consecutive failed steps; %d higher step(s) were never offered",
+				abortAfter, n)
 		}
 	}
 
 	sampCancel()
 	if sampler != nil {
 		rr.SystemSamples = sampler.Samples()
+		if reason := sampler.Unhealthy(); reason != "" {
+			caveat("container sampling was degraded: %s - resource numbers are incomplete and a dead platform container may have gone undetected", reason)
+		}
+	}
+	if n := collector.ClampedLatencies(); n > 0 {
+		caveat("%d latency observations were out of range (negative: T3 before T1/T2, usually adapter or clock timestamp error; or above 5 min) and were clamped", n)
 	}
 
 	// One native scrape at the end if the platform exposes an endpoint.
@@ -377,6 +470,8 @@ func (Engine) Run(ctx context.Context, cfg *RunConfig, opt Options) (*RunResult,
 		sctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 		if ns, err := metrics.ScrapeNative(sctx, ep); err == nil {
 			rr.NativeScrapes = append(rr.NativeScrapes, *ns)
+		} else {
+			caveat("native metrics scrape of %s failed: %v (informational metrics only; harness numbers unaffected)", ep, err)
 		}
 		cancel()
 	}
@@ -386,10 +481,55 @@ func (Engine) Run(ctx context.Context, cfg *RunConfig, opt Options) (*RunResult,
 	rr.Manifest.EndedAt = time.Now()
 
 	if err := writeResults(outDir, cfg, rr); err != nil {
-		return rr, fmt.Errorf("write results: %w", err)
+		log.Error("writing results failed", "dir", outDir, "err", err)
+		return rr, fmt.Errorf("write results to %s: %w", outDir, err)
 	}
+	warnFailedHeadline(log, rr)
+	log.Info("run finished", "out_dir", outDir, "caveats", len(rr.Manifest.Caveats))
 	fmt.Printf("results written to %s\n", outDir)
 	return rr, nil
+}
+
+// setupHint is appended to error.txt when adapter setup fails: almost every
+// setup failure is the network or its connection material, not the harness.
+const setupHint = `What to check:
+  1. Is the network up?            docker ps   (bring it up: benchrunner setup --platform <p> --profile <profile>)
+  2. Was connection.env sourced?   set -a; source deploy/docker/<platform>/connection.env; set +a
+     An unset BENCH_ADAPTER_* variable expands to an empty adapter key.
+  3. Do the cert/key/TLS paths in connection.env exist and match the running network
+     (a re-deployed network regenerates crypto material)?
+  4. Rerun with --log-level debug and read run.log in this directory.
+See docs/README.md#troubleshooting for the full error lookup.`
+
+// warnFailedHeadline says loudly, at the end of a run, when the numbers just
+// written are not a measurement. The exit code is unchanged; summary.txt and the
+// comparison report already refuse such runs, but a campaign log should too.
+func warnFailedHeadline(log *slog.Logger, rr *RunResult) {
+	h := rr.Headline
+	if h == nil {
+		if len(rr.Phases) > 0 {
+			log.Warn("run has no headline: it did not complete a headline phase on a healthy platform; see caveats in summary.txt", "dir", rr.OutDir)
+		}
+		return
+	}
+	var why []string
+	if h.Committed == 0 {
+		why = append(why, "headline phase committed nothing")
+	}
+	if !h.InvariantOK {
+		why = append(why, "accounting invariant broken (submitted != committed+failed)")
+	}
+	if len(why) == 0 {
+		return
+	}
+	args := []any{"reason", strings.Join(why, "; "), "summary", filepath.Join(rr.OutDir, "summary.txt")}
+	for i, e := range h.Errors {
+		if i == 3 {
+			break
+		}
+		args = append(args, fmt.Sprintf("error_%d", i+1), fmt.Sprintf("%dx %s", e.Count, e.Message))
+	}
+	log.Warn("FAILED RUN - these results are not a throughput measurement", args...)
 }
 
 type phase struct {
@@ -431,28 +571,24 @@ func splitProfile(p loadgen.LoadProfile, n int) []loadgen.LoadProfile {
 }
 
 // runGenerators runs every generator concurrently for one phase and waits for
-// all of them. The first non-nil error is returned.
+// all of them. Errors from every generator are joined, each tagged with its index.
 func runGenerators(ctx context.Context, gens []*loadgen.Generator, profiles []loadgen.LoadProfile) error {
 	if len(gens) == 1 {
 		return gens[0].Run(ctx, profiles[0])
 	}
-	errCh := make(chan error, len(gens))
+	errs := make([]error, len(gens))
 	var wg sync.WaitGroup
 	for i, g := range gens {
 		wg.Add(1)
-		go func(g *loadgen.Generator, p loadgen.LoadProfile) {
+		go func(i int, g *loadgen.Generator, p loadgen.LoadProfile) {
 			defer wg.Done()
-			errCh <- g.Run(ctx, p)
-		}(g, profiles[i])
+			if err := g.Run(ctx, p); err != nil {
+				errs[i] = fmt.Errorf("generator %d: %w", i, err)
+			}
+		}(i, g, profiles[i])
 	}
 	wg.Wait()
-	close(errCh)
-	for err := range errCh {
-		if err != nil {
-			return err
-		}
-	}
-	return nil
+	return errors.Join(errs...)
 }
 
 func buildPhases(cfg *RunConfig) []phase {
@@ -543,13 +679,26 @@ func generatorCount(explicit int, prof *Profile, topo PlatformTopo, normalized b
 // proves the platform was constrained at all, and the run says so.
 func applyResourceEnv(man *Manifest) {
 	envF := func(k string) float64 {
-		v, _ := strconv.ParseFloat(strings.TrimSpace(os.Getenv(k)), 64)
+		raw := strings.TrimSpace(os.Getenv(k))
+		if raw == "" {
+			return 0
+		}
+		v, err := strconv.ParseFloat(raw, 64)
+		if err != nil {
+			man.Caveats = append(man.Caveats, fmt.Sprintf("%s=%q from connection.env is not a number; recorded as 0", k, raw))
+		}
 		return v
 	}
-	n, _ := strconv.Atoi(strings.TrimSpace(os.Getenv("BENCH_RESOURCE_CONTAINERS")))
+	rawN := strings.TrimSpace(os.Getenv("BENCH_RESOURCE_CONTAINERS"))
+	n, nerr := strconv.Atoi(rawN)
+	if rawN != "" && nerr != nil {
+		man.Caveats = append(man.Caveats, fmt.Sprintf(
+			"BENCH_RESOURCE_CONTAINERS=%q from connection.env is not an integer: container limits are unverified, so this run's hardware share is unknown", rawN))
+		return
+	}
 	if n <= 0 {
 		man.Caveats = append(man.Caveats,
-			"resource budget not reported by the deploy script: container limits are unverified, so this run's hardware share is unknown")
+			"resource budget not reported by the deploy script (BENCH_RESOURCE_CONTAINERS unset - was connection.env sourced?): container limits are unverified, so this run's hardware share is unknown")
 		return
 	}
 	man.ResourceContainers = n

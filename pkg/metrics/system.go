@@ -4,8 +4,12 @@ import (
 	"bufio"
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
+	"log/slog"
+	"os"
 	"os/exec"
+	"path/filepath"
 	"sort"
 	"strconv"
 	"strings"
@@ -57,6 +61,17 @@ func (e ContainerFailure) String() string {
 type SystemSampler struct {
 	Interval     time.Duration
 	NamePrefixes []string
+	// Logger receives sampling problems as they happen. nil = slog.Default().
+	Logger *slog.Logger
+
+	// Health bookkeeping, guarded by mu: a sampler that cannot talk to docker
+	// silently detects nothing, so every way it can go blind is recorded and
+	// surfaced by Unhealthy.
+	ticks, statsFailures, consecFail, maxConsecFail int
+	lastStatsErr                                    string
+	badLines                                        int
+	oomWatchErr                                     string
+	inspectErrs                                     int
 
 	mu      sync.Mutex
 	samples []SystemSample
@@ -66,6 +81,42 @@ type SystemSampler struct {
 	lastSeen map[string]time.Time
 	missed   map[string]int
 	failures []ContainerFailure
+}
+
+func (s *SystemSampler) log() *slog.Logger {
+	if s.Logger != nil {
+		return s.Logger
+	}
+	return slog.Default()
+}
+
+// unhealthyConsecutive is how many docker stats calls in a row must fail before
+// the sampler counts as blind: over that span a container exit cannot be seen.
+const unhealthyConsecutive = 3
+
+// Unhealthy returns "" when sampling worked, otherwise a one-line description of
+// every way it was degraded during the run. The engine turns it into a caveat.
+func (s *SystemSampler) Unhealthy() string {
+	if s == nil {
+		return ""
+	}
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	var why []string
+	if len(s.NamePrefixes) == 0 {
+		why = append(why, "system_metrics.container_names is empty, so no container was sampled or watched")
+	}
+	if s.maxConsecFail >= unhealthyConsecutive {
+		why = append(why, fmt.Sprintf("docker stats failed %d of %d samples, up to %d in a row (last error: %s)",
+			s.statsFailures, s.ticks, s.maxConsecFail, s.lastStatsErr))
+	}
+	if s.oomWatchErr != "" {
+		why = append(why, "OOM watch (docker events) unavailable: "+s.oomWatchErr)
+	}
+	if s.inspectErrs > 0 {
+		why = append(why, fmt.Sprintf("docker inspect failed %d time(s) while confirming a missing container", s.inspectErrs))
+	}
+	return strings.Join(why, "; ")
 }
 
 // Failures returns the platform containers that failed since sampling began.
@@ -103,14 +154,34 @@ func (s *SystemSampler) record(f ContainerFailure) {
 func (s *SystemSampler) watchOOM(ctx context.Context) {
 	cmd := exec.CommandContext(ctx, "docker", "events", "--filter", "event=oom",
 		"--format", "{{.Actor.Attributes.name}}|{{.TimeNano}}")
+	var stderr strings.Builder
+	cmd.Stderr = &stderr
+	fail := func(err error) {
+		msg := err.Error()
+		if e := strings.TrimSpace(stderr.String()); e != "" {
+			msg += ": " + e
+		}
+		s.mu.Lock()
+		s.oomWatchErr = msg
+		s.mu.Unlock()
+		s.log().Warn("OOM watch unavailable: an OOM kill that does not stop the container will not be detected", "err", msg)
+	}
 	out, err := cmd.StdoutPipe()
 	if err != nil {
+		fail(err)
 		return
 	}
-	if cmd.Start() != nil {
+	if err := cmd.Start(); err != nil {
+		fail(fmt.Errorf("start docker events: %w", err))
 		return
 	}
-	defer func() { _ = cmd.Wait() }()
+	defer func() {
+		// Exiting because the run ended is normal; anything else means the
+		// watch died mid-run.
+		if err := cmd.Wait(); err != nil && ctx.Err() == nil {
+			fail(fmt.Errorf("docker events exited: %w", err))
+		}
+	}()
 	sc := bufio.NewScanner(out)
 	for sc.Scan() {
 		name, ts, _ := strings.Cut(strings.TrimSpace(sc.Text()), "|")
@@ -130,6 +201,10 @@ func (s *SystemSampler) Run(ctx context.Context) {
 	if s.Interval <= 0 {
 		s.Interval = time.Second
 	}
+	if len(s.NamePrefixes) == 0 {
+		s.log().Warn("system_metrics.container_names is empty: sampler is idle, so container failures will not be detected")
+		return
+	}
 	go s.watchOOM(ctx)
 	t := time.NewTicker(s.Interval)
 	defer t.Stop()
@@ -138,8 +213,29 @@ func (s *SystemSampler) Run(ctx context.Context) {
 		case <-ctx.Done():
 			return
 		case <-t.C:
-			sample, names, ok := s.sample(ctx)
-			if !ok {
+			sample, names, err := s.sample(ctx)
+			if ctx.Err() != nil {
+				return
+			}
+			s.mu.Lock()
+			s.ticks++
+			if err != nil {
+				s.statsFailures++
+				s.consecFail++
+				s.maxConsecFail = max(s.maxConsecFail, s.consecFail)
+				s.lastStatsErr = err.Error()
+			} else {
+				s.consecFail = 0
+			}
+			consec, total := s.consecFail, s.statsFailures
+			s.mu.Unlock()
+			if err != nil {
+				// Say it on the first failure and when it becomes a blind
+				// spot, then only occasionally, to keep the log readable.
+				if total == 1 || consec == unhealthyConsecutive || total%60 == 0 {
+					s.log().Warn("docker stats failed; container sampling and exit detection are blind while this lasts",
+						"err", err, "consecutive", consec, "total_failures", total)
+				}
 				continue
 			}
 			if sample.Containers > 0 {
@@ -198,7 +294,19 @@ func (s *SystemSampler) track(ctx context.Context, t time.Time, running []string
 	sort.Strings(gone)
 
 	for _, n := range gone {
-		e, stillRunning := inspectExit(ctx, n)
+		e, stillRunning, ierr := inspectExit(ctx, n)
+		if ierr != nil {
+			// Could not ask docker: do not declare a platform failure on a
+			// docker hiccup. Keep it as seen; if it is really gone it will be
+			// missed again and re-inspected.
+			s.mu.Lock()
+			s.inspectErrs++
+			delete(s.missed, n)
+			s.mu.Unlock()
+			s.log().Warn("container missing from docker stats but docker inspect failed; not counting it as failed yet",
+				"container", n, "err", ierr)
+			continue
+		}
 		s.mu.Lock()
 		e.At = s.lastSeen[n]
 		delete(s.missed, n)
@@ -212,34 +320,82 @@ func (s *SystemSampler) track(ctx context.Context, t time.Time, running []string
 	}
 }
 
-func inspectExit(ctx context.Context, name string) (ContainerFailure, bool) {
-	e := ContainerFailure{Name: name, Exited: true, Status: "removed", ExitCode: -1}
+// inspectExit asks docker why a container disappeared from docker stats. It
+// returns stillRunning=true when docker says it is running, and a non-nil error
+// when docker could not answer (daemon hiccup, timeout) - which is NOT evidence
+// the container failed.
+func inspectExit(ctx context.Context, name string) (ContainerFailure, bool, error) {
 	cctx, cancel := context.WithTimeout(ctx, 5*time.Second)
 	defer cancel()
 	out, err := exec.CommandContext(cctx, "docker", "inspect", "-f",
-		"{{.State.Running}}|{{.State.OOMKilled}}|{{.State.ExitCode}}|{{.State.Status}}", name).Output()
-	if err != nil {
-		return e, false
-	}
-	f := strings.Split(strings.TrimSpace(string(out)), "|")
-	if len(f) != 4 {
-		return e, false
-	}
-	if f[0] == "true" {
-		return e, true
-	}
-	e.OOMKilled = f[1] == "true"
-	e.ExitCode, _ = strconv.Atoi(f[2])
-	e.Status = f[3]
-	return e, false
+		"{{.State.Running}}|{{.State.OOMKilled}}|{{.State.ExitCode}}|{{.State.Status}}", name).CombinedOutput()
+	return classifyInspect(name, out, err)
 }
 
-func (s *SystemSampler) sample(ctx context.Context) (SystemSample, []string, bool) {
+// errInspectOutput marks docker inspect output the sampler cannot parse.
+var errInspectOutput = errors.New("unexpected docker inspect output")
+
+func classifyInspect(name string, out []byte, err error) (ContainerFailure, bool, error) {
+	e := ContainerFailure{Name: name, Exited: true, Status: "removed", ExitCode: -1}
+	text := strings.TrimSpace(string(out))
+	if err != nil {
+		// The only error that means the container is gone.
+		if strings.Contains(text, "No such object") || strings.Contains(text, "No such container") {
+			return e, false, nil
+		}
+		if text != "" {
+			return e, false, fmt.Errorf("%w: %s", err, text)
+		}
+		return e, false, err
+	}
+	f := strings.Split(text, "|")
+	if len(f) != 4 {
+		return e, false, fmt.Errorf("%w for %s: %q", errInspectOutput, name, text)
+	}
+	if f[0] == "true" {
+		return e, true, nil
+	}
+	e.OOMKilled = f[1] == "true"
+	code, cerr := strconv.Atoi(f[2])
+	if cerr != nil {
+		return e, false, fmt.Errorf("%w for %s: exit code %q", errInspectOutput, name, f[2])
+	}
+	e.ExitCode = code
+	e.Status = f[3]
+	return e, false, nil
+}
+
+// CaptureLogs writes the last tail lines of a container's log (stdout and stderr,
+// with timestamps) to path. Called when a container fails, because teardown
+// removes the container and with it the only record of why it died.
+func CaptureLogs(ctx context.Context, name, path string, tail int) error {
+	cctx, cancel := context.WithTimeout(ctx, 10*time.Second)
+	defer cancel()
+	out, err := exec.CommandContext(cctx, "docker", "logs", "--timestamps", "--tail", strconv.Itoa(tail), name).CombinedOutput()
+	if mkErr := os.MkdirAll(filepath.Dir(path), 0o755); mkErr != nil {
+		return mkErr
+	}
+	if writeErr := os.WriteFile(path, out, 0o644); writeErr != nil {
+		return writeErr
+	}
+	return err
+}
+
+func (s *SystemSampler) sample(ctx context.Context) (SystemSample, []string, error) {
 	cctx, cancel := context.WithTimeout(ctx, 5*time.Second)
 	defer cancel()
-	out, err := exec.CommandContext(cctx, "docker", "stats", "--no-stream", "--format", "{{json .}}").Output()
+	cmd := exec.CommandContext(cctx, "docker", "stats", "--no-stream", "--format", "{{json .}}")
+	var stderr strings.Builder
+	cmd.Stderr = &stderr
+	out, err := cmd.Output()
 	if err != nil {
-		return SystemSample{}, nil, false
+		if cctx.Err() == context.DeadlineExceeded {
+			return SystemSample{}, nil, fmt.Errorf("docker stats timed out after 5s (daemon overloaded?)")
+		}
+		if e := strings.TrimSpace(stderr.String()); e != "" {
+			return SystemSample{}, nil, fmt.Errorf("docker stats: %w: %s", err, e)
+		}
+		return SystemSample{}, nil, fmt.Errorf("docker stats: %w", err)
 	}
 	sample := SystemSample{T: time.Now()}
 	var names []string
@@ -248,7 +404,16 @@ func (s *SystemSampler) sample(ctx context.Context) (SystemSample, []string, boo
 			continue
 		}
 		var d dockerStatsLine
-		if json.Unmarshal([]byte(ln), &d) != nil {
+		if jerr := json.Unmarshal([]byte(ln), &d); jerr != nil {
+			s.mu.Lock()
+			s.badLines++
+			first := s.badLines == 1
+			s.mu.Unlock()
+			if first {
+				s.log().Warn("unparseable docker stats line skipped (further ones logged at debug)", "line", ln, "err", jerr)
+			} else {
+				s.log().Debug("unparseable docker stats line skipped", "line", ln, "err", jerr)
+			}
 			continue
 		}
 		if !s.match(d.Name) {
@@ -259,13 +424,13 @@ func (s *SystemSampler) sample(ctx context.Context) (SystemSample, []string, boo
 		sample.MemBytes += parseMemUsed(d.MemUsage)
 		names = append(names, d.Name)
 	}
-	return sample, names, true
+	return sample, names, nil
 }
 
+// match reports whether a container belongs to the platform under test. An empty
+// filter matches nothing: matching everything would count unrelated containers
+// (monitoring, other projects) and fail the run when one of them stops.
 func (s *SystemSampler) match(name string) bool {
-	if len(s.NamePrefixes) == 0 {
-		return true
-	}
 	for _, p := range s.NamePrefixes {
 		if strings.Contains(name, p) {
 			return true

@@ -15,9 +15,9 @@ The directory split is the whole point:
   literally the same bytes whichever `--platform` you pass, so the fairness
   levers cannot drift apart (adr-013). Platform differences live only in the
   union `adapter:` block, whose irrelevant keys each adapter ignores.
-- **`configs/native/`** — per-platform tuned runs, `normalized: false`. Each
-  platform at its own best. **Never** mixed with normalized numbers in one
-  comparison table.
+- **`configs/native/`** — reserved for per-platform tuned runs (`normalized:
+  false`), which would never be mixed with normalized numbers. **It does not exist
+  today**; see "Native set" below.
 
 ## Primer: workloads, load modes, `normalized`
 
@@ -27,11 +27,12 @@ The directory split is the whole point:
 - `kv-mixed` — `Get`/`Put` mixed per `load.read_write_ratio`.
 - `transfer` — `Transfer(from, to, amount)` between two keys in the key space (read-modify-write on two accounts; this is what makes MVCC conflicts visible).
 
-Same workload code runs identically on every Fabric-family platform (fabric-cft,
-fabric-bft, drunix) — deterministic given `seed`, so contention/access patterns are
-byte-for-byte comparable across them. Fabric-X and NeuChain use platform-native
-adapters with their own config shape (see their sections below) since they don't speak
-the same chaincode-invoke model.
+Same workload code runs on every platform, deterministic given `seed`, so the
+key-access and contention patterns are identical everywhere. Each adapter maps the
+logical operation onto its platform's own primitive (chaincode on the Fabric
+family, namespace read/write sets on Fabric-X, YCSB payloads on NeuChain); the
+mapping and its caveats are in
+[docs/architecture/normalization-status.md](docs/architecture/normalization-status.md).
 
 **Load mode** (`load.mode`):
 - `open-loop` — fire at a target/ramped TPS regardless of how fast responses come back (`target_tps`, or `ramp_from`/`ramp_to`/`ramp_duration`).
@@ -58,36 +59,32 @@ differs is whether the platform can currently be brought up at all.
 
 | Mode | Workload | fabric-cft | fabric-bft | drunix | fabricx | neuchain |
 | --- | --- | --- | --- | --- | --- | --- |
-| `quick-smoke.yaml` | kv-write | yes | yes | yes¹ | blocked² | blocked³ |
-| `probe-sweep.yaml` | kv-write | yes | yes | yes¹ | blocked² | blocked³ |
-| `throughput-scan.yaml` | kv-write | yes | yes | yes¹ | blocked² | blocked³ |
-| `latency-profile.yaml` | kv-write | yes | yes | yes¹ | blocked² | blocked³ |
-| `read-profile.yaml` | kv-read | yes | yes | yes¹ | blocked² | blocked³ |
-| `contention.yaml` | transfer | yes | yes | yes¹ | blocked²⁴ | blocked³ |
-| `multi-client.yaml` | kv-mixed | yes | yes | yes¹ | blocked² | blocked³ |
+| `quick-smoke.yaml` | kv-write | yes | yes | yes¹ | yes² | blocked³ |
+| `probe-sweep.yaml` | kv-write | yes | yes | yes¹ | yes² | blocked³ |
+| `throughput-scan.yaml` | kv-write | yes | yes | yes¹ | yes² | blocked³ |
+| `latency-profile.yaml` | kv-write | yes | yes | yes¹ | yes² | blocked³ |
+| `read-profile.yaml` | kv-read | yes | yes | yes¹ | yes² | blocked³ |
+| `contention.yaml` | transfer | yes | yes | yes¹ | yes²⁴ | blocked³ |
+| `multi-client.yaml` | kv-mixed | yes | yes | yes¹ | yes² | blocked³ |
 
 ¹ Runs, with two automatic manifest caveats — see below.
 
-² **Fabric-X was rebuilt on its native gRPC path** and has not yet been
-live-verified. The previous REST/token integration is gone: it measured Fabric
-Smart Client and ZKP generation rather than Fabric-X, and never produced a
-number. The deploy now builds Arma + committer from pinned upstream tags and the
-adapter broadcasts to the Arma router, reading finality from the sidecar's
-deliver stream. See
+² **Fabric-X runs on its native gRPC path** and is live-verified (2026-09-14,
+local-small, smoke + probe-sweep). The adapter broadcasts each envelope to all
+four Arma routers and reads finality from the sidecar's deliver stream, so it
+reports a real submit latency. `state_db` is PostgreSQL, the platform's only
+store, so every normalized run carries the state-DB caveat. See
 [`docs/platforms/fabricx-integration.md`](docs/platforms/fabricx-integration.md)
-and [adr-016](docs/decisions/adr-016-fabricx-native-grpc.md). Because submit and
-commit are separate operations, Fabric-X now reports a real submit latency.
+and [adr-016](docs/decisions/adr-016-fabricx-native-grpc.md).
 
 ³ **NeuChain has no server binaries yet** — a 45–90 min C++ build, see
 [`docs/neuchain/build-and-portability-guide.md`](docs/neuchain/build-and-portability-guide.md).
 The Go adapter and all seven configs are ready; nothing else is missing.
 
-⁴ `contention.yaml` is the one normalized mode Fabric-X can meet with a *native*
-primitive (Token SDK `Transfer`), so it is the strongest cross-architecture
-comparison in the set once the platform is unblocked. Note the workload names
-accounts `acct-%09d` (`pkg/workloads/workload.go`), so those identifiers have to
-exist as real Fabric-X accounts — provisioning them is part of unblocking the
-platform, not something the config can assert.
+⁴ On Fabric-X, `transfer` is a two-key read/write set carrying the workload's
+values: contention (two hot accounts per transaction) is exercised, but no balance
+is computed as the Fabric chaincode does. See
+[docs/workloads/mismatches.md](docs/workloads/mismatches.md).
 
 The union `adapter:` block is what lets one file serve every platform: each
 adapter's `configFromExtra` is a key lookup that ignores keys it does not know,
@@ -108,21 +105,22 @@ uniform space.
 
 ```bash
 # fabric-cft
-source deploy/docker/fabric-cft/connection.env
+set -a; source deploy/docker/fabric-cft/connection.env; set +a
 ./bin/benchrunner run --config configs/normalized/quick-smoke.yaml --platform fabric-cft
 
 # fabric-bft
-source deploy/docker/fabric-bft/connection.env
+set -a; source deploy/docker/fabric-bft/connection.env; set +a
 ./bin/benchrunner run --config configs/normalized/quick-smoke.yaml --platform fabric-bft
 
 # drunix
 set -a; source deploy/docker/drunix/connection.env; set +a
 ./bin/benchrunner run --config configs/normalized/quick-smoke.yaml --platform drunix
-# fabricx (rebuilt on native gRPC; unverified - see footnote 2)
+
+# fabricx (see footnote 2)
 set -a; source deploy/docker/fabricx/connection.env; set +a
 ./bin/benchrunner run --config configs/normalized/quick-smoke.yaml --platform fabricx
 
-# neuchain (blocked - see footnote 3)
+# neuchain (needs its image built - see footnote 3)
 set -a; source deploy/docker/neuchain/connection.env; set +a
 ./bin/benchrunner run --config configs/normalized/quick-smoke.yaml --platform neuchain
 ```
@@ -141,21 +139,22 @@ output tells you what `target_tps` to set in `latency-profile.yaml`.
 
 ```bash
 # fabric-cft
-source deploy/docker/fabric-cft/connection.env
+set -a; source deploy/docker/fabric-cft/connection.env; set +a
 ./bin/benchrunner run --config configs/normalized/probe-sweep.yaml --platform fabric-cft
 
 # fabric-bft
-source deploy/docker/fabric-bft/connection.env
+set -a; source deploy/docker/fabric-bft/connection.env; set +a
 ./bin/benchrunner run --config configs/normalized/probe-sweep.yaml --platform fabric-bft
 
 # drunix
 set -a; source deploy/docker/drunix/connection.env; set +a
 ./bin/benchrunner run --config configs/normalized/probe-sweep.yaml --platform drunix
-# fabricx (rebuilt on native gRPC; unverified - see footnote 2)
+
+# fabricx (see footnote 2)
 set -a; source deploy/docker/fabricx/connection.env; set +a
 ./bin/benchrunner run --config configs/normalized/probe-sweep.yaml --platform fabricx
 
-# neuchain (blocked - see footnote 3)
+# neuchain (needs its image built - see footnote 3)
 set -a; source deploy/docker/neuchain/connection.env; set +a
 ./bin/benchrunner run --config configs/normalized/probe-sweep.yaml --platform neuchain
 ```
@@ -168,21 +167,22 @@ want a rough sense of where a platform falls over.
 
 ```bash
 # fabric-cft
-source deploy/docker/fabric-cft/connection.env
+set -a; source deploy/docker/fabric-cft/connection.env; set +a
 ./bin/benchrunner run --config configs/normalized/throughput-scan.yaml --platform fabric-cft
 
 # fabric-bft
-source deploy/docker/fabric-bft/connection.env
+set -a; source deploy/docker/fabric-bft/connection.env; set +a
 ./bin/benchrunner run --config configs/normalized/throughput-scan.yaml --platform fabric-bft
 
 # drunix
 set -a; source deploy/docker/drunix/connection.env; set +a
 ./bin/benchrunner run --config configs/normalized/throughput-scan.yaml --platform drunix
-# fabricx (rebuilt on native gRPC; unverified - see footnote 2)
+
+# fabricx (see footnote 2)
 set -a; source deploy/docker/fabricx/connection.env; set +a
 ./bin/benchrunner run --config configs/normalized/throughput-scan.yaml --platform fabricx
 
-# neuchain (blocked - see footnote 3)
+# neuchain (needs its image built - see footnote 3)
 set -a; source deploy/docker/neuchain/connection.env; set +a
 ./bin/benchrunner run --config configs/normalized/throughput-scan.yaml --platform neuchain
 ```
@@ -196,21 +196,22 @@ end-to-end latency numbers well clear of saturation effects — run this *after*
 
 ```bash
 # fabric-cft
-source deploy/docker/fabric-cft/connection.env
+set -a; source deploy/docker/fabric-cft/connection.env; set +a
 ./bin/benchrunner run --config configs/normalized/latency-profile.yaml --platform fabric-cft
 
 # fabric-bft
-source deploy/docker/fabric-bft/connection.env
+set -a; source deploy/docker/fabric-bft/connection.env; set +a
 ./bin/benchrunner run --config configs/normalized/latency-profile.yaml --platform fabric-bft
 
 # drunix
 set -a; source deploy/docker/drunix/connection.env; set +a
 ./bin/benchrunner run --config configs/normalized/latency-profile.yaml --platform drunix
-# fabricx (rebuilt on native gRPC; unverified - see footnote 2)
+
+# fabricx (see footnote 2)
 set -a; source deploy/docker/fabricx/connection.env; set +a
 ./bin/benchrunner run --config configs/normalized/latency-profile.yaml --platform fabricx
 
-# neuchain (blocked - see footnote 3)
+# neuchain (needs its image built - see footnote 3)
 set -a; source deploy/docker/neuchain/connection.env; set +a
 ./bin/benchrunner run --config configs/normalized/latency-profile.yaml --platform neuchain
 ```
@@ -225,21 +226,22 @@ that failure rate *is* the measurement, not a bug.
 
 ```bash
 # fabric-cft
-source deploy/docker/fabric-cft/connection.env
+set -a; source deploy/docker/fabric-cft/connection.env; set +a
 ./bin/benchrunner run --config configs/normalized/contention.yaml --platform fabric-cft
 
 # fabric-bft
-source deploy/docker/fabric-bft/connection.env
+set -a; source deploy/docker/fabric-bft/connection.env; set +a
 ./bin/benchrunner run --config configs/normalized/contention.yaml --platform fabric-bft
 
 # drunix
 set -a; source deploy/docker/drunix/connection.env; set +a
 ./bin/benchrunner run --config configs/normalized/contention.yaml --platform drunix
-# fabricx (rebuilt on native gRPC; unverified - see footnote 2)
+
+# fabricx (see footnote 2)
 set -a; source deploy/docker/fabricx/connection.env; set +a
 ./bin/benchrunner run --config configs/normalized/contention.yaml --platform fabricx
 
-# neuchain (blocked - see footnote 3)
+# neuchain (needs its image built - see footnote 3)
 set -a; source deploy/docker/neuchain/connection.env; set +a
 ./bin/benchrunner run --config configs/normalized/contention.yaml --platform neuchain
 ```
@@ -254,21 +256,22 @@ processes/VMs is a later phase, not yet built).
 
 ```bash
 # fabric-cft
-source deploy/docker/fabric-cft/connection.env
+set -a; source deploy/docker/fabric-cft/connection.env; set +a
 ./bin/benchrunner run --config configs/normalized/multi-client.yaml --platform fabric-cft
 
 # fabric-bft
-source deploy/docker/fabric-bft/connection.env
+set -a; source deploy/docker/fabric-bft/connection.env; set +a
 ./bin/benchrunner run --config configs/normalized/multi-client.yaml --platform fabric-bft
 
 # drunix
 set -a; source deploy/docker/drunix/connection.env; set +a
 ./bin/benchrunner run --config configs/normalized/multi-client.yaml --platform drunix
-# fabricx (rebuilt on native gRPC; unverified - see footnote 2)
+
+# fabricx (see footnote 2)
 set -a; source deploy/docker/fabricx/connection.env; set +a
 ./bin/benchrunner run --config configs/normalized/multi-client.yaml --platform fabricx
 
-# neuchain (blocked - see footnote 3)
+# neuchain (needs its image built - see footnote 3)
 set -a; source deploy/docker/neuchain/connection.env; set +a
 ./bin/benchrunner run --config configs/normalized/multi-client.yaml --platform neuchain
 ```
@@ -283,12 +286,13 @@ bash deploy/docker/fabricx/down.sh local-small
 ```
 
 Four containers from one image: Arma (4 parties, 16 processes), PostgreSQL, the
-sidecar/verifier/coordinator pipeline, and the validator-committer. Ports 6022
-(broadcast), 4001 (deliver) and 9643 (metrics) — none of which collide with the
+sidecar/verifier/coordinator pipeline, and the validator-committer. Ports
+6022/6122/6222/6322 (the four routers; the adapter broadcasts to all of them), 6023
+(assembler), 4001 (deliver) and 9643 (metrics) — none of which collide with the
 Fabric family, NeuChain, or the monitoring stack.
 
-The first `up.sh` compiles Arma and the committer from source: 15-20 minutes and
-several GB. Subsequent runs reuse the image.
+The first `up.sh` compiles Arma and the committer from source: several minutes and
+several GB. Later deploys reuse the Docker build cache.
 
 ## `read-profile.yaml` — the kv-read leg of the normalized set
 
@@ -302,12 +306,19 @@ to the write modes:
 
 - **fabric / drunix** — chaincode `Evaluate` against one peer. `WaitForFinality`
   returns immediately with `Valid: true`; nothing reaches the ledger.
-- **fabricx** — the same synchronous POST as a write, through the FSC KV view.
+- **fabricx** — a full ordered + committed transaction carrying a unique dummy
+  blind write (the validator rejects read-only transactions).
 - **neuchain** — a real submitted transaction carrying a read set, not a point
   query; it goes through the full commit path.
 
 The shape is consistent enough to compare read paths against each other. It is
 not a like-for-like latency against `kv-write`. See `docs/workloads/mismatches.md`.
+
+**Run it on a populated ledger.** `scripts/run-all.sh` redeploys the platform for
+every config, so a campaign that includes `read-profile.yaml` reads an empty
+ledger: on the Fabric family an absent key returns an empty value and counts as a
+successful read. For a meaningful read run, deploy once, run `latency-profile.yaml`
+(same 500k key space), then run `read-profile.yaml` against the same deployment.
 
 ```bash
 set -a; source deploy/docker/<platform>/connection.env; set +a

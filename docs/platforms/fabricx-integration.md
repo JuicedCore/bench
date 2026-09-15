@@ -8,7 +8,7 @@ integration path.
 ## The short version
 
 Fabric-X has no REST benchmarking interface. Clients speak **gRPC**: submit by
-broadcasting an `Envelope` to an **Arma router**, and learn the outcome by reading
+broadcasting an `Envelope` to **every party's Arma router**, and learn the outcome by reading
 blocks from the **sidecar's deliver stream**. Submit and commit are separate
 operations on separate connections, so Fabric-X has a genuine submit ack — a real
 T2 — which the previous REST-based integration could not observe.
@@ -72,6 +72,15 @@ Two hard prerequisites that fail silently if missed:
 - Arma's generated configs bind their advertised IP. Rewrite `ListenAddress` to
   `0.0.0.0`, or the address has to exist at image-build time.
 
+A third, unrelated to signatures: `transport: authentication handshake failed:
+tls: first record does not look like a TLS handshake`. The committer v1.0.x sample
+YAMLs default every client and server to `mode: mtls`, while `arma-deployment.yaml`
+runs routers and assemblers with `UseTLSRouter/UseTLSAssembler: none`. The
+`SC_*_TLS_MODE=none` overrides must therefore reach the bootstrap loadgen, which
+up.sh starts with `docker compose exec` — a new process that does not go through
+the image entrypoint. They live in `deploy/docker/fabricx/endpoints.env` (the
+compose `env_file`) for that reason; exporting them only in `run.sh` breaks it.
+
 ## The supported client paths
 
 | Path | What it is | Use for benchmarking? |
@@ -93,6 +102,19 @@ Two hard prerequisites that fail silently if missed:
   overhead no other platform pays; it belongs in the run caveats.
 - **Version skew is the recurring trap here.** Keep orderer, committer, tools and
   loadgen on one coherent set; upstream's own sample stacks pin mismatched versions.
+
+## Gotchas found at first live bring-up (2026-09-14)
+
+Each one silently produced a broken or misleading benchmark until fixed:
+
+| Symptom | Cause | Fix (where) |
+| ------- | ----- | ----------- |
+| `generate-arma.sh: 'RequestBatchMaxInterval: 200ms' not found` | a sed keyed on an old upstream default; v1.0.6 writes `requestbatchmaxinterval: 500ms` (lowercase key). The unguarded sed had been silently matching nothing | `pin` replaces whatever value is present and verifies it (`image/generate-arma.sh`) |
+| `loadgen` bootstrap: `tls: first record does not look like a TLS handshake` | sample YAMLs default to mTLS; the `SC_*_TLS_MODE=none` overrides lived only in `run.sh`, which `docker compose exec` never runs | overrides moved to `endpoints.env` (compose `env_file`) |
+| `receiver done: context canceled`, exit 1, yet the namespace exists | upstream loadgen always returns `context.Canceled` when its workload ends | `up.sh` checks the `ns__meta` row in PostgreSQL instead of the exit code |
+| finality stream: `unknown service orderer.AtomicBroadcast` | the sidecar serves `peer.Deliver`, not the orderer's Deliver | adapter uses `peer.NewDeliverClient` (`pkg/adapters/fabricx/stream.go`) |
+| every transaction `committed invalid` | status bytes are `committerpb.Status` (1 = COMMITTED), not Fabric's `TxValidationCode` (0 = VALID) | `decodeBlock` checks `Status_COMMITTED` |
+| ~12 s end-to-end latency at 50 TPS | only party 1's router was used; only the primary batcher (party 2) cuts batches, and a secondary forwards after `FirstStrikeThreshold` (10 s) | adapter broadcasts to all four routers, like upstream's `bftBroadcaster` (`routerSet`) |
 
 ## Known-good reference
 

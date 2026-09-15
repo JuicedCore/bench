@@ -11,7 +11,7 @@ Collected the same way for every platform, from the same code path:
 | ------ | ------ | ----- |
 | Confirmed TPS | `metrics.Collector`, T3 timestamps | all platforms |
 | End-to-end latency p50…p99.99 | `metrics.Collector`, T3 − scheduled | all platforms |
-| Submit latency | T2 − T1 | **NeuChain: N/A** — its ZeroMQ PUB is fire-and-forget, so `AckTime = now` measures a local call return, not a platform acknowledgement. Ignore its submit/commit split. Fabric-X reports a real ack: T2 is the Arma router's reply to that envelope (it accepted it and forwarded it to a batcher, strictly before ordering and commit — the same point the Fabric gateway's Submit returns). |
+| Submit latency | T2 − T1 | **NeuChain: N/A** — its ZeroMQ PUB is fire-and-forget, so `AckTime = now` measures a local call return, not a platform acknowledgement. Ignore its submit/commit split. Fabric-X reports a real ack: T2 is the first reply from the four Arma routers the envelope is sent to (it accepted it and forwarded it to a batcher, strictly before ordering and commit — the same point the Fabric gateway's Submit returns). |
 | Commit latency | T3 − T2 | same caveat for NeuChain |
 | Failure rate | invalid + errored + timed-out over submitted | all platforms, but see the breakdown caveat below |
 | Host CPU / memory / disk | node_exporter + cAdvisor, or the built-in `docker stats` sampler | all platforms |
@@ -88,7 +88,8 @@ union `adapter:` block, whose irrelevant keys each adapter ignores.
 
 For **platform-native runs** (`normalized: false`) each platform is tuned to its
 best and the tuning is recorded in the manifest. Native and normalized numbers
-are never mixed in one comparison. Native configs live in `configs/native/`.
+are never mixed in one comparison. There are no native configs today: the old
+`configs/native/` Fabric-X files targeted the removed REST path.
 
 ### State DB: requested vs actual
 
@@ -140,11 +141,13 @@ and the HTML report:
   the ~200 k TPS (Fabric-X) or VLDB (NeuChain) figures. The *shape* of the
   latency curve and the relative behaviour under contention are still
   informative. Full-scale numbers require the `gcp-full` profile.
-- **Mismatched workloads on Fabric-X** (`kv-write` mapped onto a token mint) —
-  see [workloads/mismatches.md](../workloads/mismatches.md) and
+- **Mismatched workloads on Fabric-X** — reads carry a dummy blind write, and
+  `transfer` writes values rather than computing balances; see
+  [workloads/mismatches.md](../workloads/mismatches.md) and
   [adr-010](../decisions/adr-010-mismatch-report.md).
 - **State-DB parity not held** — emitted automatically whenever `state_db`
-  differs from `state_db_requested` (Drunix on YugabyteDB).
+  differs from `state_db_requested` (Drunix on YugabyteDB, Fabric-X on
+  PostgreSQL).
 - **Sweep aborted early** / **no sweep step held** — emitted automatically by the
   ladder rules above; the second means the headline is a floor, not a saturation
   figure.
