@@ -11,6 +11,7 @@
 #
 # Installs:
 #   git curl jq python3 + PyYAML, openssl, make, rsync   (distro packages)
+#   matplotlib, python-pptx                               (per-run charts + campaign decks)
 #   Docker Engine + compose plugin                        (Docker's own repo on
 #                                                          apt/dnf; distro on Arch)
 #   Go at the version go.mod names                        (go.dev tarball, sha256
@@ -163,6 +164,36 @@ else
   tar -C /usr/local -xzf "${tmp}/${tarball}"
   printf 'export PATH=/usr/local/go/bin:$PATH\n' > /etc/profile.d/go.sh
   log "go: $(/usr/local/go/bin/go version) (new shells pick up /etc/profile.d/go.sh)"
+fi
+
+# --- Python extras: per-run charts (matplotlib) and campaign decks (python-pptx)
+py_ok() { python3 -c "import $1" 2>/dev/null; }
+pip_install() {
+  python3 -m pip install --break-system-packages "$1" >/dev/null 2>&1 \
+    || python3 -m pip install "$1" >/dev/null 2>&1
+}
+case "$family" in
+  apt)
+    apt-get install -y -qq python3-matplotlib python3-pip >/dev/null || warn "apt matplotlib/pip failed"
+    ;;
+  dnf)
+    dnf install -y -q python3-matplotlib python3-pip >/dev/null || warn "dnf matplotlib/pip failed"
+    ;;
+  pacman)
+    pacman -S --noconfirm --needed python-matplotlib python-pip >/dev/null || warn "pacman matplotlib/pip failed"
+    ;;
+esac
+if py_ok matplotlib; then
+  log "python3 matplotlib already installed"
+else
+  log "installing matplotlib"
+  pip_install matplotlib || warn "matplotlib missing - per-run reports render without charts"
+fi
+if py_ok pptx; then
+  log "python3 python-pptx already installed"
+else
+  log "installing python-pptx"
+  pip_install python-pptx || warn "python-pptx missing - campaign PPT decks cannot be generated"
 fi
 
 # --- optional host tuning -------------------------------------------------------

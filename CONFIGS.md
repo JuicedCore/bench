@@ -133,6 +133,8 @@ the kv-write native set.
 scripts/run-all.sh configs/native-kv-mixed local-32gb fabric-cft fabric-bft drunix fabricx neuchain
 ```
 
+After a campaign, `python3 scripts/gen-pptx.py --campaign results/_campaigns/<id>` (or `make pptx CAMPAIGN=results/_campaigns/<id>`) writes `deck.pptx` from per-run `result.json` + `monitoring-report.html`. It is not wired into `run-all.sh`.
+
 | File | Workload | What is tuned |
 | --- | --- | --- |
 | `fabric-cft.yaml` | kv-mixed 50% reads | LevelDB, Raft, 500 msgs / 500ms batch |

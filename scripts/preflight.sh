@@ -61,12 +61,15 @@ docker info >/dev/null 2>&1 && ok "docker daemon reachable" \
   || fail "cannot talk to the docker daemon (not running, or user not in the docker group)"
 
 # Optional python deps. yaml has a yq fallback chain in deploy/docker/lib.sh, so
-# it is only a warning; matplotlib only affects charts inside the per-run report.
+# it is only a warning; matplotlib only affects charts inside the per-run report;
+# python-pptx is only needed for campaign PPT decks (scripts/gen-pptx.py).
 # The capacity checks below read the profile with PyYAML.
 python3 -c 'import yaml' 2>/dev/null && ok "python3 yaml" \
   || fail "python3 yaml (PyYAML) missing - run: sudo scripts/install-deps.sh"
 python3 -c 'import matplotlib' 2>/dev/null && ok "python3 matplotlib" \
   || warn "python3 matplotlib missing - per-run reports render without charts"
+python3 -c 'import pptx' 2>/dev/null && ok "python3 python-pptx" \
+  || warn "python3 python-pptx missing - campaign PPT decks cannot be generated"
 
 # run-all.sh drops the page cache between platforms for inter-run isolation.
 sudo -n true 2>/dev/null && ok "passwordless sudo (page-cache drop between runs)" \

@@ -175,3 +175,14 @@ The NeuChain image build logs separately, to
 
 Only harness metrics appear. `normalized=true` and `normalized=false` rows are
 never mixed in one ranking. Caveat rows appear under their platform.
+
+Campaign PowerPoint (not attached to `run-all.sh`):
+
+```
+python3 scripts/gen-pptx.py --campaign results/_campaigns/<id>
+# or: make pptx CAMPAIGN=results/_campaigns/<id>
+# optional: --out /path/to/deck.pptx
+```
+
+Numbers come from each run’s `result.json`; charts are the PNGs already
+embedded in `monitoring-report.html`.

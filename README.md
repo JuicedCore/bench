@@ -576,6 +576,7 @@ docs/reports/comparison.html         output of `make report`
 | ---- | -------- |
 | `SUMMARY.tsv` | one row per platform × config: `ok`, `no-measurement`, `deploy-failed`, `run-failed`, `container-failed`, with a reason |
 | `comparison.html` | cross-platform report of this campaign only; rejected runs are listed with the reason |
+| `deck.pptx` | optional 16:9 campaign deck from `make pptx CAMPAIGN=…` / `scripts/gen-pptx.py` |
 | `run-all.log` (or `gcp-run.log`) | the whole campaign |
 | `<platform>/<config>/` | `deploy.log`, `run.log`, `teardown.log`, and `capture/` (docker ps, inspect, container logs, events, host state) taken before teardown |
 

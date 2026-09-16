@@ -11,9 +11,11 @@ CONFIGS   ?= configs/normalized/quick-smoke.yaml,configs/normalized/probe-sweep.
 SINCE     ?= 24h
 PROJECT   ?=
 GCP_PROFILE ?= gcp-small
+CAMPAIGN  ?=
+OUT       ?=
 
 .PHONY: all build test vet fmt tidy smoke clean clean-images monitoring-up monitoring-down \
-        chaincode integration up-all down-all help deps preflight bench report runbook images-export images-import lint \
+        chaincode integration up-all down-all help deps preflight bench report pptx runbook images-export images-import lint \
         gcp-plan gcp
 
 all: build test vet ## build + test + vet
@@ -55,6 +57,10 @@ bench: ## deploy, run CONFIGS on PLATFORMS sequentially, report (PROFILE, PLATFO
 report: build ## comparison report of runs since SINCE (date, RFC3339, or duration)
 	./$(BIN) report --results-dir results --output docs/reports/comparison.html --since $(SINCE)
 	@echo "wrote docs/reports/comparison.html"
+
+pptx: ## campaign PowerPoint from monitoring reports (CAMPAIGN=results/_campaigns/<id>)
+	@test -n "$(CAMPAIGN)" || { echo "usage: make pptx CAMPAIGN=results/_campaigns/<id>"; exit 2; }
+	python3 scripts/gen-pptx.py --campaign $(CAMPAIGN) $(if $(OUT),--out $(OUT))
 
 runbook: build ## rebuild results/index.html: one page per run (also rebuilt after every run)
 	./$(BIN) runbook --results-dir results
