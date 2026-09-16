@@ -1,0 +1,32 @@
+time=2026-09-16T10:55:09.454+05:30 level=INFO msg="run starting" workload=kv-write profile=local normalized=true out_dir=results/fabricx/20260916-105509
+time=2026-09-16T10:55:09.454+05:30 level=WARN msg=caveat text="fabricx on the local profile is resource-constrained; absolute throughput is NOT comparable to its published scale-out ceiling"
+time=2026-09-16T10:55:09.454+05:30 level=WARN msg=caveat text="state-db parity not held: run requested leveldb, platform actually ran postgres"
+time=2026-09-16T10:55:09.454+05:30 level=INFO msg="adapter setup"
+time=2026-09-16T10:55:09.631+05:30 level=INFO msg="setup complete" component=adapter routers=localhost:6022,localhost:6122,localhost:6222,localhost:6322 deliver=localhost:4001 channel=arma namespace=0 broadcast_streams=256
+time=2026-09-16T10:55:09.631+05:30 level=INFO msg="phase start" phase=probe offered_tps=10 workers=0 duration=30s
+time=2026-09-16T10:55:40.281+05:30 level=DEBUG msg="phase shorter than warmup+cooldown; measuring whole phase" phase=probe
+time=2026-09-16T10:55:40.284+05:30 level=INFO msg="phase end" phase=probe submitted=300 committed=300 confirmed_tps=10.0 fail_rate=0.0000 e2e_p99_ms=1467.39
+time=2026-09-16T10:55:40.284+05:30 level=INFO msg="phase start" phase=sweep-100 offered_tps=100 workers=0 duration=1m0s
+time=2026-09-16T10:56:41.617+05:30 level=INFO msg="phase end" phase=sweep-100 submitted=1500 committed=1500 confirmed_tps=100.0 fail_rate=0.0000 e2e_p99_ms=1485.82
+time=2026-09-16T10:56:41.617+05:30 level=INFO msg="phase start" phase=sweep-250 offered_tps=250 workers=0 duration=1m0s
+time=2026-09-16T10:57:43.076+05:30 level=INFO msg="phase end" phase=sweep-250 submitted=3750 committed=3750 confirmed_tps=250.0 fail_rate=0.0000 e2e_p99_ms=889.34
+time=2026-09-16T10:57:43.076+05:30 level=INFO msg="phase start" phase=sweep-500 offered_tps=500 workers=0 duration=1m0s
+time=2026-09-16T10:58:44.281+05:30 level=INFO msg="phase end" phase=sweep-500 submitted=7500 committed=7500 confirmed_tps=500.0 fail_rate=0.0000 e2e_p99_ms=706.05
+time=2026-09-16T10:58:44.281+05:30 level=INFO msg="phase start" phase=sweep-1000 offered_tps=1000 workers=0 duration=1m0s
+time=2026-09-16T10:59:45.637+05:30 level=INFO msg="phase end" phase=sweep-1000 submitted=15000 committed=15000 confirmed_tps=1000.0 fail_rate=0.0000 e2e_p99_ms=621.57
+time=2026-09-16T10:59:45.637+05:30 level=INFO msg="phase start" phase=sweep-2000 offered_tps=2000 workers=0 duration=1m0s
+time=2026-09-16T11:00:47.020+05:30 level=INFO msg="phase end" phase=sweep-2000 submitted=30000 committed=30000 confirmed_tps=2000.0 fail_rate=0.0000 e2e_p99_ms=588.80
+time=2026-09-16T11:00:47.020+05:30 level=INFO msg="phase start" phase=sweep-3500 offered_tps=3500 workers=0 duration=1m0s
+time=2026-09-16T11:01:48.671+05:30 level=INFO msg="phase end" phase=sweep-3500 submitted=52500 committed=52500 confirmed_tps=3500.0 fail_rate=0.0000 e2e_p99_ms=602.11
+time=2026-09-16T11:01:48.671+05:30 level=INFO msg="phase start" phase=sweep-5000 offered_tps=5000 workers=0 duration=1m0s
+time=2026-09-16T11:02:50.220+05:30 level=INFO msg="phase end" phase=sweep-5000 submitted=75000 committed=75000 confirmed_tps=5000.0 fail_rate=0.0000 e2e_p99_ms=769.02
+time=2026-09-16T11:02:50.220+05:30 level=INFO msg="phase start" phase=sweep-7500 offered_tps=7500 workers=0 duration=1m0s
+time=2026-09-16T11:03:57.050+05:30 level=INFO msg="phase end" phase=sweep-7500 submitted=112500 committed=59887 confirmed_tps=3992.5 fail_rate=0.4677 e2e_p99_ms=18923.52
+time=2026-09-16T11:03:57.050+05:30 level=WARN msg="phase errors" phase=sweep-7500 count=52613 message="not sent: N transactions already in flight (platform is not finalizing)"
+time=2026-09-16T11:03:57.050+05:30 level=INFO msg="phase start" phase=sweep-10000 offered_tps=10000 workers=0 duration=1m0s
+time=2026-09-16T11:05:04.449+05:30 level=INFO msg="phase end" phase=sweep-10000 submitted=150000 committed=50699 confirmed_tps=3379.9 fail_rate=0.6620 e2e_p99_ms=24084.48
+time=2026-09-16T11:05:04.449+05:30 level=WARN msg="phase errors" phase=sweep-10000 count=99301 message="not sent: N transactions already in flight (platform is not finalizing)"
+time=2026-09-16T11:05:04.449+05:30 level=INFO msg="phase start" phase=hold offered_tps=4500 workers=0 duration=5m0s
+time=2026-09-16T11:10:07.383+05:30 level=INFO msg="phase end" phase=hold submitted=1147500 committed=1147500 confirmed_tps=4500.0 fail_rate=0.0000 e2e_p99_ms=1112.06
+time=2026-09-16T11:10:07.781+05:30 level=WARN msg=caveat text="native metrics scrape of http://localhost:9643/metrics failed: scrape http://localhost:9643/metrics: parser panic: Invalid name validation scheme requested: unset (informational metrics only; harness numbers unaffected)"
+time=2026-09-16T11:10:07.782+05:30 level=INFO msg="run finished" out_dir=results/fabricx/20260916-105509 caveats=3

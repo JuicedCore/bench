@@ -76,3 +76,40 @@ func TestRunbookPagesEveryRun(t *testing.T) {
 		t.Error("runs are not ordered newest first")
 	}
 }
+
+func TestResourceChartsPerContainer(t *testing.T) {
+	t0 := time.Date(2026, 9, 16, 10, 0, 0, 0, time.UTC)
+	rr := &RunResult{SystemSamples: []metrics.SystemSample{
+		{
+			T: t0, CPUPercent: 150, MemBytes: 300 << 20, Containers: 2,
+			ByContainer: []metrics.ContainerUsage{
+				{Name: "peer0.org1.example.com", CPUPercent: 100, MemBytes: 200 << 20},
+				{Name: "orderer.example.com", CPUPercent: 50, MemBytes: 100 << 20},
+			},
+		},
+		{
+			T: t0.Add(time.Second), CPUPercent: 180, MemBytes: 320 << 20, Containers: 2,
+			ByContainer: []metrics.ContainerUsage{
+				{Name: "peer0.org1.example.com", CPUPercent: 120, MemBytes: 210 << 20},
+				{Name: "orderer.example.com", CPUPercent: 60, MemBytes: 110 << 20},
+			},
+		},
+	}}
+	html := resourceCharts(rr)
+	for _, want := range []string{"Platform CPU by container", "1.0 = one full core", "peer0.org1", "orderer"} {
+		if !strings.Contains(html, want) {
+			t.Errorf("resource chart missing %q", want)
+		}
+	}
+	if strings.Contains(html, "all containers") {
+		t.Error("per-container samples should not fall back to the summed series")
+	}
+
+	old := resourceCharts(&RunResult{SystemSamples: []metrics.SystemSample{
+		{T: t0, CPUPercent: 80, MemBytes: 50 << 20, Containers: 2},
+		{T: t0.Add(time.Second), CPUPercent: 90, MemBytes: 60 << 20, Containers: 2},
+	}})
+	if !strings.Contains(old, "all containers") {
+		t.Error("legacy summed samples should still plot as one series")
+	}
+}

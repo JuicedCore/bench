@@ -1,0 +1,14 @@
+run:        quick-smoke
+platform:   mock  (version mock-0)
+workload:   kv-write   normalized=true
+profile:    local   state_db=leveldb
+resources:  NOT REPORTED - limits unverified
+batch:      msgcount=100 timeout=1s preferred=2 MB
+crypto:     sig= hash= per_tx_endorse_verify=false
+caveats:
+  - resource budget not reported by the deploy script (BENCH_RESOURCE_CONTAINERS unset - was connection.env sourced?): container limits are unverified, so this run's hardware share is unknown
+
+phase           offered     conf_tps  goodput  fail_rate    e2e_p50    e2e_p99    gap_p99    com_p50  verdict
+single               50         50.0     100%     0.0000      58.66      71.68       1.12      48.19  
+
+HEADLINE  confirmed_tps=50.0  fail_rate=0.0000  e2e p50/p99=58.66/71.68 ms  invariant_ok=true

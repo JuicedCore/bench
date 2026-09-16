@@ -1,0 +1,59 @@
+{
+  "run_name": "quick-smoke",
+  "platform": "fabricx",
+  "workload": "kv-write",
+  "profile": "local",
+  "normalized": true,
+  "started_at": "2026-09-16T09:17:33.991367501+05:30",
+  "ended_at": "2026-09-16T09:18:04.953529709+05:30",
+  "harness_git_sha": "a034b6e",
+  "platform_version": "fabricx-committer-v1.0.5-orderer-v1.0.6",
+  "state_db": "postgres",
+  "state_db_requested": "leveldb",
+  "orderer_batch": {
+    "MaxMessageCount": 100,
+    "AbsoluteMaxBytes": "10 MB",
+    "PreferredMaxBytes": "2 MB",
+    "BatchTimeout": "1s"
+  },
+  "crypto": {
+    "signature_alg": "ECDSA-P256",
+    "hash_alg": "SHA-256",
+    "per_tx_endorsement_verify": true,
+    "msp_note": "Fabric-X: client-signed ECDSA endorsement per namespace, verified by the committer against the namespace policy registered in _meta at deploy time. No peer endorsement round-trip."
+  },
+  "resource_limit_per_container": {
+    "CPUs": 2.75,
+    "Memory": ""
+  },
+  "resource_memory_by_container": {
+    "bench-fabricx-fabricx-arma-1": "2816m",
+    "bench-fabricx-fabricx-committer-1": "2816m",
+    "bench-fabricx-fabricx-db-1": "2816m",
+    "bench-fabricx-fabricx-pipeline-1": "2816m"
+  },
+  "resource_memory_weights": "peer=4 statedb=4 orderer=2 other=1",
+  "resource_containers": 4,
+  "resource_cpus_total": 11,
+  "resource_memory_total_gb": 11,
+  "nodes": {
+    "arma": 1,
+    "committer": 1,
+    "pipeline": 1,
+    "postgres": 1
+  },
+  "generators": 2,
+  "seed": 1,
+  "key_space": 5000,
+  "key_distribution": "uniform",
+  "zipfian_constant": 0,
+  "read_write_ratio": 0,
+  "value_size_bytes": 64,
+  "warmup_sec": 5,
+  "cooldown_sec": 3,
+  "caveats": [
+    "fabricx on the local profile is resource-constrained; absolute throughput is NOT comparable to its published scale-out ceiling",
+    "state-db parity not held: run requested leveldb, platform actually ran postgres",
+    "native metrics scrape of http://localhost:9643/metrics failed: scrape http://localhost:9643/metrics: parser panic: Invalid name validation scheme requested: unset (informational metrics only; harness numbers unaffected)"
+  ]
+}

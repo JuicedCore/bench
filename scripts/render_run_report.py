@@ -36,6 +36,8 @@ def scale_for_unit(unit):
         return 0.001, "ms"
     if unit == "percent":
         return 1, "%"
+    if unit == "cores":
+        return 1, "CPU cores"
     return 1, ""
 
 
@@ -67,7 +69,8 @@ def render_chart(spec):
         ax.xaxis.set_major_formatter(mdates.DateFormatter("%H:%M:%S"))
         fig.autofmt_xdate()
         if len(spec.get("series", [])) > 1:
-            ax.legend(fontsize=8, loc="upper left")
+            n = len(spec.get("series", []))
+            ax.legend(fontsize=7, loc="upper left", ncol=2 if n > 6 else 1, framealpha=0.85)
         ax.grid(True, alpha=0.3)
 
     ax.set_title(spec.get("title", ""))

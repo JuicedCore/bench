@@ -1,0 +1,12 @@
+time=2026-09-16T09:15:21.115+05:30 level=INFO msg="run starting" workload=kv-write profile=local normalized=true out_dir=results/drunix/20260916-091521
+time=2026-09-16T09:15:21.115+05:30 level=WARN msg=caveat text="drunix ran on YugabyteDB (its shipped test-network default); LevelDB parity is unavailable, so the state-DB variable is NOT held constant vs fabric-cft for this run"
+time=2026-09-16T09:15:21.115+05:30 level=WARN msg=caveat text="drunix write values are JSON-wrapped client-side to survive a YugabyteDB statedb bug (non-JSON values panic the Committing Peer); the on-wire payload format differs from the shared kv workload on other platforms for this run"
+time=2026-09-16T09:15:21.115+05:30 level=WARN msg=caveat text="state-db parity not held: run requested leveldb, platform actually ran yugabyte"
+time=2026-09-16T09:15:21.115+05:30 level=INFO msg="adapter setup"
+time=2026-09-16T09:15:21.115+05:30 level=DEBUG msg="gateway connection configured" component=adapter endpoint=localhost:7051 tls_server_name=peer0.org1.example.com msp_id=Org1MSP channel=mychannel chaincode=kvstore
+time=2026-09-16T09:15:21.146+05:30 level=DEBUG msg="block event stream open" component=adapter stream=filtered-block-events endpoint=localhost:7061 channel=mychannel
+time=2026-09-16T09:15:21.181+05:30 level=INFO msg="setup complete" component=adapter gateway=localhost:7051 finality_from=localhost:7061
+time=2026-09-16T09:15:21.181+05:30 level=INFO msg="phase start" phase=single offered_tps=50 workers=0 duration=30s
+time=2026-09-16T09:15:51.755+05:30 level=INFO msg="phase end" phase=single submitted=1100 committed=1100 confirmed_tps=50.0 fail_rate=0.0000 e2e_p99_ms=2154.50
+time=2026-09-16T09:15:51.758+05:30 level=WARN msg=caveat text="native metrics scrape of http://localhost:9444/metrics failed: scrape http://localhost:9444/metrics: parser panic: Invalid name validation scheme requested: unset (informational metrics only; harness numbers unaffected)"
+time=2026-09-16T09:15:51.758+05:30 level=INFO msg="run finished" out_dir=results/drunix/20260916-091521 caveats=4

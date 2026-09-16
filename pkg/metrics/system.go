@@ -17,15 +17,26 @@ import (
 	"time"
 )
 
-// SystemSample is one point-in-time reading of aggregate container resource use,
-// sampled from `docker stats`. Host-level CPU/mem/disk are collected separately
-// by node_exporter + cAdvisor into Prometheus; this cheap sampler exists so a
-// run has a resource trace even when the monitoring stack is not up.
+// ContainerUsage is one container's share of a SystemSample.
+type ContainerUsage struct {
+	Name       string  `json:"name"`
+	CPUPercent float64 `json:"cpu_percent"` // docker stats: 100 = one full core
+	MemBytes   uint64  `json:"mem_bytes"`
+}
+
+// SystemSample is one point-in-time reading of container resource use, sampled
+// from `docker stats`. Host-level CPU/mem/disk are collected separately by
+// node_exporter + cAdvisor into Prometheus; this cheap sampler exists so a run
+// has a resource trace even when the monitoring stack is not up.
+//
+// CPUPercent / MemBytes stay as the sum so older reports keep working.
+// ByContainer is the per-container breakdown the run book charts from.
 type SystemSample struct {
-	T          time.Time `json:"t"`
-	CPUPercent float64   `json:"cpu_percent"` // sum across matched containers
-	MemBytes   uint64    `json:"mem_bytes"`   // sum across matched containers
-	Containers int       `json:"containers"`
+	T           time.Time        `json:"t"`
+	CPUPercent  float64          `json:"cpu_percent"` // sum across matched containers
+	MemBytes    uint64           `json:"mem_bytes"`   // sum across matched containers
+	Containers  int              `json:"containers"`
+	ByContainer []ContainerUsage `json:"by_container,omitempty"`
 }
 
 // ContainerFailure is a platform container that stopped running mid-run, or had
@@ -419,11 +430,20 @@ func (s *SystemSampler) sample(ctx context.Context) (SystemSample, []string, err
 		if !s.match(d.Name) {
 			continue
 		}
+		u := ContainerUsage{
+			Name:       d.Name,
+			CPUPercent: parsePercent(d.CPUPerc),
+			MemBytes:   parseMemUsed(d.MemUsage),
+		}
+		sample.ByContainer = append(sample.ByContainer, u)
 		sample.Containers++
-		sample.CPUPercent += parsePercent(d.CPUPerc)
-		sample.MemBytes += parseMemUsed(d.MemUsage)
+		sample.CPUPercent += u.CPUPercent
+		sample.MemBytes += u.MemBytes
 		names = append(names, d.Name)
 	}
+	sort.Slice(sample.ByContainer, func(i, j int) bool {
+		return sample.ByContainer[i].Name < sample.ByContainer[j].Name
+	})
 	return sample, names, nil
 }
 

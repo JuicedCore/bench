@@ -1,0 +1,397 @@
+time=2026-09-16T09:17:33.992+05:30 level=INFO msg="run starting" platform=fabricx run=quick-smoke workload=kv-write profile=local normalized=true out_dir=results/fabricx/20260916-091733
+time=2026-09-16T09:17:33.992+05:30 level=WARN msg=caveat platform=fabricx run=quick-smoke text="fabricx on the local profile is resource-constrained; absolute throughput is NOT comparable to its published scale-out ceiling"
+time=2026-09-16T09:17:33.992+05:30 level=WARN msg=caveat platform=fabricx run=quick-smoke text="state-db parity not held: run requested leveldb, platform actually ran postgres"
+time=2026-09-16T09:17:33.992+05:30 level=INFO msg="adapter setup" platform=fabricx run=quick-smoke
+[34m2026-09-16 09:17:33.992 IST 0001 INFO[0m [grpc] [34;1mInfof[0m -> [core] original dial target is: "localhost:4001"
+[34m2026-09-16 09:17:33.992 IST 0002 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1] Channel created for target "localhost:4001"
+[34m2026-09-16 09:17:33.992 IST 0003 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1] parsed dial target is: resolver.Target{URL:url.URL{Scheme:"dns", Opaque:"", User:(*url.Userinfo)(nil), Host:"", Path:"/localhost:4001", Fragment:"", RawQuery:"", RawPath:"", RawFragment:"", ForceQuery:false, OmitHost:false}}
+[34m2026-09-16 09:17:33.992 IST 0004 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1] Channel authority set to "localhost:4001"
+[34m2026-09-16 09:17:33.993 IST 0005 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1] Channel Connectivity change to CONNECTING
+[34m2026-09-16 09:17:33.993 IST 0006 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1] Channel exiting idle mode
+[34m2026-09-16 09:17:34.021 IST 0007 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1] Resolver state updated: {
+  "Addresses": [
+    {
+      "Addr": "127.0.0.1:4001",
+      "ServerName": "",
+      "Attributes": null,
+      "BalancerAttributes": null,
+      "Metadata": null
+    }
+  ],
+  "Endpoints": [
+    {
+      "Addresses": [
+        {
+          "Addr": "127.0.0.1:4001",
+          "ServerName": "",
+          "Attributes": null,
+          "BalancerAttributes": null,
+          "Metadata": null
+        }
+      ],
+      "Attributes": null
+    }
+  ],
+  "ServiceConfig": null,
+  "Attributes": null
+} (resolver returned new addresses)
+[34m2026-09-16 09:17:34.021 IST 0008 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1] Channel switches to new LB policy "pick_first"
+[34m2026-09-16 09:17:34.021 IST 0009 INFO[0m [grpc] [34;1mInfof[0m -> [pick-first-leaf-lb] [pick-first-leaf-lb 0xbc7b32ac870] Received new config {
+  "shuffleAddressList": false
+}, resolver state {
+  "Addresses": [
+    {
+      "Addr": "127.0.0.1:4001",
+      "ServerName": "",
+      "Attributes": null,
+      "BalancerAttributes": null,
+      "Metadata": null
+    }
+  ],
+  "Endpoints": [
+    {
+      "Addresses": [
+        {
+          "Addr": "127.0.0.1:4001",
+          "ServerName": "",
+          "Attributes": null,
+          "BalancerAttributes": null,
+          "Metadata": null
+        }
+      ],
+      "Attributes": null
+    }
+  ],
+  "ServiceConfig": null,
+  "Attributes": null
+}
+[34m2026-09-16 09:17:34.021 IST 000a INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1 SubChannel #2] Subchannel created
+[34m2026-09-16 09:17:34.022 IST 000b INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1 SubChannel #2] Subchannel Connectivity change to CONNECTING
+[34m2026-09-16 09:17:34.022 IST 000c INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1 SubChannel #2] Subchannel picks a new address "127.0.0.1:4001" to connect
+[34m2026-09-16 09:17:34.022 IST 000d INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1 SubChannel #2] Subchannel Connectivity change to READY
+[34m2026-09-16 09:17:34.022 IST 000e INFO[0m [grpc] [34;1mInfof[0m -> [pick-first-leaf-lb] [pick-first-leaf-lb 0xbc7b32ac870] SubConn 0xbc7b35245a0 reported connectivity state READY and the health listener is disabled. Transitioning SubConn to READY.
+[34m2026-09-16 09:17:34.022 IST 000f INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1] Channel Connectivity change to READY
+[34m2026-09-16 09:17:34.023 IST 0010 INFO[0m [grpc] [34;1mInfof[0m -> [core] original dial target is: "localhost:6022"
+[34m2026-09-16 09:17:34.023 IST 0011 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #4] Channel created for target "localhost:6022"
+[34m2026-09-16 09:17:34.023 IST 0012 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #4] parsed dial target is: resolver.Target{URL:url.URL{Scheme:"dns", Opaque:"", User:(*url.Userinfo)(nil), Host:"", Path:"/localhost:6022", Fragment:"", RawQuery:"", RawPath:"", RawFragment:"", ForceQuery:false, OmitHost:false}}
+[34m2026-09-16 09:17:34.023 IST 0013 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #4] Channel authority set to "localhost:6022"
+[34m2026-09-16 09:17:34.023 IST 0014 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #4] Channel Connectivity change to CONNECTING
+[34m2026-09-16 09:17:34.023 IST 0015 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #4] Channel exiting idle mode
+[34m2026-09-16 09:17:34.049 IST 0016 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #4] Resolver state updated: {
+  "Addresses": [
+    {
+      "Addr": "127.0.0.1:6022",
+      "ServerName": "",
+      "Attributes": null,
+      "BalancerAttributes": null,
+      "Metadata": null
+    }
+  ],
+  "Endpoints": [
+    {
+      "Addresses": [
+        {
+          "Addr": "127.0.0.1:6022",
+          "ServerName": "",
+          "Attributes": null,
+          "BalancerAttributes": null,
+          "Metadata": null
+        }
+      ],
+      "Attributes": null
+    }
+  ],
+  "ServiceConfig": null,
+  "Attributes": null
+} (resolver returned new addresses)
+[34m2026-09-16 09:17:34.049 IST 0017 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #4] Channel switches to new LB policy "pick_first"
+[34m2026-09-16 09:17:34.049 IST 0018 INFO[0m [grpc] [34;1mInfof[0m -> [pick-first-leaf-lb] [pick-first-leaf-lb 0xbc7b34d2000] Received new config {
+  "shuffleAddressList": false
+}, resolver state {
+  "Addresses": [
+    {
+      "Addr": "127.0.0.1:6022",
+      "ServerName": "",
+      "Attributes": null,
+      "BalancerAttributes": null,
+      "Metadata": null
+    }
+  ],
+  "Endpoints": [
+    {
+      "Addresses": [
+        {
+          "Addr": "127.0.0.1:6022",
+          "ServerName": "",
+          "Attributes": null,
+          "BalancerAttributes": null,
+          "Metadata": null
+        }
+      ],
+      "Attributes": null
+    }
+  ],
+  "ServiceConfig": null,
+  "Attributes": null
+}
+[34m2026-09-16 09:17:34.049 IST 0019 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #4 SubChannel #5] Subchannel created
+[34m2026-09-16 09:17:34.049 IST 001a INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #4 SubChannel #5] Subchannel Connectivity change to CONNECTING
+[34m2026-09-16 09:17:34.049 IST 001b INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #4 SubChannel #5] Subchannel picks a new address "127.0.0.1:6022" to connect
+[34m2026-09-16 09:17:34.050 IST 001c INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #4 SubChannel #5] Subchannel Connectivity change to READY
+[34m2026-09-16 09:17:34.050 IST 001d INFO[0m [grpc] [34;1mInfof[0m -> [pick-first-leaf-lb] [pick-first-leaf-lb 0xbc7b34d2000] SubConn 0xbc7b34be190 reported connectivity state READY and the health listener is disabled. Transitioning SubConn to READY.
+[34m2026-09-16 09:17:34.050 IST 001e INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #4] Channel Connectivity change to READY
+[34m2026-09-16 09:17:34.053 IST 001f INFO[0m [grpc] [34;1mInfof[0m -> [core] original dial target is: "localhost:6122"
+[34m2026-09-16 09:17:34.053 IST 0020 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #7] Channel created for target "localhost:6122"
+[34m2026-09-16 09:17:34.053 IST 0021 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #7] parsed dial target is: resolver.Target{URL:url.URL{Scheme:"dns", Opaque:"", User:(*url.Userinfo)(nil), Host:"", Path:"/localhost:6122", Fragment:"", RawQuery:"", RawPath:"", RawFragment:"", ForceQuery:false, OmitHost:false}}
+[34m2026-09-16 09:17:34.053 IST 0022 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #7] Channel authority set to "localhost:6122"
+[34m2026-09-16 09:17:34.053 IST 0023 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #7] Channel Connectivity change to CONNECTING
+[34m2026-09-16 09:17:34.053 IST 0024 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #7] Channel exiting idle mode
+[34m2026-09-16 09:17:34.080 IST 0025 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #7] Resolver state updated: {
+  "Addresses": [
+    {
+      "Addr": "127.0.0.1:6122",
+      "ServerName": "",
+      "Attributes": null,
+      "BalancerAttributes": null,
+      "Metadata": null
+    }
+  ],
+  "Endpoints": [
+    {
+      "Addresses": [
+        {
+          "Addr": "127.0.0.1:6122",
+          "ServerName": "",
+          "Attributes": null,
+          "BalancerAttributes": null,
+          "Metadata": null
+        }
+      ],
+      "Attributes": null
+    }
+  ],
+  "ServiceConfig": null,
+  "Attributes": null
+} (resolver returned new addresses)
+[34m2026-09-16 09:17:34.080 IST 0026 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #7] Channel switches to new LB policy "pick_first"
+[34m2026-09-16 09:17:34.080 IST 0027 INFO[0m [grpc] [34;1mInfof[0m -> [pick-first-leaf-lb] [pick-first-leaf-lb 0xbc7b34d2120] Received new config {
+  "shuffleAddressList": false
+}, resolver state {
+  "Addresses": [
+    {
+      "Addr": "127.0.0.1:6122",
+      "ServerName": "",
+      "Attributes": null,
+      "BalancerAttributes": null,
+      "Metadata": null
+    }
+  ],
+  "Endpoints": [
+    {
+      "Addresses": [
+        {
+          "Addr": "127.0.0.1:6122",
+          "ServerName": "",
+          "Attributes": null,
+          "BalancerAttributes": null,
+          "Metadata": null
+        }
+      ],
+      "Attributes": null
+    }
+  ],
+  "ServiceConfig": null,
+  "Attributes": null
+}
+[34m2026-09-16 09:17:34.080 IST 0028 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #7 SubChannel #8] Subchannel created
+[34m2026-09-16 09:17:34.080 IST 0029 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #7 SubChannel #8] Subchannel Connectivity change to CONNECTING
+[34m2026-09-16 09:17:34.080 IST 002a INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #7 SubChannel #8] Subchannel picks a new address "127.0.0.1:6122" to connect
+[34m2026-09-16 09:17:34.080 IST 002b INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #7 SubChannel #8] Subchannel Connectivity change to READY
+[34m2026-09-16 09:17:34.080 IST 002c INFO[0m [grpc] [34;1mInfof[0m -> [pick-first-leaf-lb] [pick-first-leaf-lb 0xbc7b34d2120] SubConn 0xbc7b3980690 reported connectivity state READY and the health listener is disabled. Transitioning SubConn to READY.
+[34m2026-09-16 09:17:34.080 IST 002d INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #7] Channel Connectivity change to READY
+[34m2026-09-16 09:17:34.082 IST 002e INFO[0m [grpc] [34;1mInfof[0m -> [core] original dial target is: "localhost:6222"
+[34m2026-09-16 09:17:34.083 IST 002f INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #10] Channel created for target "localhost:6222"
+[34m2026-09-16 09:17:34.083 IST 0030 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #10] parsed dial target is: resolver.Target{URL:url.URL{Scheme:"dns", Opaque:"", User:(*url.Userinfo)(nil), Host:"", Path:"/localhost:6222", Fragment:"", RawQuery:"", RawPath:"", RawFragment:"", ForceQuery:false, OmitHost:false}}
+[34m2026-09-16 09:17:34.083 IST 0031 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #10] Channel authority set to "localhost:6222"
+[34m2026-09-16 09:17:34.083 IST 0032 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #10] Channel Connectivity change to CONNECTING
+[34m2026-09-16 09:17:34.083 IST 0033 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #10] Channel exiting idle mode
+[34m2026-09-16 09:17:34.111 IST 0034 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #10] Resolver state updated: {
+  "Addresses": [
+    {
+      "Addr": "127.0.0.1:6222",
+      "ServerName": "",
+      "Attributes": null,
+      "BalancerAttributes": null,
+      "Metadata": null
+    }
+  ],
+  "Endpoints": [
+    {
+      "Addresses": [
+        {
+          "Addr": "127.0.0.1:6222",
+          "ServerName": "",
+          "Attributes": null,
+          "BalancerAttributes": null,
+          "Metadata": null
+        }
+      ],
+      "Attributes": null
+    }
+  ],
+  "ServiceConfig": null,
+  "Attributes": null
+} (resolver returned new addresses)
+[34m2026-09-16 09:17:34.111 IST 0035 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #10] Channel switches to new LB policy "pick_first"
+[34m2026-09-16 09:17:34.111 IST 0036 INFO[0m [grpc] [34;1mInfof[0m -> [pick-first-leaf-lb] [pick-first-leaf-lb 0xbc7b34d2240] Received new config {
+  "shuffleAddressList": false
+}, resolver state {
+  "Addresses": [
+    {
+      "Addr": "127.0.0.1:6222",
+      "ServerName": "",
+      "Attributes": null,
+      "BalancerAttributes": null,
+      "Metadata": null
+    }
+  ],
+  "Endpoints": [
+    {
+      "Addresses": [
+        {
+          "Addr": "127.0.0.1:6222",
+          "ServerName": "",
+          "Attributes": null,
+          "BalancerAttributes": null,
+          "Metadata": null
+        }
+      ],
+      "Attributes": null
+    }
+  ],
+  "ServiceConfig": null,
+  "Attributes": null
+}
+[34m2026-09-16 09:17:34.111 IST 0037 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #10 SubChannel #11] Subchannel created
+[34m2026-09-16 09:17:34.111 IST 0038 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #10 SubChannel #11] Subchannel Connectivity change to CONNECTING
+[34m2026-09-16 09:17:34.111 IST 0039 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #10 SubChannel #11] Subchannel picks a new address "127.0.0.1:6222" to connect
+[34m2026-09-16 09:17:34.111 IST 003a INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #10 SubChannel #11] Subchannel Connectivity change to READY
+[34m2026-09-16 09:17:34.111 IST 003b INFO[0m [grpc] [34;1mInfof[0m -> [pick-first-leaf-lb] [pick-first-leaf-lb 0xbc7b34d2240] SubConn 0xbc7b3d0e6e0 reported connectivity state READY and the health listener is disabled. Transitioning SubConn to READY.
+[34m2026-09-16 09:17:34.111 IST 003c INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #10] Channel Connectivity change to READY
+[34m2026-09-16 09:17:34.113 IST 003d INFO[0m [grpc] [34;1mInfof[0m -> [core] original dial target is: "localhost:6322"
+[34m2026-09-16 09:17:34.113 IST 003e INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #13] Channel created for target "localhost:6322"
+[34m2026-09-16 09:17:34.113 IST 003f INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #13] parsed dial target is: resolver.Target{URL:url.URL{Scheme:"dns", Opaque:"", User:(*url.Userinfo)(nil), Host:"", Path:"/localhost:6322", Fragment:"", RawQuery:"", RawPath:"", RawFragment:"", ForceQuery:false, OmitHost:false}}
+[34m2026-09-16 09:17:34.113 IST 0040 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #13] Channel authority set to "localhost:6322"
+[34m2026-09-16 09:17:34.113 IST 0041 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #13] Channel Connectivity change to CONNECTING
+[34m2026-09-16 09:17:34.113 IST 0042 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #13] Channel exiting idle mode
+[34m2026-09-16 09:17:34.139 IST 0043 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #13] Resolver state updated: {
+  "Addresses": [
+    {
+      "Addr": "127.0.0.1:6322",
+      "ServerName": "",
+      "Attributes": null,
+      "BalancerAttributes": null,
+      "Metadata": null
+    }
+  ],
+  "Endpoints": [
+    {
+      "Addresses": [
+        {
+          "Addr": "127.0.0.1:6322",
+          "ServerName": "",
+          "Attributes": null,
+          "BalancerAttributes": null,
+          "Metadata": null
+        }
+      ],
+      "Attributes": null
+    }
+  ],
+  "ServiceConfig": null,
+  "Attributes": null
+} (resolver returned new addresses)
+[34m2026-09-16 09:17:34.139 IST 0044 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #13] Channel switches to new LB policy "pick_first"
+[34m2026-09-16 09:17:34.139 IST 0045 INFO[0m [grpc] [34;1mInfof[0m -> [pick-first-leaf-lb] [pick-first-leaf-lb 0xbc7b362cf30] Received new config {
+  "shuffleAddressList": false
+}, resolver state {
+  "Addresses": [
+    {
+      "Addr": "127.0.0.1:6322",
+      "ServerName": "",
+      "Attributes": null,
+      "BalancerAttributes": null,
+      "Metadata": null
+    }
+  ],
+  "Endpoints": [
+    {
+      "Addresses": [
+        {
+          "Addr": "127.0.0.1:6322",
+          "ServerName": "",
+          "Attributes": null,
+          "BalancerAttributes": null,
+          "Metadata": null
+        }
+      ],
+      "Attributes": null
+    }
+  ],
+  "ServiceConfig": null,
+  "Attributes": null
+}
+[34m2026-09-16 09:17:34.139 IST 0046 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #13 SubChannel #14] Subchannel created
+[34m2026-09-16 09:17:34.139 IST 0047 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #13 SubChannel #14] Subchannel Connectivity change to CONNECTING
+[34m2026-09-16 09:17:34.139 IST 0048 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #13 SubChannel #14] Subchannel picks a new address "127.0.0.1:6322" to connect
+[34m2026-09-16 09:17:34.140 IST 0049 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #13 SubChannel #14] Subchannel Connectivity change to READY
+[34m2026-09-16 09:17:34.140 IST 004a INFO[0m [grpc] [34;1mInfof[0m -> [pick-first-leaf-lb] [pick-first-leaf-lb 0xbc7b362cf30] SubConn 0xbc7b3f2cf50 reported connectivity state READY and the health listener is disabled. Transitioning SubConn to READY.
+[34m2026-09-16 09:17:34.140 IST 004b INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #13] Channel Connectivity change to READY
+time=2026-09-16T09:17:34.142+05:30 level=INFO msg="setup complete" platform=fabricx run=quick-smoke component=adapter routers=localhost:6022,localhost:6122,localhost:6222,localhost:6322 deliver=localhost:4001 channel=arma namespace=0 broadcast_streams=256
+time=2026-09-16T09:17:34.142+05:30 level=INFO msg="phase start" platform=fabricx run=quick-smoke phase=single offered_tps=50 workers=0 duration=30s
+time=2026-09-16T09:18:04.951+05:30 level=INFO msg="phase end" platform=fabricx run=quick-smoke phase=single submitted=1100 committed=1100 confirmed_tps=50.0 fail_rate=0.0000 e2e_p99_ms=1244.16
+time=2026-09-16T09:18:04.953+05:30 level=WARN msg=caveat platform=fabricx run=quick-smoke text="native metrics scrape of http://localhost:9643/metrics failed: scrape http://localhost:9643/metrics: parser panic: Invalid name validation scheme requested: unset (informational metrics only; harness numbers unaffected)"
+time=2026-09-16T09:18:04.953+05:30 level=INFO msg="run finished" platform=fabricx run=quick-smoke out_dir=results/fabricx/20260916-091733 caveats=3
+results written to results/fabricx/20260916-091733
+[34m2026-09-16 09:18:04.954 IST 004c INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #4] Channel Connectivity change to SHUTDOWN
+[34m2026-09-16 09:18:04.954 IST 004d INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #4] Closing the name resolver
+[34m2026-09-16 09:18:04.954 IST 004e INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #4] ccBalancerWrapper: closing
+[34m2026-09-16 09:18:04.954 IST 004f INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #4 SubChannel #5] Subchannel Connectivity change to SHUTDOWN
+[34m2026-09-16 09:18:04.954 IST 0050 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #4 SubChannel #5] Subchannel deleted
+[34m2026-09-16 09:18:04.954 IST 0051 INFO[0m [grpc] [34;1mInfof[0m -> [transport] [client-transport 0xbc7b34da008] Closing: rpc error: code = Canceled desc = grpc: the client connection is closing
+[34m2026-09-16 09:18:04.954 IST 0052 INFO[0m [grpc] [34;1mInfof[0m -> [transport] [client-transport 0xbc7b34da008] loopyWriter exiting with error: rpc error: code = Canceled desc = grpc: the client connection is closing
+[34m2026-09-16 09:18:04.954 IST 0053 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #4] Channel deleted
+[34m2026-09-16 09:18:04.954 IST 0054 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #7] Channel Connectivity change to SHUTDOWN
+[34m2026-09-16 09:18:04.954 IST 0055 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #7] Closing the name resolver
+[34m2026-09-16 09:18:04.954 IST 0056 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #7] ccBalancerWrapper: closing
+[34m2026-09-16 09:18:04.954 IST 0057 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #7 SubChannel #8] Subchannel Connectivity change to SHUTDOWN
+[34m2026-09-16 09:18:04.954 IST 0058 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #7 SubChannel #8] Subchannel deleted
+[34m2026-09-16 09:18:04.954 IST 0059 INFO[0m [grpc] [34;1mInfof[0m -> [transport] [client-transport 0xbc7b34da248] Closing: rpc error: code = Canceled desc = grpc: the client connection is closing
+[34m2026-09-16 09:18:04.954 IST 005a INFO[0m [grpc] [34;1mInfof[0m -> [transport] [client-transport 0xbc7b34da248] loopyWriter exiting with error: rpc error: code = Canceled desc = grpc: the client connection is closing
+[34m2026-09-16 09:18:04.954 IST 005b INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #7] Channel deleted
+[34m2026-09-16 09:18:04.955 IST 005c INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #10] Channel Connectivity change to SHUTDOWN
+[34m2026-09-16 09:18:04.955 IST 005d INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #10] Closing the name resolver
+[34m2026-09-16 09:18:04.955 IST 005e INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #10] ccBalancerWrapper: closing
+[34m2026-09-16 09:18:04.955 IST 005f INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #10 SubChannel #11] Subchannel Connectivity change to SHUTDOWN
+[34m2026-09-16 09:18:04.955 IST 0060 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #10 SubChannel #11] Subchannel deleted
+[34m2026-09-16 09:18:04.955 IST 0061 INFO[0m [grpc] [34;1mInfof[0m -> [transport] [client-transport 0xbc7b34da488] Closing: rpc error: code = Canceled desc = grpc: the client connection is closing
+[34m2026-09-16 09:18:04.955 IST 0062 INFO[0m [grpc] [34;1mInfof[0m -> [transport] [client-transport 0xbc7b34da488] loopyWriter exiting with error: rpc error: code = Canceled desc = grpc: the client connection is closing
+[34m2026-09-16 09:18:04.955 IST 0063 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #10] Channel deleted
+[34m2026-09-16 09:18:04.955 IST 0064 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #13] Channel Connectivity change to SHUTDOWN
+[34m2026-09-16 09:18:04.955 IST 0065 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #13] Closing the name resolver
+[34m2026-09-16 09:18:04.955 IST 0066 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #13] ccBalancerWrapper: closing
+[34m2026-09-16 09:18:04.956 IST 0067 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #13 SubChannel #14] Subchannel Connectivity change to SHUTDOWN
+[34m2026-09-16 09:18:04.956 IST 0068 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #13 SubChannel #14] Subchannel deleted
+[34m2026-09-16 09:18:04.956 IST 0069 INFO[0m [grpc] [34;1mInfof[0m -> [transport] [client-transport 0xbc7b327e008] Closing: rpc error: code = Canceled desc = grpc: the client connection is closing
+[34m2026-09-16 09:18:04.956 IST 006a INFO[0m [grpc] [34;1mInfof[0m -> [transport] [client-transport 0xbc7b327e008] loopyWriter exiting with error: rpc error: code = Canceled desc = grpc: the client connection is closing
+[34m2026-09-16 09:18:04.956 IST 006b INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #13] Channel deleted
+[34m2026-09-16 09:18:04.956 IST 006c INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1] Channel Connectivity change to SHUTDOWN
+[34m2026-09-16 09:18:04.956 IST 006d INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1] Closing the name resolver
+[34m2026-09-16 09:18:04.956 IST 006e INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1] ccBalancerWrapper: closing
+[34m2026-09-16 09:18:04.956 IST 006f INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1 SubChannel #2] Subchannel Connectivity change to SHUTDOWN
+[34m2026-09-16 09:18:04.956 IST 0070 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1 SubChannel #2] Subchannel deleted
+[34m2026-09-16 09:18:04.956 IST 0071 INFO[0m [grpc] [34;1mInfof[0m -> [transport] [client-transport 0xbc7b339e488] Closing: rpc error: code = Canceled desc = grpc: the client connection is closing
+[34m2026-09-16 09:18:04.956 IST 0072 INFO[0m [grpc] [34;1mInfof[0m -> [transport] [client-transport 0xbc7b339e488] loopyWriter exiting with error: rpc error: code = Canceled desc = grpc: the client connection is closing
+[34m2026-09-16 09:18:04.956 IST 0073 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1] Channel deleted
+monitoring report: results/fabricx/20260916-091733/monitoring-report.html
+run book: results/index.html

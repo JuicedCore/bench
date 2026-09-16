@@ -1,0 +1,25 @@
+[deploy 09:11:32] installing Fabric 3.1.5 binaries + config (had: 2.5.16)
+rm: cannot remove '/home/chad/Projects/bench/deploy/docker/.cache/fabric-samples/bin/configtxgen': Permission denied
+rm: cannot remove '/home/chad/Projects/bench/deploy/docker/.cache/fabric-samples/bin/discover': Permission denied
+rm: cannot remove '/home/chad/Projects/bench/deploy/docker/.cache/fabric-samples/bin/orderer': Permission denied
+rm: cannot remove '/home/chad/Projects/bench/deploy/docker/.cache/fabric-samples/bin/cryptogen': Permission denied
+rm: cannot remove '/home/chad/Projects/bench/deploy/docker/.cache/fabric-samples/bin/osnadmin': Permission denied
+rm: cannot remove '/home/chad/Projects/bench/deploy/docker/.cache/fabric-samples/bin/ledgerutil': Permission denied
+rm: cannot remove '/home/chad/Projects/bench/deploy/docker/.cache/fabric-samples/bin/configtxlator': Permission denied
+rm: cannot remove '/home/chad/Projects/bench/deploy/docker/.cache/fabric-samples/bin/fabric-ca-server': Permission denied
+rm: cannot remove '/home/chad/Projects/bench/deploy/docker/.cache/fabric-samples/bin/peer': Permission denied
+rm: cannot remove '/home/chad/Projects/bench/deploy/docker/.cache/fabric-samples/bin/fabric-ca-client': Permission denied
+rm: cannot remove '/home/chad/Projects/bench/deploy/docker/.cache/fabric-samples/bin/.fabricver': Permission denied
+rm: cannot remove '/home/chad/Projects/bench/deploy/docker/.cache/fabric-samples/config/configtx.yaml': Permission denied
+rm: cannot remove '/home/chad/Projects/bench/deploy/docker/.cache/fabric-samples/config/orderer.yaml': Permission denied
+rm: cannot remove '/home/chad/Projects/bench/deploy/docker/.cache/fabric-samples/config/core.yaml': Permission denied
+rm: cannot remove '/home/chad/Projects/bench/deploy/docker/.cache/fabric-samples/builders/ccaas/bin/detect': Permission denied
+rm: cannot remove '/home/chad/Projects/bench/deploy/docker/.cache/fabric-samples/builders/ccaas/bin/release': Permission denied
+rm: cannot remove '/home/chad/Projects/bench/deploy/docker/.cache/fabric-samples/builders/ccaas/bin/build': Permission denied
+[deploy 09:11:32] ERROR: up.sh failed (exit 1) near line 1: SAMPLES="$(fabric_samples_bootstrap "$FABRIC_VERSION" "$FABRIC_CA_VERSION" "$SAMPLES_REF")"
+
+----- docker ps -a (matching /^(peer|orderer|ca_|dev-peer)/) -----
+NAMES                              STATUS                          IMAGE
+
+(full capture of a live network: scripts/capture.sh <out-dir>)
+

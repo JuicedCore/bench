@@ -10,9 +10,12 @@ Source: `pkg/workloads/workload.go`.
 | Name | Transaction kind(s) | Fabric / Drunix | Fabric-X | NeuChain |
 | ---- | ------------------- | --------------- | -------- | -------- |
 | `kv-write` | all `TxWrite` | chaincode `Put(key,value)` | blind write in the application namespace, ordered by Arma | YCSB update |
-| `kv-read` | all `TxRead` | chaincode `Get(key)` (Evaluate on one peer) | read set **plus a unique dummy blind write** (read-only txs are rejected), ordered and committed | transaction with a read set, through commit |
+| `kv-read` | all `TxRead` | chaincode `Get(key)` (Evaluate on one peer) | QueryService `GetRows` against committed PostgreSQL (no Arma, no dummy write) | transaction with a read set, through commit |
 | `kv-mixed` | `TxRead`/`TxWrite` per `read_write_ratio` | `Get` / `Put` | as the two rows above | as the two rows above |
-| `transfer` | all `TxTransfer` | chaincode `Transfer(from,to,amount)` (RMW two accounts, balance computed) | two-key read/write set carrying the workload's values (no computed balance) | two-key read + update set |
+| `transfer` | all `TxTransfer` | chaincode `Transfer(from,to,amount)` (RMW two accounts, balance computed) | two-key read/write set carrying the workload's values (no computed balance; live workload leaves those values empty) | **not implemented** — YCSB is one key per call; Submit fails |
+
+Exact bytes on the wire and in world state, per platform:
+[payload-and-state.md](payload-and-state.md).
 
 ## Keys
 
@@ -33,10 +36,12 @@ so world-state size grows realistically rather than deduplicating.
 Not "identical bytes on the wire" — that is impossible across three transaction
 models. It means: **the same logical state effect** (set one key; move value
 between two accounts), driven by **the same key-selection process**, measured at
-**the same two points** (T2 acknowledge, T3 finality). Where a platform's native
-primitive is a poor fit (Fabric-X reads and transfers), that is documented in
-[mismatches.md](mismatches.md) and the run is caveated, not silently dropped
-([adr-010](../decisions/adr-010-mismatch-report.md)).
+**the same two points** (T2 acknowledge, T3 finality). The actual payload and
+the bytes that land in world state are in
+[payload-and-state.md](payload-and-state.md). Where a platform's native
+primitive is a poor fit (Fabric-X reads and transfers, NeuChain transfer), that
+is documented in [mismatches.md](mismatches.md) and the run is caveated, not
+silently dropped ([adr-010](../decisions/adr-010-mismatch-report.md)).
 
 ## One config file per mode
 

@@ -1,0 +1,9 @@
+time=2026-09-16T11:22:08.806+05:30 level=INFO msg="run starting" workload=kv-write profile=local normalized=true out_dir=results/fabricx/20260916-112208
+time=2026-09-16T11:22:08.806+05:30 level=WARN msg=caveat text="fabricx on the local profile is resource-constrained; absolute throughput is NOT comparable to its published scale-out ceiling"
+time=2026-09-16T11:22:08.806+05:30 level=WARN msg=caveat text="state-db parity not held: run requested leveldb, platform actually ran postgres"
+time=2026-09-16T11:22:08.806+05:30 level=INFO msg="adapter setup"
+time=2026-09-16T11:22:09.283+05:30 level=INFO msg="setup complete" component=adapter routers=localhost:6022,localhost:6122,localhost:6222,localhost:6322 deliver=localhost:4001 query=localhost:7001 channel=arma namespace=0 broadcast_streams=256
+time=2026-09-16T11:22:09.283+05:30 level=INFO msg="phase start" phase=single offered_tps=50 workers=0 duration=30s
+time=2026-09-16T11:22:39.742+05:30 level=INFO msg="phase end" phase=single submitted=1100 committed=1100 confirmed_tps=50.0 fail_rate=0.0000 e2e_p99_ms=1281.02
+time=2026-09-16T11:22:39.743+05:30 level=WARN msg=caveat text="native metrics scrape of http://localhost:9643/metrics failed: scrape http://localhost:9643/metrics: parser panic: Invalid name validation scheme requested: unset (informational metrics only; harness numbers unaffected)"
+time=2026-09-16T11:22:39.743+05:30 level=INFO msg="run finished" out_dir=results/fabricx/20260916-112208 caveats=3

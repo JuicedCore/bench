@@ -7,34 +7,45 @@ data point is itself misleading.
 
 ## Fabric-X + `kv-read`
 
-The validator rejects read-only transactions outright (`MALFORMED_NO_WRITES`), so
-a read must carry a write to be accepted at all. The adapter attaches a unique
-blind write per read (`_r/<key>/<seq>`), unique so that concurrent reads of one
-key do not write-after-write conflict and abort each other.
+A read-only *transaction* is still rejected by the validator
+(`MALFORMED_NO_WRITES`). The adapter does not paper over that with a dummy
+write. `TxRead` uses Fabric-X's **QueryService** (`GetRows` on `:7001`): a
+point lookup of committed PostgreSQL state, no Arma, no state mutation.
+`WaitForFinality` returns immediately `Valid: true`, the same T2/T3 shape as
+Fabric Evaluate.
 
-That is overhead no other platform pays, and it means a Fabric-X "read" performs
-a state mutation. Read throughput is therefore a floor, not a like-for-like
-figure.
+That is the platform's default read path. It is comparable to Fabric/Drunix
+Evaluate as a non-committing lookup; the remaining gap is the state engine
+(PostgreSQL vs LevelDB/YugabyteDB). The query process batches keys
+(`min-batch-keys` / `max-batch-wait` in query.yaml, default 100 ms wait) — that
+is upstream behaviour, not something the adapter adds.
 
-**Caveat:** "Fabric-X reads carry a unique dummy blind write; the validator
-rejects read-only transactions. Read cost includes a write no other platform
-performs."
+Writes still go through Arma. A read-only envelope would still fail if anyone
+broadcast one.
+
+**Caveat:** "Fabric-X reads are QueryService.GetRows against PostgreSQL, not
+an ordered transaction. Compare as a point-lookup path, with the state-DB
+caveat."
 
 ## Fabric-X + `transfer`
 
 There is no chaincode to evaluate a predicate, so `transfer` is modelled as a
-two-key read-modify-write carrying the workload's values rather than a computed
-balance. Contention behaviour — two accounts touched per transaction, hot keys
-colliding — is comparable. Token semantics, coin selection and change outputs are
-not exercised.
+two-key read-modify-write. The live workload does not set `Value` (it sets
+`Amount`), so both keys are written empty rather than as a computed balance.
+Contention behaviour — two accounts touched per transaction, hot keys colliding
+— is comparable. Token semantics are not. Details:
+[payload-and-state.md](payload-and-state.md).
 
 ## NeuChain + `transfer`
 
-If the `ev` branch's native transaction model does not express a two-account
-read-modify-write directly, the adapter composes it from two KV operations in one
-deterministic transaction. Any such composition is recorded in
-[neuchain-client-implementation.md](../platforms/neuchain-client-implementation.md)
-§4 and becomes a caveat.
+The YCSB chaincode the deploy runs (`cc_type: ycsb`) touches one key per call.
+`pkg/adapters/neuchain/txbuild.go` therefore **rejects** `TxTransfer` at Submit
+(`transfers need the small_bank chaincode`). No payload is published; the
+collector records a submit error; world state does not change. A unit test
+asserts this. `contention.yaml` against `--platform neuchain` cannot produce a
+headline until a small-bank mapping exists.
+
+Wire-level detail: [payload-and-state.md](payload-and-state.md).
 
 ## kv-read on every platform
 
@@ -44,18 +55,20 @@ each platform family, so its latency is not comparable to the write modes:
 - **fabric / drunix** — `Evaluate` against one peer; `WaitForFinality` returns
   immediately with `Valid: true` and nothing reaches the ledger. The number is a
   client-observed evaluate round-trip.
-- **fabricx** — a full transaction through Arma ordering and the committer,
-  carrying a unique dummy blind write (see above).
+- **fabricx** — QueryService `GetRows` against committed state. Not ordered,
+  not committed, no dummy write. Same T2/T3 shape as Fabric Evaluate.
 - **neuchain** — a real submitted transaction carrying a read set, through the
   full commit path (`txbuild.go` maps `TxRead` to a read-set-only YCSB payload).
 
-So NeuChain's read cost includes consensus while Fabric's does not. Read paths are
-comparable *to each other* as read paths; `read-profile` numbers must never be set
-beside `kv-write` numbers as though they measured the same thing.
+So NeuChain's read cost includes consensus while Fabric, Drunix and Fabric-X
+do not. Read paths are comparable *to each other* as read paths; `read-profile`
+numbers must never be set beside `kv-write` numbers as though they measured the
+same thing.
 
-**Caveat wording:** "kv-read is an evaluate round-trip on Fabric/Drunix and a
-committed transaction on NeuChain and Fabric-X; read latency is not comparable to write
-latency, and not uniformly comparable across platforms."
+**Caveat wording:** "kv-read is an evaluate / query-service round-trip on
+Fabric, Drunix and Fabric-X, and a committed transaction on NeuChain; read
+latency is not comparable to write latency, and Fabric-X vs Fabric still
+carries the state-DB caveat."
 
 ## NeuChain / Fabric-X on the `local` profile
 

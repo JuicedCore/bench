@@ -1,0 +1,47 @@
+{
+  "run_name": "probe-sweep",
+  "platform": "mock",
+  "workload": "kv-write",
+  "profile": "local",
+  "normalized": true,
+  "started_at": "2026-09-16T09:54:59.972699843+05:30",
+  "ended_at": "2026-09-16T10:03:27.086753908+05:30",
+  "harness_git_sha": "a034b6e",
+  "platform_version": "mock-0",
+  "state_db": "leveldb",
+  "state_db_requested": "leveldb",
+  "orderer_batch": {
+    "MaxMessageCount": 100,
+    "AbsoluteMaxBytes": "10 MB",
+    "PreferredMaxBytes": "2 MB",
+    "BatchTimeout": "1s"
+  },
+  "crypto": {
+    "signature_alg": "",
+    "hash_alg": "",
+    "per_tx_endorsement_verify": false
+  },
+  "resource_limit_per_container": {
+    "CPUs": 0,
+    "Memory": ""
+  },
+  "resource_containers": 0,
+  "resource_cpus_total": 0,
+  "resource_memory_total_gb": 0,
+  "nodes": {
+    "node": 1
+  },
+  "generators": 2,
+  "seed": 1,
+  "key_space": 200000,
+  "key_distribution": "uniform",
+  "zipfian_constant": 0,
+  "read_write_ratio": 0,
+  "value_size_bytes": 64,
+  "warmup_sec": 30,
+  "cooldown_sec": 15,
+  "caveats": [
+    "resource budget not reported by the deploy script (BENCH_RESOURCE_CONTAINERS unset - was connection.env sourced?): container limits are unverified, so this run's hardware share is unknown",
+    "run interrupted (signal or cancelled context) during phase sweep-7500 after 56s: that phase is partial and not a headline; phases never run: sweep-10000, hold"
+  ]
+}

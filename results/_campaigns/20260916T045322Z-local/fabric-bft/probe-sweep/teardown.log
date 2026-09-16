@@ -1,0 +1,52 @@
+[0;34mUsing docker and docker compose[0m
+[0;34mStopping network[0m
+ Container orderer.example.com Stopping 
+ Container peer0.org1.example.com Stopping 
+ Container orderer3.example.com Stopping 
+ Container orderer4.example.com Stopping 
+ Container peer0.org2.example.com Stopping 
+ Container orderer2.example.com Stopping 
+ Container peer0.org1.example.com Stopped 
+ Container peer0.org1.example.com Removing 
+ Container peer0.org1.example.com Removed 
+ Container orderer3.example.com Stopped 
+ Container orderer3.example.com Removing 
+ Container orderer3.example.com Removed 
+ Container orderer.example.com Stopped 
+ Container orderer.example.com Removing 
+ Container orderer.example.com Removed 
+ Container orderer4.example.com Stopped 
+ Container orderer4.example.com Removing 
+ Container orderer4.example.com Removed 
+ Container orderer2.example.com Stopped 
+ Container orderer2.example.com Removing 
+ Container orderer2.example.com Removed 
+ Container peer0.org2.example.com Stopped 
+ Container peer0.org2.example.com Removing 
+ Container peer0.org2.example.com Removed 
+ Volume compose_orderer2.example.com Removing 
+ Volume compose_orderer.example.com Removing 
+ Volume compose_orderer3.example.com Removing 
+ Volume compose_orderer4.example.com Removing 
+ Volume compose_peer0.org1.example.com Removing 
+ Volume compose_peer0.org2.example.com Removing 
+ Network fabric_test Removing 
+ Volume compose_orderer2.example.com Removed 
+ Volume compose_orderer3.example.com Removed 
+ Volume compose_orderer.example.com Removed 
+ Volume compose_peer0.org1.example.com Removed 
+ Volume compose_peer0.org2.example.com Removed 
+ Network fabric_test Removed 
+ Volume compose_orderer4.example.com Removed 
+Error response from daemon: get docker_orderer.example.com: no such volume
+Error response from daemon: get docker_peer0.org1.example.com: no such volume
+Error response from daemon: get docker_peer0.org2.example.com: no such volume
+[0;34mRemoving remaining containers[0m
+6fec7c9025c7
+[0;34mRemoving generated chaincode docker images[0m
+Untagged: dev-peer0.org2.example.com-kvstore_1.0-e88284a33ff8806958375f99312782794164d62aac26fe22876f2c72fb6294d9-68943f16f9aba9f24cbd04de158905f755f192c405682abc67b51f4b237b88ec:latest
+Deleted: sha256:a395b0d4c95098205c400d7facbea6545693d5992517a448a5c5201cade002a1
+Untagged: dev-peer0.org1.example.com-kvstore_1.0-e88284a33ff8806958375f99312782794164d62aac26fe22876f2c72fb6294d9-69fc7c62d4c586b892ebdf21972c9f99a025fa7f3de7b416a325aa17c7d14ed9:latest
+Deleted: sha256:b48ad47628d71b9b8527aa160a10ad6f272d93c91f9f31a7c042fc260f03fc2e
+[deploy 10:46:12] WARN: could not drop page cache (needs root); continuing
+[deploy 10:46:12] fabric-bft down

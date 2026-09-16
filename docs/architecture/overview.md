@@ -93,7 +93,7 @@ adapter packages.
 | Path | Responsibility |
 | ---- | -------------- |
 | `pkg/adapters/` | the interface, the registry, per-platform adapters, `mock` |
-| `pkg/workloads/` | normalized workloads (`kv-write`, `kv-read`, `kv-mixed`, `transfer`) |
+| `pkg/workloads/` | normalized workloads (`kv-write`, `kv-read`, `kv-mixed`, `transfer`); payload → world state: [workloads/payload-and-state.md](../workloads/payload-and-state.md) |
 | `pkg/loadgen/` | key distributions, read/write mix, open/closed-loop generator |
 | `pkg/metrics/` | per-tx collector, HDR histograms, native scrape, `docker stats` sampler |
 | `pkg/harness/` | run config, resource profile, engine, manifest, reporter |

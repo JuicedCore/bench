@@ -288,7 +288,7 @@ bash deploy/docker/fabricx/down.sh local-small
 Four containers from one image: Arma (4 parties, 16 processes), PostgreSQL, the
 sidecar/verifier/coordinator pipeline, and the validator-committer. Ports
 6022/6122/6222/6322 (the four routers; the adapter broadcasts to all of them), 6023
-(assembler), 4001 (deliver) and 9643 (metrics) — none of which collide with the
+(assembler), 4001 (deliver), 7001 (QueryService) and 9643 (metrics) — none of which collide with the
 Fabric family, NeuChain, or the monitoring stack.
 
 The first `up.sh` compiles Arma and the committer from source: several minutes and
@@ -301,13 +301,13 @@ no config on any platform. 1000 TPS open-loop, 5 min, over the same 500k key spa
 as `latency-profile.yaml` so a populated ledger can be read back — run it after a
 write mode or the keys will be absent.
 
-**A read is not a commit, on any platform**, so these numbers are not comparable
+**A read is not a commit on Fabric / Drunix / Fabric-X**, so these numbers are not comparable
 to the write modes:
 
 - **fabric / drunix** — chaincode `Evaluate` against one peer. `WaitForFinality`
   returns immediately with `Valid: true`; nothing reaches the ledger.
-- **fabricx** — a full ordered + committed transaction carrying a unique dummy
-  blind write (the validator rejects read-only transactions).
+- **fabricx** — QueryService `GetRows` against committed PostgreSQL. Same T2/T3
+  shape as Evaluate; no Arma, no dummy write.
 - **neuchain** — a real submitted transaction carrying a read set, not a point
   query; it goes through the full commit path.
 

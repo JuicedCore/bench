@@ -1,0 +1,1518 @@
+2026-08-04T05:44:01.396623235Z INFO: ensuring we can execute mount/umount even with userns-remap
+2026-08-04T05:44:01.411119661Z INFO: remounting /sys read-only
+2026-08-04T05:44:01.412073110Z INFO: making mounts shared
+2026-08-04T05:44:01.412833282Z INFO: detected cgroup v2
+2026-08-04T05:44:01.412838507Z INFO: clearing and regenerating /etc/machine-id
+2026-08-04T05:44:01.415983326Z Initializing machine ID from random generator.
+2026-08-04T05:44:01.426317663Z INFO: setting iptables to detected mode: nft
+2026-08-04T05:44:01.509781545Z INFO: detected IPv4 address: 172.20.0.3
+2026-08-04T05:44:01.513540377Z INFO: detected IPv6 address: fc00:f853:ccd:e793::3
+2026-08-04T05:44:01.513558158Z INFO: starting init
+2026-08-04T05:44:01.516641849Z [!p]104[?7hsystemd 257.13-1~deb13u1 running in system mode (+PAM +AUDIT +SELINUX +APPARMOR +IMA +IPE +SMACK +SECCOMP +GCRYPT -GNUTLS +OPENSSL +ACL +BLKID +CURL +ELFUTILS +FIDO2 +IDN2 -IDN +IPTC +KMOD +LIBCRYPTSETUP +LIBCRYPTSETUP_PLUGINS +LIBFDISK +PCRE2 +PWQUALITY +P11KIT +QRENCODE +TPM2 +BZIP2 +LZ4 +XZ +ZLIB +ZSTD +BPF_FRAMEWORK +BTF -XKBCOMMON -UTMP +SYSVINIT +LIBARCHIVE)
+2026-08-04T05:44:01.516652507Z Detected virtualization wsl.
+2026-08-04T05:44:01.516653558Z Detected architecture x86-64.
+2026-08-04T05:44:01.516654288Z 
+2026-08-04T05:44:01.516655040Z [0;1;39mWelcome to [0m[1mDebian GNU/Linux 13 (trixie)[0m[0;1;39m![0m
+2026-08-04T05:44:01.516655802Z 
+2026-08-04T05:44:01.529318653Z bpf-restrict-fs: BPF LSM hook not enabled in the kernel, BPF LSM not supported.
+2026-08-04T05:44:01.554345643Z Queued start job for default target graphical.target.
+2026-08-04T05:44:01.560033664Z [[0;32m  OK  [0m] Created slice [0;1;39mkubelet.slice[0m - slice used to run Kubernetes / Kubelet.
+2026-08-04T05:44:01.562377755Z [[0;32m  OK  [0m] Created slice [0;1;39msystem-modprobe.slice[0m - Slice /system/modprobe.
+2026-08-04T05:44:01.562384789Z [[0;32m  OK  [0m] Started [0;1;39msystemd-ask-password-conso…[0mequests to Console Directory Watch.
+2026-08-04T05:44:01.562535920Z [[0;32m  OK  [0m] Set up automount [0;1;39mproc-sys-fs-binfm…[0mormats File System Automount Point.
+2026-08-04T05:44:01.562548649Z [[0;32m  OK  [0m] Reached target [0;1;39mpaths.target[0m - Path Units.
+2026-08-04T05:44:01.562550162Z [[0;32m  OK  [0m] Reached target [0;1;39mslices.target[0m - Slice Units.
+2026-08-04T05:44:01.562551108Z [[0;32m  OK  [0m] Reached target [0;1;39mswap.target[0m - Swaps.
+2026-08-04T05:44:01.563064495Z [[0;32m  OK  [0m] Listening on [0;1;39msystemd-creds.socket[0m - Credential Encryption/Decryption.
+2026-08-04T05:44:01.563193199Z [[0;32m  OK  [0m] Listening on [0;1;39msystemd-journald-dev-…socket[0m - Journal Socket (/dev/log).
+2026-08-04T05:44:01.563200694Z [[0;32m  OK  [0m] Listening on [0;1;39msystemd-journald.socket[0m - Journal Sockets.
+2026-08-04T05:44:01.563999782Z          Mounting [0;1;39mdev-hugepages.mount[0m - Huge Pages File System...
+2026-08-04T05:44:01.564811091Z          Mounting [0;1;39msys-kernel-debug.mount[0m - Kernel Debug File System...
+2026-08-04T05:44:01.565519330Z          Mounting [0;1;39msys-kernel-tracing.mount[0m - Kernel Trace File System...
+2026-08-04T05:44:01.566537446Z          Starting [0;1;39mkmod-static-nodes.service[0m…eate List of Static Device Nodes...
+2026-08-04T05:44:01.568263494Z          Starting [0;1;39mmodprobe@configfs.service[0m - Load Kernel Module configfs...
+2026-08-04T05:44:01.569324050Z          Starting [0;1;39mmodprobe@fuse.service[0m - Load Kernel Module fuse...
+2026-08-04T05:44:01.570760219Z          Starting [0;1;39msystemd-journald.service[0m - Journal Service...
+2026-08-04T05:44:01.571750457Z          Starting [0;1;39msystemd-modules-load.service[0m - Load Kernel Modules...
+2026-08-04T05:44:01.572349709Z          Starting [0;1;39msystemd-remount-fs.servic…[0munt Root and Kernel File Systems...
+2026-08-04T05:44:01.573249534Z          Starting [0;1;39msystemd-udev-load-credent…[0mLoad udev Rules from Credentials...
+2026-08-04T05:44:01.573712895Z [[0;32m  OK  [0m] Mounted [0;1;39mdev-hugepages.mount[0m - Huge Pages File System.
+2026-08-04T05:44:01.573719161Z [[0;32m  OK  [0m] Mounted [0;1;39msys-kernel-debug.mount[0m - Kernel Debug File System.
+2026-08-04T05:44:01.573720650Z [[0;32m  OK  [0m] Mounted [0;1;39msys-kernel-tracing.mount[0m - Kernel Trace File System.
+2026-08-04T05:44:01.573880306Z [[0;32m  OK  [0m] Finished [0;1;39mkmod-static-nodes.service[0m…Create List of Static Device Nodes.
+2026-08-04T05:44:01.574060903Z modprobe@configfs.service: Deactivated successfully.
+2026-08-04T05:44:01.574068558Z [[0;32m  OK  [0m] Finished [0;1;39mmodprobe@configfs.service[0m - Load Kernel Module configfs.
+2026-08-04T05:44:01.574800740Z          Mounting [0;1;39msys-kernel-config.mount[0m - Kernel Configuration File System...
+2026-08-04T05:44:01.575592541Z          Starting [0;1;39msystemd-tmpfiles-setup-de…[0m Device Nodes in /dev gracefully...
+2026-08-04T05:44:01.575701973Z modprobe@fuse.service: Deactivated successfully.
+2026-08-04T05:44:01.575744684Z [[0;32m  OK  [0m] Finished [0;1;39mmodprobe@fuse.service[0m - Load Kernel Module fuse.
+2026-08-04T05:44:01.576318276Z          Mounting [0;1;39msys-fs-fuse-connections.mount[0m - FUSE Control File System...
+2026-08-04T05:44:01.576857045Z [[0;32m  OK  [0m] Finished [0;1;39msystemd-remount-fs.servic…[0mmount Root and Kernel File Systems.
+2026-08-04T05:44:01.577216666Z [[0;32m  OK  [0m] Finished [0;1;39msystemd-modules-load.service[0m - Load Kernel Modules.
+2026-08-04T05:44:01.578212868Z          Starting [0;1;39msystemd-sysctl.service[0m - Apply Kernel Variables...
+2026-08-04T05:44:01.578397510Z [[0;32m  OK  [0m] Mounted [0;1;39msys-kernel-config.mount[0m - Kernel Configuration File System.
+2026-08-04T05:44:01.579556400Z [[0;32m  OK  [0m] Mounted [0;1;39msys-fs-fuse-connections.mount[0m - FUSE Control File System.
+2026-08-04T05:44:01.650662374Z [[0;32m  OK  [0m] Finished [0;1;39msystemd-udev-load-credent…[0m- Load udev Rules from Credentials.
+2026-08-04T05:44:01.651057609Z [[0;32m  OK  [0m] Finished [0;1;39msystemd-sysctl.service[0m - Apply Kernel Variables.
+2026-08-04T05:44:01.687990452Z [[0;32m  OK  [0m] Finished [0;1;39msystemd-tmpfiles-setup-de…[0mic Device Nodes in /dev gracefully.
+2026-08-04T05:44:01.688602718Z          Starting [0;1;39msystemd-sysusers.service[0m - Create System Users...
+2026-08-04T05:44:01.692005090Z [[0;32m  OK  [0m] Started [0;1;39msystemd-journald.service[0m - Journal Service.
+2026-08-04T05:44:01.695071999Z [[0;32m  OK  [0m] Finished [0;1;39msystemd-sysusers.service[0m - Create System Users.
+2026-08-04T05:44:01.697624622Z          Starting [0;1;39msystemd-journal-flush.ser…[0msh Journal to Persistent Storage...
+2026-08-04T05:44:01.698227568Z          Starting [0;1;39msystemd-tmpfiles-setup-de…[0meate Static Device Nodes in /dev...
+2026-08-04T05:44:01.702401789Z [[0;32m  OK  [0m] Finished [0;1;39msystemd-journal-flush.ser…[0mlush Journal to Persistent Storage.
+2026-08-04T05:44:01.705677676Z [[0;32m  OK  [0m] Finished [0;1;39msystemd-tmpfiles-setup-de…[0mCreate Static Device Nodes in /dev.
+2026-08-04T05:44:01.705930448Z [[0;32m  OK  [0m] Reached target [0;1;39mlocal-fs-pre.target[0m…Preparation for Local File Systems.
+2026-08-04T05:44:01.705944654Z [[0;32m  OK  [0m] Reached target [0;1;39mlocal-fs.target[0m - Local File Systems.
+2026-08-04T05:44:01.707051347Z [[0;32m  OK  [0m] Listening on [0;1;39msystemd-sysext.socket[0m… System Extension Image Management.
+2026-08-04T05:44:01.707693052Z          Starting [0;1;39mldconfig.service[0m - Rebuild Dynamic Linker Cache...
+2026-08-04T05:44:01.709024102Z          Starting [0;1;39msystemd-journal-catalog-u…ervice[0m - Rebuild Journal Catalog...
+2026-08-04T05:44:01.718112966Z [[0;32m  OK  [0m] Finished [0;1;39msystemd-journal-catalog-u….service[0m - Rebuild Journal Catalog.
+2026-08-04T05:44:01.719284597Z [[0;32m  OK  [0m] Finished [0;1;39mldconfig.service[0m - Rebuild Dynamic Linker Cache.
+2026-08-04T05:44:01.720716660Z          Starting [0;1;39msystemd-update-done.service[0m - Update is Completed...
+2026-08-04T05:44:01.727186078Z [[0;32m  OK  [0m] Finished [0;1;39msystemd-update-done.service[0m - Update is Completed.
+2026-08-04T05:44:01.727552962Z [[0;32m  OK  [0m] Reached target [0;1;39msysinit.target[0m - System Initialization.
+2026-08-04T05:44:01.727623870Z [[0;32m  OK  [0m] Started [0;1;39msystemd-tmpfiles-clean.tim…[0my Cleanup of Temporary Directories.
+2026-08-04T05:44:01.727631136Z [[0;32m  OK  [0m] Reached target [0;1;39mtimers.target[0m - Timer Units.
+2026-08-04T05:44:01.727740830Z [[0;32m  OK  [0m] Listening on [0;1;39msystemd-hostnamed.socket[0m - Hostname Service Socket.
+2026-08-04T05:44:01.727752747Z [[0;32m  OK  [0m] Reached target [0;1;39msockets.target[0m - Socket Units.
+2026-08-04T05:44:01.727786814Z [[0;32m  OK  [0m] Reached target [0;1;39mbasic.target[0m - Basic System.
+2026-08-04T05:44:01.728664453Z          Starting [0;1;39mundo-mount-hacks.service[0m - Undo KIND mount hacks...
+2026-08-04T05:44:01.733331879Z [[0;32m  OK  [0m] Finished [0;1;39mundo-mount-hacks.service[0m - Undo KIND mount hacks.
+2026-08-04T05:44:01.734734788Z          Starting [0;1;39mcontainerd.service[0m - containerd container runtime...
+2026-08-04T05:44:01.790593658Z [[0;32m  OK  [0m] Started [0;1;39mcontainerd.service[0m - containerd container runtime.
+2026-08-04T05:44:01.790620306Z [[0;32m  OK  [0m] Reached target [0;1;39mmulti-user.target[0m - Multi-User System.
+2026-08-04T05:44:01.790622086Z [[0;32m  OK  [0m] Reached target [0;1;39mgraphical.target[0m - Graphical Interface.
+2026-08-07T07:46:31.090363629Z INFO: ensuring we can execute mount/umount even with userns-remap
+2026-08-07T07:46:31.096061202Z INFO: remounting /sys read-only
+2026-08-07T07:46:31.097948368Z INFO: making mounts shared
+2026-08-07T07:46:31.098707615Z INFO: detected cgroup v2
+2026-08-07T07:46:31.098715845Z INFO: clearing and regenerating /etc/machine-id
+2026-08-07T07:46:31.101482849Z Initializing machine ID from random generator.
+2026-08-07T07:46:31.176555737Z INFO: setting iptables to detected mode: nft
+2026-08-07T07:46:31.279505800Z INFO: detected IPv4 address: 172.20.0.3
+2026-08-07T07:46:31.280481815Z INFO: detected old IPv4 address: 172.20.0.3
+2026-08-07T07:46:31.283441606Z INFO: detected IPv6 address: fc00:f853:ccd:e793::3
+2026-08-07T07:46:31.284264424Z INFO: detected old IPv6 address: fc00:f853:ccd:e793::3
+2026-08-07T07:46:31.284318424Z INFO: starting init
+2026-08-07T07:46:31.304850759Z [!p]104[?7hsystemd 257.13-1~deb13u1 running in system mode (+PAM +AUDIT +SELINUX +APPARMOR +IMA +IPE +SMACK +SECCOMP +GCRYPT -GNUTLS +OPENSSL +ACL +BLKID +CURL +ELFUTILS +FIDO2 +IDN2 -IDN +IPTC +KMOD +LIBCRYPTSETUP +LIBCRYPTSETUP_PLUGINS +LIBFDISK +PCRE2 +PWQUALITY +P11KIT +QRENCODE +TPM2 +BZIP2 +LZ4 +XZ +ZLIB +ZSTD +BPF_FRAMEWORK +BTF -XKBCOMMON -UTMP +SYSVINIT +LIBARCHIVE)
+2026-08-07T07:46:31.304868341Z Detected virtualization wsl.
+2026-08-07T07:46:31.304877125Z Detected architecture x86-64.
+2026-08-07T07:46:31.306630960Z 
+2026-08-07T07:46:31.306637061Z [0;1;39mWelcome to [0m[1mDebian GNU/Linux 13 (trixie)[0m[0;1;39m![0m
+2026-08-07T07:46:31.306638533Z 
+2026-08-07T07:46:31.347342588Z bpf-restrict-fs: BPF LSM hook not enabled in the kernel, BPF LSM not supported.
+2026-08-07T07:46:31.414296114Z Queued start job for default target graphical.target.
+2026-08-07T07:46:31.440213807Z [[0;32m  OK  [0m] Created slice [0;1;39mkubelet.slice[0m - slice used to run Kubernetes / Kubelet.
+2026-08-07T07:46:31.440744567Z [[0;32m  OK  [0m] Created slice [0;1;39msystem-modprobe.slice[0m - Slice /system/modprobe.
+2026-08-07T07:46:31.440749967Z [[0;32m  OK  [0m] Started [0;1;39msystemd-ask-password-conso…[0mequests to Console Directory Watch.
+2026-08-07T07:46:31.440934871Z [[0;32m  OK  [0m] Set up automount [0;1;39mproc-sys-fs-binfm…[0mormats File System Automount Point.
+2026-08-07T07:46:31.440942231Z [[0;32m  OK  [0m] Reached target [0;1;39mpaths.target[0m - Path Units.
+2026-08-07T07:46:31.440943657Z [[0;32m  OK  [0m] Reached target [0;1;39mslices.target[0m - Slice Units.
+2026-08-07T07:46:31.440944621Z [[0;32m  OK  [0m] Reached target [0;1;39mswap.target[0m - Swaps.
+2026-08-07T07:46:31.441396004Z [[0;32m  OK  [0m] Listening on [0;1;39msystemd-creds.socket[0m - Credential Encryption/Decryption.
+2026-08-07T07:46:31.441401725Z [[0;32m  OK  [0m] Listening on [0;1;39msystemd-journald-dev-…socket[0m - Journal Socket (/dev/log).
+2026-08-07T07:46:31.441403289Z [[0;32m  OK  [0m] Listening on [0;1;39msystemd-journald.socket[0m - Journal Sockets.
+2026-08-07T07:46:31.442275553Z          Mounting [0;1;39mdev-hugepages.mount[0m - Huge Pages File System...
+2026-08-07T07:46:31.442815999Z          Mounting [0;1;39msys-kernel-debug.mount[0m - Kernel Debug File System...
+2026-08-07T07:46:31.443337021Z          Mounting [0;1;39msys-kernel-tracing.mount[0m - Kernel Trace File System...
+2026-08-07T07:46:31.443803591Z          Starting [0;1;39mkmod-static-nodes.service[0m…eate List of Static Device Nodes...
+2026-08-07T07:46:31.444566992Z          Starting [0;1;39mmodprobe@configfs.service[0m - Load Kernel Module configfs...
+2026-08-07T07:46:31.445132182Z          Starting [0;1;39mmodprobe@fuse.service[0m - Load Kernel Module fuse...
+2026-08-07T07:46:31.446325606Z          Starting [0;1;39msystemd-journald.service[0m - Journal Service...
+2026-08-07T07:46:31.447450602Z          Starting [0;1;39msystemd-modules-load.service[0m - Load Kernel Modules...
+2026-08-07T07:46:31.448105419Z          Starting [0;1;39msystemd-remount-fs.servic…[0munt Root and Kernel File Systems...
+2026-08-07T07:46:31.448797684Z          Starting [0;1;39msystemd-udev-load-credent…[0mLoad udev Rules from Credentials...
+2026-08-07T07:46:31.449525713Z modprobe@configfs.service: Deactivated successfully.
+2026-08-07T07:46:31.449722455Z [[0;32m  OK  [0m] Finished [0;1;39mmodprobe@configfs.service[0m - Load Kernel Module configfs.
+2026-08-07T07:46:31.449918796Z [[0;32m  OK  [0m] Finished [0;1;39mkmod-static-nodes.service[0m…Create List of Static Device Nodes.
+2026-08-07T07:46:31.450069232Z modprobe@fuse.service: Deactivated successfully.
+2026-08-07T07:46:31.450200115Z [[0;32m  OK  [0m] Finished [0;1;39mmodprobe@fuse.service[0m - Load Kernel Module fuse.
+2026-08-07T07:46:31.450996485Z          Mounting [0;1;39msys-fs-fuse-connections.mount[0m - FUSE Control File System...
+2026-08-07T07:46:31.451687833Z          Mounting [0;1;39msys-kernel-config.mount[0m - Kernel Configuration File System...
+2026-08-07T07:46:31.453386029Z          Starting [0;1;39msystemd-tmpfiles-setup-de…[0m Device Nodes in /dev gracefully...
+2026-08-07T07:46:31.454138002Z [[0;32m  OK  [0m] Mounted [0;1;39mdev-hugepages.mount[0m - Huge Pages File System.
+2026-08-07T07:46:31.454143805Z [[0;32m  OK  [0m] Mounted [0;1;39msys-kernel-debug.mount[0m - Kernel Debug File System.
+2026-08-07T07:46:31.454151218Z [[0;32m  OK  [0m] Mounted [0;1;39msys-kernel-tracing.mount[0m - Kernel Trace File System.
+2026-08-07T07:46:31.454217322Z [[0;32m  OK  [0m] Finished [0;1;39msystemd-modules-load.service[0m - Load Kernel Modules.
+2026-08-07T07:46:31.454961619Z          Starting [0;1;39msystemd-sysctl.service[0m - Apply Kernel Variables...
+2026-08-07T07:46:31.455223043Z [[0;32m  OK  [0m] Finished [0;1;39msystemd-remount-fs.servic…[0mmount Root and Kernel File Systems.
+2026-08-07T07:46:31.455556125Z [[0;32m  OK  [0m] Mounted [0;1;39msys-fs-fuse-connections.mount[0m - FUSE Control File System.
+2026-08-07T07:46:31.455652519Z [[0;32m  OK  [0m] Mounted [0;1;39msys-kernel-config.mount[0m - Kernel Configuration File System.
+2026-08-07T07:46:31.458371291Z [[0;32m  OK  [0m] Finished [0;1;39msystemd-udev-load-credent…[0m- Load udev Rules from Credentials.
+2026-08-07T07:46:31.462376202Z [[0;32m  OK  [0m] Finished [0;1;39msystemd-sysctl.service[0m - Apply Kernel Variables.
+2026-08-07T07:46:31.464026075Z [[0;32m  OK  [0m] Started [0;1;39msystemd-journald.service[0m - Journal Service.
+2026-08-07T07:46:31.464663429Z [[0;32m  OK  [0m] Finished [0;1;39msystemd-tmpfiles-setup-de…[0mic Device Nodes in /dev gracefully.
+2026-08-07T07:46:31.468583150Z          Starting [0;1;39msystemd-journal-flush.ser…[0msh Journal to Persistent Storage...
+2026-08-07T07:46:31.469183577Z          Starting [0;1;39msystemd-tmpfiles-setup-de…[0meate Static Device Nodes in /dev...
+2026-08-07T07:46:31.474979870Z [[0;32m  OK  [0m] Finished [0;1;39msystemd-journal-flush.ser…[0mlush Journal to Persistent Storage.
+2026-08-07T07:46:31.475617875Z [[0;32m  OK  [0m] Finished [0;1;39msystemd-tmpfiles-setup-de…[0mCreate Static Device Nodes in /dev.
+2026-08-07T07:46:31.475898143Z [[0;32m  OK  [0m] Reached target [0;1;39mlocal-fs-pre.target[0m…Preparation for Local File Systems.
+2026-08-07T07:46:31.475902035Z [[0;32m  OK  [0m] Reached target [0;1;39mlocal-fs.target[0m - Local File Systems.
+2026-08-07T07:46:31.476572409Z [[0;32m  OK  [0m] Listening on [0;1;39msystemd-sysext.socket[0m… System Extension Image Management.
+2026-08-07T07:46:31.476672876Z [[0;32m  OK  [0m] Reached target [0;1;39msysinit.target[0m - System Initialization.
+2026-08-07T07:46:31.476678795Z [[0;32m  OK  [0m] Started [0;1;39msystemd-tmpfiles-clean.tim…[0my Cleanup of Temporary Directories.
+2026-08-07T07:46:31.476680366Z [[0;32m  OK  [0m] Reached target [0;1;39mtimers.target[0m - Timer Units.
+2026-08-07T07:46:31.476681362Z [[0;32m  OK  [0m] Listening on [0;1;39msystemd-hostnamed.socket[0m - Hostname Service Socket.
+2026-08-07T07:46:31.476682262Z [[0;32m  OK  [0m] Reached target [0;1;39msockets.target[0m - Socket Units.
+2026-08-07T07:46:31.476683060Z [[0;32m  OK  [0m] Reached target [0;1;39mbasic.target[0m - Basic System.
+2026-08-07T07:46:31.477442795Z          Starting [0;1;39mundo-mount-hacks.service[0m - Undo KIND mount hacks...
+2026-08-07T07:46:31.482208319Z [[0;32m  OK  [0m] Finished [0;1;39mundo-mount-hacks.service[0m - Undo KIND mount hacks.
+2026-08-07T07:46:31.483042169Z          Starting [0;1;39mcontainerd.service[0m - containerd container runtime...
+2026-08-07T07:46:31.485335960Z          Starting [0;1;39mkubelet.service[0m - kubelet: The Kubernetes Node Agent...
+2026-08-07T07:46:31.497629966Z [[0;32m  OK  [0m] Started [0;1;39mkubelet.service[0m - kubelet: The Kubernetes Node Agent.
+2026-08-07T07:46:32.116884818Z [[0;32m  OK  [0m] Started [0;1;39mcontainerd.service[0m - containerd container runtime.
+2026-08-07T07:46:32.116894496Z [[0;32m  OK  [0m] Reached target [0;1;39mmulti-user.target[0m - Multi-User System.
+2026-08-07T07:46:32.116895989Z [[0;32m  OK  [0m] Reached target [0;1;39mgraphical.target[0m - Graphical Interface.
+2026-08-07T15:09:19.823960872Z INFO: ensuring we can execute mount/umount even with userns-remap
+2026-08-07T15:09:19.831322122Z INFO: remounting /sys read-only
+2026-08-07T15:09:19.836496238Z INFO: making mounts shared
+2026-08-07T15:09:19.837376269Z INFO: detected cgroup v2
+2026-08-07T15:09:19.837383408Z INFO: clearing and regenerating /etc/machine-id
+2026-08-07T15:09:19.869889867Z Initializing machine ID from random generator.
+2026-08-07T15:09:19.895088915Z INFO: setting iptables to detected mode: nft
+2026-08-07T15:09:19.961578277Z INFO: detected IPv4 address: 172.20.0.3
+2026-08-07T15:09:19.963544286Z INFO: detected old IPv4 address: 172.20.0.3
+2026-08-07T15:09:19.966762275Z INFO: detected IPv6 address: fc00:f853:ccd:e793::3
+2026-08-07T15:09:19.967574298Z INFO: detected old IPv6 address: fc00:f853:ccd:e793::3
+2026-08-07T15:09:19.967656404Z INFO: starting init
+2026-08-07T15:09:19.970841961Z [!p]104[?7hsystemd 257.13-1~deb13u1 running in system mode (+PAM +AUDIT +SELINUX +APPARMOR +IMA +IPE +SMACK +SECCOMP +GCRYPT -GNUTLS +OPENSSL +ACL +BLKID +CURL +ELFUTILS +FIDO2 +IDN2 -IDN +IPTC +KMOD +LIBCRYPTSETUP +LIBCRYPTSETUP_PLUGINS +LIBFDISK +PCRE2 +PWQUALITY +P11KIT +QRENCODE +TPM2 +BZIP2 +LZ4 +XZ +ZLIB +ZSTD +BPF_FRAMEWORK +BTF -XKBCOMMON -UTMP +SYSVINIT +LIBARCHIVE)
+2026-08-07T15:09:19.970850977Z Detected virtualization wsl.
+2026-08-07T15:09:19.970852794Z Detected architecture x86-64.
+2026-08-07T15:09:19.970936099Z 
+2026-08-07T15:09:19.970937193Z [0;1;39mWelcome to [0m[1mDebian GNU/Linux 13 (trixie)[0m[0;1;39m![0m
+2026-08-07T15:09:19.970938294Z 
+2026-08-07T15:09:20.010448999Z bpf-restrict-fs: BPF LSM hook not enabled in the kernel, BPF LSM not supported.
+2026-08-07T15:09:20.074396666Z Queued start job for default target graphical.target.
+2026-08-07T15:09:20.075800853Z [[0;32m  OK  [0m] Created slice [0;1;39mkubelet.slice[0m - slice used to run Kubernetes / Kubelet.
+2026-08-07T15:09:20.076776994Z [[0;32m  OK  [0m] Created slice [0;1;39msystem-modprobe.slice[0m - Slice /system/modprobe.
+2026-08-07T15:09:20.076785071Z [[0;32m  OK  [0m] Started [0;1;39msystemd-ask-password-conso…[0mequests to Console Directory Watch.
+2026-08-07T15:09:20.076903395Z [[0;32m  OK  [0m] Set up automount [0;1;39mproc-sys-fs-binfm…[0mormats File System Automount Point.
+2026-08-07T15:09:20.076914010Z [[0;32m  OK  [0m] Reached target [0;1;39mpaths.target[0m - Path Units.
+2026-08-07T15:09:20.076916762Z [[0;32m  OK  [0m] Reached target [0;1;39mslices.target[0m - Slice Units.
+2026-08-07T15:09:20.076918329Z [[0;32m  OK  [0m] Reached target [0;1;39mswap.target[0m - Swaps.
+2026-08-07T15:09:20.077428787Z [[0;32m  OK  [0m] Listening on [0;1;39msystemd-creds.socket[0m - Credential Encryption/Decryption.
+2026-08-07T15:09:20.077434198Z [[0;32m  OK  [0m] Listening on [0;1;39msystemd-journald-dev-…socket[0m - Journal Socket (/dev/log).
+2026-08-07T15:09:20.077566896Z [[0;32m  OK  [0m] Listening on [0;1;39msystemd-journald.socket[0m - Journal Sockets.
+2026-08-07T15:09:20.078650107Z          Mounting [0;1;39mdev-hugepages.mount[0m - Huge Pages File System...
+2026-08-07T15:09:20.079275733Z          Mounting [0;1;39msys-kernel-debug.mount[0m - Kernel Debug File System...
+2026-08-07T15:09:20.079980151Z          Mounting [0;1;39msys-kernel-tracing.mount[0m - Kernel Trace File System...
+2026-08-07T15:09:20.080906482Z          Starting [0;1;39mkmod-static-nodes.service[0m…eate List of Static Device Nodes...
+2026-08-07T15:09:20.081665690Z          Starting [0;1;39mmodprobe@configfs.service[0m - Load Kernel Module configfs...
+2026-08-07T15:09:20.082497391Z          Starting [0;1;39mmodprobe@fuse.service[0m - Load Kernel Module fuse...
+2026-08-07T15:09:20.084298283Z          Starting [0;1;39msystemd-journald.service[0m - Journal Service...
+2026-08-07T15:09:20.085439674Z          Starting [0;1;39msystemd-modules-load.service[0m - Load Kernel Modules...
+2026-08-07T15:09:20.086076531Z          Starting [0;1;39msystemd-remount-fs.servic…[0munt Root and Kernel File Systems...
+2026-08-07T15:09:20.087360702Z          Starting [0;1;39msystemd-udev-load-credent…[0mLoad udev Rules from Credentials...
+2026-08-07T15:09:20.088371734Z [[0;32m  OK  [0m] Finished [0;1;39mkmod-static-nodes.service[0m…Create List of Static Device Nodes.
+2026-08-07T15:09:20.088718076Z modprobe@configfs.service: Deactivated successfully.
+2026-08-07T15:09:20.089079757Z [[0;32m  OK  [0m] Finished [0;1;39mmodprobe@configfs.service[0m - Load Kernel Module configfs.
+2026-08-07T15:09:20.092336265Z modprobe@fuse.service: Deactivated successfully.
+2026-08-07T15:09:20.092348876Z [[0;32m  OK  [0m] Finished [0;1;39mmodprobe@fuse.service[0m - Load Kernel Module fuse.
+2026-08-07T15:09:20.092350970Z [[0;32m  OK  [0m] Mounted [0;1;39msys-kernel-debug.mount[0m - Kernel Debug File System.
+2026-08-07T15:09:20.092352048Z [[0;32m  OK  [0m] Mounted [0;1;39mdev-hugepages.mount[0m - Huge Pages File System.
+2026-08-07T15:09:20.092353157Z [[0;32m  OK  [0m] Mounted [0;1;39msys-kernel-tracing.mount[0m - Kernel Trace File System.
+2026-08-07T15:09:20.092353993Z          Mounting [0;1;39msys-fs-fuse-connections.mount[0m - FUSE Control File System...
+2026-08-07T15:09:20.092354884Z          Mounting [0;1;39msys-kernel-config.mount[0m - Kernel Configuration File System...
+2026-08-07T15:09:20.092461182Z          Starting [0;1;39msystemd-tmpfiles-setup-de…[0m Device Nodes in /dev gracefully...
+2026-08-07T15:09:20.092693102Z [[0;32m  OK  [0m] Finished [0;1;39msystemd-modules-load.service[0m - Load Kernel Modules.
+2026-08-07T15:09:20.092945190Z [[0;32m  OK  [0m] Finished [0;1;39msystemd-remount-fs.servic…[0mmount Root and Kernel File Systems.
+2026-08-07T15:09:20.096402326Z          Starting [0;1;39msystemd-sysctl.service[0m - Apply Kernel Variables...
+2026-08-07T15:09:20.096418804Z [[0;32m  OK  [0m] Mounted [0;1;39msys-fs-fuse-connections.mount[0m - FUSE Control File System.
+2026-08-07T15:09:20.096420362Z [[0;32m  OK  [0m] Mounted [0;1;39msys-kernel-config.mount[0m - Kernel Configuration File System.
+2026-08-07T15:09:20.162612370Z [[0;32m  OK  [0m] Started [0;1;39msystemd-journald.service[0m - Journal Service.
+2026-08-07T15:09:20.171640296Z          Starting [0;1;39msystemd-journal-flush.ser…[0msh Journal to Persistent Storage...
+2026-08-07T15:09:20.253461292Z [[0;32m  OK  [0m] Finished [0;1;39msystemd-udev-load-credent…[0m- Load udev Rules from Credentials.
+2026-08-07T15:09:20.258991214Z [[0;32m  OK  [0m] Finished [0;1;39msystemd-tmpfiles-setup-de…[0mic Device Nodes in /dev gracefully.
+2026-08-07T15:09:20.262784776Z [[0;32m  OK  [0m] Finished [0;1;39msystemd-sysctl.service[0m - Apply Kernel Variables.
+2026-08-07T15:09:20.266229864Z [[0;32m  OK  [0m] Finished [0;1;39msystemd-journal-flush.ser…[0mlush Journal to Persistent Storage.
+2026-08-07T15:09:20.273127490Z          Starting [0;1;39msystemd-tmpfiles-setup-de…[0meate Static Device Nodes in /dev...
+2026-08-07T15:09:20.289847563Z [[0;32m  OK  [0m] Finished [0;1;39msystemd-tmpfiles-setup-de…[0mCreate Static Device Nodes in /dev.
+2026-08-07T15:09:20.289867955Z [[0;32m  OK  [0m] Reached target [0;1;39mlocal-fs-pre.target[0m…Preparation for Local File Systems.
+2026-08-07T15:09:20.289869510Z [[0;32m  OK  [0m] Reached target [0;1;39mlocal-fs.target[0m - Local File Systems.
+2026-08-07T15:09:20.289912192Z [[0;32m  OK  [0m] Listening on [0;1;39msystemd-sysext.socket[0m… System Extension Image Management.
+2026-08-07T15:09:20.290057509Z [[0;32m  OK  [0m] Reached target [0;1;39msysinit.target[0m - System Initialization.
+2026-08-07T15:09:20.290064070Z [[0;32m  OK  [0m] Started [0;1;39msystemd-tmpfiles-clean.tim…[0my Cleanup of Temporary Directories.
+2026-08-07T15:09:20.290066045Z [[0;32m  OK  [0m] Reached target [0;1;39mtimers.target[0m - Timer Units.
+2026-08-07T15:09:20.290067441Z [[0;32m  OK  [0m] Listening on [0;1;39msystemd-hostnamed.socket[0m - Hostname Service Socket.
+2026-08-07T15:09:20.290132415Z [[0;32m  OK  [0m] Reached target [0;1;39msockets.target[0m - Socket Units.
+2026-08-07T15:09:20.290134415Z [[0;32m  OK  [0m] Reached target [0;1;39mbasic.target[0m - Basic System.
+2026-08-07T15:09:20.297202273Z          Starting [0;1;39mundo-mount-hacks.service[0m - Undo KIND mount hacks...
+2026-08-07T15:09:20.306931778Z [[0;32m  OK  [0m] Finished [0;1;39mundo-mount-hacks.service[0m - Undo KIND mount hacks.
+2026-08-07T15:09:20.306951166Z          Starting [0;1;39mcontainerd.service[0m - containerd container runtime...
+2026-08-07T15:09:20.312802634Z          Starting [0;1;39mkubelet.service[0m - kubelet: The Kubernetes Node Agent...
+2026-08-07T15:09:20.338147251Z [[0;32m  OK  [0m] Started [0;1;39mkubelet.service[0m - kubelet: The Kubernetes Node Agent.
+2026-08-07T15:09:20.672379888Z [[0;32m  OK  [0m] Started [0;1;39mcontainerd.service[0m - containerd container runtime.
+2026-08-07T15:09:20.672401624Z [[0;32m  OK  [0m] Reached target [0;1;39mmulti-user.target[0m - Multi-User System.
+2026-08-07T15:09:20.672422057Z [[0;32m  OK  [0m] Reached target [0;1;39mgraphical.target[0m - Graphical Interface.
+2026-08-10T06:22:44.420818373Z INFO: ensuring we can execute mount/umount even with userns-remap
+2026-08-10T06:22:44.429238046Z INFO: remounting /sys read-only
+2026-08-10T06:22:44.435595544Z INFO: making mounts shared
+2026-08-10T06:22:44.436548919Z INFO: detected cgroup v2
+2026-08-10T06:22:44.436556151Z INFO: clearing and regenerating /etc/machine-id
+2026-08-10T06:22:44.476847208Z Initializing machine ID from random generator.
+2026-08-10T06:22:44.510349542Z INFO: setting iptables to detected mode: nft
+2026-08-10T06:22:44.581497867Z INFO: detected IPv4 address: 172.20.0.3
+2026-08-10T06:22:44.582303938Z INFO: detected old IPv4 address: 172.20.0.3
+2026-08-10T06:22:44.584846825Z INFO: detected IPv6 address: fc00:f853:ccd:e793::3
+2026-08-10T06:22:44.585609180Z INFO: detected old IPv6 address: fc00:f853:ccd:e793::3
+2026-08-10T06:22:44.585674663Z INFO: starting init
+2026-08-10T06:22:44.599848252Z [!p]104[?7hsystemd 257.13-1~deb13u1 running in system mode (+PAM +AUDIT +SELINUX +APPARMOR +IMA +IPE +SMACK +SECCOMP +GCRYPT -GNUTLS +OPENSSL +ACL +BLKID +CURL +ELFUTILS +FIDO2 +IDN2 -IDN +IPTC +KMOD +LIBCRYPTSETUP +LIBCRYPTSETUP_PLUGINS +LIBFDISK +PCRE2 +PWQUALITY +P11KIT +QRENCODE +TPM2 +BZIP2 +LZ4 +XZ +ZLIB +ZSTD +BPF_FRAMEWORK +BTF -XKBCOMMON -UTMP +SYSVINIT +LIBARCHIVE)
+2026-08-10T06:22:44.599861869Z Detected virtualization wsl.
+2026-08-10T06:22:44.599863650Z Detected architecture x86-64.
+2026-08-10T06:22:44.601122927Z 
+2026-08-10T06:22:44.601130309Z [0;1;39mWelcome to [0m[1mDebian GNU/Linux 13 (trixie)[0m[0;1;39m![0m
+2026-08-10T06:22:44.601132370Z 
+2026-08-10T06:22:44.623540087Z bpf-restrict-fs: BPF LSM hook not enabled in the kernel, BPF LSM not supported.
+2026-08-10T06:22:44.703569340Z Queued start job for default target graphical.target.
+2026-08-10T06:22:44.704707929Z [[0;32m  OK  [0m] Created slice [0;1;39mkubelet.slice[0m - slice used to run Kubernetes / Kubelet.
+2026-08-10T06:22:44.705026057Z [[0;32m  OK  [0m] Created slice [0;1;39msystem-modprobe.slice[0m - Slice /system/modprobe.
+2026-08-10T06:22:44.705036654Z [[0;32m  OK  [0m] Started [0;1;39msystemd-ask-password-conso…[0mequests to Console Directory Watch.
+2026-08-10T06:22:44.705119264Z [[0;32m  OK  [0m] Set up automount [0;1;39mproc-sys-fs-binfm…[0mormats File System Automount Point.
+2026-08-10T06:22:44.705124882Z [[0;32m  OK  [0m] Reached target [0;1;39mpaths.target[0m - Path Units.
+2026-08-10T06:22:44.705126142Z [[0;32m  OK  [0m] Reached target [0;1;39mslices.target[0m - Slice Units.
+2026-08-10T06:22:44.705126927Z [[0;32m  OK  [0m] Reached target [0;1;39mswap.target[0m - Swaps.
+2026-08-10T06:22:44.705893462Z [[0;32m  OK  [0m] Listening on [0;1;39msystemd-creds.socket[0m - Credential Encryption/Decryption.
+2026-08-10T06:22:44.705900372Z [[0;32m  OK  [0m] Listening on [0;1;39msystemd-journald-dev-…socket[0m - Journal Socket (/dev/log).
+2026-08-10T06:22:44.705956454Z [[0;32m  OK  [0m] Listening on [0;1;39msystemd-journald.socket[0m - Journal Sockets.
+2026-08-10T06:22:44.706806074Z          Mounting [0;1;39mdev-hugepages.mount[0m - Huge Pages File System...
+2026-08-10T06:22:44.707251557Z          Mounting [0;1;39msys-kernel-debug.mount[0m - Kernel Debug File System...
+2026-08-10T06:22:44.707696178Z          Mounting [0;1;39msys-kernel-tracing.mount[0m - Kernel Trace File System...
+2026-08-10T06:22:44.708249610Z          Starting [0;1;39mkmod-static-nodes.service[0m…eate List of Static Device Nodes...
+2026-08-10T06:22:44.708827038Z          Starting [0;1;39mmodprobe@configfs.service[0m - Load Kernel Module configfs...
+2026-08-10T06:22:44.709277702Z          Starting [0;1;39mmodprobe@fuse.service[0m - Load Kernel Module fuse...
+2026-08-10T06:22:44.710464644Z          Starting [0;1;39msystemd-journald.service[0m - Journal Service...
+2026-08-10T06:22:44.712074739Z          Starting [0;1;39msystemd-modules-load.service[0m - Load Kernel Modules...
+2026-08-10T06:22:44.712661980Z          Starting [0;1;39msystemd-remount-fs.servic…[0munt Root and Kernel File Systems...
+2026-08-10T06:22:44.713223253Z          Starting [0;1;39msystemd-udev-load-credent…[0mLoad udev Rules from Credentials...
+2026-08-10T06:22:44.715424588Z [[0;32m  OK  [0m] Finished [0;1;39mkmod-static-nodes.service[0m…Create List of Static Device Nodes.
+2026-08-10T06:22:44.715698894Z modprobe@configfs.service: Deactivated successfully.
+2026-08-10T06:22:44.715788011Z [[0;32m  OK  [0m] Finished [0;1;39mmodprobe@configfs.service[0m - Load Kernel Module configfs.
+2026-08-10T06:22:44.715937327Z modprobe@fuse.service: Deactivated successfully.
+2026-08-10T06:22:44.716063837Z [[0;32m  OK  [0m] Finished [0;1;39mmodprobe@fuse.service[0m - Load Kernel Module fuse.
+2026-08-10T06:22:44.716690519Z          Mounting [0;1;39msys-fs-fuse-connections.mount[0m - FUSE Control File System...
+2026-08-10T06:22:44.717413054Z          Mounting [0;1;39msys-kernel-config.mount[0m - Kernel Configuration File System...
+2026-08-10T06:22:44.718320154Z          Starting [0;1;39msystemd-tmpfiles-setup-de…[0m Device Nodes in /dev gracefully...
+2026-08-10T06:22:44.719184994Z [[0;32m  OK  [0m] Finished [0;1;39msystemd-modules-load.service[0m - Load Kernel Modules.
+2026-08-10T06:22:44.720356184Z          Starting [0;1;39msystemd-sysctl.service[0m - Apply Kernel Variables...
+2026-08-10T06:22:44.720609995Z [[0;32m  OK  [0m] Finished [0;1;39msystemd-remount-fs.servic…[0mmount Root and Kernel File Systems.
+2026-08-10T06:22:44.723553932Z [[0;32m  OK  [0m] Mounted [0;1;39mdev-hugepages.mount[0m - Huge Pages File System.
+2026-08-10T06:22:44.723601679Z [[0;32m  OK  [0m] Mounted [0;1;39msys-kernel-debug.mount[0m - Kernel Debug File System.
+2026-08-10T06:22:44.723702870Z [[0;32m  OK  [0m] Mounted [0;1;39msys-kernel-tracing.mount[0m - Kernel Trace File System.
+2026-08-10T06:22:44.723901200Z [[0;32m  OK  [0m] Mounted [0;1;39msys-fs-fuse-connections.mount[0m - FUSE Control File System.
+2026-08-10T06:22:44.724016497Z [[0;32m  OK  [0m] Mounted [0;1;39msys-kernel-config.mount[0m - Kernel Configuration File System.
+2026-08-10T06:22:44.725508439Z [[0;32m  OK  [0m] Finished [0;1;39msystemd-udev-load-credent…[0m- Load udev Rules from Credentials.
+2026-08-10T06:22:44.732566173Z [[0;32m  OK  [0m] Finished [0;1;39msystemd-sysctl.service[0m - Apply Kernel Variables.
+2026-08-10T06:22:44.732850068Z [[0;32m  OK  [0m] Started [0;1;39msystemd-journald.service[0m - Journal Service.
+2026-08-10T06:22:44.739338578Z          Starting [0;1;39msystemd-journal-flush.ser…[0msh Journal to Persistent Storage...
+2026-08-10T06:22:44.739372354Z [[0;32m  OK  [0m] Finished [0;1;39msystemd-tmpfiles-setup-de…[0mic Device Nodes in /dev gracefully.
+2026-08-10T06:22:44.743741845Z          Starting [0;1;39msystemd-tmpfiles-setup-de…[0meate Static Device Nodes in /dev...
+2026-08-10T06:22:44.753647908Z [[0;32m  OK  [0m] Finished [0;1;39msystemd-journal-flush.ser…[0mlush Journal to Persistent Storage.
+2026-08-10T06:22:44.767558047Z [[0;32m  OK  [0m] Finished [0;1;39msystemd-tmpfiles-setup-de…[0mCreate Static Device Nodes in /dev.
+2026-08-10T06:22:44.767578469Z [[0;32m  OK  [0m] Reached target [0;1;39mlocal-fs-pre.target[0m…Preparation for Local File Systems.
+2026-08-10T06:22:44.767579645Z [[0;32m  OK  [0m] Reached target [0;1;39mlocal-fs.target[0m - Local File Systems.
+2026-08-10T06:22:44.768144331Z [[0;32m  OK  [0m] Listening on [0;1;39msystemd-sysext.socket[0m… System Extension Image Management.
+2026-08-10T06:22:44.768151242Z [[0;32m  OK  [0m] Reached target [0;1;39msysinit.target[0m - System Initialization.
+2026-08-10T06:22:44.768161404Z [[0;32m  OK  [0m] Started [0;1;39msystemd-tmpfiles-clean.tim…[0my Cleanup of Temporary Directories.
+2026-08-10T06:22:44.768162689Z [[0;32m  OK  [0m] Reached target [0;1;39mtimers.target[0m - Timer Units.
+2026-08-10T06:22:44.768163581Z [[0;32m  OK  [0m] Listening on [0;1;39msystemd-hostnamed.socket[0m - Hostname Service Socket.
+2026-08-10T06:22:44.768164453Z [[0;32m  OK  [0m] Reached target [0;1;39msockets.target[0m - Socket Units.
+2026-08-10T06:22:44.768165272Z [[0;32m  OK  [0m] Reached target [0;1;39mbasic.target[0m - Basic System.
+2026-08-10T06:22:44.769654673Z          Starting [0;1;39mundo-mount-hacks.service[0m - Undo KIND mount hacks...
+2026-08-10T06:22:44.775937054Z [[0;32m  OK  [0m] Finished [0;1;39mundo-mount-hacks.service[0m - Undo KIND mount hacks.
+2026-08-10T06:22:44.780426901Z          Starting [0;1;39mcontainerd.service[0m - containerd container runtime...
+2026-08-10T06:22:44.782525179Z          Starting [0;1;39mkubelet.service[0m - kubelet: The Kubernetes Node Agent...
+2026-08-10T06:22:44.832979284Z [[0;32m  OK  [0m] Started [0;1;39mkubelet.service[0m - kubelet: The Kubernetes Node Agent.
+2026-08-10T06:22:45.344885028Z [[0;32m  OK  [0m] Started [0;1;39mcontainerd.service[0m - containerd container runtime.
+2026-08-10T06:22:45.344908537Z [[0;32m  OK  [0m] Reached target [0;1;39mmulti-user.target[0m - Multi-User System.
+2026-08-10T06:22:45.344910441Z [[0;32m  OK  [0m] Reached target [0;1;39mgraphical.target[0m - Graphical Interface.
+2026-08-10T06:54:41.126163154Z INFO: ensuring we can execute mount/umount even with userns-remap
+2026-08-10T06:54:41.134596423Z INFO: remounting /sys read-only
+2026-08-10T06:54:41.146661631Z INFO: making mounts shared
+2026-08-10T06:54:41.147454974Z INFO: detected cgroup v2
+2026-08-10T06:54:41.147462393Z INFO: clearing and regenerating /etc/machine-id
+2026-08-10T06:54:41.179811163Z Initializing machine ID from random generator.
+2026-08-10T06:54:41.209562234Z INFO: setting iptables to detected mode: nft
+2026-08-10T06:54:41.290483198Z INFO: detected IPv4 address: 172.20.0.4
+2026-08-10T06:54:41.291357737Z INFO: detected old IPv4 address: 172.20.0.3
+2026-08-10T06:54:41.299300775Z INFO: detected IPv6 address: fc00:f853:ccd:e793::4
+2026-08-10T06:54:41.300076223Z INFO: detected old IPv6 address: fc00:f853:ccd:e793::3
+2026-08-10T06:54:41.303520469Z INFO: starting init
+2026-08-10T06:54:41.307117556Z [!p]104[?7hsystemd 257.13-1~deb13u1 running in system mode (+PAM +AUDIT +SELINUX +APPARMOR +IMA +IPE +SMACK +SECCOMP +GCRYPT -GNUTLS +OPENSSL +ACL +BLKID +CURL +ELFUTILS +FIDO2 +IDN2 -IDN +IPTC +KMOD +LIBCRYPTSETUP +LIBCRYPTSETUP_PLUGINS +LIBFDISK +PCRE2 +PWQUALITY +P11KIT +QRENCODE +TPM2 +BZIP2 +LZ4 +XZ +ZLIB +ZSTD +BPF_FRAMEWORK +BTF -XKBCOMMON -UTMP +SYSVINIT +LIBARCHIVE)
+2026-08-10T06:54:41.307137784Z Detected virtualization wsl.
+2026-08-10T06:54:41.307139357Z Detected architecture x86-64.
+2026-08-10T06:54:41.307215151Z 
+2026-08-10T06:54:41.307220586Z [0;1;39mWelcome to [0m[1mDebian GNU/Linux 13 (trixie)[0m[0;1;39m![0m
+2026-08-10T06:54:41.307221957Z 
+2026-08-10T06:54:41.341417016Z bpf-restrict-fs: BPF LSM hook not enabled in the kernel, BPF LSM not supported.
+2026-08-10T06:54:41.410847361Z Queued start job for default target graphical.target.
+2026-08-10T06:54:41.412325881Z [[0;32m  OK  [0m] Created slice [0;1;39mkubelet.slice[0m - slice used to run Kubernetes / Kubelet.
+2026-08-10T06:54:41.413250990Z [[0;32m  OK  [0m] Created slice [0;1;39msystem-modprobe.slice[0m - Slice /system/modprobe.
+2026-08-10T06:54:41.413252996Z [[0;32m  OK  [0m] Started [0;1;39msystemd-ask-password-conso…[0mequests to Console Directory Watch.
+2026-08-10T06:54:41.413451611Z [[0;32m  OK  [0m] Set up automount [0;1;39mproc-sys-fs-binfm…[0mormats File System Automount Point.
+2026-08-10T06:54:41.413468914Z [[0;32m  OK  [0m] Reached target [0;1;39mpaths.target[0m - Path Units.
+2026-08-10T06:54:41.413470543Z [[0;32m  OK  [0m] Reached target [0;1;39mslices.target[0m - Slice Units.
+2026-08-10T06:54:41.413471658Z [[0;32m  OK  [0m] Reached target [0;1;39mswap.target[0m - Swaps.
+2026-08-10T06:54:41.414152759Z [[0;32m  OK  [0m] Listening on [0;1;39msystemd-creds.socket[0m - Credential Encryption/Decryption.
+2026-08-10T06:54:41.414154128Z [[0;32m  OK  [0m] Listening on [0;1;39msystemd-journald-dev-…socket[0m - Journal Socket (/dev/log).
+2026-08-10T06:54:41.414353152Z [[0;32m  OK  [0m] Listening on [0;1;39msystemd-journald.socket[0m - Journal Sockets.
+2026-08-10T06:54:41.415096219Z          Mounting [0;1;39mdev-hugepages.mount[0m - Huge Pages File System...
+2026-08-10T06:54:41.415611189Z          Mounting [0;1;39msys-kernel-debug.mount[0m - Kernel Debug File System...
+2026-08-10T06:54:41.416299198Z          Mounting [0;1;39msys-kernel-tracing.mount[0m - Kernel Trace File System...
+2026-08-10T06:54:41.417222505Z          Starting [0;1;39mkmod-static-nodes.service[0m…eate List of Static Device Nodes...
+2026-08-10T06:54:41.417727462Z          Starting [0;1;39mmodprobe@configfs.service[0m - Load Kernel Module configfs...
+2026-08-10T06:54:41.418177388Z          Starting [0;1;39mmodprobe@fuse.service[0m - Load Kernel Module fuse...
+2026-08-10T06:54:41.420019691Z          Starting [0;1;39msystemd-journald.service[0m - Journal Service...
+2026-08-10T06:54:41.420838929Z          Starting [0;1;39msystemd-modules-load.service[0m - Load Kernel Modules...
+2026-08-10T06:54:41.421887556Z          Starting [0;1;39msystemd-remount-fs.servic…[0munt Root and Kernel File Systems...
+2026-08-10T06:54:41.424202742Z          Starting [0;1;39msystemd-udev-load-credent…[0mLoad udev Rules from Credentials...
+2026-08-10T06:54:41.426887532Z [[0;32m  OK  [0m] Finished [0;1;39mkmod-static-nodes.service[0m…Create List of Static Device Nodes.
+2026-08-10T06:54:41.426897459Z modprobe@configfs.service: Deactivated successfully.
+2026-08-10T06:54:41.427151585Z [[0;32m  OK  [0m] Finished [0;1;39mmodprobe@configfs.service[0m - Load Kernel Module configfs.
+2026-08-10T06:54:41.427692961Z modprobe@fuse.service: Deactivated successfully.
+2026-08-10T06:54:41.427833178Z [[0;32m  OK  [0m] Finished [0;1;39mmodprobe@fuse.service[0m - Load Kernel Module fuse.
+2026-08-10T06:54:41.428412036Z [[0;32m  OK  [0m] Mounted [0;1;39mdev-hugepages.mount[0m - Huge Pages File System.
+2026-08-10T06:54:41.428417069Z [[0;32m  OK  [0m] Mounted [0;1;39msys-kernel-debug.mount[0m - Kernel Debug File System.
+2026-08-10T06:54:41.428418245Z [[0;32m  OK  [0m] Mounted [0;1;39msys-kernel-tracing.mount[0m - Kernel Trace File System.
+2026-08-10T06:54:41.428563171Z [[0;32m  OK  [0m] Finished [0;1;39msystemd-modules-load.service[0m - Load Kernel Modules.
+2026-08-10T06:54:41.428841544Z [[0;32m  OK  [0m] Finished [0;1;39msystemd-remount-fs.servic…[0mmount Root and Kernel File Systems.
+2026-08-10T06:54:41.429590070Z          Mounting [0;1;39msys-fs-fuse-connections.mount[0m - FUSE Control File System...
+2026-08-10T06:54:41.430275575Z          Mounting [0;1;39msys-kernel-config.mount[0m - Kernel Configuration File System...
+2026-08-10T06:54:41.434774251Z          Starting [0;1;39msystemd-sysctl.service[0m - Apply Kernel Variables...
+2026-08-10T06:54:41.434783238Z          Starting [0;1;39msystemd-tmpfiles-setup-de…[0m Device Nodes in /dev gracefully...
+2026-08-10T06:54:41.434784657Z [[0;32m  OK  [0m] Mounted [0;1;39msys-fs-fuse-connections.mount[0m - FUSE Control File System.
+2026-08-10T06:54:41.434785484Z [[0;32m  OK  [0m] Finished [0;1;39msystemd-udev-load-credent…[0m- Load udev Rules from Credentials.
+2026-08-10T06:54:41.434786183Z [[0;32m  OK  [0m] Mounted [0;1;39msys-kernel-config.mount[0m - Kernel Configuration File System.
+2026-08-10T06:54:41.439117642Z [[0;32m  OK  [0m] Started [0;1;39msystemd-journald.service[0m - Journal Service.
+2026-08-10T06:54:41.440737442Z [[0;32m  OK  [0m] Finished [0;1;39msystemd-sysctl.service[0m - Apply Kernel Variables.
+2026-08-10T06:54:41.441079709Z [[0;32m  OK  [0m] Finished [0;1;39msystemd-tmpfiles-setup-de…[0mic Device Nodes in /dev gracefully.
+2026-08-10T06:54:41.443764301Z          Starting [0;1;39msystemd-journal-flush.ser…[0msh Journal to Persistent Storage...
+2026-08-10T06:54:41.444480611Z          Starting [0;1;39msystemd-tmpfiles-setup-de…[0meate Static Device Nodes in /dev...
+2026-08-10T06:54:41.450492082Z [[0;32m  OK  [0m] Finished [0;1;39msystemd-journal-flush.ser…[0mlush Journal to Persistent Storage.
+2026-08-10T06:54:41.451270186Z [[0;32m  OK  [0m] Finished [0;1;39msystemd-tmpfiles-setup-de…[0mCreate Static Device Nodes in /dev.
+2026-08-10T06:54:41.451547492Z [[0;32m  OK  [0m] Reached target [0;1;39mlocal-fs-pre.target[0m…Preparation for Local File Systems.
+2026-08-10T06:54:41.451552945Z [[0;32m  OK  [0m] Reached target [0;1;39mlocal-fs.target[0m - Local File Systems.
+2026-08-10T06:54:41.451902615Z [[0;32m  OK  [0m] Listening on [0;1;39msystemd-sysext.socket[0m… System Extension Image Management.
+2026-08-10T06:54:41.451992726Z [[0;32m  OK  [0m] Reached target [0;1;39msysinit.target[0m - System Initialization.
+2026-08-10T06:54:41.451994062Z [[0;32m  OK  [0m] Started [0;1;39msystemd-tmpfiles-clean.tim…[0my Cleanup of Temporary Directories.
+2026-08-10T06:54:41.451994800Z [[0;32m  OK  [0m] Reached target [0;1;39mtimers.target[0m - Timer Units.
+2026-08-10T06:54:41.452072516Z [[0;32m  OK  [0m] Listening on [0;1;39msystemd-hostnamed.socket[0m - Hostname Service Socket.
+2026-08-10T06:54:41.452074642Z [[0;32m  OK  [0m] Reached target [0;1;39msockets.target[0m - Socket Units.
+2026-08-10T06:54:41.452075778Z [[0;32m  OK  [0m] Reached target [0;1;39mbasic.target[0m - Basic System.
+2026-08-10T06:54:41.452708948Z          Starting [0;1;39mundo-mount-hacks.service[0m - Undo KIND mount hacks...
+2026-08-10T06:54:41.461583167Z [[0;32m  OK  [0m] Finished [0;1;39mundo-mount-hacks.service[0m - Undo KIND mount hacks.
+2026-08-10T06:54:41.469652851Z          Starting [0;1;39mcontainerd.service[0m - containerd container runtime...
+2026-08-10T06:54:41.473909026Z          Starting [0;1;39mkubelet.service[0m - kubelet: The Kubernetes Node Agent...
+2026-08-10T06:54:41.515002462Z [[0;32m  OK  [0m] Started [0;1;39mkubelet.service[0m - kubelet: The Kubernetes Node Agent.
+2026-08-10T06:54:41.859549940Z [[0;32m  OK  [0m] Started [0;1;39mcontainerd.service[0m - containerd container runtime.
+2026-08-10T06:54:41.859567547Z [[0;32m  OK  [0m] Reached target [0;1;39mmulti-user.target[0m - Multi-User System.
+2026-08-10T06:54:41.859569207Z [[0;32m  OK  [0m] Reached target [0;1;39mgraphical.target[0m - Graphical Interface.
+2026-08-10T07:11:05.875440003Z          Stopping [0;1;39mcri-containerd-b39a9d36b1…[0mdd1308655ddf72f82b260db341c6bf54...
+2026-08-10T07:11:05.876911191Z          Stopping [0;1;39mcri-containerd-6405b04e87…[0m58342d8f33c6b894769f45d3fbb17c13...
+2026-08-10T07:11:05.876942937Z          Stopping [0;1;39mcri-containerd-016eef172b…[0m0543d303288d3c5789fd754dd7a3fa90...
+2026-08-10T07:11:05.876946231Z          Stopping [0;1;39mcri-containerd-0ab5532635…[0mae55bc02a970f0e095f46025ec5f34f5...
+2026-08-10T07:11:05.876948074Z          Stopping [0;1;39mcri-containerd-0ac3fdd301…[0mbc333d9c5761473db4be64e10b5bb3e3...
+2026-08-10T07:11:05.877410751Z          Stopping [0;1;39mcri-containerd-2f7d4b6d40…[0m98c552bb442edd33596949026ec36e22...
+2026-08-10T07:11:05.877755727Z          Stopping [0;1;39mcri-containerd-4c71c2f430…[0m1e7ec9140f6a1b6548aa5d8361117b8b...
+2026-08-10T07:11:05.877760487Z          Stopping [0;1;39mcri-containerd-ba14d721cb…[0m2df6563db37cfb8f79b82974cb9279b6...
+2026-08-10T07:11:05.877995513Z          Stopping [0;1;39mcri-containerd-e0313d6076…[0m7eaf63a2533f0724b619811c0a8172f3...
+2026-08-10T07:11:05.878190740Z          Stopping [0;1;39mcri-containerd-fc0774c1f8…[0mb719b5b9da502d000841ca7e8b7267e3...
+2026-08-10T07:11:05.878927946Z [[0;32m  OK  [0m] Removed slice [0;1;39msystem-modprobe.slice[0m - Slice /system/modprobe.
+2026-08-10T07:11:05.878939507Z [[0;32m  OK  [0m] Stopped target [0;1;39mgraphical.target[0m - Graphical Interface.
+2026-08-10T07:11:05.878942765Z [[0;32m  OK  [0m] Stopped target [0;1;39mmulti-user.target[0m - Multi-User System.
+2026-08-10T07:11:05.878945012Z [[0;32m  OK  [0m] Stopped target [0;1;39mtimers.target[0m - Timer Units.
+2026-08-10T07:11:05.878946919Z [[0;32m  OK  [0m] Stopped [0;1;39msystemd-tmpfiles-clean.tim…[0my Cleanup of Temporary Directories.
+2026-08-10T07:11:05.879178306Z          Stopping [0;1;39mcontainerd.service[0m - containerd container runtime...
+2026-08-10T07:11:05.879250632Z          Stopping [0;1;39mkubelet.service[0m - kubelet: The Kubernetes Node Agent...
+2026-08-10T07:11:05.879255186Z [[0;32m  OK  [0m] Stopped [0;1;39msystemd-udev-load-credenti…[0m- Load udev Rules from Credentials.
+2026-08-10T07:11:05.880939691Z [[0;32m  OK  [0m] Stopped [0;1;39mcri-containerd-fc0774c1f86…[0m20b719b5b9da502d000841ca7e8b7267e3.
+2026-08-10T07:11:05.880955806Z [[0;32m  OK  [0m] Stopped [0;1;39mcri-containerd-e0313d60768…[0mae7eaf63a2533f0724b619811c0a8172f3.
+2026-08-10T07:11:05.881228361Z [[0;32m  OK  [0m] Stopped [0;1;39mcri-containerd-b39a9d36b1d…[0mb6dd1308655ddf72f82b260db341c6bf54.
+2026-08-10T07:11:05.881809373Z [[0;32m  OK  [0m] Stopped [0;1;39mcri-containerd-0ac3fdd3015…[0mc4bc333d9c5761473db4be64e10b5bb3e3.
+2026-08-10T07:11:05.882067940Z [[0;32m  OK  [0m] Stopped [0;1;39mcri-containerd-0ab5532635d…[0m7eae55bc02a970f0e095f46025ec5f34f5.
+2026-08-10T07:11:05.883199928Z [[0;32m  OK  [0m] Stopped [0;1;39mcri-containerd-016eef172b4…[0m970543d303288d3c5789fd754dd7a3fa90.
+2026-08-10T07:11:05.883237201Z [[0;32m  OK  [0m] Removed slice [0;1;39mkubelet-kubepods-pod…[0m_332d_4c34_871f_5ea4f1515821.slice.
+2026-08-10T07:11:05.897117099Z [[0;32m  OK  [0m] Stopped [0;1;39mcri-containerd-4c71c2f4300…[0m9f1e7ec9140f6a1b6548aa5d8361117b8b.
+2026-08-10T07:11:05.898211815Z [[0;32m  OK  [0m] Removed slice [0;1;39mkubelet-kubepods-bes…[0m_7e6e_42e2_ae2f_a1910e7ed23f.slice.
+2026-08-10T07:11:05.938591156Z [[0;32m  OK  [0m] Stopped [0;1;39mcontainerd.service[0m - containerd container runtime.
+2026-08-10T07:11:05.982228233Z [[0;32m  OK  [0m] Stopped [0;1;39mkubelet.service[0m - kubelet: The Kubernetes Node Agent.
+2026-08-10T07:11:05.982458398Z [[0;32m  OK  [0m] Stopped [0;1;39mcri-containerd-ba14d721cb5…[0m9a2df6563db37cfb8f79b82974cb9279b6.
+2026-08-10T07:11:05.982916850Z [[0;32m  OK  [0m] Stopped [0;1;39mcri-containerd-6405b04e871…[0m2158342d8f33c6b894769f45d3fbb17c13.
+2026-08-10T07:11:06.022264573Z [[0;32m  OK  [0m] Stopped [0;1;39mcri-containerd-2f7d4b6d401…[0m3198c552bb442edd33596949026ec36e22.
+2026-08-10T07:11:06.086784336Z [[0;32m  OK  [0m] Removed slice [0;1;39mkubelet-kubepods-bes…[0m_7a9b_40fc_ae45_18629113397e.slice.
+2026-08-10T07:11:06.086803414Z [[0;32m  OK  [0m] Removed slice [0;1;39mkubelet-kubepods-bes…[0m_0d4d_4cda_b0ba_ccdff8ca20fa.slice.
+2026-08-10T07:11:06.087034464Z [[0;32m  OK  [0m] Removed slice [0;1;39mkubelet-kubepods-bes…[0m kubelet-kubepods-besteffort.slice.
+2026-08-10T07:11:06.087214628Z [[0;32m  OK  [0m] Removed slice [0;1;39mkubelet-kubepods-bur…[0m_8234_4d56_a3fb_fcb78c4d031c.slice.
+2026-08-10T07:11:06.087291828Z [[0;32m  OK  [0m] Removed slice [0;1;39mkubelet-kubepods-bur…[0mr kubelet-kubepods-burstable.slice.
+2026-08-10T07:11:06.087417229Z [[0;32m  OK  [0m] Removed slice [0;1;39mkubelet-kubepods.sli…[0mr container kubelet-kubepods.slice.
+2026-08-10T07:11:06.087429936Z [[0;32m  OK  [0m] Stopped target [0;1;39mbasic.target[0m - Basic System.
+2026-08-10T07:11:06.087432277Z [[0;32m  OK  [0m] Stopped target [0;1;39mpaths.target[0m - Path Units.
+2026-08-10T07:11:06.105686778Z [[0;32m  OK  [0m] Stopped [0;1;39msystemd-ask-password-conso…[0mequests to Console Directory Watch.
+2026-08-10T07:11:06.105705025Z [[0;32m  OK  [0m] Stopped target [0;1;39mslices.target[0m - Slice Units.
+2026-08-10T07:11:06.105878520Z [[0;32m  OK  [0m] Removed slice [0;1;39mkubelet.slice[0m - slice used to run Kubernetes / Kubelet.
+2026-08-10T07:11:06.105888573Z [[0;32m  OK  [0m] Stopped target [0;1;39msockets.target[0m - Socket Units.
+2026-08-10T07:11:06.105957600Z [[0;32m  OK  [0m] Closed [0;1;39msystemd-hostnamed.socket[0m - Hostname Service Socket.
+2026-08-10T07:11:06.105975208Z [[0;32m  OK  [0m] Stopped target [0;1;39msysinit.target[0m - System Initialization.
+2026-08-10T07:11:06.106092201Z [[0;32m  OK  [0m] Unset automount [0;1;39mproc-sys-fs-binfmt…[0mormats File System Automount Point.
+2026-08-10T07:11:06.106099389Z [[0;32m  OK  [0m] Stopped target [0;1;39mlocal-fs.target[0m - Local File Systems.
+2026-08-10T07:11:06.106790107Z          Unmounting [0;1;39metc-hostname.mount[0m - /etc/hostname...
+2026-08-10T07:11:06.107347750Z          Unmounting [0;1;39metc-hosts.mount[0m - /etc/hosts...
+2026-08-10T07:11:06.107828936Z          Unmounting [0;1;39metc-resolv.conf.mount[0m - /etc/resolv.conf...
+2026-08-10T07:11:06.108284611Z          Unmounting [0;1;39mrun-containerd-io.conta…[0md303288d3c5789fd754dd7a3fa90/shm...
+2026-08-10T07:11:06.108764808Z          Unmounting [0;1;39mrun-containerd-io.conta…[0mbc02a970f0e095f46025ec5f34f5/shm...
+2026-08-10T07:11:06.109256168Z          Unmounting [0;1;39mrun-containerd-io.conta…[0m3d9c5761473db4be64e10b5bb3e3/shm...
+2026-08-10T07:11:06.110432551Z          Unmounting [0;1;39mrun-containerd-io.conta…[0m63a2533f0724b619811c0a8172f3/shm...
+2026-08-10T07:11:06.110999817Z          Unmounting [0;1;39mrun-containerd-io.conta…[0mb5b9da502d000841ca7e8b7267e3/shm...
+2026-08-10T07:11:06.111803950Z          Unmounting [0;1;39mrun-containerd-io.conta…[0m3288d3c5789fd754dd7a3fa90/rootfs...
+2026-08-10T07:11:06.112454051Z          Unmounting [0;1;39mrun-containerd-io.conta…[0m2a970f0e095f46025ec5f34f5/rootfs...
+2026-08-10T07:11:06.113022749Z          Unmounting [0;1;39mrun-containerd-io.conta…[0mc5761473db4be64e10b5bb3e3/rootfs...
+2026-08-10T07:11:06.113626395Z          Unmounting [0;1;39mrun-containerd-io.conta…[0mb442edd33596949026ec36e22/rootfs...
+2026-08-10T07:11:06.114124906Z          Unmounting [0;1;39mrun-containerd-io.conta…[0m40f6a1b6548aa5d8361117b8b/rootfs...
+2026-08-10T07:11:06.114649956Z          Unmounting [0;1;39mrun-containerd-io.conta…[0mf33c6b894769f45d3fbb17c13/rootfs...
+2026-08-10T07:11:06.115455077Z          Unmounting [0;1;39mrun-containerd-io.conta…[0m55ddf72f82b260db341c6bf54/rootfs...
+2026-08-10T07:11:06.116172543Z          Unmounting [0;1;39mrun-containerd-io.conta…[0mdb37cfb8f79b82974cb9279b6/rootfs...
+2026-08-10T07:11:06.116968584Z          Unmounting [0;1;39mrun-containerd-io.conta…[0m2533f0724b619811c0a8172f3/rootfs...
+2026-08-10T07:11:06.117757064Z          Unmounting [0;1;39mrun-containerd-io.conta…[0m9da502d000841ca7e8b7267e3/rootfs...
+2026-08-10T07:11:06.118238676Z          Unmounting [0;1;39mrun-netns-cni\x2d64a688…[0m88c7-1ff1-ca95-7948-76180c65ac27...
+2026-08-10T07:11:06.118843834Z          Unmounting [0;1;39mrun-netns-cni\x2d7d5e6c…[0m6c38-9a97-1ea1-0c20-eff5fd779616...
+2026-08-10T07:11:06.119317084Z          Unmounting [0;1;39mrun-netns-cni\x2d9775ff…[0mff96-aecf-240f-a3bb-88fed94d960d...
+2026-08-10T07:11:06.119811694Z          Unmounting [0;1;39mtmp.mount[0m - Temporary Directory /tmp...
+2026-08-10T07:11:06.120247778Z          Unmounting [0;1;39musr-lib-modules-6.6.87.…[0m6.6.87.2-microsoft-standard-WSL2...
+2026-08-10T07:11:06.120691268Z          Unmounting [0;1;39mvar-lib-kubelet-pods-7b…[0m~projected/kube-api-access-zhg2x...
+2026-08-10T07:11:06.121319016Z          Unmounting [0;1;39mvar-lib-kubelet-pods-81…[0m~projected/kube-api-access-nl76k...
+2026-08-10T07:11:06.122034398Z          Unmounting [0;1;39mvar-lib-kubelet-pods-9e…[0m~projected/kube-api-access-pxc2p...
+2026-08-10T07:11:06.122688503Z          Unmounting [0;1;39mvar-lib-kubelet-pods-d9…[0m~projected/kube-api-access-mfxkj...
+2026-08-10T07:11:06.123276351Z          Unmounting [0;1;39mvar-lib-kubelet-pods-f6…[0m~projected/kube-api-access-v5hfm...
+2026-08-10T07:11:06.123286089Z [[0;32m  OK  [0m] Stopped [0;1;39msystemd-sysctl.service[0m - Apply Kernel Variables.
+2026-08-10T07:11:06.123402254Z [[0;32m  OK  [0m] Stopped [0;1;39msystemd-modules-load.service[0m - Load Kernel Modules.
+2026-08-10T07:11:06.125853216Z [[0;32m  OK  [0m] Unmounted [0;1;39metc-hostname.mount[0m - /etc/hostname.
+2026-08-10T07:11:06.126092744Z [[0;32m  OK  [0m] Unmounted [0;1;39metc-hosts.mount[0m - /etc/hosts.
+2026-08-10T07:11:06.126320126Z [[0;32m  OK  [0m] Unmounted [0;1;39metc-resolv.conf.mount[0m - /etc/resolv.conf.
+2026-08-10T07:11:06.126526375Z [[0;32m  OK  [0m] Unmounted [0;1;39mrun-netns-cni\x2d64a688c…[0ma688c7-1ff1-ca95-7948-76180c65ac27.
+2026-08-10T07:11:06.126700716Z [[0;32m  OK  [0m] Unmounted [0;1;39mrun-netns-cni\x2d7d5e6c3…[0m5e6c38-9a97-1ea1-0c20-eff5fd779616.
+2026-08-10T07:11:06.126854781Z [[0;32m  OK  [0m] Unmounted [0;1;39mrun-netns-cni\x2d9775ff9…[0m75ff96-aecf-240f-a3bb-88fed94d960d.
+2026-08-10T07:11:06.127074230Z [[0;32m  OK  [0m] Unmounted [0;1;39musr-lib-modules-6.6.87.2…[0ms/6.6.87.2-microsoft-standard-WSL2.
+2026-08-10T07:11:06.130404614Z          Unmounting [0;1;39musr-lib-modules.mount[0m - /usr/lib/modules...
+2026-08-10T07:11:06.134547015Z [[0;32m  OK  [0m] Unmounted [0;1;39musr-lib-modules.mount[0m - /usr/lib/modules.
+2026-08-10T07:11:06.158701259Z [[0;32m  OK  [0m] Unmounted [0;1;39mrun-containerd-io.contai…[0m43d303288d3c5789fd754dd7a3fa90/shm.
+2026-08-10T07:11:06.158890446Z [[0;32m  OK  [0m] Unmounted [0;1;39mrun-containerd-io.contai…[0m55bc02a970f0e095f46025ec5f34f5/shm.
+2026-08-10T07:11:06.159056089Z [[0;32m  OK  [0m] Unmounted [0;1;39mrun-containerd-io.contai…[0m333d9c5761473db4be64e10b5bb3e3/shm.
+2026-08-10T07:11:06.159214124Z [[0;32m  OK  [0m] Unmounted [0;1;39mrun-containerd-io.contai…[0maf63a2533f0724b619811c0a8172f3/shm.
+2026-08-10T07:11:06.159369935Z [[0;32m  OK  [0m] Unmounted [0;1;39mrun-containerd-io.contai…[0m19b5b9da502d000841ca7e8b7267e3/shm.
+2026-08-10T07:11:06.159506625Z [[0;32m  OK  [0m] Unmounted [0;1;39mrun-containerd-io.contai…[0m303288d3c5789fd754dd7a3fa90/rootfs.
+2026-08-10T07:11:06.159674776Z [[0;32m  OK  [0m] Unmounted [0;1;39mrun-containerd-io.contai…[0mc02a970f0e095f46025ec5f34f5/rootfs.
+2026-08-10T07:11:06.159834452Z [[0;32m  OK  [0m] Unmounted [0;1;39mrun-containerd-io.contai…[0md9c5761473db4be64e10b5bb3e3/rootfs.
+2026-08-10T07:11:06.223053919Z [[0;32m  OK  [0m] Unmounted [0;1;39mrun-containerd-io.contai…[0m2bb442edd33596949026ec36e22/rootfs.
+2026-08-10T07:11:06.223078943Z [[0;32m  OK  [0m] Unmounted [0;1;39mrun-containerd-io.contai…[0m9140f6a1b6548aa5d8361117b8b/rootfs.
+2026-08-10T07:11:06.223258732Z [[0;32m  OK  [0m] Unmounted [0;1;39mrun-containerd-io.contai…[0md8f33c6b894769f45d3fbb17c13/rootfs.
+2026-08-10T07:11:06.223552796Z [[0;32m  OK  [0m] Unmounted [0;1;39mrun-containerd-io.contai…[0m8655ddf72f82b260db341c6bf54/rootfs.
+2026-08-10T07:11:06.223713412Z [[0;32m  OK  [0m] Unmounted [0;1;39mrun-containerd-io.contai…[0m63db37cfb8f79b82974cb9279b6/rootfs.
+2026-08-10T07:11:06.223718232Z [[0;32m  OK  [0m] Unmounted [0;1;39mrun-containerd-io.contai…[0m3a2533f0724b619811c0a8172f3/rootfs.
+2026-08-10T07:11:06.224005667Z [[0;32m  OK  [0m] Unmounted [0;1;39mrun-containerd-io.contai…[0m5b9da502d000841ca7e8b7267e3/rootfs.
+2026-08-10T07:11:06.224013867Z [[0;32m  OK  [0m] Unmounted [0;1;39mtmp.mount[0m - Temporary Directory /tmp.
+2026-08-10T07:11:06.224523037Z [[0;32m  OK  [0m] Unmounted [0;1;39mvar-lib-kubelet-pods-7b3…[0mio~projected/kube-api-access-zhg2x.
+2026-08-10T07:11:06.224536679Z [[0;32m  OK  [0m] Unmounted [0;1;39mvar-lib-kubelet-pods-81f…[0mio~projected/kube-api-access-nl76k.
+2026-08-10T07:11:06.224537936Z [[0;32m  OK  [0m] Unmounted [0;1;39mvar-lib-kubelet-pods-9ea…[0mio~projected/kube-api-access-pxc2p.
+2026-08-10T07:11:06.224624540Z [[0;32m  OK  [0m] Unmounted [0;1;39mvar-lib-kubelet-pods-d97…[0mio~projected/kube-api-access-mfxkj.
+2026-08-10T07:11:06.224902444Z [[0;32m  OK  [0m] Unmounted [0;1;39mvar-lib-kubelet-pods-f6b…[0mio~projected/kube-api-access-v5hfm.
+2026-08-10T07:11:06.228915967Z [[0;32m  OK  [0m] Stopped target [0;1;39mswap.target[0m - Swaps.
+2026-08-10T07:11:06.229441580Z          Unmounting [0;1;39mvar.mount[0m...
+2026-08-10T07:11:06.264052578Z [[0;32m  OK  [0m] Unmounted [0;1;39mvar.mount[0m.
+2026-08-10T07:11:06.264406147Z [[0;32m  OK  [0m] Stopped target [0;1;39mlocal-fs-pre.target[0m…Preparation for Local File Systems.
+2026-08-10T07:11:06.264480400Z [[0;32m  OK  [0m] Reached target [0;1;39mumount.target[0m - Unmount All Filesystems.
+2026-08-10T07:11:06.264520454Z [[0;32m  OK  [0m] Stopped [0;1;39msystemd-remount-fs.service[0m…mount Root and Kernel File Systems.
+2026-08-10T07:11:06.264550597Z [[0;32m  OK  [0m] Stopped [0;1;39msystemd-tmpfiles-setup-dev…[0mCreate Static Device Nodes in /dev.
+2026-08-10T07:11:06.264597503Z [[0;32m  OK  [0m] Stopped [0;1;39msystemd-tmpfiles-setup-dev…[0mic Device Nodes in /dev gracefully.
+2026-08-10T07:11:06.264607277Z [[0;32m  OK  [0m] Reached target [0;1;39mshutdown.target[0m - System Shutdown.
+2026-08-10T07:11:06.264609015Z [[0;32m  OK  [0m] Reached target [0;1;39mfinal.target[0m - Late Shutdown Services.
+2026-08-10T07:11:06.264666434Z [[0;32m  OK  [0m] Finished [0;1;39msystemd-halt.service[0m - System Halt.
+2026-08-10T07:11:06.264675820Z [[0;32m  OK  [0m] Reached target [0;1;39mhalt.target[0m - System Halt.
+2026-08-10T07:11:06.373143851Z Sending SIGTERM to remaining processes...
+2026-08-10T07:11:06.406578421Z Sending SIGKILL to remaining processes...
+2026-08-10T07:11:06.406858110Z All filesystems, swaps, loop devices, MD devices and DM devices detached.
+2026-08-10T07:11:06.406867149Z Halting system.
+2026-08-10T07:11:17.831828811Z INFO: ensuring we can execute mount/umount even with userns-remap
+2026-08-10T07:11:17.840274319Z INFO: remounting /sys read-only
+2026-08-10T07:11:17.841164756Z INFO: making mounts shared
+2026-08-10T07:11:17.842137967Z INFO: detected cgroup v2
+2026-08-10T07:11:17.842144909Z INFO: clearing and regenerating /etc/machine-id
+2026-08-10T07:11:17.845125872Z Initializing machine ID from random generator.
+2026-08-10T07:11:17.853332732Z INFO: setting iptables to detected mode: nft
+2026-08-10T07:11:17.926476626Z INFO: detected IPv4 address: 172.20.0.4
+2026-08-10T07:11:17.927320743Z INFO: detected old IPv4 address: 172.20.0.4
+2026-08-10T07:11:17.930317775Z INFO: detected IPv6 address: fc00:f853:ccd:e793::4
+2026-08-10T07:11:17.931508655Z INFO: detected old IPv6 address: fc00:f853:ccd:e793::4
+2026-08-10T07:11:17.931516281Z INFO: starting init
+2026-08-10T07:11:17.934558167Z [!p]104[?7hsystemd 257.13-1~deb13u1 running in system mode (+PAM +AUDIT +SELINUX +APPARMOR +IMA +IPE +SMACK +SECCOMP +GCRYPT -GNUTLS +OPENSSL +ACL +BLKID +CURL +ELFUTILS +FIDO2 +IDN2 -IDN +IPTC +KMOD +LIBCRYPTSETUP +LIBCRYPTSETUP_PLUGINS +LIBFDISK +PCRE2 +PWQUALITY +P11KIT +QRENCODE +TPM2 +BZIP2 +LZ4 +XZ +ZLIB +ZSTD +BPF_FRAMEWORK +BTF -XKBCOMMON -UTMP +SYSVINIT +LIBARCHIVE)
+2026-08-10T07:11:17.934570445Z Detected virtualization wsl.
+2026-08-10T07:11:17.934572442Z Detected architecture x86-64.
+2026-08-10T07:11:17.934729385Z 
+2026-08-10T07:11:17.934746355Z [0;1;39mWelcome to [0m[1mDebian GNU/Linux 13 (trixie)[0m[0;1;39m![0m
+2026-08-10T07:11:17.934748338Z 
+2026-08-10T07:11:17.965869948Z bpf-restrict-fs: BPF LSM hook not enabled in the kernel, BPF LSM not supported.
+2026-08-10T07:11:17.989136020Z Queued start job for default target graphical.target.
+2026-08-10T07:11:17.989847428Z [[0;32m  OK  [0m] Created slice [0;1;39mkubelet.slice[0m - slice used to run Kubernetes / Kubelet.
+2026-08-10T07:11:17.990143743Z [[0;32m  OK  [0m] Created slice [0;1;39msystem-modprobe.slice[0m - Slice /system/modprobe.
+2026-08-10T07:11:17.990151127Z [[0;32m  OK  [0m] Started [0;1;39msystemd-ask-password-conso…[0mequests to Console Directory Watch.
+2026-08-10T07:11:17.990254730Z [[0;32m  OK  [0m] Set up automount [0;1;39mproc-sys-fs-binfm…[0mormats File System Automount Point.
+2026-08-10T07:11:17.990259843Z [[0;32m  OK  [0m] Reached target [0;1;39mpaths.target[0m - Path Units.
+2026-08-10T07:11:17.990261191Z [[0;32m  OK  [0m] Reached target [0;1;39mslices.target[0m - Slice Units.
+2026-08-10T07:11:17.990261991Z [[0;32m  OK  [0m] Reached target [0;1;39mswap.target[0m - Swaps.
+2026-08-10T07:11:17.990637059Z [[0;32m  OK  [0m] Listening on [0;1;39msystemd-creds.socket[0m - Credential Encryption/Decryption.
+2026-08-10T07:11:17.990687971Z [[0;32m  OK  [0m] Listening on [0;1;39msystemd-journald-dev-…socket[0m - Journal Socket (/dev/log).
+2026-08-10T07:11:17.990795421Z [[0;32m  OK  [0m] Listening on [0;1;39msystemd-journald.socket[0m - Journal Sockets.
+2026-08-10T07:11:17.991344667Z          Mounting [0;1;39mdev-hugepages.mount[0m - Huge Pages File System...
+2026-08-10T07:11:17.991757480Z          Mounting [0;1;39msys-kernel-debug.mount[0m - Kernel Debug File System...
+2026-08-10T07:11:17.992398461Z          Mounting [0;1;39msys-kernel-tracing.mount[0m - Kernel Trace File System...
+2026-08-10T07:11:17.993022819Z          Starting [0;1;39mkmod-static-nodes.service[0m…eate List of Static Device Nodes...
+2026-08-10T07:11:17.993598505Z          Starting [0;1;39mmodprobe@configfs.service[0m - Load Kernel Module configfs...
+2026-08-10T07:11:17.993935761Z          Starting [0;1;39mmodprobe@fuse.service[0m - Load Kernel Module fuse...
+2026-08-10T07:11:17.994718244Z          Starting [0;1;39msystemd-journald.service[0m - Journal Service...
+2026-08-10T07:11:17.995434947Z          Starting [0;1;39msystemd-modules-load.service[0m - Load Kernel Modules...
+2026-08-10T07:11:17.996042637Z          Starting [0;1;39msystemd-remount-fs.servic…[0munt Root and Kernel File Systems...
+2026-08-10T07:11:17.996619387Z          Starting [0;1;39msystemd-udev-load-credent…[0mLoad udev Rules from Credentials...
+2026-08-10T07:11:17.997317596Z [[0;32m  OK  [0m] Mounted [0;1;39mdev-hugepages.mount[0m - Huge Pages File System.
+2026-08-10T07:11:17.997324359Z [[0;32m  OK  [0m] Mounted [0;1;39msys-kernel-debug.mount[0m - Kernel Debug File System.
+2026-08-10T07:11:17.997428695Z [[0;32m  OK  [0m] Mounted [0;1;39msys-kernel-tracing.mount[0m - Kernel Trace File System.
+2026-08-10T07:11:17.999295832Z [[0;32m  OK  [0m] Finished [0;1;39mkmod-static-nodes.service[0m…Create List of Static Device Nodes.
+2026-08-10T07:11:17.999446799Z modprobe@configfs.service: Deactivated successfully.
+2026-08-10T07:11:17.999580743Z [[0;32m  OK  [0m] Finished [0;1;39mmodprobe@configfs.service[0m - Load Kernel Module configfs.
+2026-08-10T07:11:18.000056180Z modprobe@fuse.service: Deactivated successfully.
+2026-08-10T07:11:18.000274970Z [[0;32m  OK  [0m] Finished [0;1;39mmodprobe@fuse.service[0m - Load Kernel Module fuse.
+2026-08-10T07:11:18.001144645Z          Mounting [0;1;39msys-fs-fuse-connections.mount[0m - FUSE Control File System...
+2026-08-10T07:11:18.001743310Z          Mounting [0;1;39msys-kernel-config.mount[0m - Kernel Configuration File System...
+2026-08-10T07:11:18.002471900Z          Starting [0;1;39msystemd-tmpfiles-setup-de…[0m Device Nodes in /dev gracefully...
+2026-08-10T07:11:18.002621302Z [[0;32m  OK  [0m] Finished [0;1;39msystemd-modules-load.service[0m - Load Kernel Modules.
+2026-08-10T07:11:18.002942561Z [[0;32m  OK  [0m] Finished [0;1;39msystemd-remount-fs.servic…[0mmount Root and Kernel File Systems.
+2026-08-10T07:11:18.007471547Z          Starting [0;1;39msystemd-sysctl.service[0m - Apply Kernel Variables...
+2026-08-10T07:11:18.007486137Z [[0;32m  OK  [0m] Finished [0;1;39msystemd-udev-load-credent…[0m- Load udev Rules from Credentials.
+2026-08-10T07:11:18.007488235Z [[0;32m  OK  [0m] Mounted [0;1;39msys-fs-fuse-connections.mount[0m - FUSE Control File System.
+2026-08-10T07:11:18.007489362Z [[0;32m  OK  [0m] Mounted [0;1;39msys-kernel-config.mount[0m - Kernel Configuration File System.
+2026-08-10T07:11:18.009432731Z [[0;32m  OK  [0m] Finished [0;1;39msystemd-tmpfiles-setup-de…[0mic Device Nodes in /dev gracefully.
+2026-08-10T07:11:18.010302451Z          Starting [0;1;39msystemd-tmpfiles-setup-de…[0meate Static Device Nodes in /dev...
+2026-08-10T07:11:18.010310664Z [[0;32m  OK  [0m] Started [0;1;39msystemd-journald.service[0m - Journal Service.
+2026-08-10T07:11:18.015666578Z [[0;32m  OK  [0m] Finished [0;1;39msystemd-sysctl.service[0m - Apply Kernel Variables.
+2026-08-10T07:11:18.016251630Z          Starting [0;1;39msystemd-journal-flush.ser…[0msh Journal to Persistent Storage...
+2026-08-10T07:11:18.017505158Z [[0;32m  OK  [0m] Finished [0;1;39msystemd-tmpfiles-setup-de…[0mCreate Static Device Nodes in /dev.
+2026-08-10T07:11:18.017721729Z [[0;32m  OK  [0m] Reached target [0;1;39mlocal-fs-pre.target[0m…Preparation for Local File Systems.
+2026-08-10T07:11:18.017725222Z [[0;32m  OK  [0m] Reached target [0;1;39mlocal-fs.target[0m - Local File Systems.
+2026-08-10T07:11:18.018163472Z [[0;32m  OK  [0m] Listening on [0;1;39msystemd-sysext.socket[0m… System Extension Image Management.
+2026-08-10T07:11:18.018241831Z [[0;32m  OK  [0m] Reached target [0;1;39msysinit.target[0m - System Initialization.
+2026-08-10T07:11:18.018314768Z [[0;32m  OK  [0m] Started [0;1;39msystemd-tmpfiles-clean.tim…[0my Cleanup of Temporary Directories.
+2026-08-10T07:11:18.018321952Z [[0;32m  OK  [0m] Reached target [0;1;39mtimers.target[0m - Timer Units.
+2026-08-10T07:11:18.018343483Z [[0;32m  OK  [0m] Listening on [0;1;39msystemd-hostnamed.socket[0m - Hostname Service Socket.
+2026-08-10T07:11:18.018345326Z [[0;32m  OK  [0m] Reached target [0;1;39msockets.target[0m - Socket Units.
+2026-08-10T07:11:18.018441729Z [[0;32m  OK  [0m] Reached target [0;1;39mbasic.target[0m - Basic System.
+2026-08-10T07:11:18.019185168Z          Starting [0;1;39mundo-mount-hacks.service[0m - Undo KIND mount hacks...
+2026-08-10T07:11:18.022506840Z [[0;32m  OK  [0m] Finished [0;1;39msystemd-journal-flush.ser…[0mlush Journal to Persistent Storage.
+2026-08-10T07:11:18.023872876Z [[0;32m  OK  [0m] Finished [0;1;39mundo-mount-hacks.service[0m - Undo KIND mount hacks.
+2026-08-10T07:11:18.024653701Z          Starting [0;1;39mcontainerd.service[0m - containerd container runtime...
+2026-08-10T07:11:18.025145816Z          Starting [0;1;39mkubelet.service[0m - kubelet: The Kubernetes Node Agent...
+2026-08-10T07:11:18.039018932Z [[0;32m  OK  [0m] Started [0;1;39mkubelet.service[0m - kubelet: The Kubernetes Node Agent.
+2026-08-10T07:11:18.140534230Z [[0;32m  OK  [0m] Started [0;1;39mcontainerd.service[0m - containerd container runtime.
+2026-08-10T07:11:18.140559449Z [[0;32m  OK  [0m] Reached target [0;1;39mmulti-user.target[0m - Multi-User System.
+2026-08-10T07:11:18.140561312Z [[0;32m  OK  [0m] Reached target [0;1;39mgraphical.target[0m - Graphical Interface.
+2026-08-10T08:53:58.546624886Z INFO: ensuring we can execute mount/umount even with userns-remap
+2026-08-10T08:53:58.551454216Z INFO: remounting /sys read-only
+2026-08-10T08:53:58.553761555Z INFO: making mounts shared
+2026-08-10T08:53:58.554530064Z INFO: detected cgroup v2
+2026-08-10T08:53:58.554537246Z INFO: clearing and regenerating /etc/machine-id
+2026-08-10T08:53:58.564658671Z Initializing machine ID from random generator.
+2026-08-10T08:53:58.589609502Z INFO: setting iptables to detected mode: nft
+2026-08-10T08:53:58.675941966Z INFO: detected IPv4 address: 172.20.0.4
+2026-08-10T08:53:58.676904140Z INFO: detected old IPv4 address: 172.20.0.4
+2026-08-10T08:53:58.679499099Z INFO: detected IPv6 address: fc00:f853:ccd:e793::4
+2026-08-10T08:53:58.680316519Z INFO: detected old IPv6 address: fc00:f853:ccd:e793::4
+2026-08-10T08:53:58.680321931Z INFO: starting init
+2026-08-10T08:53:58.683390973Z [!p]104[?7hsystemd 257.13-1~deb13u1 running in system mode (+PAM +AUDIT +SELINUX +APPARMOR +IMA +IPE +SMACK +SECCOMP +GCRYPT -GNUTLS +OPENSSL +ACL +BLKID +CURL +ELFUTILS +FIDO2 +IDN2 -IDN +IPTC +KMOD +LIBCRYPTSETUP +LIBCRYPTSETUP_PLUGINS +LIBFDISK +PCRE2 +PWQUALITY +P11KIT +QRENCODE +TPM2 +BZIP2 +LZ4 +XZ +ZLIB +ZSTD +BPF_FRAMEWORK +BTF -XKBCOMMON -UTMP +SYSVINIT +LIBARCHIVE)
+2026-08-10T08:53:58.683401374Z Detected virtualization wsl.
+2026-08-10T08:53:58.683402811Z Detected architecture x86-64.
+2026-08-10T08:53:58.683486529Z 
+2026-08-10T08:53:58.683491873Z [0;1;39mWelcome to [0m[1mDebian GNU/Linux 13 (trixie)[0m[0;1;39m![0m
+2026-08-10T08:53:58.683493565Z 
+2026-08-10T08:53:58.732746006Z bpf-restrict-fs: BPF LSM hook not enabled in the kernel, BPF LSM not supported.
+2026-08-10T08:53:58.821649889Z Queued start job for default target graphical.target.
+2026-08-10T08:53:58.868166644Z [[0;32m  OK  [0m] Created slice [0;1;39mkubelet.slice[0m - slice used to run Kubernetes / Kubelet.
+2026-08-10T08:53:58.868743936Z [[0;32m  OK  [0m] Created slice [0;1;39msystem-modprobe.slice[0m - Slice /system/modprobe.
+2026-08-10T08:53:58.868749367Z [[0;32m  OK  [0m] Started [0;1;39msystemd-ask-password-conso…[0mequests to Console Directory Watch.
+2026-08-10T08:53:58.868750704Z [[0;32m  OK  [0m] Set up automount [0;1;39mproc-sys-fs-binfm…[0mormats File System Automount Point.
+2026-08-10T08:53:58.868751575Z [[0;32m  OK  [0m] Reached target [0;1;39mpaths.target[0m - Path Units.
+2026-08-10T08:53:58.868752257Z [[0;32m  OK  [0m] Reached target [0;1;39mslices.target[0m - Slice Units.
+2026-08-10T08:53:58.868752992Z [[0;32m  OK  [0m] Reached target [0;1;39mswap.target[0m - Swaps.
+2026-08-10T08:53:58.869498815Z [[0;32m  OK  [0m] Listening on [0;1;39msystemd-creds.socket[0m - Credential Encryption/Decryption.
+2026-08-10T08:53:58.869512202Z [[0;32m  OK  [0m] Listening on [0;1;39msystemd-journald-dev-…socket[0m - Journal Socket (/dev/log).
+2026-08-10T08:53:58.869584100Z [[0;32m  OK  [0m] Listening on [0;1;39msystemd-journald.socket[0m - Journal Sockets.
+2026-08-10T08:53:58.870151620Z          Mounting [0;1;39mdev-hugepages.mount[0m - Huge Pages File System...
+2026-08-10T08:53:58.870685909Z          Mounting [0;1;39msys-kernel-debug.mount[0m - Kernel Debug File System...
+2026-08-10T08:53:58.871340490Z          Mounting [0;1;39msys-kernel-tracing.mount[0m - Kernel Trace File System...
+2026-08-10T08:53:58.872221730Z          Starting [0;1;39mkmod-static-nodes.service[0m…eate List of Static Device Nodes...
+2026-08-10T08:53:58.872801427Z          Starting [0;1;39mmodprobe@configfs.service[0m - Load Kernel Module configfs...
+2026-08-10T08:53:58.873380392Z          Starting [0;1;39mmodprobe@fuse.service[0m - Load Kernel Module fuse...
+2026-08-10T08:53:58.874103034Z          Starting [0;1;39msystemd-journald.service[0m - Journal Service...
+2026-08-10T08:53:58.874905047Z          Starting [0;1;39msystemd-modules-load.service[0m - Load Kernel Modules...
+2026-08-10T08:53:58.875478359Z          Starting [0;1;39msystemd-remount-fs.servic…[0munt Root and Kernel File Systems...
+2026-08-10T08:53:58.876504803Z          Starting [0;1;39msystemd-udev-load-credent…[0mLoad udev Rules from Credentials...
+2026-08-10T08:53:58.878100288Z modprobe@fuse.service: Deactivated successfully.
+2026-08-10T08:53:58.878229672Z [[0;32m  OK  [0m] Finished [0;1;39mmodprobe@fuse.service[0m - Load Kernel Module fuse.
+2026-08-10T08:53:58.878644340Z [[0;32m  OK  [0m] Finished [0;1;39mkmod-static-nodes.service[0m…Create List of Static Device Nodes.
+2026-08-10T08:53:58.878855463Z modprobe@configfs.service: Deactivated successfully.
+2026-08-10T08:53:58.879117601Z [[0;32m  OK  [0m] Finished [0;1;39mmodprobe@configfs.service[0m - Load Kernel Module configfs.
+2026-08-10T08:53:58.880456506Z          Mounting [0;1;39msys-fs-fuse-connections.mount[0m - FUSE Control File System...
+2026-08-10T08:53:58.880796333Z          Mounting [0;1;39msys-kernel-config.mount[0m - Kernel Configuration File System...
+2026-08-10T08:53:58.881370455Z          Starting [0;1;39msystemd-tmpfiles-setup-de…[0m Device Nodes in /dev gracefully...
+2026-08-10T08:53:58.881666317Z [[0;32m  OK  [0m] Finished [0;1;39msystemd-modules-load.service[0m - Load Kernel Modules.
+2026-08-10T08:53:58.881881692Z [[0;32m  OK  [0m] Finished [0;1;39msystemd-remount-fs.servic…[0mmount Root and Kernel File Systems.
+2026-08-10T08:53:58.884918404Z          Starting [0;1;39msystemd-sysctl.service[0m - Apply Kernel Variables...
+2026-08-10T08:53:58.885078838Z [[0;32m  OK  [0m] Mounted [0;1;39mdev-hugepages.mount[0m - Huge Pages File System.
+2026-08-10T08:53:58.885229794Z [[0;32m  OK  [0m] Mounted [0;1;39msys-kernel-debug.mount[0m - Kernel Debug File System.
+2026-08-10T08:53:58.885611841Z [[0;32m  OK  [0m] Mounted [0;1;39msys-kernel-tracing.mount[0m - Kernel Trace File System.
+2026-08-10T08:53:58.885854024Z [[0;32m  OK  [0m] Finished [0;1;39msystemd-udev-load-credent…[0m- Load udev Rules from Credentials.
+2026-08-10T08:53:58.886149499Z [[0;32m  OK  [0m] Mounted [0;1;39msys-fs-fuse-connections.mount[0m - FUSE Control File System.
+2026-08-10T08:53:58.886156695Z [[0;32m  OK  [0m] Mounted [0;1;39msys-kernel-config.mount[0m - Kernel Configuration File System.
+2026-08-10T08:53:58.890351454Z [[0;32m  OK  [0m] Started [0;1;39msystemd-journald.service[0m - Journal Service.
+2026-08-10T08:53:58.893353488Z [[0;32m  OK  [0m] Finished [0;1;39msystemd-sysctl.service[0m - Apply Kernel Variables.
+2026-08-10T08:53:58.894269117Z          Starting [0;1;39msystemd-journal-flush.ser…[0msh Journal to Persistent Storage...
+2026-08-10T08:53:58.897298783Z [[0;32m  OK  [0m] Finished [0;1;39msystemd-tmpfiles-setup-de…[0mic Device Nodes in /dev gracefully.
+2026-08-10T08:53:58.897951156Z          Starting [0;1;39msystemd-tmpfiles-setup-de…[0meate Static Device Nodes in /dev...
+2026-08-10T08:53:58.901219841Z [[0;32m  OK  [0m] Finished [0;1;39msystemd-journal-flush.ser…[0mlush Journal to Persistent Storage.
+2026-08-10T08:53:58.904965427Z [[0;32m  OK  [0m] Finished [0;1;39msystemd-tmpfiles-setup-de…[0mCreate Static Device Nodes in /dev.
+2026-08-10T08:53:58.905242376Z [[0;32m  OK  [0m] Reached target [0;1;39mlocal-fs-pre.target[0m…Preparation for Local File Systems.
+2026-08-10T08:53:58.905249545Z [[0;32m  OK  [0m] Reached target [0;1;39mlocal-fs.target[0m - Local File Systems.
+2026-08-10T08:53:58.905873755Z [[0;32m  OK  [0m] Listening on [0;1;39msystemd-sysext.socket[0m… System Extension Image Management.
+2026-08-10T08:53:58.905949406Z [[0;32m  OK  [0m] Reached target [0;1;39msysinit.target[0m - System Initialization.
+2026-08-10T08:53:58.905956326Z [[0;32m  OK  [0m] Started [0;1;39msystemd-tmpfiles-clean.tim…[0my Cleanup of Temporary Directories.
+2026-08-10T08:53:58.905958239Z [[0;32m  OK  [0m] Reached target [0;1;39mtimers.target[0m - Timer Units.
+2026-08-10T08:53:58.906015712Z [[0;32m  OK  [0m] Listening on [0;1;39msystemd-hostnamed.socket[0m - Hostname Service Socket.
+2026-08-10T08:53:58.906019601Z [[0;32m  OK  [0m] Reached target [0;1;39msockets.target[0m - Socket Units.
+2026-08-10T08:53:58.906021384Z [[0;32m  OK  [0m] Reached target [0;1;39mbasic.target[0m - Basic System.
+2026-08-10T08:53:58.906686066Z          Starting [0;1;39mundo-mount-hacks.service[0m - Undo KIND mount hacks...
+2026-08-10T08:53:58.911650950Z [[0;32m  OK  [0m] Finished [0;1;39mundo-mount-hacks.service[0m - Undo KIND mount hacks.
+2026-08-10T08:53:58.917500702Z          Starting [0;1;39mcontainerd.service[0m - containerd container runtime...
+2026-08-10T08:53:58.919833356Z          Starting [0;1;39mkubelet.service[0m - kubelet: The Kubernetes Node Agent...
+2026-08-10T08:53:58.969001086Z [[0;32m  OK  [0m] Started [0;1;39mkubelet.service[0m - kubelet: The Kubernetes Node Agent.
+2026-08-10T08:53:59.365882399Z [[0;32m  OK  [0m] Started [0;1;39mcontainerd.service[0m - containerd container runtime.
+2026-08-10T08:53:59.365894557Z [[0;32m  OK  [0m] Reached target [0;1;39mmulti-user.target[0m - Multi-User System.
+2026-08-10T08:53:59.365895900Z [[0;32m  OK  [0m] Reached target [0;1;39mgraphical.target[0m - Graphical Interface.
+2026-08-11T06:07:13.955627671Z INFO: ensuring we can execute mount/umount even with userns-remap
+2026-08-11T06:07:13.965419071Z INFO: remounting /sys read-only
+2026-08-11T06:07:13.967746082Z INFO: making mounts shared
+2026-08-11T06:07:13.969086959Z INFO: detected cgroup v2
+2026-08-11T06:07:13.969096424Z INFO: clearing and regenerating /etc/machine-id
+2026-08-11T06:07:13.973861556Z Initializing machine ID from random generator.
+2026-08-11T06:07:13.998375889Z INFO: setting iptables to detected mode: nft
+2026-08-11T06:07:14.055734834Z INFO: detected IPv4 address: 172.20.0.3
+2026-08-11T06:07:14.057911714Z INFO: detected old IPv4 address: 172.20.0.4
+2026-08-11T06:07:14.078427315Z INFO: detected IPv6 address: fc00:f853:ccd:e793::3
+2026-08-11T06:07:14.083058556Z INFO: detected old IPv6 address: fc00:f853:ccd:e793::4
+2026-08-11T06:07:14.088918255Z INFO: starting init
+2026-08-11T06:07:14.099548041Z [!p]104[?7hsystemd 257.13-1~deb13u1 running in system mode (+PAM +AUDIT +SELINUX +APPARMOR +IMA +IPE +SMACK +SECCOMP +GCRYPT -GNUTLS +OPENSSL +ACL +BLKID +CURL +ELFUTILS +FIDO2 +IDN2 -IDN +IPTC +KMOD +LIBCRYPTSETUP +LIBCRYPTSETUP_PLUGINS +LIBFDISK +PCRE2 +PWQUALITY +P11KIT +QRENCODE +TPM2 +BZIP2 +LZ4 +XZ +ZLIB +ZSTD +BPF_FRAMEWORK +BTF -XKBCOMMON -UTMP +SYSVINIT +LIBARCHIVE)
+2026-08-11T06:07:14.099561546Z Detected virtualization wsl.
+2026-08-11T06:07:14.099563798Z Detected architecture x86-64.
+2026-08-11T06:07:14.102368049Z 
+2026-08-11T06:07:14.102382225Z [0;1;39mWelcome to [0m[1mDebian GNU/Linux 13 (trixie)[0m[0;1;39m![0m
+2026-08-11T06:07:14.102384757Z 
+2026-08-11T06:07:14.179500265Z bpf-restrict-fs: BPF LSM hook not enabled in the kernel, BPF LSM not supported.
+2026-08-11T06:07:14.295098716Z Queued start job for default target graphical.target.
+2026-08-11T06:07:14.329346820Z [[0;32m  OK  [0m] Created slice [0;1;39mkubelet.slice[0m - slice used to run Kubernetes / Kubelet.
+2026-08-11T06:07:14.331890117Z [[0;32m  OK  [0m] Created slice [0;1;39msystem-modprobe.slice[0m - Slice /system/modprobe.
+2026-08-11T06:07:14.331914102Z [[0;32m  OK  [0m] Started [0;1;39msystemd-ask-password-conso…[0mequests to Console Directory Watch.
+2026-08-11T06:07:14.334470443Z [[0;32m  OK  [0m] Set up automount [0;1;39mproc-sys-fs-binfm…[0mormats File System Automount Point.
+2026-08-11T06:07:14.334501862Z [[0;32m  OK  [0m] Reached target [0;1;39mpaths.target[0m - Path Units.
+2026-08-11T06:07:14.334504033Z [[0;32m  OK  [0m] Reached target [0;1;39mslices.target[0m - Slice Units.
+2026-08-11T06:07:14.334505180Z [[0;32m  OK  [0m] Reached target [0;1;39mswap.target[0m - Swaps.
+2026-08-11T06:07:14.335602656Z [[0;32m  OK  [0m] Listening on [0;1;39msystemd-creds.socket[0m - Credential Encryption/Decryption.
+2026-08-11T06:07:14.335755854Z [[0;32m  OK  [0m] Listening on [0;1;39msystemd-journald-dev-…socket[0m - Journal Socket (/dev/log).
+2026-08-11T06:07:14.335762368Z [[0;32m  OK  [0m] Listening on [0;1;39msystemd-journald.socket[0m - Journal Sockets.
+2026-08-11T06:07:14.338113010Z          Mounting [0;1;39mdev-hugepages.mount[0m - Huge Pages File System...
+2026-08-11T06:07:14.339802575Z          Mounting [0;1;39msys-kernel-debug.mount[0m - Kernel Debug File System...
+2026-08-11T06:07:14.343629871Z          Mounting [0;1;39msys-kernel-tracing.mount[0m - Kernel Trace File System...
+2026-08-11T06:07:14.343947872Z          Starting [0;1;39mkmod-static-nodes.service[0m…eate List of Static Device Nodes...
+2026-08-11T06:07:14.345032480Z          Starting [0;1;39mmodprobe@configfs.service[0m - Load Kernel Module configfs...
+2026-08-11T06:07:14.347440201Z          Starting [0;1;39mmodprobe@fuse.service[0m - Load Kernel Module fuse...
+2026-08-11T06:07:14.351607086Z          Starting [0;1;39msystemd-journald.service[0m - Journal Service...
+2026-08-11T06:07:14.355304223Z          Starting [0;1;39msystemd-modules-load.service[0m - Load Kernel Modules...
+2026-08-11T06:07:14.357990989Z          Starting [0;1;39msystemd-remount-fs.servic…[0munt Root and Kernel File Systems...
+2026-08-11T06:07:14.366765246Z          Starting [0;1;39msystemd-udev-load-credent…[0mLoad udev Rules from Credentials...
+2026-08-11T06:07:14.366784023Z [[0;32m  OK  [0m] Finished [0;1;39mkmod-static-nodes.service[0m…Create List of Static Device Nodes.
+2026-08-11T06:07:14.366786359Z modprobe@configfs.service: Deactivated successfully.
+2026-08-11T06:07:14.366787323Z [[0;32m  OK  [0m] Finished [0;1;39mmodprobe@configfs.service[0m - Load Kernel Module configfs.
+2026-08-11T06:07:14.366788204Z modprobe@fuse.service: Deactivated successfully.
+2026-08-11T06:07:14.366789189Z [[0;32m  OK  [0m] Finished [0;1;39mmodprobe@fuse.service[0m - Load Kernel Module fuse.
+2026-08-11T06:07:14.369120389Z          Mounting [0;1;39msys-fs-fuse-connections.mount[0m - FUSE Control File System...
+2026-08-11T06:07:14.373210396Z          Mounting [0;1;39msys-kernel-config.mount[0m - Kernel Configuration File System...
+2026-08-11T06:07:14.375172084Z          Starting [0;1;39msystemd-tmpfiles-setup-de…[0m Device Nodes in /dev gracefully...
+2026-08-11T06:07:14.376041477Z [[0;32m  OK  [0m] Mounted [0;1;39mdev-hugepages.mount[0m - Huge Pages File System.
+2026-08-11T06:07:14.376045473Z [[0;32m  OK  [0m] Mounted [0;1;39msys-kernel-debug.mount[0m - Kernel Debug File System.
+2026-08-11T06:07:14.376046343Z [[0;32m  OK  [0m] Mounted [0;1;39msys-kernel-tracing.mount[0m - Kernel Trace File System.
+2026-08-11T06:07:14.379137944Z [[0;32m  OK  [0m] Finished [0;1;39msystemd-remount-fs.servic…[0mmount Root and Kernel File Systems.
+2026-08-11T06:07:14.384370745Z [[0;32m  OK  [0m] Finished [0;1;39msystemd-modules-load.service[0m - Load Kernel Modules.
+2026-08-11T06:07:14.384392775Z [[0;32m  OK  [0m] Mounted [0;1;39msys-kernel-config.mount[0m - Kernel Configuration File System.
+2026-08-11T06:07:14.389097338Z          Starting [0;1;39msystemd-sysctl.service[0m - Apply Kernel Variables...
+2026-08-11T06:07:14.389785881Z [[0;32m  OK  [0m] Mounted [0;1;39msys-fs-fuse-connections.mount[0m - FUSE Control File System.
+2026-08-11T06:07:14.422159321Z [[0;32m  OK  [0m] Finished [0;1;39msystemd-udev-load-credent…[0m- Load udev Rules from Credentials.
+2026-08-11T06:07:14.432580373Z [[0;32m  OK  [0m] Started [0;1;39msystemd-journald.service[0m - Journal Service.
+2026-08-11T06:07:14.439590070Z [[0;32m  OK  [0m] Finished [0;1;39msystemd-sysctl.service[0m - Apply Kernel Variables.
+2026-08-11T06:07:14.445880644Z [[0;32m  OK  [0m] Finished [0;1;39msystemd-tmpfiles-setup-de…[0mic Device Nodes in /dev gracefully.
+2026-08-11T06:07:14.460249410Z          Starting [0;1;39msystemd-journal-flush.ser…[0msh Journal to Persistent Storage...
+2026-08-11T06:07:14.465308150Z          Starting [0;1;39msystemd-tmpfiles-setup-de…[0meate Static Device Nodes in /dev...
+2026-08-11T06:07:14.502963865Z [[0;32m  OK  [0m] Finished [0;1;39msystemd-journal-flush.ser…[0mlush Journal to Persistent Storage.
+2026-08-11T06:07:14.508838003Z [[0;32m  OK  [0m] Finished [0;1;39msystemd-tmpfiles-setup-de…[0mCreate Static Device Nodes in /dev.
+2026-08-11T06:07:14.509668660Z [[0;32m  OK  [0m] Reached target [0;1;39mlocal-fs-pre.target[0m…Preparation for Local File Systems.
+2026-08-11T06:07:14.509804248Z [[0;32m  OK  [0m] Reached target [0;1;39mlocal-fs.target[0m - Local File Systems.
+2026-08-11T06:07:14.511806004Z [[0;32m  OK  [0m] Listening on [0;1;39msystemd-sysext.socket[0m… System Extension Image Management.
+2026-08-11T06:07:14.512095595Z [[0;32m  OK  [0m] Reached target [0;1;39msysinit.target[0m - System Initialization.
+2026-08-11T06:07:14.512397944Z [[0;32m  OK  [0m] Started [0;1;39msystemd-tmpfiles-clean.tim…[0my Cleanup of Temporary Directories.
+2026-08-11T06:07:14.512404340Z [[0;32m  OK  [0m] Reached target [0;1;39mtimers.target[0m - Timer Units.
+2026-08-11T06:07:14.512685119Z [[0;32m  OK  [0m] Listening on [0;1;39msystemd-hostnamed.socket[0m - Hostname Service Socket.
+2026-08-11T06:07:14.512692202Z [[0;32m  OK  [0m] Reached target [0;1;39msockets.target[0m - Socket Units.
+2026-08-11T06:07:14.512693904Z [[0;32m  OK  [0m] Reached target [0;1;39mbasic.target[0m - Basic System.
+2026-08-11T06:07:14.514619166Z          Starting [0;1;39mundo-mount-hacks.service[0m - Undo KIND mount hacks...
+2026-08-11T06:07:14.659029997Z [[0;32m  OK  [0m] Finished [0;1;39mundo-mount-hacks.service[0m - Undo KIND mount hacks.
+2026-08-11T06:07:14.659106164Z          Starting [0;1;39mcontainerd.service[0m - containerd container runtime...
+2026-08-11T06:07:14.705964541Z          Starting [0;1;39mkubelet.service[0m - kubelet: The Kubernetes Node Agent...
+2026-08-11T06:07:14.725257425Z [[0;32m  OK  [0m] Started [0;1;39mkubelet.service[0m - kubelet: The Kubernetes Node Agent.
+2026-08-11T06:07:15.255351406Z [[0;32m  OK  [0m] Started [0;1;39mcontainerd.service[0m - containerd container runtime.
+2026-08-11T06:07:15.255367502Z [[0;32m  OK  [0m] Reached target [0;1;39mmulti-user.target[0m - Multi-User System.
+2026-08-11T06:07:15.255369205Z [[0;32m  OK  [0m] Reached target [0;1;39mgraphical.target[0m - Graphical Interface.
+2026-08-12T14:43:57.011863063Z INFO: ensuring we can execute mount/umount even with userns-remap
+2026-08-12T14:43:57.023802937Z INFO: remounting /sys read-only
+2026-08-12T14:43:57.034831351Z INFO: making mounts shared
+2026-08-12T14:43:57.036327367Z INFO: detected cgroup v2
+2026-08-12T14:43:57.036339680Z INFO: clearing and regenerating /etc/machine-id
+2026-08-12T14:43:57.085502561Z Initializing machine ID from random generator.
+2026-08-12T14:43:57.149418860Z INFO: setting iptables to detected mode: nft
+2026-08-12T14:43:57.247315238Z INFO: detected IPv4 address: 172.20.0.2
+2026-08-12T14:43:57.251360354Z INFO: detected old IPv4 address: 172.20.0.3
+2026-08-12T14:43:57.263834026Z INFO: detected IPv6 address: fc00:f853:ccd:e793::2
+2026-08-12T14:43:57.265429354Z INFO: detected old IPv6 address: fc00:f853:ccd:e793::3
+2026-08-12T14:43:57.271222927Z INFO: starting init
+2026-08-12T14:43:57.286892247Z [!p]104[?7hsystemd 257.13-1~deb13u1 running in system mode (+PAM +AUDIT +SELINUX +APPARMOR +IMA +IPE +SMACK +SECCOMP +GCRYPT -GNUTLS +OPENSSL +ACL +BLKID +CURL +ELFUTILS +FIDO2 +IDN2 -IDN +IPTC +KMOD +LIBCRYPTSETUP +LIBCRYPTSETUP_PLUGINS +LIBFDISK +PCRE2 +PWQUALITY +P11KIT +QRENCODE +TPM2 +BZIP2 +LZ4 +XZ +ZLIB +ZSTD +BPF_FRAMEWORK +BTF -XKBCOMMON -UTMP +SYSVINIT +LIBARCHIVE)
+2026-08-12T14:43:57.286907569Z Detected virtualization wsl.
+2026-08-12T14:43:57.286909592Z Detected architecture x86-64.
+2026-08-12T14:43:57.288975780Z 
+2026-08-12T14:43:57.288983292Z [0;1;39mWelcome to [0m[1mDebian GNU/Linux 13 (trixie)[0m[0;1;39m![0m
+2026-08-12T14:43:57.288984850Z 
+2026-08-12T14:43:57.341465955Z bpf-restrict-fs: BPF LSM hook not enabled in the kernel, BPF LSM not supported.
+2026-08-12T14:43:57.453962952Z Queued start job for default target graphical.target.
+2026-08-12T14:43:57.518303322Z [[0;32m  OK  [0m] Created slice [0;1;39mkubelet.slice[0m - slice used to run Kubernetes / Kubelet.
+2026-08-12T14:43:57.518348141Z [[0;32m  OK  [0m] Created slice [0;1;39msystem-modprobe.slice[0m - Slice /system/modprobe.
+2026-08-12T14:43:57.518349794Z [[0;32m  OK  [0m] Started [0;1;39msystemd-ask-password-conso…[0mequests to Console Directory Watch.
+2026-08-12T14:43:57.518352329Z [[0;32m  OK  [0m] Set up automount [0;1;39mproc-sys-fs-binfm…[0mormats File System Automount Point.
+2026-08-12T14:43:57.518353151Z [[0;32m  OK  [0m] Reached target [0;1;39mpaths.target[0m - Path Units.
+2026-08-12T14:43:57.518353857Z [[0;32m  OK  [0m] Reached target [0;1;39mslices.target[0m - Slice Units.
+2026-08-12T14:43:57.518354502Z [[0;32m  OK  [0m] Reached target [0;1;39mswap.target[0m - Swaps.
+2026-08-12T14:43:57.532377919Z [[0;32m  OK  [0m] Listening on [0;1;39msystemd-creds.socket[0m - Credential Encryption/Decryption.
+2026-08-12T14:43:57.532403642Z [[0;32m  OK  [0m] Listening on [0;1;39msystemd-journald-dev-…socket[0m - Journal Socket (/dev/log).
+2026-08-12T14:43:57.532406305Z [[0;32m  OK  [0m] Listening on [0;1;39msystemd-journald.socket[0m - Journal Sockets.
+2026-08-12T14:43:57.532407193Z          Mounting [0;1;39mdev-hugepages.mount[0m - Huge Pages File System...
+2026-08-12T14:43:57.546045976Z          Mounting [0;1;39msys-kernel-debug.mount[0m - Kernel Debug File System...
+2026-08-12T14:43:57.574134289Z          Mounting [0;1;39msys-kernel-tracing.mount[0m - Kernel Trace File System...
+2026-08-12T14:43:57.578789393Z          Starting [0;1;39mkmod-static-nodes.service[0m…eate List of Static Device Nodes...
+2026-08-12T14:43:57.616570898Z          Starting [0;1;39mmodprobe@configfs.service[0m - Load Kernel Module configfs...
+2026-08-12T14:43:57.620641110Z          Starting [0;1;39mmodprobe@fuse.service[0m - Load Kernel Module fuse...
+2026-08-12T14:43:57.652537734Z          Starting [0;1;39msystemd-journald.service[0m - Journal Service...
+2026-08-12T14:43:57.652557314Z          Starting [0;1;39msystemd-modules-load.service[0m - Load Kernel Modules...
+2026-08-12T14:43:57.684306320Z          Starting [0;1;39msystemd-remount-fs.servic…[0munt Root and Kernel File Systems...
+2026-08-12T14:43:57.684395176Z          Starting [0;1;39msystemd-udev-load-credent…[0mLoad udev Rules from Credentials...
+2026-08-12T14:43:57.684411131Z [[0;32m  OK  [0m] Mounted [0;1;39mdev-hugepages.mount[0m - Huge Pages File System.
+2026-08-12T14:43:57.684412905Z [[0;32m  OK  [0m] Mounted [0;1;39msys-kernel-debug.mount[0m - Kernel Debug File System.
+2026-08-12T14:43:57.684413969Z [[0;32m  OK  [0m] Mounted [0;1;39msys-kernel-tracing.mount[0m - Kernel Trace File System.
+2026-08-12T14:43:57.684414934Z [[0;32m  OK  [0m] Finished [0;1;39mkmod-static-nodes.service[0m…Create List of Static Device Nodes.
+2026-08-12T14:43:57.684416138Z modprobe@configfs.service: Deactivated successfully.
+2026-08-12T14:43:57.684416959Z [[0;32m  OK  [0m] Finished [0;1;39mmodprobe@configfs.service[0m - Load Kernel Module configfs.
+2026-08-12T14:43:57.684417877Z modprobe@fuse.service: Deactivated successfully.
+2026-08-12T14:43:57.684418706Z [[0;32m  OK  [0m] Finished [0;1;39mmodprobe@fuse.service[0m - Load Kernel Module fuse.
+2026-08-12T14:43:57.684419575Z          Mounting [0;1;39msys-fs-fuse-connections.mount[0m - FUSE Control File System...
+2026-08-12T14:43:57.684420443Z          Mounting [0;1;39msys-kernel-config.mount[0m - Kernel Configuration File System...
+2026-08-12T14:43:57.686911708Z          Starting [0;1;39msystemd-tmpfiles-setup-de…[0m Device Nodes in /dev gracefully...
+2026-08-12T14:43:57.688723909Z [[0;32m  OK  [0m] Finished [0;1;39msystemd-modules-load.service[0m - Load Kernel Modules.
+2026-08-12T14:43:57.688740476Z [[0;32m  OK  [0m] Mounted [0;1;39msys-fs-fuse-connections.mount[0m - FUSE Control File System.
+2026-08-12T14:43:57.691338592Z          Starting [0;1;39msystemd-sysctl.service[0m - Apply Kernel Variables...
+2026-08-12T14:43:57.692047961Z [[0;32m  OK  [0m] Finished [0;1;39msystemd-remount-fs.servic…[0mmount Root and Kernel File Systems.
+2026-08-12T14:43:57.692055354Z [[0;32m  OK  [0m] Mounted [0;1;39msys-kernel-config.mount[0m - Kernel Configuration File System.
+2026-08-12T14:43:57.700081057Z [[0;32m  OK  [0m] Finished [0;1;39msystemd-udev-load-credent…[0m- Load udev Rules from Credentials.
+2026-08-12T14:43:57.703180456Z [[0;32m  OK  [0m] Started [0;1;39msystemd-journald.service[0m - Journal Service.
+2026-08-12T14:43:57.708246168Z [[0;32m  OK  [0m] Finished [0;1;39msystemd-tmpfiles-setup-de…[0mic Device Nodes in /dev gracefully.
+2026-08-12T14:43:57.709742455Z [[0;32m  OK  [0m] Finished [0;1;39msystemd-sysctl.service[0m - Apply Kernel Variables.
+2026-08-12T14:43:57.713908839Z          Starting [0;1;39msystemd-journal-flush.ser…[0msh Journal to Persistent Storage...
+2026-08-12T14:43:57.715572088Z          Starting [0;1;39msystemd-tmpfiles-setup-de…[0meate Static Device Nodes in /dev...
+2026-08-12T14:43:57.721524972Z [[0;32m  OK  [0m] Finished [0;1;39msystemd-journal-flush.ser…[0mlush Journal to Persistent Storage.
+2026-08-12T14:43:57.726609785Z [[0;32m  OK  [0m] Finished [0;1;39msystemd-tmpfiles-setup-de…[0mCreate Static Device Nodes in /dev.
+2026-08-12T14:43:57.727085192Z [[0;32m  OK  [0m] Reached target [0;1;39mlocal-fs-pre.target[0m…Preparation for Local File Systems.
+2026-08-12T14:43:57.727093356Z [[0;32m  OK  [0m] Reached target [0;1;39mlocal-fs.target[0m - Local File Systems.
+2026-08-12T14:43:57.727439292Z [[0;32m  OK  [0m] Listening on [0;1;39msystemd-sysext.socket[0m… System Extension Image Management.
+2026-08-12T14:43:57.727581100Z [[0;32m  OK  [0m] Reached target [0;1;39msysinit.target[0m - System Initialization.
+2026-08-12T14:43:57.727587990Z [[0;32m  OK  [0m] Started [0;1;39msystemd-tmpfiles-clean.tim…[0my Cleanup of Temporary Directories.
+2026-08-12T14:43:57.727589801Z [[0;32m  OK  [0m] Reached target [0;1;39mtimers.target[0m - Timer Units.
+2026-08-12T14:43:57.727601396Z [[0;32m  OK  [0m] Listening on [0;1;39msystemd-hostnamed.socket[0m - Hostname Service Socket.
+2026-08-12T14:43:57.727606650Z [[0;32m  OK  [0m] Reached target [0;1;39msockets.target[0m - Socket Units.
+2026-08-12T14:43:57.727608166Z [[0;32m  OK  [0m] Reached target [0;1;39mbasic.target[0m - Basic System.
+2026-08-12T14:43:57.729445271Z          Starting [0;1;39mundo-mount-hacks.service[0m - Undo KIND mount hacks...
+2026-08-12T14:43:57.735648908Z [[0;32m  OK  [0m] Finished [0;1;39mundo-mount-hacks.service[0m - Undo KIND mount hacks.
+2026-08-12T14:43:57.737406011Z          Starting [0;1;39mcontainerd.service[0m - containerd container runtime...
+2026-08-12T14:43:57.738388325Z          Starting [0;1;39mkubelet.service[0m - kubelet: The Kubernetes Node Agent...
+2026-08-12T14:43:57.758258248Z [[0;32m  OK  [0m] Started [0;1;39mkubelet.service[0m - kubelet: The Kubernetes Node Agent.
+2026-08-12T14:43:58.256391310Z [[0;32m  OK  [0m] Started [0;1;39mcontainerd.service[0m - containerd container runtime.
+2026-08-12T14:43:58.256407959Z [[0;32m  OK  [0m] Reached target [0;1;39mmulti-user.target[0m - Multi-User System.
+2026-08-12T14:43:58.256409818Z [[0;32m  OK  [0m] Reached target [0;1;39mgraphical.target[0m - Graphical Interface.
+2026-08-26T10:46:17.814065294Z INFO: ensuring we can execute mount/umount even with userns-remap
+2026-08-26T10:46:17.824960868Z INFO: remounting /sys read-only
+2026-08-26T10:46:17.832119052Z INFO: making mounts shared
+2026-08-26T10:46:17.833017037Z INFO: detected cgroup v2
+2026-08-26T10:46:17.833028125Z INFO: clearing and regenerating /etc/machine-id
+2026-08-26T10:46:17.865780307Z Initializing machine ID from random generator.
+2026-08-26T10:46:17.890381530Z INFO: setting iptables to detected mode: nft
+2026-08-26T10:46:17.981531092Z INFO: detected IPv4 address: 172.20.0.2
+2026-08-26T10:46:17.982568772Z INFO: detected old IPv4 address: 172.20.0.2
+2026-08-26T10:46:18.005190779Z INFO: detected IPv6 address: fc00:f853:ccd:e793::2
+2026-08-26T10:46:18.006607973Z INFO: detected old IPv6 address: fc00:f853:ccd:e793::2
+2026-08-26T10:46:18.006696060Z INFO: starting init
+2026-08-26T10:46:18.010057067Z [!p]104[?7hsystemd 257.13-1~deb13u1 running in system mode (+PAM +AUDIT +SELINUX +APPARMOR +IMA +IPE +SMACK +SECCOMP +GCRYPT -GNUTLS +OPENSSL +ACL +BLKID +CURL +ELFUTILS +FIDO2 +IDN2 -IDN +IPTC +KMOD +LIBCRYPTSETUP +LIBCRYPTSETUP_PLUGINS +LIBFDISK +PCRE2 +PWQUALITY +P11KIT +QRENCODE +TPM2 +BZIP2 +LZ4 +XZ +ZLIB +ZSTD +BPF_FRAMEWORK +BTF -XKBCOMMON -UTMP +SYSVINIT +LIBARCHIVE)
+2026-08-26T10:46:18.010068272Z Detected virtualization wsl.
+2026-08-26T10:46:18.010069722Z Detected architecture x86-64.
+2026-08-26T10:46:18.010183731Z 
+2026-08-26T10:46:18.010189172Z [0;1;39mWelcome to [0m[1mDebian GNU/Linux 13 (trixie)[0m[0;1;39m![0m
+2026-08-26T10:46:18.010190961Z 
+2026-08-26T10:46:18.043403089Z bpf-restrict-fs: BPF LSM hook not enabled in the kernel, BPF LSM not supported.
+2026-08-26T10:46:18.115584774Z Queued start job for default target graphical.target.
+2026-08-26T10:46:18.157310802Z [[0;32m  OK  [0m] Created slice [0;1;39mkubelet.slice[0m - slice used to run Kubernetes / Kubelet.
+2026-08-26T10:46:18.157906615Z [[0;32m  OK  [0m] Created slice [0;1;39msystem-modprobe.slice[0m - Slice /system/modprobe.
+2026-08-26T10:46:18.158086396Z [[0;32m  OK  [0m] Started [0;1;39msystemd-ask-password-conso…[0mequests to Console Directory Watch.
+2026-08-26T10:46:18.158091610Z [[0;32m  OK  [0m] Set up automount [0;1;39mproc-sys-fs-binfm…[0mormats File System Automount Point.
+2026-08-26T10:46:18.158093288Z [[0;32m  OK  [0m] Reached target [0;1;39mpaths.target[0m - Path Units.
+2026-08-26T10:46:18.158094246Z [[0;32m  OK  [0m] Reached target [0;1;39mslices.target[0m - Slice Units.
+2026-08-26T10:46:18.158095135Z [[0;32m  OK  [0m] Reached target [0;1;39mswap.target[0m - Swaps.
+2026-08-26T10:46:18.158825917Z [[0;32m  OK  [0m] Listening on [0;1;39msystemd-creds.socket[0m - Credential Encryption/Decryption.
+2026-08-26T10:46:18.158833524Z [[0;32m  OK  [0m] Listening on [0;1;39msystemd-journald-dev-…socket[0m - Journal Socket (/dev/log).
+2026-08-26T10:46:18.158835373Z [[0;32m  OK  [0m] Listening on [0;1;39msystemd-journald.socket[0m - Journal Sockets.
+2026-08-26T10:46:18.161713388Z          Mounting [0;1;39mdev-hugepages.mount[0m - Huge Pages File System...
+2026-08-26T10:46:18.161725450Z          Mounting [0;1;39msys-kernel-debug.mount[0m - Kernel Debug File System...
+2026-08-26T10:46:18.162835763Z          Mounting [0;1;39msys-kernel-tracing.mount[0m - Kernel Trace File System...
+2026-08-26T10:46:18.164057307Z          Starting [0;1;39mkmod-static-nodes.service[0m…eate List of Static Device Nodes...
+2026-08-26T10:46:18.168918019Z          Starting [0;1;39mmodprobe@configfs.service[0m - Load Kernel Module configfs...
+2026-08-26T10:46:18.169802415Z          Starting [0;1;39mmodprobe@fuse.service[0m - Load Kernel Module fuse...
+2026-08-26T10:46:18.187851348Z          Starting [0;1;39msystemd-journald.service[0m - Journal Service...
+2026-08-26T10:46:18.187865092Z          Starting [0;1;39msystemd-modules-load.service[0m - Load Kernel Modules...
+2026-08-26T10:46:18.187866669Z          Starting [0;1;39msystemd-remount-fs.servic…[0munt Root and Kernel File Systems...
+2026-08-26T10:46:18.187867945Z          Starting [0;1;39msystemd-udev-load-credent…[0mLoad udev Rules from Credentials...
+2026-08-26T10:46:18.187868786Z [[0;32m  OK  [0m] Mounted [0;1;39mdev-hugepages.mount[0m - Huge Pages File System.
+2026-08-26T10:46:18.187869654Z [[0;32m  OK  [0m] Mounted [0;1;39msys-kernel-debug.mount[0m - Kernel Debug File System.
+2026-08-26T10:46:18.187870475Z [[0;32m  OK  [0m] Mounted [0;1;39msys-kernel-tracing.mount[0m - Kernel Trace File System.
+2026-08-26T10:46:18.187871254Z [[0;32m  OK  [0m] Finished [0;1;39mkmod-static-nodes.service[0m…Create List of Static Device Nodes.
+2026-08-26T10:46:18.187872166Z modprobe@configfs.service: Deactivated successfully.
+2026-08-26T10:46:18.187872889Z [[0;32m  OK  [0m] Finished [0;1;39mmodprobe@configfs.service[0m - Load Kernel Module configfs.
+2026-08-26T10:46:18.209466867Z          Mounting [0;1;39msys-kernel-config.mount[0m - Kernel Configuration File System...
+2026-08-26T10:46:18.211918157Z          Starting [0;1;39msystemd-tmpfiles-setup-de…[0m Device Nodes in /dev gracefully...
+2026-08-26T10:46:18.212709286Z modprobe@fuse.service: Deactivated successfully.
+2026-08-26T10:46:18.212712379Z [[0;32m  OK  [0m] Finished [0;1;39mmodprobe@fuse.service[0m - Load Kernel Module fuse.
+2026-08-26T10:46:18.212921921Z [[0;32m  OK  [0m] Finished [0;1;39msystemd-modules-load.service[0m - Load Kernel Modules.
+2026-08-26T10:46:18.212949940Z [[0;32m  OK  [0m] Finished [0;1;39msystemd-remount-fs.servic…[0mmount Root and Kernel File Systems.
+2026-08-26T10:46:18.212992511Z [[0;32m  OK  [0m] Mounted [0;1;39msys-kernel-config.mount[0m - Kernel Configuration File System.
+2026-08-26T10:46:18.213817529Z          Mounting [0;1;39msys-fs-fuse-connections.mount[0m - FUSE Control File System...
+2026-08-26T10:46:18.219630311Z          Starting [0;1;39msystemd-sysctl.service[0m - Apply Kernel Variables...
+2026-08-26T10:46:18.284258037Z [[0;32m  OK  [0m] Finished [0;1;39msystemd-udev-load-credent…[0m- Load udev Rules from Credentials.
+2026-08-26T10:46:18.285686886Z [[0;32m  OK  [0m] Started [0;1;39msystemd-journald.service[0m - Journal Service.
+2026-08-26T10:46:18.286416953Z [[0;32m  OK  [0m] Finished [0;1;39msystemd-tmpfiles-setup-de…[0mic Device Nodes in /dev gracefully.
+2026-08-26T10:46:18.286661734Z [[0;32m  OK  [0m] Mounted [0;1;39msys-fs-fuse-connections.mount[0m - FUSE Control File System.
+2026-08-26T10:46:18.290496839Z          Starting [0;1;39msystemd-journal-flush.ser…[0msh Journal to Persistent Storage...
+2026-08-26T10:46:18.294202493Z          Starting [0;1;39msystemd-tmpfiles-setup-de…[0meate Static Device Nodes in /dev...
+2026-08-26T10:46:18.295295018Z [[0;32m  OK  [0m] Finished [0;1;39msystemd-sysctl.service[0m - Apply Kernel Variables.
+2026-08-26T10:46:18.296302549Z [[0;32m  OK  [0m] Finished [0;1;39msystemd-journal-flush.ser…[0mlush Journal to Persistent Storage.
+2026-08-26T10:46:18.297955742Z [[0;32m  OK  [0m] Finished [0;1;39msystemd-tmpfiles-setup-de…[0mCreate Static Device Nodes in /dev.
+2026-08-26T10:46:18.298345235Z [[0;32m  OK  [0m] Reached target [0;1;39mlocal-fs-pre.target[0m…Preparation for Local File Systems.
+2026-08-26T10:46:18.298350800Z [[0;32m  OK  [0m] Reached target [0;1;39mlocal-fs.target[0m - Local File Systems.
+2026-08-26T10:46:18.298716289Z [[0;32m  OK  [0m] Listening on [0;1;39msystemd-sysext.socket[0m… System Extension Image Management.
+2026-08-26T10:46:18.298821257Z [[0;32m  OK  [0m] Reached target [0;1;39msysinit.target[0m - System Initialization.
+2026-08-26T10:46:18.298826746Z [[0;32m  OK  [0m] Started [0;1;39msystemd-tmpfiles-clean.tim…[0my Cleanup of Temporary Directories.
+2026-08-26T10:46:18.298828204Z [[0;32m  OK  [0m] Reached target [0;1;39mtimers.target[0m - Timer Units.
+2026-08-26T10:46:18.298890356Z [[0;32m  OK  [0m] Listening on [0;1;39msystemd-hostnamed.socket[0m - Hostname Service Socket.
+2026-08-26T10:46:18.298897114Z [[0;32m  OK  [0m] Reached target [0;1;39msockets.target[0m - Socket Units.
+2026-08-26T10:46:18.298898779Z [[0;32m  OK  [0m] Reached target [0;1;39mbasic.target[0m - Basic System.
+2026-08-26T10:46:18.299705126Z          Starting [0;1;39mundo-mount-hacks.service[0m - Undo KIND mount hacks...
+2026-08-26T10:46:18.303901052Z [[0;32m  OK  [0m] Finished [0;1;39mundo-mount-hacks.service[0m - Undo KIND mount hacks.
+2026-08-26T10:46:18.305919449Z          Starting [0;1;39mcontainerd.service[0m - containerd container runtime...
+2026-08-26T10:46:18.308773424Z          Starting [0;1;39mkubelet.service[0m - kubelet: The Kubernetes Node Agent...
+2026-08-26T10:46:18.323262170Z [[0;32m  OK  [0m] Started [0;1;39mkubelet.service[0m - kubelet: The Kubernetes Node Agent.
+2026-08-26T10:46:19.637273435Z [[0;32m  OK  [0m] Started [0;1;39mcontainerd.service[0m - containerd container runtime.
+2026-08-26T10:46:19.637290915Z [[0;32m  OK  [0m] Reached target [0;1;39mmulti-user.target[0m - Multi-User System.
+2026-08-26T10:46:19.637293134Z [[0;32m  OK  [0m] Reached target [0;1;39mgraphical.target[0m - Graphical Interface.
+2026-08-28T05:27:33.528459257Z INFO: ensuring we can execute mount/umount even with userns-remap
+2026-08-28T05:27:33.546489744Z INFO: remounting /sys read-only
+2026-08-28T05:27:33.548124324Z INFO: making mounts shared
+2026-08-28T05:27:33.549464683Z INFO: detected cgroup v2
+2026-08-28T05:27:33.549485639Z INFO: clearing and regenerating /etc/machine-id
+2026-08-28T05:27:33.553436721Z Initializing machine ID from random generator.
+2026-08-28T05:27:33.565151078Z INFO: setting iptables to detected mode: nft
+2026-08-28T05:27:33.646924555Z INFO: detected IPv4 address: 172.20.0.4
+2026-08-28T05:27:33.648489189Z INFO: detected old IPv4 address: 172.20.0.2
+2026-08-28T05:27:33.663907052Z INFO: detected IPv6 address: fc00:f853:ccd:e793::4
+2026-08-28T05:27:33.674626530Z INFO: detected old IPv6 address: fc00:f853:ccd:e793::2
+2026-08-28T05:27:33.679023163Z INFO: starting init
+2026-08-28T05:27:33.682218797Z [!p]104[?7hsystemd 257.13-1~deb13u1 running in system mode (+PAM +AUDIT +SELINUX +APPARMOR +IMA +IPE +SMACK +SECCOMP +GCRYPT -GNUTLS +OPENSSL +ACL +BLKID +CURL +ELFUTILS +FIDO2 +IDN2 -IDN +IPTC +KMOD +LIBCRYPTSETUP +LIBCRYPTSETUP_PLUGINS +LIBFDISK +PCRE2 +PWQUALITY +P11KIT +QRENCODE +TPM2 +BZIP2 +LZ4 +XZ +ZLIB +ZSTD +BPF_FRAMEWORK +BTF -XKBCOMMON -UTMP +SYSVINIT +LIBARCHIVE)
+2026-08-28T05:27:33.682228263Z Detected virtualization wsl.
+2026-08-28T05:27:33.682230219Z Detected architecture x86-64.
+2026-08-28T05:27:33.682304281Z 
+2026-08-28T05:27:33.682310378Z [0;1;39mWelcome to [0m[1mDebian GNU/Linux 13 (trixie)[0m[0;1;39m![0m
+2026-08-28T05:27:33.682312089Z 
+2026-08-28T05:27:33.726942948Z bpf-restrict-fs: BPF LSM hook not enabled in the kernel, BPF LSM not supported.
+2026-08-28T05:27:33.847062941Z Queued start job for default target graphical.target.
+2026-08-28T05:27:33.878887149Z [[0;32m  OK  [0m] Created slice [0;1;39mkubelet.slice[0m - slice used to run Kubernetes / Kubelet.
+2026-08-28T05:27:33.879356324Z [[0;32m  OK  [0m] Created slice [0;1;39msystem-modprobe.slice[0m - Slice /system/modprobe.
+2026-08-28T05:27:33.879367168Z [[0;32m  OK  [0m] Started [0;1;39msystemd-ask-password-conso…[0mequests to Console Directory Watch.
+2026-08-28T05:27:33.879523212Z [[0;32m  OK  [0m] Set up automount [0;1;39mproc-sys-fs-binfm…[0mormats File System Automount Point.
+2026-08-28T05:27:33.879525108Z [[0;32m  OK  [0m] Reached target [0;1;39mpaths.target[0m - Path Units.
+2026-08-28T05:27:33.879526071Z [[0;32m  OK  [0m] Reached target [0;1;39mslices.target[0m - Slice Units.
+2026-08-28T05:27:33.879526961Z [[0;32m  OK  [0m] Reached target [0;1;39mswap.target[0m - Swaps.
+2026-08-28T05:27:33.880750339Z [[0;32m  OK  [0m] Listening on [0;1;39msystemd-creds.socket[0m - Credential Encryption/Decryption.
+2026-08-28T05:27:33.880755600Z [[0;32m  OK  [0m] Listening on [0;1;39msystemd-journald-dev-…socket[0m - Journal Socket (/dev/log).
+2026-08-28T05:27:33.880781334Z [[0;32m  OK  [0m] Listening on [0;1;39msystemd-journald.socket[0m - Journal Sockets.
+2026-08-28T05:27:33.881936075Z          Mounting [0;1;39mdev-hugepages.mount[0m - Huge Pages File System...
+2026-08-28T05:27:33.882465201Z          Mounting [0;1;39msys-kernel-debug.mount[0m - Kernel Debug File System...
+2026-08-28T05:27:33.883000443Z          Mounting [0;1;39msys-kernel-tracing.mount[0m - Kernel Trace File System...
+2026-08-28T05:27:33.883609301Z          Starting [0;1;39mkmod-static-nodes.service[0m…eate List of Static Device Nodes...
+2026-08-28T05:27:33.884085364Z          Starting [0;1;39mmodprobe@configfs.service[0m - Load Kernel Module configfs...
+2026-08-28T05:27:33.884664560Z          Starting [0;1;39mmodprobe@fuse.service[0m - Load Kernel Module fuse...
+2026-08-28T05:27:33.885546323Z          Starting [0;1;39msystemd-journald.service[0m - Journal Service...
+2026-08-28T05:27:33.887031470Z          Starting [0;1;39msystemd-modules-load.service[0m - Load Kernel Modules...
+2026-08-28T05:27:33.887627869Z          Starting [0;1;39msystemd-remount-fs.servic…[0munt Root and Kernel File Systems...
+2026-08-28T05:27:33.888466490Z          Starting [0;1;39msystemd-udev-load-credent…[0mLoad udev Rules from Credentials...
+2026-08-28T05:27:33.890142877Z [[0;32m  OK  [0m] Finished [0;1;39mkmod-static-nodes.service[0m…Create List of Static Device Nodes.
+2026-08-28T05:27:33.890450277Z modprobe@configfs.service: Deactivated successfully.
+2026-08-28T05:27:33.890639392Z [[0;32m  OK  [0m] Finished [0;1;39mmodprobe@configfs.service[0m - Load Kernel Module configfs.
+2026-08-28T05:27:33.890997309Z modprobe@fuse.service: Deactivated successfully.
+2026-08-28T05:27:33.891260791Z [[0;32m  OK  [0m] Finished [0;1;39mmodprobe@fuse.service[0m - Load Kernel Module fuse.
+2026-08-28T05:27:33.892110593Z          Mounting [0;1;39msys-fs-fuse-connections.mount[0m - FUSE Control File System...
+2026-08-28T05:27:33.892680502Z          Mounting [0;1;39msys-kernel-config.mount[0m - Kernel Configuration File System...
+2026-08-28T05:27:33.893425023Z          Starting [0;1;39msystemd-tmpfiles-setup-de…[0m Device Nodes in /dev gracefully...
+2026-08-28T05:27:33.893775512Z [[0;32m  OK  [0m] Finished [0;1;39msystemd-remount-fs.servic…[0mmount Root and Kernel File Systems.
+2026-08-28T05:27:33.896284089Z [[0;32m  OK  [0m] Finished [0;1;39msystemd-modules-load.service[0m - Load Kernel Modules.
+2026-08-28T05:27:33.896432871Z          Starting [0;1;39msystemd-sysctl.service[0m - Apply Kernel Variables...
+2026-08-28T05:27:33.900795111Z [[0;32m  OK  [0m] Mounted [0;1;39mdev-hugepages.mount[0m - Huge Pages File System.
+2026-08-28T05:27:33.900818385Z [[0;32m  OK  [0m] Mounted [0;1;39msys-kernel-debug.mount[0m - Kernel Debug File System.
+2026-08-28T05:27:33.900820090Z [[0;32m  OK  [0m] Mounted [0;1;39msys-kernel-tracing.mount[0m - Kernel Trace File System.
+2026-08-28T05:27:33.900821127Z [[0;32m  OK  [0m] Mounted [0;1;39msys-fs-fuse-connections.mount[0m - FUSE Control File System.
+2026-08-28T05:27:33.900822226Z [[0;32m  OK  [0m] Mounted [0;1;39msys-kernel-config.mount[0m - Kernel Configuration File System.
+2026-08-28T05:27:33.915074278Z [[0;32m  OK  [0m] Finished [0;1;39msystemd-udev-load-credent…[0m- Load udev Rules from Credentials.
+2026-08-28T05:27:33.919416657Z [[0;32m  OK  [0m] Finished [0;1;39msystemd-tmpfiles-setup-de…[0mic Device Nodes in /dev gracefully.
+2026-08-28T05:27:33.921722150Z [[0;32m  OK  [0m] Finished [0;1;39msystemd-sysctl.service[0m - Apply Kernel Variables.
+2026-08-28T05:27:33.921739361Z [[0;32m  OK  [0m] Started [0;1;39msystemd-journald.service[0m - Journal Service.
+2026-08-28T05:27:33.930391855Z          Starting [0;1;39msystemd-journal-flush.ser…[0msh Journal to Persistent Storage...
+2026-08-28T05:27:33.930411957Z          Starting [0;1;39msystemd-tmpfiles-setup-de…[0meate Static Device Nodes in /dev...
+2026-08-28T05:27:33.939065431Z [[0;32m  OK  [0m] Finished [0;1;39msystemd-journal-flush.ser…[0mlush Journal to Persistent Storage.
+2026-08-28T05:27:33.949103705Z [[0;32m  OK  [0m] Finished [0;1;39msystemd-tmpfiles-setup-de…[0mCreate Static Device Nodes in /dev.
+2026-08-28T05:27:33.949417808Z [[0;32m  OK  [0m] Reached target [0;1;39mlocal-fs-pre.target[0m…Preparation for Local File Systems.
+2026-08-28T05:27:33.949425891Z [[0;32m  OK  [0m] Reached target [0;1;39mlocal-fs.target[0m - Local File Systems.
+2026-08-28T05:27:33.950621286Z [[0;32m  OK  [0m] Listening on [0;1;39msystemd-sysext.socket[0m… System Extension Image Management.
+2026-08-28T05:27:33.950632170Z [[0;32m  OK  [0m] Reached target [0;1;39msysinit.target[0m - System Initialization.
+2026-08-28T05:27:33.950633793Z [[0;32m  OK  [0m] Started [0;1;39msystemd-tmpfiles-clean.tim…[0my Cleanup of Temporary Directories.
+2026-08-28T05:27:33.950642168Z [[0;32m  OK  [0m] Reached target [0;1;39mtimers.target[0m - Timer Units.
+2026-08-28T05:27:33.950643254Z [[0;32m  OK  [0m] Listening on [0;1;39msystemd-hostnamed.socket[0m - Hostname Service Socket.
+2026-08-28T05:27:33.950644111Z [[0;32m  OK  [0m] Reached target [0;1;39msockets.target[0m - Socket Units.
+2026-08-28T05:27:33.950644743Z [[0;32m  OK  [0m] Reached target [0;1;39mbasic.target[0m - Basic System.
+2026-08-28T05:27:33.958228585Z          Starting [0;1;39mundo-mount-hacks.service[0m - Undo KIND mount hacks...
+2026-08-28T05:27:33.963924539Z [[0;32m  OK  [0m] Finished [0;1;39mundo-mount-hacks.service[0m - Undo KIND mount hacks.
+2026-08-28T05:27:33.964916198Z          Starting [0;1;39mcontainerd.service[0m - containerd container runtime...
+2026-08-28T05:27:33.965276461Z          Starting [0;1;39mkubelet.service[0m - kubelet: The Kubernetes Node Agent...
+2026-08-28T05:27:33.987246911Z [[0;32m  OK  [0m] Started [0;1;39mkubelet.service[0m - kubelet: The Kubernetes Node Agent.
+2026-08-28T05:27:34.644667896Z [[0;32m  OK  [0m] Started [0;1;39mcontainerd.service[0m - containerd container runtime.
+2026-08-28T05:27:34.644680616Z [[0;32m  OK  [0m] Reached target [0;1;39mmulti-user.target[0m - Multi-User System.
+2026-08-28T05:27:34.644682440Z [[0;32m  OK  [0m] Reached target [0;1;39mgraphical.target[0m - Graphical Interface.
+2026-09-01T07:23:56.468964230Z INFO: ensuring we can execute mount/umount even with userns-remap
+2026-09-01T07:23:56.479068947Z INFO: remounting /sys read-only
+2026-09-01T07:23:56.489432449Z INFO: making mounts shared
+2026-09-01T07:23:56.538339006Z INFO: detected cgroup v2
+2026-09-01T07:23:56.538353812Z INFO: clearing and regenerating /etc/machine-id
+2026-09-01T07:23:56.593536533Z Initializing machine ID from random generator.
+2026-09-01T07:23:56.664271342Z INFO: setting iptables to detected mode: nft
+2026-09-01T07:23:56.970330191Z INFO: detected IPv4 address: 172.20.0.4
+2026-09-01T07:23:57.059152561Z INFO: detected old IPv4 address: 172.20.0.4
+2026-09-01T07:23:57.077435270Z INFO: detected IPv6 address: fc00:f853:ccd:e793::4
+2026-09-01T07:23:57.081045880Z INFO: detected old IPv6 address: fc00:f853:ccd:e793::4
+2026-09-01T07:23:57.081071984Z INFO: starting init
+2026-09-01T07:23:57.228677198Z [!p]104[?7hsystemd 257.13-1~deb13u1 running in system mode (+PAM +AUDIT +SELINUX +APPARMOR +IMA +IPE +SMACK +SECCOMP +GCRYPT -GNUTLS +OPENSSL +ACL +BLKID +CURL +ELFUTILS +FIDO2 +IDN2 -IDN +IPTC +KMOD +LIBCRYPTSETUP +LIBCRYPTSETUP_PLUGINS +LIBFDISK +PCRE2 +PWQUALITY +P11KIT +QRENCODE +TPM2 +BZIP2 +LZ4 +XZ +ZLIB +ZSTD +BPF_FRAMEWORK +BTF -XKBCOMMON -UTMP +SYSVINIT +LIBARCHIVE)
+2026-09-01T07:23:57.228700441Z Detected virtualization wsl.
+2026-09-01T07:23:57.228701788Z Detected architecture x86-64.
+2026-09-01T07:23:57.251091529Z 
+2026-09-01T07:23:57.251095334Z [0;1;39mWelcome to [0m[1mDebian GNU/Linux 13 (trixie)[0m[0;1;39m![0m
+2026-09-01T07:23:57.251096387Z 
+2026-09-01T07:23:57.504944177Z bpf-restrict-fs: BPF LSM hook not enabled in the kernel, BPF LSM not supported.
+2026-09-01T07:23:59.684078863Z Queued start job for default target graphical.target.
+2026-09-01T07:23:59.796045884Z [[0;32m  OK  [0m] Created slice [0;1;39mkubelet.slice[0m - slice used to run Kubernetes / Kubelet.
+2026-09-01T07:23:59.796068264Z [[0;32m  OK  [0m] Created slice [0;1;39msystem-modprobe.slice[0m - Slice /system/modprobe.
+2026-09-01T07:23:59.796070592Z [[0;32m  OK  [0m] Started [0;1;39msystemd-ask-password-conso…[0mequests to Console Directory Watch.
+2026-09-01T07:23:59.796110656Z [[0;32m  OK  [0m] Set up automount [0;1;39mproc-sys-fs-binfm…[0mormats File System Automount Point.
+2026-09-01T07:23:59.796113847Z [[0;32m  OK  [0m] Reached target [0;1;39mpaths.target[0m - Path Units.
+2026-09-01T07:23:59.796115272Z [[0;32m  OK  [0m] Reached target [0;1;39mslices.target[0m - Slice Units.
+2026-09-01T07:23:59.796116606Z [[0;32m  OK  [0m] Reached target [0;1;39mswap.target[0m - Swaps.
+2026-09-01T07:23:59.796117860Z [[0;32m  OK  [0m] Listening on [0;1;39msystemd-creds.socket[0m - Credential Encryption/Decryption.
+2026-09-01T07:23:59.796119135Z [[0;32m  OK  [0m] Listening on [0;1;39msystemd-journald-dev-…socket[0m - Journal Socket (/dev/log).
+2026-09-01T07:23:59.796120429Z [[0;32m  OK  [0m] Listening on [0;1;39msystemd-journald.socket[0m - Journal Sockets.
+2026-09-01T07:23:59.844656211Z          Mounting [0;1;39mdev-hugepages.mount[0m - Huge Pages File System...
+2026-09-01T07:23:59.895565692Z          Mounting [0;1;39msys-kernel-debug.mount[0m - Kernel Debug File System...
+2026-09-01T07:23:59.899750115Z          Mounting [0;1;39msys-kernel-tracing.mount[0m - Kernel Trace File System...
+2026-09-01T07:23:59.953439861Z          Starting [0;1;39mkmod-static-nodes.service[0m…eate List of Static Device Nodes...
+2026-09-01T07:23:59.973032881Z          Starting [0;1;39mmodprobe@configfs.service[0m - Load Kernel Module configfs...
+2026-09-01T07:23:59.973206949Z          Starting [0;1;39mmodprobe@fuse.service[0m - Load Kernel Module fuse...
+2026-09-01T07:23:59.982232264Z          Starting [0;1;39msystemd-journald.service[0m - Journal Service...
+2026-09-01T07:24:00.031222295Z          Starting [0;1;39msystemd-modules-load.service[0m - Load Kernel Modules...
+2026-09-01T07:24:00.040486949Z          Starting [0;1;39msystemd-remount-fs.servic…[0munt Root and Kernel File Systems...
+2026-09-01T07:24:00.103761642Z          Starting [0;1;39msystemd-udev-load-credent…[0mLoad udev Rules from Credentials...
+2026-09-01T07:24:00.103806639Z [[0;32m  OK  [0m] Mounted [0;1;39mdev-hugepages.mount[0m - Huge Pages File System.
+2026-09-01T07:24:00.103810705Z [[0;32m  OK  [0m] Mounted [0;1;39msys-kernel-debug.mount[0m - Kernel Debug File System.
+2026-09-01T07:24:00.103812482Z [[0;32m  OK  [0m] Mounted [0;1;39msys-kernel-tracing.mount[0m - Kernel Trace File System.
+2026-09-01T07:24:00.107756073Z [[0;32m  OK  [0m] Finished [0;1;39mkmod-static-nodes.service[0m…Create List of Static Device Nodes.
+2026-09-01T07:24:00.107773847Z modprobe@configfs.service: Deactivated successfully.
+2026-09-01T07:24:00.107775242Z [[0;32m  OK  [0m] Finished [0;1;39mmodprobe@configfs.service[0m - Load Kernel Module configfs.
+2026-09-01T07:24:00.221391835Z          Mounting [0;1;39msys-kernel-config.mount[0m - Kernel Configuration File System...
+2026-09-01T07:24:00.348811342Z          Starting [0;1;39msystemd-tmpfiles-setup-de…[0m Device Nodes in /dev gracefully...
+2026-09-01T07:24:00.348855248Z modprobe@fuse.service: Deactivated successfully.
+2026-09-01T07:24:00.348859229Z [[0;32m  OK  [0m] Finished [0;1;39mmodprobe@fuse.service[0m - Load Kernel Module fuse.
+2026-09-01T07:24:00.350229146Z [[0;32m  OK  [0m] Finished [0;1;39msystemd-modules-load.service[0m - Load Kernel Modules.
+2026-09-01T07:24:00.350382911Z [[0;32m  OK  [0m] Mounted [0;1;39msys-kernel-config.mount[0m - Kernel Configuration File System.
+2026-09-01T07:24:00.882764083Z          Mounting [0;1;39msys-fs-fuse-connections.mount[0m - FUSE Control File System...
+2026-09-01T07:24:00.887883946Z          Starting [0;1;39msystemd-sysctl.service[0m - Apply Kernel Variables...
+2026-09-01T07:24:00.887909284Z [[0;32m  OK  [0m] Finished [0;1;39msystemd-remount-fs.servic…[0mmount Root and Kernel File Systems.
+2026-09-01T07:24:01.042376761Z [[0;32m  OK  [0m] Finished [0;1;39msystemd-udev-load-credent…[0m- Load udev Rules from Credentials.
+2026-09-01T07:24:01.209892016Z [[0;32m  OK  [0m] Mounted [0;1;39msys-fs-fuse-connections.mount[0m - FUSE Control File System.
+2026-09-01T07:24:01.605362875Z [[0;32m  OK  [0m] Finished [0;1;39msystemd-sysctl.service[0m - Apply Kernel Variables.
+2026-09-01T07:24:01.609089031Z [[0;32m  OK  [0m] Started [0;1;39msystemd-journald.service[0m - Journal Service.
+2026-09-01T07:24:01.663181857Z          Starting [0;1;39msystemd-journal-flush.ser…[0msh Journal to Persistent Storage...
+2026-09-01T07:24:02.110871537Z [[0;32m  OK  [0m] Finished [0;1;39msystemd-tmpfiles-setup-de…[0mic Device Nodes in /dev gracefully.
+2026-09-01T07:24:02.112001323Z          Starting [0;1;39msystemd-tmpfiles-setup-de…[0meate Static Device Nodes in /dev...
+2026-09-01T07:24:02.663983417Z [[0;32m  OK  [0m] Finished [0;1;39msystemd-journal-flush.ser…[0mlush Journal to Persistent Storage.
+2026-09-01T07:24:03.786542342Z [[0;32m  OK  [0m] Finished [0;1;39msystemd-tmpfiles-setup-de…[0mCreate Static Device Nodes in /dev.
+2026-09-01T07:24:03.786567535Z [[0;32m  OK  [0m] Reached target [0;1;39mlocal-fs-pre.target[0m…Preparation for Local File Systems.
+2026-09-01T07:24:03.786569438Z [[0;32m  OK  [0m] Reached target [0;1;39mlocal-fs.target[0m - Local File Systems.
+2026-09-01T07:24:03.786570567Z [[0;32m  OK  [0m] Listening on [0;1;39msystemd-sysext.socket[0m… System Extension Image Management.
+2026-09-01T07:24:03.786571618Z [[0;32m  OK  [0m] Reached target [0;1;39msysinit.target[0m - System Initialization.
+2026-09-01T07:24:03.786572574Z [[0;32m  OK  [0m] Started [0;1;39msystemd-tmpfiles-clean.tim…[0my Cleanup of Temporary Directories.
+2026-09-01T07:24:03.786573612Z [[0;32m  OK  [0m] Reached target [0;1;39mtimers.target[0m - Timer Units.
+2026-09-01T07:24:03.786574520Z [[0;32m  OK  [0m] Listening on [0;1;39msystemd-hostnamed.socket[0m - Hostname Service Socket.
+2026-09-01T07:24:03.786575456Z [[0;32m  OK  [0m] Reached target [0;1;39msockets.target[0m - Socket Units.
+2026-09-01T07:24:03.786576552Z [[0;32m  OK  [0m] Reached target [0;1;39mbasic.target[0m - Basic System.
+2026-09-01T07:24:03.887393580Z          Starting [0;1;39mundo-mount-hacks.service[0m - Undo KIND mount hacks...
+2026-09-01T07:24:04.403888158Z [[0;32m  OK  [0m] Finished [0;1;39mundo-mount-hacks.service[0m - Undo KIND mount hacks.
+2026-09-01T07:24:04.499738195Z          Starting [0;1;39mcontainerd.service[0m - containerd container runtime...
+2026-09-01T07:24:04.646996376Z          Starting [0;1;39mkubelet.service[0m - kubelet: The Kubernetes Node Agent...
+2026-09-01T07:24:08.443808908Z [[0m[0;31m*     [0m] (1 of 2) Job kubelet.service/start running (8s / 1min 34s)
+2026-09-01T07:24:08.834840856Z M[K[[0;1;31m*[0m[0;31m*    [0m] (1 of 2) Job kubelet.service/start running (9s / 1min 39s)
+2026-09-01T07:24:09.095346993Z M[K[[0;32m  OK  [0m] Started [0;1;39mkubelet.service[0m - kubelet: The Kubernetes Node Agent.
+2026-09-01T07:24:11.342743109Z [K[[0;31m*[0;1;31m*[0m[0;31m*   [0m] Job containerd.service/start running (11s / 1min 36s)
+2026-09-01T07:24:11.926017767Z M[K[ [0;31m*[0;1;31m*[0m[0;31m*  [0m] Job containerd.service/start running (12s / 1min 36s)
+2026-09-01T07:24:12.342800617Z M[K[  [0;31m*[0;1;31m*[0m[0;31m* [0m] Job containerd.service/start running (12s / 1min 36s)
+2026-09-01T07:24:12.842914426Z M[K[   [0;31m*[0;1;31m*[0m[0;31m*[0m] Job containerd.service/start running (13s / 1min 36s)
+2026-09-01T07:24:13.392438813Z M[K[    [0;31m*[0;1;31m*[0m] Job containerd.service/start running (13s / 1min 36s)
+2026-09-01T07:24:13.842870263Z M[K[     [0;31m*[0m] Job containerd.service/start running (14s / 1min 36s)
+2026-09-01T07:24:14.262034034Z M[K[[0;32m  OK  [0m] Started [0;1;39mcontainerd.service[0m - containerd container runtime.
+2026-09-01T07:24:14.262050874Z [K[[0;32m  OK  [0m] Reached target [0;1;39mmulti-user.target[0m - Multi-User System.
+2026-09-01T07:24:14.262053078Z [[0;32m  OK  [0m] Reached target [0;1;39mgraphical.target[0m - Graphical Interface.
+2026-09-04T04:47:24.472495853Z INFO: ensuring we can execute mount/umount even with userns-remap
+2026-09-04T04:47:24.478402259Z INFO: remounting /sys read-only
+2026-09-04T04:47:24.480678589Z INFO: making mounts shared
+2026-09-04T04:47:24.481692341Z INFO: detected cgroup v2
+2026-09-04T04:47:24.481703103Z INFO: clearing and regenerating /etc/machine-id
+2026-09-04T04:47:24.521079579Z Initializing machine ID from random generator.
+2026-09-04T04:47:24.552963679Z INFO: setting iptables to detected mode: nft
+2026-09-04T04:47:24.651247967Z INFO: detected IPv4 address: 172.20.0.2
+2026-09-04T04:47:24.653569333Z INFO: detected old IPv4 address: 172.20.0.4
+2026-09-04T04:47:24.662945870Z INFO: detected IPv6 address: fc00:f853:ccd:e793::2
+2026-09-04T04:47:24.663938418Z INFO: detected old IPv6 address: fc00:f853:ccd:e793::4
+2026-09-04T04:47:24.668038324Z INFO: starting init
+2026-09-04T04:47:24.671426467Z [!p]104[?7hsystemd 257.13-1~deb13u1 running in system mode (+PAM +AUDIT +SELINUX +APPARMOR +IMA +IPE +SMACK +SECCOMP +GCRYPT -GNUTLS +OPENSSL +ACL +BLKID +CURL +ELFUTILS +FIDO2 +IDN2 -IDN +IPTC +KMOD +LIBCRYPTSETUP +LIBCRYPTSETUP_PLUGINS +LIBFDISK +PCRE2 +PWQUALITY +P11KIT +QRENCODE +TPM2 +BZIP2 +LZ4 +XZ +ZLIB +ZSTD +BPF_FRAMEWORK +BTF -XKBCOMMON -UTMP +SYSVINIT +LIBARCHIVE)
+2026-09-04T04:47:24.671434487Z Detected virtualization wsl.
+2026-09-04T04:47:24.671436317Z Detected architecture x86-64.
+2026-09-04T04:47:24.671521272Z 
+2026-09-04T04:47:24.671528657Z [0;1;39mWelcome to [0m[1mDebian GNU/Linux 13 (trixie)[0m[0;1;39m![0m
+2026-09-04T04:47:24.671530524Z 
+2026-09-04T04:47:24.708758533Z bpf-restrict-fs: BPF LSM hook not enabled in the kernel, BPF LSM not supported.
+2026-09-04T04:47:24.823707448Z Queued start job for default target graphical.target.
+2026-09-04T04:47:24.860303342Z [[0;32m  OK  [0m] Created slice [0;1;39mkubelet.slice[0m - slice used to run Kubernetes / Kubelet.
+2026-09-04T04:47:24.860311460Z [[0;32m  OK  [0m] Created slice [0;1;39msystem-modprobe.slice[0m - Slice /system/modprobe.
+2026-09-04T04:47:24.860324777Z [[0;32m  OK  [0m] Started [0;1;39msystemd-ask-password-conso…[0mequests to Console Directory Watch.
+2026-09-04T04:47:24.860325679Z [[0;32m  OK  [0m] Set up automount [0;1;39mproc-sys-fs-binfm…[0mormats File System Automount Point.
+2026-09-04T04:47:24.860326406Z [[0;32m  OK  [0m] Reached target [0;1;39mpaths.target[0m - Path Units.
+2026-09-04T04:47:24.860327061Z [[0;32m  OK  [0m] Reached target [0;1;39mslices.target[0m - Slice Units.
+2026-09-04T04:47:24.860327702Z [[0;32m  OK  [0m] Reached target [0;1;39mswap.target[0m - Swaps.
+2026-09-04T04:47:24.860328291Z [[0;32m  OK  [0m] Listening on [0;1;39msystemd-creds.socket[0m - Credential Encryption/Decryption.
+2026-09-04T04:47:24.860328971Z [[0;32m  OK  [0m] Listening on [0;1;39msystemd-journald-dev-…socket[0m - Journal Socket (/dev/log).
+2026-09-04T04:47:24.860329732Z [[0;32m  OK  [0m] Listening on [0;1;39msystemd-journald.socket[0m - Journal Sockets.
+2026-09-04T04:47:24.866658496Z          Mounting [0;1;39mdev-hugepages.mount[0m - Huge Pages File System...
+2026-09-04T04:47:24.866922107Z          Mounting [0;1;39msys-kernel-debug.mount[0m - Kernel Debug File System...
+2026-09-04T04:47:24.868103210Z          Mounting [0;1;39msys-kernel-tracing.mount[0m - Kernel Trace File System...
+2026-09-04T04:47:24.875640948Z          Starting [0;1;39mkmod-static-nodes.service[0m…eate List of Static Device Nodes...
+2026-09-04T04:47:24.875656170Z          Starting [0;1;39mmodprobe@configfs.service[0m - Load Kernel Module configfs...
+2026-09-04T04:47:24.890416645Z          Starting [0;1;39mmodprobe@fuse.service[0m - Load Kernel Module fuse...
+2026-09-04T04:47:24.894352813Z          Starting [0;1;39msystemd-journald.service[0m - Journal Service...
+2026-09-04T04:47:24.907209675Z          Starting [0;1;39msystemd-modules-load.service[0m - Load Kernel Modules...
+2026-09-04T04:47:24.910569082Z          Starting [0;1;39msystemd-remount-fs.servic…[0munt Root and Kernel File Systems...
+2026-09-04T04:47:24.918091568Z          Starting [0;1;39msystemd-udev-load-credent…[0mLoad udev Rules from Credentials...
+2026-09-04T04:47:24.918117359Z [[0;32m  OK  [0m] Mounted [0;1;39mdev-hugepages.mount[0m - Huge Pages File System.
+2026-09-04T04:47:24.918119198Z [[0;32m  OK  [0m] Mounted [0;1;39msys-kernel-debug.mount[0m - Kernel Debug File System.
+2026-09-04T04:47:24.918120218Z [[0;32m  OK  [0m] Mounted [0;1;39msys-kernel-tracing.mount[0m - Kernel Trace File System.
+2026-09-04T04:47:24.918121074Z [[0;32m  OK  [0m] Finished [0;1;39mkmod-static-nodes.service[0m…Create List of Static Device Nodes.
+2026-09-04T04:47:24.918122190Z modprobe@configfs.service: Deactivated successfully.
+2026-09-04T04:47:24.918130198Z [[0;32m  OK  [0m] Finished [0;1;39mmodprobe@configfs.service[0m - Load Kernel Module configfs.
+2026-09-04T04:47:24.918131391Z modprobe@fuse.service: Deactivated successfully.
+2026-09-04T04:47:24.918132196Z [[0;32m  OK  [0m] Finished [0;1;39mmodprobe@fuse.service[0m - Load Kernel Module fuse.
+2026-09-04T04:47:24.918133146Z [[0;32m  OK  [0m] Finished [0;1;39msystemd-modules-load.service[0m - Load Kernel Modules.
+2026-09-04T04:47:24.918134024Z          Mounting [0;1;39msys-fs-fuse-connections.mount[0m - FUSE Control File System...
+2026-09-04T04:47:24.918368021Z          Mounting [0;1;39msys-kernel-config.mount[0m - Kernel Configuration File System...
+2026-09-04T04:47:24.922272881Z          Starting [0;1;39msystemd-sysctl.service[0m - Apply Kernel Variables...
+2026-09-04T04:47:24.930429023Z          Starting [0;1;39msystemd-tmpfiles-setup-de…[0m Device Nodes in /dev gracefully...
+2026-09-04T04:47:24.933150575Z [[0;32m  OK  [0m] Finished [0;1;39msystemd-remount-fs.servic…[0mmount Root and Kernel File Systems.
+2026-09-04T04:47:24.945517425Z [[0;32m  OK  [0m] Mounted [0;1;39msys-fs-fuse-connections.mount[0m - FUSE Control File System.
+2026-09-04T04:47:24.945558608Z [[0;32m  OK  [0m] Mounted [0;1;39msys-kernel-config.mount[0m - Kernel Configuration File System.
+2026-09-04T04:47:24.970668151Z [[0;32m  OK  [0m] Finished [0;1;39msystemd-tmpfiles-setup-de…[0mic Device Nodes in /dev gracefully.
+2026-09-04T04:47:24.978237060Z          Starting [0;1;39msystemd-tmpfiles-setup-de…[0meate Static Device Nodes in /dev...
+2026-09-04T04:47:24.980266066Z [[0;32m  OK  [0m] Finished [0;1;39msystemd-sysctl.service[0m - Apply Kernel Variables.
+2026-09-04T04:47:24.985058059Z [[0;32m  OK  [0m] Finished [0;1;39msystemd-udev-load-credent…[0m- Load udev Rules from Credentials.
+2026-09-04T04:47:25.006424779Z [[0;32m  OK  [0m] Finished [0;1;39msystemd-tmpfiles-setup-de…[0mCreate Static Device Nodes in /dev.
+2026-09-04T04:47:25.006452939Z [[0;32m  OK  [0m] Reached target [0;1;39mlocal-fs-pre.target[0m…Preparation for Local File Systems.
+2026-09-04T04:47:25.007207516Z [[0;32m  OK  [0m] Reached target [0;1;39mlocal-fs.target[0m - Local File Systems.
+2026-09-04T04:47:25.007213182Z [[0;32m  OK  [0m] Listening on [0;1;39msystemd-sysext.socket[0m… System Extension Image Management.
+2026-09-04T04:47:25.060393921Z [[0;32m  OK  [0m] Started [0;1;39msystemd-journald.service[0m - Journal Service.
+2026-09-04T04:47:25.073432331Z [[0;32m  OK  [0m] Reached target [0;1;39msysinit.target[0m - System Initialization.
+2026-09-04T04:47:25.073446725Z [[0;32m  OK  [0m] Started [0;1;39msystemd-tmpfiles-clean.tim…[0my Cleanup of Temporary Directories.
+2026-09-04T04:47:25.073456402Z [[0;32m  OK  [0m] Reached target [0;1;39mtimers.target[0m - Timer Units.
+2026-09-04T04:47:25.073866766Z [[0;32m  OK  [0m] Listening on [0;1;39msystemd-hostnamed.socket[0m - Hostname Service Socket.
+2026-09-04T04:47:25.073873142Z [[0;32m  OK  [0m] Reached target [0;1;39msockets.target[0m - Socket Units.
+2026-09-04T04:47:25.075564002Z          Starting [0;1;39msystemd-journal-flush.ser…[0msh Journal to Persistent Storage...
+2026-09-04T04:47:25.075666897Z [[0;32m  OK  [0m] Reached target [0;1;39mbasic.target[0m - Basic System.
+2026-09-04T04:47:25.083998149Z          Starting [0;1;39mundo-mount-hacks.service[0m - Undo KIND mount hacks...
+2026-09-04T04:47:25.088586107Z [[0;32m  OK  [0m] Finished [0;1;39msystemd-journal-flush.ser…[0mlush Journal to Persistent Storage.
+2026-09-04T04:47:25.098181012Z [[0;32m  OK  [0m] Finished [0;1;39mundo-mount-hacks.service[0m - Undo KIND mount hacks.
+2026-09-04T04:47:25.106428116Z          Starting [0;1;39mcontainerd.service[0m - containerd container runtime...
+2026-09-04T04:47:25.107217623Z          Starting [0;1;39mkubelet.service[0m - kubelet: The Kubernetes Node Agent...
+2026-09-04T04:47:25.146872551Z [[0;32m  OK  [0m] Started [0;1;39mkubelet.service[0m - kubelet: The Kubernetes Node Agent.
+2026-09-04T04:47:26.037839807Z [[0;32m  OK  [0m] Started [0;1;39mcontainerd.service[0m - containerd container runtime.
+2026-09-04T04:47:26.037857676Z [[0;32m  OK  [0m] Reached target [0;1;39mmulti-user.target[0m - Multi-User System.
+2026-09-04T04:47:26.037859320Z [[0;32m  OK  [0m] Reached target [0;1;39mgraphical.target[0m - Graphical Interface.
+2026-09-08T06:23:38.538669978Z INFO: ensuring we can execute mount/umount even with userns-remap
+2026-09-08T06:23:38.555045800Z INFO: remounting /sys read-only
+2026-09-08T06:23:38.570646935Z INFO: making mounts shared
+2026-09-08T06:23:38.570652730Z INFO: detected cgroup v2
+2026-09-08T06:23:38.570653636Z INFO: clearing and regenerating /etc/machine-id
+2026-09-08T06:23:38.625314483Z Initializing machine ID from random generator.
+2026-09-08T06:23:38.701928913Z INFO: setting iptables to detected mode: nft
+2026-09-08T06:23:38.789108491Z INFO: detected IPv4 address: 172.20.0.2
+2026-09-08T06:23:38.800333148Z INFO: detected old IPv4 address: 172.20.0.2
+2026-09-08T06:23:38.811359839Z INFO: detected IPv6 address: fc00:f853:ccd:e793::2
+2026-09-08T06:23:38.813742003Z INFO: detected old IPv6 address: fc00:f853:ccd:e793::2
+2026-09-08T06:23:38.813746805Z INFO: starting init
+2026-09-08T06:23:38.938050988Z [!p]104[?7hsystemd 257.13-1~deb13u1 running in system mode (+PAM +AUDIT +SELINUX +APPARMOR +IMA +IPE +SMACK +SECCOMP +GCRYPT -GNUTLS +OPENSSL +ACL +BLKID +CURL +ELFUTILS +FIDO2 +IDN2 -IDN +IPTC +KMOD +LIBCRYPTSETUP +LIBCRYPTSETUP_PLUGINS +LIBFDISK +PCRE2 +PWQUALITY +P11KIT +QRENCODE +TPM2 +BZIP2 +LZ4 +XZ +ZLIB +ZSTD +BPF_FRAMEWORK +BTF -XKBCOMMON -UTMP +SYSVINIT +LIBARCHIVE)
+2026-09-08T06:23:38.938120079Z Detected virtualization wsl.
+2026-09-08T06:23:38.938123293Z Detected architecture x86-64.
+2026-09-08T06:23:38.945124191Z 
+2026-09-08T06:23:38.945128534Z [0;1;39mWelcome to [0m[1mDebian GNU/Linux 13 (trixie)[0m[0;1;39m![0m
+2026-09-08T06:23:38.945129312Z 
+2026-09-08T06:23:39.066811448Z bpf-restrict-fs: BPF LSM hook not enabled in the kernel, BPF LSM not supported.
+2026-09-08T06:23:39.271849542Z Queued start job for default target graphical.target.
+2026-09-08T06:23:39.277891365Z [[0;32m  OK  [0m] Created slice [0;1;39mkubelet.slice[0m - slice used to run Kubernetes / Kubelet.
+2026-09-08T06:23:39.280733836Z [[0;32m  OK  [0m] Created slice [0;1;39msystem-modprobe.slice[0m - Slice /system/modprobe.
+2026-09-08T06:23:39.280751042Z [[0;32m  OK  [0m] Started [0;1;39msystemd-ask-password-conso…[0mequests to Console Directory Watch.
+2026-09-08T06:23:39.281393575Z [[0;32m  OK  [0m] Set up automount [0;1;39mproc-sys-fs-binfm…[0mormats File System Automount Point.
+2026-09-08T06:23:39.281398815Z [[0;32m  OK  [0m] Reached target [0;1;39mpaths.target[0m - Path Units.
+2026-09-08T06:23:39.281400382Z [[0;32m  OK  [0m] Reached target [0;1;39mslices.target[0m - Slice Units.
+2026-09-08T06:23:39.281401335Z [[0;32m  OK  [0m] Reached target [0;1;39mswap.target[0m - Swaps.
+2026-09-08T06:23:39.282397222Z [[0;32m  OK  [0m] Listening on [0;1;39msystemd-creds.socket[0m - Credential Encryption/Decryption.
+2026-09-08T06:23:39.282405887Z [[0;32m  OK  [0m] Listening on [0;1;39msystemd-journald-dev-…socket[0m - Journal Socket (/dev/log).
+2026-09-08T06:23:39.282407970Z [[0;32m  OK  [0m] Listening on [0;1;39msystemd-journald.socket[0m - Journal Sockets.
+2026-09-08T06:23:39.289940254Z          Mounting [0;1;39mdev-hugepages.mount[0m - Huge Pages File System...
+2026-09-08T06:23:39.307550959Z          Mounting [0;1;39msys-kernel-debug.mount[0m - Kernel Debug File System...
+2026-09-08T06:23:39.339483749Z          Mounting [0;1;39msys-kernel-tracing.mount[0m - Kernel Trace File System...
+2026-09-08T06:23:39.340580259Z          Starting [0;1;39mkmod-static-nodes.service[0m…eate List of Static Device Nodes...
+2026-09-08T06:23:39.343313257Z          Starting [0;1;39mmodprobe@configfs.service[0m - Load Kernel Module configfs...
+2026-09-08T06:23:39.347970153Z          Starting [0;1;39mmodprobe@fuse.service[0m - Load Kernel Module fuse...
+2026-09-08T06:23:39.355044937Z          Starting [0;1;39msystemd-journald.service[0m - Journal Service...
+2026-09-08T06:23:39.374153459Z          Starting [0;1;39msystemd-modules-load.service[0m - Load Kernel Modules...
+2026-09-08T06:23:39.390925503Z          Starting [0;1;39msystemd-remount-fs.servic…[0munt Root and Kernel File Systems...
+2026-09-08T06:23:39.395030982Z          Starting [0;1;39msystemd-udev-load-credent…[0mLoad udev Rules from Credentials...
+2026-09-08T06:23:39.396205679Z [[0;32m  OK  [0m] Mounted [0;1;39mdev-hugepages.mount[0m - Huge Pages File System.
+2026-09-08T06:23:39.396217558Z [[0;32m  OK  [0m] Mounted [0;1;39msys-kernel-debug.mount[0m - Kernel Debug File System.
+2026-09-08T06:23:39.396219117Z [[0;32m  OK  [0m] Mounted [0;1;39msys-kernel-tracing.mount[0m - Kernel Trace File System.
+2026-09-08T06:23:39.401156584Z [[0;32m  OK  [0m] Finished [0;1;39mkmod-static-nodes.service[0m…Create List of Static Device Nodes.
+2026-09-08T06:23:39.401537800Z modprobe@configfs.service: Deactivated successfully.
+2026-09-08T06:23:39.401545844Z [[0;32m  OK  [0m] Finished [0;1;39mmodprobe@configfs.service[0m - Load Kernel Module configfs.
+2026-09-08T06:23:39.401547573Z modprobe@fuse.service: Deactivated successfully.
+2026-09-08T06:23:39.401831477Z [[0;32m  OK  [0m] Finished [0;1;39mmodprobe@fuse.service[0m - Load Kernel Module fuse.
+2026-09-08T06:23:39.402247666Z [[0;32m  OK  [0m] Finished [0;1;39msystemd-modules-load.service[0m - Load Kernel Modules.
+2026-09-08T06:23:39.410614013Z          Mounting [0;1;39msys-fs-fuse-connections.mount[0m - FUSE Control File System...
+2026-09-08T06:23:39.442156740Z          Mounting [0;1;39msys-kernel-config.mount[0m - Kernel Configuration File System...
+2026-09-08T06:23:39.443533370Z          Starting [0;1;39msystemd-sysctl.service[0m - Apply Kernel Variables...
+2026-09-08T06:23:39.458784737Z          Starting [0;1;39msystemd-tmpfiles-setup-de…[0m Device Nodes in /dev gracefully...
+2026-09-08T06:23:39.474341167Z [[0;32m  OK  [0m] Started [0;1;39msystemd-journald.service[0m - Journal Service.
+2026-09-08T06:23:39.476237282Z [[0;32m  OK  [0m] Finished [0;1;39msystemd-remount-fs.servic…[0mmount Root and Kernel File Systems.
+2026-09-08T06:23:39.476260287Z [[0;32m  OK  [0m] Mounted [0;1;39msys-fs-fuse-connections.mount[0m - FUSE Control File System.
+2026-09-08T06:23:39.476262047Z [[0;32m  OK  [0m] Mounted [0;1;39msys-kernel-config.mount[0m - Kernel Configuration File System.
+2026-09-08T06:23:39.487331646Z [[0;32m  OK  [0m] Finished [0;1;39msystemd-udev-load-credent…[0m- Load udev Rules from Credentials.
+2026-09-08T06:23:39.501034703Z [[0;32m  OK  [0m] Finished [0;1;39msystemd-sysctl.service[0m - Apply Kernel Variables.
+2026-09-08T06:23:39.530177619Z          Starting [0;1;39msystemd-journal-flush.ser…[0msh Journal to Persistent Storage...
+2026-09-08T06:23:39.530207527Z [[0;32m  OK  [0m] Finished [0;1;39msystemd-tmpfiles-setup-de…[0mic Device Nodes in /dev gracefully.
+2026-09-08T06:23:39.561992442Z          Starting [0;1;39msystemd-tmpfiles-setup-de…[0meate Static Device Nodes in /dev...
+2026-09-08T06:23:39.570374702Z [[0;32m  OK  [0m] Finished [0;1;39msystemd-journal-flush.ser…[0mlush Journal to Persistent Storage.
+2026-09-08T06:23:39.589921250Z [[0;32m  OK  [0m] Finished [0;1;39msystemd-tmpfiles-setup-de…[0mCreate Static Device Nodes in /dev.
+2026-09-08T06:23:39.590136068Z [[0;32m  OK  [0m] Reached target [0;1;39mlocal-fs-pre.target[0m…Preparation for Local File Systems.
+2026-09-08T06:23:39.590142463Z [[0;32m  OK  [0m] Reached target [0;1;39mlocal-fs.target[0m - Local File Systems.
+2026-09-08T06:23:39.591444987Z [[0;32m  OK  [0m] Listening on [0;1;39msystemd-sysext.socket[0m… System Extension Image Management.
+2026-09-08T06:23:39.591455663Z [[0;32m  OK  [0m] Reached target [0;1;39msysinit.target[0m - System Initialization.
+2026-09-08T06:23:39.591457358Z [[0;32m  OK  [0m] Started [0;1;39msystemd-tmpfiles-clean.tim…[0my Cleanup of Temporary Directories.
+2026-09-08T06:23:39.591458409Z [[0;32m  OK  [0m] Reached target [0;1;39mtimers.target[0m - Timer Units.
+2026-09-08T06:23:39.591459253Z [[0;32m  OK  [0m] Listening on [0;1;39msystemd-hostnamed.socket[0m - Hostname Service Socket.
+2026-09-08T06:23:39.591459950Z [[0;32m  OK  [0m] Reached target [0;1;39msockets.target[0m - Socket Units.
+2026-09-08T06:23:39.591460670Z [[0;32m  OK  [0m] Reached target [0;1;39mbasic.target[0m - Basic System.
+2026-09-08T06:23:39.592668964Z          Starting [0;1;39mundo-mount-hacks.service[0m - Undo KIND mount hacks...
+2026-09-08T06:23:39.606991362Z [[0;32m  OK  [0m] Finished [0;1;39mundo-mount-hacks.service[0m - Undo KIND mount hacks.
+2026-09-08T06:23:39.610960255Z          Starting [0;1;39mcontainerd.service[0m - containerd container runtime...
+2026-09-08T06:23:39.618096008Z          Starting [0;1;39mkubelet.service[0m - kubelet: The Kubernetes Node Agent...
+2026-09-08T06:23:39.688360551Z [[0;32m  OK  [0m] Started [0;1;39mkubelet.service[0m - kubelet: The Kubernetes Node Agent.
+2026-09-08T06:23:41.692196675Z [[0m[0;31m*     [0m] Job containerd.service/start running (2s / 1min 30s)
+2026-09-08T06:23:41.718472085Z M[K         Starting [0;1;39mkubelet.service[0m - kubelet: The Kubernetes Node Agent...
+2026-09-08T06:23:42.086876098Z [K[[0;1;31m*[0m[0;31m*    [0m] (1 of 2) Job kubelet.service/start running (396ms / 1min 30s)
+2026-09-08T06:23:42.092855695Z M[K[[0;32m  OK  [0m] Started [0;1;39mkubelet.service[0m - kubelet: The Kubernetes Node Agent.
+2026-09-08T06:23:44.200634961Z [K[[0;31m*[0;1;31m*[0m[0;31m*   [0m] Job containerd.service/start running (4s / 1min 30s)
+2026-09-08T06:23:44.604204593Z M[K[[0;32m  OK  [0m] Started [0;1;39mcontainerd.service[0m - containerd container runtime.
+2026-09-08T06:23:44.604230047Z [K[[0;32m  OK  [0m] Reached target [0;1;39mmulti-user.target[0m - Multi-User System.
+2026-09-08T06:23:44.604232224Z [[0;32m  OK  [0m] Reached target [0;1;39mgraphical.target[0m - Graphical Interface.
+2026-09-15T10:16:49.937923565Z INFO: ensuring we can execute mount/umount even with userns-remap
+2026-09-15T10:16:49.942897756Z INFO: remounting /sys read-only
+2026-09-15T10:16:49.945390320Z INFO: making mounts shared
+2026-09-15T10:16:49.946122869Z INFO: detected cgroup v2
+2026-09-15T10:16:49.946130004Z INFO: clearing and regenerating /etc/machine-id
+2026-09-15T10:16:49.949630193Z Initializing machine ID from random generator.
+2026-09-15T10:16:49.981012021Z INFO: setting iptables to detected mode: nft
+2026-09-15T10:16:50.036632490Z INFO: detected IPv4 address: 172.20.0.3
+2026-09-15T10:16:50.037517089Z INFO: detected old IPv4 address: 172.20.0.2
+2026-09-15T10:16:50.072596737Z INFO: detected IPv6 address: fc00:f853:ccd:e793::3
+2026-09-15T10:16:50.074271272Z INFO: detected old IPv6 address: fc00:f853:ccd:e793::2
+2026-09-15T10:16:50.079731361Z INFO: starting init
+2026-09-15T10:16:50.102910576Z [!p]104[?7hsystemd 257.13-1~deb13u1 running in system mode (+PAM +AUDIT +SELINUX +APPARMOR +IMA +IPE +SMACK +SECCOMP +GCRYPT -GNUTLS +OPENSSL +ACL +BLKID +CURL +ELFUTILS +FIDO2 +IDN2 -IDN +IPTC +KMOD +LIBCRYPTSETUP +LIBCRYPTSETUP_PLUGINS +LIBFDISK +PCRE2 +PWQUALITY +P11KIT +QRENCODE +TPM2 +BZIP2 +LZ4 +XZ +ZLIB +ZSTD +BPF_FRAMEWORK +BTF -XKBCOMMON -UTMP +SYSVINIT +LIBARCHIVE)
+2026-09-15T10:16:50.102923716Z Detected virtualization wsl.
+2026-09-15T10:16:50.102925458Z Detected architecture x86-64.
+2026-09-15T10:16:50.105592367Z 
+2026-09-15T10:16:50.107848207Z [0;1;39mWelcome to [0m[1mDebian GNU/Linux 13 (trixie)[0m[0;1;39m![0m
+2026-09-15T10:16:50.107854389Z 
+2026-09-15T10:16:50.164708276Z bpf-restrict-fs: BPF LSM hook not enabled in the kernel, BPF LSM not supported.
+2026-09-15T10:16:50.259299679Z Queued start job for default target graphical.target.
+2026-09-15T10:16:50.300605474Z [[0;32m  OK  [0m] Created slice [0;1;39mkubelet.slice[0m - slice used to run Kubernetes / Kubelet.
+2026-09-15T10:16:50.301191072Z [[0;32m  OK  [0m] Created slice [0;1;39msystem-modprobe.slice[0m - Slice /system/modprobe.
+2026-09-15T10:16:50.301201855Z [[0;32m  OK  [0m] Started [0;1;39msystemd-ask-password-conso…[0mequests to Console Directory Watch.
+2026-09-15T10:16:50.301226750Z [[0;32m  OK  [0m] Set up automount [0;1;39mproc-sys-fs-binfm…[0mormats File System Automount Point.
+2026-09-15T10:16:50.301230508Z [[0;32m  OK  [0m] Reached target [0;1;39mpaths.target[0m - Path Units.
+2026-09-15T10:16:50.301232205Z [[0;32m  OK  [0m] Reached target [0;1;39mslices.target[0m - Slice Units.
+2026-09-15T10:16:50.301233163Z [[0;32m  OK  [0m] Reached target [0;1;39mswap.target[0m - Swaps.
+2026-09-15T10:16:50.301478776Z [[0;32m  OK  [0m] Listening on [0;1;39msystemd-creds.socket[0m - Credential Encryption/Decryption.
+2026-09-15T10:16:50.301485050Z [[0;32m  OK  [0m] Listening on [0;1;39msystemd-journald-dev-…socket[0m - Journal Socket (/dev/log).
+2026-09-15T10:16:50.301486778Z [[0;32m  OK  [0m] Listening on [0;1;39msystemd-journald.socket[0m - Journal Sockets.
+2026-09-15T10:16:50.302624739Z          Mounting [0;1;39mdev-hugepages.mount[0m - Huge Pages File System...
+2026-09-15T10:16:50.303564510Z          Mounting [0;1;39msys-kernel-debug.mount[0m - Kernel Debug File System...
+2026-09-15T10:16:50.307662771Z          Mounting [0;1;39msys-kernel-tracing.mount[0m - Kernel Trace File System...
+2026-09-15T10:16:50.320018492Z          Starting [0;1;39mkmod-static-nodes.service[0m…eate List of Static Device Nodes...
+2026-09-15T10:16:50.323930306Z          Starting [0;1;39mmodprobe@configfs.service[0m - Load Kernel Module configfs...
+2026-09-15T10:16:50.326905899Z          Starting [0;1;39mmodprobe@fuse.service[0m - Load Kernel Module fuse...
+2026-09-15T10:16:50.343679417Z          Starting [0;1;39msystemd-journald.service[0m - Journal Service...
+2026-09-15T10:16:50.344924607Z          Starting [0;1;39msystemd-modules-load.service[0m - Load Kernel Modules...
+2026-09-15T10:16:50.355809154Z          Starting [0;1;39msystemd-remount-fs.servic…[0munt Root and Kernel File Systems...
+2026-09-15T10:16:50.356274598Z          Starting [0;1;39msystemd-udev-load-credent…[0mLoad udev Rules from Credentials...
+2026-09-15T10:16:50.357084309Z [[0;32m  OK  [0m] Mounted [0;1;39mdev-hugepages.mount[0m - Huge Pages File System.
+2026-09-15T10:16:50.357091551Z [[0;32m  OK  [0m] Mounted [0;1;39msys-kernel-debug.mount[0m - Kernel Debug File System.
+2026-09-15T10:16:50.357149001Z [[0;32m  OK  [0m] Mounted [0;1;39msys-kernel-tracing.mount[0m - Kernel Trace File System.
+2026-09-15T10:16:50.357441590Z [[0;32m  OK  [0m] Finished [0;1;39mkmod-static-nodes.service[0m…Create List of Static Device Nodes.
+2026-09-15T10:16:50.359264548Z modprobe@configfs.service: Deactivated successfully.
+2026-09-15T10:16:50.359272626Z [[0;32m  OK  [0m] Finished [0;1;39mmodprobe@configfs.service[0m - Load Kernel Module configfs.
+2026-09-15T10:16:50.359281486Z modprobe@fuse.service: Deactivated successfully.
+2026-09-15T10:16:50.359282598Z [[0;32m  OK  [0m] Finished [0;1;39mmodprobe@fuse.service[0m - Load Kernel Module fuse.
+2026-09-15T10:16:50.359283570Z [[0;32m  OK  [0m] Finished [0;1;39msystemd-modules-load.service[0m - Load Kernel Modules.
+2026-09-15T10:16:50.359284573Z          Mounting [0;1;39msys-fs-fuse-connections.mount[0m - FUSE Control File System...
+2026-09-15T10:16:50.360103342Z          Mounting [0;1;39msys-kernel-config.mount[0m - Kernel Configuration File System...
+2026-09-15T10:16:50.361303417Z          Starting [0;1;39msystemd-sysctl.service[0m - Apply Kernel Variables...
+2026-09-15T10:16:50.363901054Z          Starting [0;1;39msystemd-tmpfiles-setup-de…[0m Device Nodes in /dev gracefully...
+2026-09-15T10:16:50.363943362Z [[0;32m  OK  [0m] Finished [0;1;39msystemd-remount-fs.servic…[0mmount Root and Kernel File Systems.
+2026-09-15T10:16:50.364955118Z [[0;32m  OK  [0m] Mounted [0;1;39msys-fs-fuse-connections.mount[0m - FUSE Control File System.
+2026-09-15T10:16:50.366516806Z [[0;32m  OK  [0m] Mounted [0;1;39msys-kernel-config.mount[0m - Kernel Configuration File System.
+2026-09-15T10:16:50.372802820Z [[0;32m  OK  [0m] Finished [0;1;39msystemd-udev-load-credent…[0m- Load udev Rules from Credentials.
+2026-09-15T10:16:50.376241735Z [[0;32m  OK  [0m] Finished [0;1;39msystemd-sysctl.service[0m - Apply Kernel Variables.
+2026-09-15T10:16:50.380250784Z [[0;32m  OK  [0m] Started [0;1;39msystemd-journald.service[0m - Journal Service.
+2026-09-15T10:16:50.381365121Z          Starting [0;1;39msystemd-journal-flush.ser…[0msh Journal to Persistent Storage...
+2026-09-15T10:16:50.387606387Z [[0;32m  OK  [0m] Finished [0;1;39msystemd-tmpfiles-setup-de…[0mic Device Nodes in /dev gracefully.
+2026-09-15T10:16:50.392943150Z          Starting [0;1;39msystemd-tmpfiles-setup-de…[0meate Static Device Nodes in /dev...
+2026-09-15T10:16:50.406142974Z [[0;32m  OK  [0m] Finished [0;1;39msystemd-journal-flush.ser…[0mlush Journal to Persistent Storage.
+2026-09-15T10:16:50.412623542Z [[0;32m  OK  [0m] Finished [0;1;39msystemd-tmpfiles-setup-de…[0mCreate Static Device Nodes in /dev.
+2026-09-15T10:16:50.412942249Z [[0;32m  OK  [0m] Reached target [0;1;39mlocal-fs-pre.target[0m…Preparation for Local File Systems.
+2026-09-15T10:16:50.412945900Z [[0;32m  OK  [0m] Reached target [0;1;39mlocal-fs.target[0m - Local File Systems.
+2026-09-15T10:16:50.413968224Z [[0;32m  OK  [0m] Listening on [0;1;39msystemd-sysext.socket[0m… System Extension Image Management.
+2026-09-15T10:16:50.414269479Z [[0;32m  OK  [0m] Reached target [0;1;39msysinit.target[0m - System Initialization.
+2026-09-15T10:16:50.414274678Z [[0;32m  OK  [0m] Started [0;1;39msystemd-tmpfiles-clean.tim…[0my Cleanup of Temporary Directories.
+2026-09-15T10:16:50.414280641Z [[0;32m  OK  [0m] Reached target [0;1;39mtimers.target[0m - Timer Units.
+2026-09-15T10:16:50.414281654Z [[0;32m  OK  [0m] Listening on [0;1;39msystemd-hostnamed.socket[0m - Hostname Service Socket.
+2026-09-15T10:16:50.414282403Z [[0;32m  OK  [0m] Reached target [0;1;39msockets.target[0m - Socket Units.
+2026-09-15T10:16:50.414283018Z [[0;32m  OK  [0m] Reached target [0;1;39mbasic.target[0m - Basic System.
+2026-09-15T10:16:50.415733208Z          Starting [0;1;39mundo-mount-hacks.service[0m - Undo KIND mount hacks...
+2026-09-15T10:16:50.421790810Z [[0;32m  OK  [0m] Finished [0;1;39mundo-mount-hacks.service[0m - Undo KIND mount hacks.
+2026-09-15T10:16:50.422860815Z          Starting [0;1;39mcontainerd.service[0m - containerd container runtime...
+2026-09-15T10:16:50.428869017Z          Starting [0;1;39mkubelet.service[0m - kubelet: The Kubernetes Node Agent...
+2026-09-15T10:16:50.476462709Z [[0;32m  OK  [0m] Started [0;1;39mkubelet.service[0m - kubelet: The Kubernetes Node Agent.
+2026-09-15T10:16:51.311768867Z [[0;32m  OK  [0m] Started [0;1;39mcontainerd.service[0m - containerd container runtime.
+2026-09-15T10:16:51.311805371Z [[0;32m  OK  [0m] Reached target [0;1;39mmulti-user.target[0m - Multi-User System.
+2026-09-15T10:16:51.311808107Z [[0;32m  OK  [0m] Reached target [0;1;39mgraphical.target[0m - Graphical Interface.
+2026-09-15T10:33:45.389313561Z INFO: ensuring we can execute mount/umount even with userns-remap
+2026-09-15T10:33:45.394501230Z INFO: remounting /sys read-only
+2026-09-15T10:33:45.395980340Z INFO: making mounts shared
+2026-09-15T10:33:45.396749339Z INFO: detected cgroup v2
+2026-09-15T10:33:45.396757771Z INFO: clearing and regenerating /etc/machine-id
+2026-09-15T10:33:45.410942911Z Initializing machine ID from random generator.
+2026-09-15T10:33:45.431238224Z INFO: setting iptables to detected mode: nft
+2026-09-15T10:33:45.487632224Z INFO: detected IPv4 address: 172.20.0.4
+2026-09-15T10:33:45.488425791Z INFO: detected old IPv4 address: 172.20.0.3
+2026-09-15T10:33:45.499271240Z INFO: detected IPv6 address: fc00:f853:ccd:e793::4
+2026-09-15T10:33:45.500327816Z INFO: detected old IPv6 address: fc00:f853:ccd:e793::3
+2026-09-15T10:33:45.506569884Z INFO: starting init
+2026-09-15T10:33:45.533792763Z [!p]104[?7hsystemd 257.13-1~deb13u1 running in system mode (+PAM +AUDIT +SELINUX +APPARMOR +IMA +IPE +SMACK +SECCOMP +GCRYPT -GNUTLS +OPENSSL +ACL +BLKID +CURL +ELFUTILS +FIDO2 +IDN2 -IDN +IPTC +KMOD +LIBCRYPTSETUP +LIBCRYPTSETUP_PLUGINS +LIBFDISK +PCRE2 +PWQUALITY +P11KIT +QRENCODE +TPM2 +BZIP2 +LZ4 +XZ +ZLIB +ZSTD +BPF_FRAMEWORK +BTF -XKBCOMMON -UTMP +SYSVINIT +LIBARCHIVE)
+2026-09-15T10:33:45.533814016Z Detected virtualization wsl.
+2026-09-15T10:33:45.533815259Z Detected architecture x86-64.
+2026-09-15T10:33:45.535767559Z 
+2026-09-15T10:33:45.535776009Z [0;1;39mWelcome to [0m[1mDebian GNU/Linux 13 (trixie)[0m[0;1;39m![0m
+2026-09-15T10:33:45.535777794Z 
+2026-09-15T10:33:45.582594350Z bpf-restrict-fs: BPF LSM hook not enabled in the kernel, BPF LSM not supported.
+2026-09-15T10:33:45.689423390Z Queued start job for default target graphical.target.
+2026-09-15T10:33:45.727751018Z [[0;32m  OK  [0m] Created slice [0;1;39mkubelet.slice[0m - slice used to run Kubernetes / Kubelet.
+2026-09-15T10:33:45.728173125Z [[0;32m  OK  [0m] Created slice [0;1;39msystem-modprobe.slice[0m - Slice /system/modprobe.
+2026-09-15T10:33:45.728220320Z [[0;32m  OK  [0m] Started [0;1;39msystemd-ask-password-conso…[0mequests to Console Directory Watch.
+2026-09-15T10:33:45.728321827Z [[0;32m  OK  [0m] Set up automount [0;1;39mproc-sys-fs-binfm…[0mormats File System Automount Point.
+2026-09-15T10:33:45.728323788Z [[0;32m  OK  [0m] Reached target [0;1;39mpaths.target[0m - Path Units.
+2026-09-15T10:33:45.728324898Z [[0;32m  OK  [0m] Reached target [0;1;39mslices.target[0m - Slice Units.
+2026-09-15T10:33:45.728325708Z [[0;32m  OK  [0m] Reached target [0;1;39mswap.target[0m - Swaps.
+2026-09-15T10:33:45.734975968Z [[0;32m  OK  [0m] Listening on [0;1;39msystemd-creds.socket[0m - Credential Encryption/Decryption.
+2026-09-15T10:33:45.734988959Z [[0;32m  OK  [0m] Listening on [0;1;39msystemd-journald-dev-…socket[0m - Journal Socket (/dev/log).
+2026-09-15T10:33:45.735192177Z [[0;32m  OK  [0m] Listening on [0;1;39msystemd-journald.socket[0m - Journal Sockets.
+2026-09-15T10:33:45.736060761Z          Mounting [0;1;39mdev-hugepages.mount[0m - Huge Pages File System...
+2026-09-15T10:33:45.736575795Z          Mounting [0;1;39msys-kernel-debug.mount[0m - Kernel Debug File System...
+2026-09-15T10:33:45.737208057Z          Mounting [0;1;39msys-kernel-tracing.mount[0m - Kernel Trace File System...
+2026-09-15T10:33:45.737959481Z          Starting [0;1;39mkmod-static-nodes.service[0m…eate List of Static Device Nodes...
+2026-09-15T10:33:45.738753868Z          Starting [0;1;39mmodprobe@configfs.service[0m - Load Kernel Module configfs...
+2026-09-15T10:33:45.739604694Z          Starting [0;1;39mmodprobe@fuse.service[0m - Load Kernel Module fuse...
+2026-09-15T10:33:45.740826874Z          Starting [0;1;39msystemd-journald.service[0m - Journal Service...
+2026-09-15T10:33:45.741724843Z          Starting [0;1;39msystemd-modules-load.service[0m - Load Kernel Modules...
+2026-09-15T10:33:45.742301630Z          Starting [0;1;39msystemd-remount-fs.servic…[0munt Root and Kernel File Systems...
+2026-09-15T10:33:45.743284275Z          Starting [0;1;39msystemd-udev-load-credent…[0mLoad udev Rules from Credentials...
+2026-09-15T10:33:45.744314644Z [[0;32m  OK  [0m] Finished [0;1;39mkmod-static-nodes.service[0m…Create List of Static Device Nodes.
+2026-09-15T10:33:45.744425806Z modprobe@configfs.service: Deactivated successfully.
+2026-09-15T10:33:45.744553445Z [[0;32m  OK  [0m] Finished [0;1;39mmodprobe@configfs.service[0m - Load Kernel Module configfs.
+2026-09-15T10:33:45.744730834Z modprobe@fuse.service: Deactivated successfully.
+2026-09-15T10:33:45.744881461Z [[0;32m  OK  [0m] Finished [0;1;39mmodprobe@fuse.service[0m - Load Kernel Module fuse.
+2026-09-15T10:33:45.745514684Z          Mounting [0;1;39msys-fs-fuse-connections.mount[0m - FUSE Control File System...
+2026-09-15T10:33:45.745958974Z          Mounting [0;1;39msys-kernel-config.mount[0m - Kernel Configuration File System...
+2026-09-15T10:33:45.746666399Z          Starting [0;1;39msystemd-tmpfiles-setup-de…[0m Device Nodes in /dev gracefully...
+2026-09-15T10:33:45.748011010Z [[0;32m  OK  [0m] Finished [0;1;39msystemd-remount-fs.servic…[0mmount Root and Kernel File Systems.
+2026-09-15T10:33:45.753392126Z [[0;32m  OK  [0m] Finished [0;1;39msystemd-modules-load.service[0m - Load Kernel Modules.
+2026-09-15T10:33:45.753408266Z          Starting [0;1;39msystemd-sysctl.service[0m - Apply Kernel Variables...
+2026-09-15T10:33:45.753409835Z [[0;32m  OK  [0m] Mounted [0;1;39mdev-hugepages.mount[0m - Huge Pages File System.
+2026-09-15T10:33:45.753410881Z [[0;32m  OK  [0m] Mounted [0;1;39msys-kernel-tracing.mount[0m - Kernel Trace File System.
+2026-09-15T10:33:45.754346857Z [[0;32m  OK  [0m] Mounted [0;1;39msys-kernel-debug.mount[0m - Kernel Debug File System.
+2026-09-15T10:33:45.756375981Z [[0;32m  OK  [0m] Finished [0;1;39msystemd-udev-load-credent…[0m- Load udev Rules from Credentials.
+2026-09-15T10:33:45.762977620Z [[0;32m  OK  [0m] Mounted [0;1;39msys-fs-fuse-connections.mount[0m - FUSE Control File System.
+2026-09-15T10:33:45.762995407Z [[0;32m  OK  [0m] Mounted [0;1;39msys-kernel-config.mount[0m - Kernel Configuration File System.
+2026-09-15T10:33:45.765989068Z [[0;32m  OK  [0m] Finished [0;1;39msystemd-sysctl.service[0m - Apply Kernel Variables.
+2026-09-15T10:33:45.766147710Z [[0;32m  OK  [0m] Started [0;1;39msystemd-journald.service[0m - Journal Service.
+2026-09-15T10:33:45.778762096Z          Starting [0;1;39msystemd-journal-flush.ser…[0msh Journal to Persistent Storage...
+2026-09-15T10:33:45.787840608Z [[0;32m  OK  [0m] Finished [0;1;39msystemd-tmpfiles-setup-de…[0mic Device Nodes in /dev gracefully.
+2026-09-15T10:33:45.791318663Z          Starting [0;1;39msystemd-tmpfiles-setup-de…[0meate Static Device Nodes in /dev...
+2026-09-15T10:33:45.792916646Z [[0;32m  OK  [0m] Finished [0;1;39msystemd-journal-flush.ser…[0mlush Journal to Persistent Storage.
+2026-09-15T10:33:45.802360494Z [[0;32m  OK  [0m] Finished [0;1;39msystemd-tmpfiles-setup-de…[0mCreate Static Device Nodes in /dev.
+2026-09-15T10:33:45.802706233Z [[0;32m  OK  [0m] Reached target [0;1;39mlocal-fs-pre.target[0m…Preparation for Local File Systems.
+2026-09-15T10:33:45.802864098Z [[0;32m  OK  [0m] Reached target [0;1;39mlocal-fs.target[0m - Local File Systems.
+2026-09-15T10:33:45.804085434Z [[0;32m  OK  [0m] Listening on [0;1;39msystemd-sysext.socket[0m… System Extension Image Management.
+2026-09-15T10:33:45.804666484Z [[0;32m  OK  [0m] Reached target [0;1;39msysinit.target[0m - System Initialization.
+2026-09-15T10:33:45.804672530Z [[0;32m  OK  [0m] Started [0;1;39msystemd-tmpfiles-clean.tim…[0my Cleanup of Temporary Directories.
+2026-09-15T10:33:45.804674171Z [[0;32m  OK  [0m] Reached target [0;1;39mtimers.target[0m - Timer Units.
+2026-09-15T10:33:45.804919953Z [[0;32m  OK  [0m] Listening on [0;1;39msystemd-hostnamed.socket[0m - Hostname Service Socket.
+2026-09-15T10:33:45.804926775Z [[0;32m  OK  [0m] Reached target [0;1;39msockets.target[0m - Socket Units.
+2026-09-15T10:33:45.804928296Z [[0;32m  OK  [0m] Reached target [0;1;39mbasic.target[0m - Basic System.
+2026-09-15T10:33:45.806281724Z          Starting [0;1;39mundo-mount-hacks.service[0m - Undo KIND mount hacks...
+2026-09-15T10:33:45.811986202Z [[0;32m  OK  [0m] Finished [0;1;39mundo-mount-hacks.service[0m - Undo KIND mount hacks.
+2026-09-15T10:33:45.813449212Z          Starting [0;1;39mcontainerd.service[0m - containerd container runtime...
+2026-09-15T10:33:45.816970441Z          Starting [0;1;39mkubelet.service[0m - kubelet: The Kubernetes Node Agent...
+2026-09-15T10:33:45.827857225Z [[0;32m  OK  [0m] Started [0;1;39mkubelet.service[0m - kubelet: The Kubernetes Node Agent.
+2026-09-15T10:33:46.364536199Z [[0;32m  OK  [0m] Started [0;1;39mcontainerd.service[0m - containerd container runtime.
+2026-09-15T10:33:46.364559930Z [[0;32m  OK  [0m] Reached target [0;1;39mmulti-user.target[0m - Multi-User System.
+2026-09-15T10:33:46.364561841Z [[0;32m  OK  [0m] Reached target [0;1;39mgraphical.target[0m - Graphical Interface.
+2026-09-15T11:34:06.176245067Z INFO: ensuring we can execute mount/umount even with userns-remap
+2026-09-15T11:34:06.190231384Z INFO: remounting /sys read-only
+2026-09-15T11:34:06.199675217Z INFO: making mounts shared
+2026-09-15T11:34:06.200821890Z INFO: detected cgroup v2
+2026-09-15T11:34:06.200849161Z INFO: clearing and regenerating /etc/machine-id
+2026-09-15T11:34:06.244278161Z Initializing machine ID from random generator.
+2026-09-15T11:34:06.295384863Z INFO: setting iptables to detected mode: nft
+2026-09-15T11:34:06.375348805Z INFO: detected IPv4 address: 172.20.0.2
+2026-09-15T11:34:06.376577263Z INFO: detected old IPv4 address: 172.20.0.4
+2026-09-15T11:34:06.389562994Z INFO: detected IPv6 address: fc00:f853:ccd:e793::2
+2026-09-15T11:34:06.390333340Z INFO: detected old IPv6 address: fc00:f853:ccd:e793::4
+2026-09-15T11:34:06.395220187Z INFO: starting init
+2026-09-15T11:34:06.399321844Z [!p]104[?7hsystemd 257.13-1~deb13u1 running in system mode (+PAM +AUDIT +SELINUX +APPARMOR +IMA +IPE +SMACK +SECCOMP +GCRYPT -GNUTLS +OPENSSL +ACL +BLKID +CURL +ELFUTILS +FIDO2 +IDN2 -IDN +IPTC +KMOD +LIBCRYPTSETUP +LIBCRYPTSETUP_PLUGINS +LIBFDISK +PCRE2 +PWQUALITY +P11KIT +QRENCODE +TPM2 +BZIP2 +LZ4 +XZ +ZLIB +ZSTD +BPF_FRAMEWORK +BTF -XKBCOMMON -UTMP +SYSVINIT +LIBARCHIVE)
+2026-09-15T11:34:06.399333533Z Detected virtualization wsl.
+2026-09-15T11:34:06.399335042Z Detected architecture x86-64.
+2026-09-15T11:34:06.400963461Z 
+2026-09-15T11:34:06.400979905Z [0;1;39mWelcome to [0m[1mDebian GNU/Linux 13 (trixie)[0m[0;1;39m![0m
+2026-09-15T11:34:06.400981633Z 
+2026-09-15T11:34:06.818217109Z bpf-restrict-fs: BPF LSM hook not enabled in the kernel, BPF LSM not supported.
+2026-09-15T11:34:06.951653555Z Queued start job for default target graphical.target.
+2026-09-15T11:34:06.987170113Z [[0;32m  OK  [0m] Created slice [0;1;39mkubelet.slice[0m - slice used to run Kubernetes / Kubelet.
+2026-09-15T11:34:06.987922020Z [[0;32m  OK  [0m] Created slice [0;1;39msystem-modprobe.slice[0m - Slice /system/modprobe.
+2026-09-15T11:34:06.987947610Z [[0;32m  OK  [0m] Started [0;1;39msystemd-ask-password-conso…[0mequests to Console Directory Watch.
+2026-09-15T11:34:06.988087830Z [[0;32m  OK  [0m] Set up automount [0;1;39mproc-sys-fs-binfm…[0mormats File System Automount Point.
+2026-09-15T11:34:06.988094585Z [[0;32m  OK  [0m] Reached target [0;1;39mpaths.target[0m - Path Units.
+2026-09-15T11:34:06.988096203Z [[0;32m  OK  [0m] Reached target [0;1;39mslices.target[0m - Slice Units.
+2026-09-15T11:34:06.988097494Z [[0;32m  OK  [0m] Reached target [0;1;39mswap.target[0m - Swaps.
+2026-09-15T11:34:06.988649260Z [[0;32m  OK  [0m] Listening on [0;1;39msystemd-creds.socket[0m - Credential Encryption/Decryption.
+2026-09-15T11:34:06.988947411Z [[0;32m  OK  [0m] Listening on [0;1;39msystemd-journald-dev-…socket[0m - Journal Socket (/dev/log).
+2026-09-15T11:34:06.988955684Z [[0;32m  OK  [0m] Listening on [0;1;39msystemd-journald.socket[0m - Journal Sockets.
+2026-09-15T11:34:06.989830134Z          Mounting [0;1;39mdev-hugepages.mount[0m - Huge Pages File System...
+2026-09-15T11:34:06.990935975Z          Mounting [0;1;39msys-kernel-debug.mount[0m - Kernel Debug File System...
+2026-09-15T11:34:06.992463183Z          Mounting [0;1;39msys-kernel-tracing.mount[0m - Kernel Trace File System...
+2026-09-15T11:34:06.994284161Z          Starting [0;1;39mkmod-static-nodes.service[0m…eate List of Static Device Nodes...
+2026-09-15T11:34:06.998143915Z          Starting [0;1;39mmodprobe@configfs.service[0m - Load Kernel Module configfs...
+2026-09-15T11:34:06.998695175Z          Starting [0;1;39mmodprobe@fuse.service[0m - Load Kernel Module fuse...
+2026-09-15T11:34:06.999890622Z          Starting [0;1;39msystemd-journald.service[0m - Journal Service...
+2026-09-15T11:34:07.001286684Z          Starting [0;1;39msystemd-modules-load.service[0m - Load Kernel Modules...
+2026-09-15T11:34:07.001437120Z          Starting [0;1;39msystemd-remount-fs.servic…[0munt Root and Kernel File Systems...
+2026-09-15T11:34:07.002166279Z          Starting [0;1;39msystemd-udev-load-credent…[0mLoad udev Rules from Credentials...
+2026-09-15T11:34:07.002824490Z [[0;32m  OK  [0m] Finished [0;1;39mkmod-static-nodes.service[0m…Create List of Static Device Nodes.
+2026-09-15T11:34:07.003014929Z modprobe@configfs.service: Deactivated successfully.
+2026-09-15T11:34:07.003019810Z [[0;32m  OK  [0m] Finished [0;1;39mmodprobe@configfs.service[0m - Load Kernel Module configfs.
+2026-09-15T11:34:07.003197512Z modprobe@fuse.service: Deactivated successfully.
+2026-09-15T11:34:07.003210704Z [[0;32m  OK  [0m] Finished [0;1;39mmodprobe@fuse.service[0m - Load Kernel Module fuse.
+2026-09-15T11:34:07.003937120Z          Mounting [0;1;39msys-fs-fuse-connections.mount[0m - FUSE Control File System...
+2026-09-15T11:34:07.005765771Z          Mounting [0;1;39msys-kernel-config.mount[0m - Kernel Configuration File System...
+2026-09-15T11:34:07.006431272Z          Starting [0;1;39msystemd-tmpfiles-setup-de…[0m Device Nodes in /dev gracefully...
+2026-09-15T11:34:07.007306748Z [[0;32m  OK  [0m] Finished [0;1;39msystemd-remount-fs.servic…[0mmount Root and Kernel File Systems.
+2026-09-15T11:34:07.011908996Z [[0;32m  OK  [0m] Mounted [0;1;39mdev-hugepages.mount[0m - Huge Pages File System.
+2026-09-15T11:34:07.011922073Z [[0;32m  OK  [0m] Mounted [0;1;39msys-kernel-debug.mount[0m - Kernel Debug File System.
+2026-09-15T11:34:07.012087446Z [[0;32m  OK  [0m] Finished [0;1;39msystemd-modules-load.service[0m - Load Kernel Modules.
+2026-09-15T11:34:07.012544107Z [[0;32m  OK  [0m] Mounted [0;1;39msys-fs-fuse-connections.mount[0m - FUSE Control File System.
+2026-09-15T11:34:07.012545495Z [[0;32m  OK  [0m] Mounted [0;1;39msys-kernel-config.mount[0m - Kernel Configuration File System.
+2026-09-15T11:34:07.012933626Z          Starting [0;1;39msystemd-sysctl.service[0m - Apply Kernel Variables...
+2026-09-15T11:34:07.015127234Z [[0;32m  OK  [0m] Mounted [0;1;39msys-kernel-tracing.mount[0m - Kernel Trace File System.
+2026-09-15T11:34:07.015675560Z [[0;32m  OK  [0m] Finished [0;1;39msystemd-udev-load-credent…[0m- Load udev Rules from Credentials.
+2026-09-15T11:34:07.024663579Z [[0;32m  OK  [0m] Finished [0;1;39msystemd-sysctl.service[0m - Apply Kernel Variables.
+2026-09-15T11:34:07.025115362Z [[0;32m  OK  [0m] Started [0;1;39msystemd-journald.service[0m - Journal Service.
+2026-09-15T11:34:07.026375640Z [[0;32m  OK  [0m] Finished [0;1;39msystemd-tmpfiles-setup-de…[0mic Device Nodes in /dev gracefully.
+2026-09-15T11:34:07.031288138Z          Starting [0;1;39msystemd-journal-flush.ser…[0msh Journal to Persistent Storage...
+2026-09-15T11:34:07.032066036Z          Starting [0;1;39msystemd-tmpfiles-setup-de…[0meate Static Device Nodes in /dev...
+2026-09-15T11:34:07.038465599Z [[0;32m  OK  [0m] Finished [0;1;39msystemd-journal-flush.ser…[0mlush Journal to Persistent Storage.
+2026-09-15T11:34:07.038794529Z [[0;32m  OK  [0m] Finished [0;1;39msystemd-tmpfiles-setup-de…[0mCreate Static Device Nodes in /dev.
+2026-09-15T11:34:07.039382751Z [[0;32m  OK  [0m] Reached target [0;1;39mlocal-fs-pre.target[0m…Preparation for Local File Systems.
+2026-09-15T11:34:07.039389573Z [[0;32m  OK  [0m] Reached target [0;1;39mlocal-fs.target[0m - Local File Systems.
+2026-09-15T11:34:07.039737643Z [[0;32m  OK  [0m] Listening on [0;1;39msystemd-sysext.socket[0m… System Extension Image Management.
+2026-09-15T11:34:07.039973549Z [[0;32m  OK  [0m] Reached target [0;1;39msysinit.target[0m - System Initialization.
+2026-09-15T11:34:07.039978861Z [[0;32m  OK  [0m] Started [0;1;39msystemd-tmpfiles-clean.tim…[0my Cleanup of Temporary Directories.
+2026-09-15T11:34:07.039980546Z [[0;32m  OK  [0m] Reached target [0;1;39mtimers.target[0m - Timer Units.
+2026-09-15T11:34:07.039981659Z [[0;32m  OK  [0m] Listening on [0;1;39msystemd-hostnamed.socket[0m - Hostname Service Socket.
+2026-09-15T11:34:07.039982332Z [[0;32m  OK  [0m] Reached target [0;1;39msockets.target[0m - Socket Units.
+2026-09-15T11:34:07.039983004Z [[0;32m  OK  [0m] Reached target [0;1;39mbasic.target[0m - Basic System.
+2026-09-15T11:34:07.040857880Z          Starting [0;1;39mundo-mount-hacks.service[0m - Undo KIND mount hacks...
+2026-09-15T11:34:07.046413688Z [[0;32m  OK  [0m] Finished [0;1;39mundo-mount-hacks.service[0m - Undo KIND mount hacks.
+2026-09-15T11:34:07.047263206Z          Starting [0;1;39mcontainerd.service[0m - containerd container runtime...
+2026-09-15T11:34:07.049001373Z          Starting [0;1;39mkubelet.service[0m - kubelet: The Kubernetes Node Agent...
+2026-09-15T11:34:07.063571078Z [[0;32m  OK  [0m] Started [0;1;39mkubelet.service[0m - kubelet: The Kubernetes Node Agent.
+2026-09-15T11:34:07.580975137Z [[0;32m  OK  [0m] Started [0;1;39mcontainerd.service[0m - containerd container runtime.
+2026-09-15T11:34:07.580995445Z [[0;32m  OK  [0m] Reached target [0;1;39mmulti-user.target[0m - Multi-User System.
+2026-09-15T11:34:07.580997006Z [[0;32m  OK  [0m] Reached target [0;1;39mgraphical.target[0m - Graphical Interface.

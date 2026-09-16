@@ -1,0 +1,2 @@
+[deploy 09:18:27] WARN: could not drop page cache (needs root); continuing
+[deploy 09:18:27] neuchain down (image and .cache/crypto kept; 'docker rmi' / rm -rf .cache to reclaim)

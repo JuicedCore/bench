@@ -40,8 +40,8 @@ mapped onto the platform's own primitive.
 | Workload | fabric-cft / fabric-bft | Drunix | Fabric-X | NeuChain |
 | -------- | ----------------------- | ------ | -------- | -------- |
 | `kv-write` | chaincode `Put` | chaincode `Put`, value JSON-wrapped | blind write in namespace `0` | YCSB update |
-| `transfer` | chaincode `Transfer`: read-modify-write on two accounts, balance computed | same as Fabric | two-key read/write set carrying the workload's values (no chaincode, no computed balance) | two-key read + update set |
-| `kv-read` | **evaluate on one peer** — no ordering, no commit | same as Fabric | full transaction through ordering and commit, plus a dummy write (read-only txs are rejected) | full transaction with a read set, through commit |
+| `transfer` | chaincode `Transfer`: read-modify-write on two accounts, balance computed | same as Fabric | two-key read/write set carrying the workload's values (no chaincode, no computed balance; live `Value` is empty) | **not implemented** — YCSB is one key per call; Submit fails ([payload-and-state.md](../workloads/payload-and-state.md)) |
+| `kv-read` | **evaluate on one peer** — no ordering, no commit | same as Fabric | QueryService `GetRows` — no ordering, no commit, no dummy write | full transaction with a read set, through commit |
 
 Adapters: `pkg/adapters/fabric`, `pkg/adapters/drunix`, `pkg/adapters/fabricx`,
 `pkg/adapters/neuchain`.
@@ -50,7 +50,7 @@ Adapters: `pkg/adapters/fabric`, `pkg/adapters/drunix`, `pkg/adapters/fabricx`,
 
 | Gap | What differs | Effect on the numbers | How it is surfaced |
 | --- | ------------ | --------------------- | ------------------ |
-| **Reads** | Fabric and Drunix answer a read from one peer without ordering or committing it; Fabric-X and NeuChain order and commit every read. | Fabric-family read throughput and latency are **not comparable** with Fabric-X or NeuChain, and favour Fabric by construction. This affects `read-profile` and also `multi-client`, which is 50% reads. | **Not caveated automatically.** Do not quote those two modes across families. |
+| **Reads** | Fabric and Drunix answer a read from one peer without ordering or committing it; Fabric-X does the same via QueryService.GetRows (PostgreSQL). NeuChain orders and commits every read. | Fabric-family and Fabric-X read numbers are comparable as point lookups, with the state-DB caveat. They are **not comparable** with NeuChain, and favour the query path by construction vs a committed read. This affects `read-profile` and `multi-client` (50% reads) vs NeuChain. | **Not caveated automatically.** Do not quote those two modes against NeuChain. |
 | **State DB** | LevelDB is requested for every normalized run. fabric-cft, fabric-bft and NeuChain use it. Drunix runs YugabyteDB (its shipped network cannot run LevelDB). Fabric-X runs PostgreSQL, its only state store. | Different storage engines under the same workload; write-heavy numbers are the most exposed. | Automatic: manifest `state_db` vs `state_db_requested`, plus a caveat on the run and in the report. |
 | **Block cutting** | The Fabric family applies the full shared setting: 100 messages, 1 s, 2 MB preferred / 10 MB absolute. Fabric-X applies the message count and timeout but **not the byte limits**. NeuChain applies **nothing** — its batching is not wired to the profile, and its deploy is still placeholder. | Block formation, and so throughput and latency, is only truly matched within the Fabric family. | **Not caveated automatically.** Treat cross-family throughput as carrying this. |
 | **Cryptography** | Fabric and Drunix verify an ECDSA-P256 endorsement on every transaction. Fabric-X verifies a client-signed ECDSA-P256 endorsement, with no peer endorsement round-trip. NeuChain signs with RSA-1024 and has no endorsement phase. | Per-transaction verification cost differs by architecture. This is disclosed, not equalized, by design. | Manifest `crypto`; footnoted under every table in the report. |
@@ -63,8 +63,8 @@ Adapters: `pkg/adapters/fabric`, `pkg/adapters/drunix`, `pkg/adapters/fabricx`,
 | ---- | ------------------------ | --------------------------------------- |
 | `quick-smoke`, `probe-sweep`, `throughput-scan`, `latency-profile` (kv-write) | yes | yes, with the state-DB and block-cutting caveats |
 | `contention` (transfer) | yes | yes, with those caveats — and Fabric-X writes values rather than computing balances |
-| `read-profile` (kv-read) | yes | **no** |
-| `multi-client` (kv-mixed, 50% reads) | yes | **no** |
+| `read-profile` (kv-read) | yes | vs Fabric-X: yes, with the state-DB caveat; vs NeuChain: **no** |
+| `multi-client` (kv-mixed, 50% reads) | yes | vs Fabric-X: yes, with those caveats; vs NeuChain: **no** |
 
 Always subject to the per-run rejection rules in fairness-guarantees.md: the
 comparison report excludes runs that fail them and says why.

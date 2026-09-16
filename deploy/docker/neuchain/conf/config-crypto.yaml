@@ -54,3 +54,25 @@ server_data:
 epoch_data:
   public_crt: crypto/epoch.public.key
   private_crt: crypto/epoch.private.key
+
+# Required by `user -b` after keygen (YAML::InvalidNode without it).
+cc_config:
+  table_name: user_table
+  field_count: 10
+  field_length_distribution: constant
+  field_length: 100
+  max_scan_len: 1000
+  scan_len_distribution: uniform
+  insert_start: 0
+  zipfian_const: 0.99
+  ordered_inserts: false
+  record_count: 1000000
+  operation_count: 10000
+  read_all_fields: true
+  write_all_fields: false
+  read_proportion: 0.50
+  update_proportion: 0.50
+  insert_proportion: 0.00
+  scan_proportion: 0.00
+  read_modify_write_proportion: 0.0
+  request_distribution: zipfian

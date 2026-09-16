@@ -1,0 +1,44 @@
+run:        probe-sweep
+platform:   drunix  (version drunix-ddc0eae77815)
+workload:   kv-write   normalized=true
+profile:    local   state_db=yugabyte (requested leveldb - PARITY NOT HELD)
+resources:  11 CPU / 11 GB total over 13 containers (0.85 CPU each; memory by role weight peer=4 statedb=4 orderer=2 other=1)
+              1408m    cp.org1
+              1408m    cp.org2
+              352m     dev-peer0.org1.example.com-kvstore_1.0-e88284a33ff8806958375f99312782794164d62aac26fe22876f2c72fb6294d9
+              352m     dev-peer0.org2.example.com-kvstore_1.0-e88284a33ff8806958375f99312782794164d62aac26fe22876f2c72fb6294d9
+              352m     hlf_keydb_org1msp
+              352m     hlf_keydb_org2msp
+              1408m    lp1.org1
+              1408m    lp1.org2
+              704m     orderer.example.com
+              352m     vs1.org1
+              352m     vs1.org2
+              1408m    yugabyte-org1
+              1408m    yugabyte-org2
+batch:      msgcount=100 timeout=1s preferred=2 MB
+crypto:     sig=ECDSA-P256 hash=SHA-256 per_tx_endorse_verify=true
+caveats:
+  - drunix ran on YugabyteDB (its shipped test-network default); LevelDB parity is unavailable, so the state-DB variable is NOT held constant vs fabric-cft for this run
+  - drunix write values are JSON-wrapped client-side to survive a YugabyteDB statedb bug (non-JSON values panic the Committing Peer); the on-wire payload format differs from the shared kv workload on other platforms for this run
+  - state-db parity not held: run requested leveldb, platform actually ran yugabyte
+  - platform container lp1.org1 was OOM-killed at its memory limit and exited (after 10:53:42, exit code 137)
+  - platform container dev-peer0.org1.example.com-kvstore_1.0-e88284a33ff8806958375f99312782794164d62aac26fe22876f2c72fb6294d9 exited (after 10:53:41, status exited, exit code 2)
+  - run stopped during sweep-2000 because a platform container failed; phases never run: sweep-3500, sweep-5000, sweep-7500, sweep-10000, hold
+  - 4262 latency observations were out of range (negative: T3 before T1/T2, usually adapter or clock timestamp error; or above 5 min) and were clamped
+  - native metrics scrape of http://localhost:9444/metrics failed: Get "http://localhost:9444/metrics": dial tcp 127.0.0.1:9444: connect: connection refused (informational metrics only; harness numbers unaffected)
+
+phase           offered     conf_tps  goodput  fail_rate    e2e_p50    e2e_p99    gap_p99    com_p50  verdict
+probe                10         10.0     100%     0.0000    1167.36    2967.55       1.10    1162.24  
+sweep-100           100        100.0     100%     0.0000    1341.44    2260.99       1.15    1335.30  held
+sweep-250           250        250.0     100%     0.0000     678.91    1080.32       1.10     675.84  held
+sweep-500           500        500.0     100%     0.0000     499.97     694.27       1.08     496.38  held
+sweep-1000         1000        716.0      72%     0.2840   11116.54   11255.81       1.08   11108.35  failure rate 28.40% > 2.00%
+sweep-2000         2000          0.0       0%     1.0000       0.00       0.00       0.00       0.00  failure rate 100.00% > 2.00%
+
+errors sweep-1000       4260 x not sent: N transactions already in flight (platform is not finalizing)
+errors sweep-2000      30000 x endorse Put: rpc error: code = Unavailable desc = connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:7051: connect: connection refused"
+PLATFORM FAILURE  lp1.org1 was OOM-killed at its memory limit and exited (after 10:53:42, exit code 137)
+PLATFORM FAILURE  dev-peer0.org1.example.com-kvstore_1.0-e88284a33ff8806958375f99312782794164d62aac26fe22876f2c72fb6294d9 exited (after 10:53:41, status exited, exit code 2)
+detected saturation: ~500 offered TPS
+HEADLINE  none - the run did not complete a headline phase on a healthy platform

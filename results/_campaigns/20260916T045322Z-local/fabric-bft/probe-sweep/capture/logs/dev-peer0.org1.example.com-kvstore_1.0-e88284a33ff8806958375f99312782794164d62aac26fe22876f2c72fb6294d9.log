@@ -1,0 +1,5 @@
+2026-09-16T05:15:16.717657511Z panic: start kvstore chaincode: receive failed: rpc error: code = Unavailable desc = error reading from server: EOF
+2026-09-16T05:15:16.717679669Z 
+2026-09-16T05:15:16.717681096Z goroutine 1 [running]:
+2026-09-16T05:15:16.717682125Z main.main()
+2026-09-16T05:15:16.717684994Z 	/chaincode/input/src/kvstore.go:126 +0xac

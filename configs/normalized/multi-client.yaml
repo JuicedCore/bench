@@ -80,16 +80,18 @@ adapter:
   channel: "${BENCH_ADAPTER_CHANNEL}"
   chaincode: "${BENCH_ADAPTER_CHAINCODE}"
   # fabricx: native gRPC. Submit by broadcasting to the Arma router, read
-  # finality from the sidecar's deliver stream. signing_key_path is the key whose
-  # public half is registered as the namespace policy at deploy time.
+  # finality from the sidecar's deliver stream. kv-read uses QueryService
+  # GetRows (query_endpoint). signing_key_path is the key whose public half is
+  # registered as the namespace policy at deploy time.
   broadcast_endpoint: "${BENCH_ADAPTER_BROADCAST_ENDPOINT}"
   deliver_endpoint: "${BENCH_ADAPTER_DELIVER_ENDPOINT}"
+  query_endpoint: "${BENCH_ADAPTER_QUERY_ENDPOINT}"
   channel_id: "${BENCH_ADAPTER_CHANNEL_ID}"
   namespace: "${BENCH_ADAPTER_NAMESPACE}"
   signing_key_path: "${BENCH_ADAPTER_SIGNING_KEY_PATH}"
-  # neuchain
+  # neuchain (query_endpoint above is also NeuChain's tip/block query; the
+  # platform under test's connection.env fills BENCH_ADAPTER_QUERY_ENDPOINT)
   block_servers: "${BENCH_ADAPTER_BLOCK_SERVERS}"
-  query_endpoint: "${BENCH_ADAPTER_QUERY_ENDPOINT}"
   user_priv_key_path: "${BENCH_ADAPTER_USER_PRIV_KEY_PATH}"
   user_pub_key_path: "${BENCH_ADAPTER_USER_PUB_KEY_PATH}"
   table_name: "${BENCH_ADAPTER_TABLE_NAME}"

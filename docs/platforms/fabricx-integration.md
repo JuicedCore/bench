@@ -97,9 +97,10 @@ compose `env_file`) for that reason; exporting them only in `run.sh` breaks it.
   platform, so we must apply ours instead — see `deploy/profiles/*.yaml`
   `orderer_batch`. The reference's published numbers are therefore a proven recipe,
   not results we can adopt.
-- **Reads need a write.** The validator rejects read-only transactions with
-  `MALFORMED_NO_WRITES`. `kv-read` must carry a unique dummy blind-write, which is
-  overhead no other platform pays; it belongs in the run caveats.
+- **Reads use QueryService.** A read-only transaction is rejected with
+  `MALFORMED_NO_WRITES`. `kv-read` calls `GetRows` on `:7001` (no dummy write).
+  That is the platform's default point-lookup path; it belongs in the run
+  caveats only as the state-DB difference vs Fabric Evaluate.
 - **Version skew is the recurring trap here.** Keep orderer, committer, tools and
   loadgen on one coherent set; upstream's own sample stacks pin mismatched versions.
 

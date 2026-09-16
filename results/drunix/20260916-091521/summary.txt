@@ -1,0 +1,30 @@
+run:        quick-smoke
+platform:   drunix  (version drunix-ddc0eae77815)
+workload:   kv-write   normalized=true
+profile:    local   state_db=yugabyte (requested leveldb - PARITY NOT HELD)
+resources:  11 CPU / 11 GB total over 13 containers (0.85 CPU each; memory by role weight peer=4 statedb=4 orderer=2 other=1)
+              1408m    cp.org1
+              1408m    cp.org2
+              352m     dev-peer0.org1.example.com-kvstore_1.0-e88284a33ff8806958375f99312782794164d62aac26fe22876f2c72fb6294d9
+              352m     dev-peer0.org2.example.com-kvstore_1.0-e88284a33ff8806958375f99312782794164d62aac26fe22876f2c72fb6294d9
+              352m     hlf_keydb_org1msp
+              352m     hlf_keydb_org2msp
+              1408m    lp1.org1
+              1408m    lp1.org2
+              704m     orderer.example.com
+              352m     vs1.org1
+              352m     vs1.org2
+              1408m    yugabyte-org1
+              1408m    yugabyte-org2
+batch:      msgcount=100 timeout=1s preferred=2 MB
+crypto:     sig=ECDSA-P256 hash=SHA-256 per_tx_endorse_verify=true
+caveats:
+  - drunix ran on YugabyteDB (its shipped test-network default); LevelDB parity is unavailable, so the state-DB variable is NOT held constant vs fabric-cft for this run
+  - drunix write values are JSON-wrapped client-side to survive a YugabyteDB statedb bug (non-JSON values panic the Committing Peer); the on-wire payload format differs from the shared kv workload on other platforms for this run
+  - state-db parity not held: run requested leveldb, platform actually ran yugabyte
+  - native metrics scrape of http://localhost:9444/metrics failed: scrape http://localhost:9444/metrics: parser panic: Invalid name validation scheme requested: unset (informational metrics only; harness numbers unaffected)
+
+phase           offered     conf_tps  goodput  fail_rate    e2e_p50    e2e_p99    gap_p99    com_p50  verdict
+single               50         50.0     100%     0.0000    1149.95    2154.50       1.09    1144.83  
+
+HEADLINE  confirmed_tps=50.0  fail_rate=0.0000  e2e p50/p99=1149.95/2154.50 ms  invariant_ok=true

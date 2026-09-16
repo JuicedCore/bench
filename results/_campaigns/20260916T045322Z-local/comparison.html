@@ -1,0 +1,27 @@
+<title>Benchmark Comparison</title>
+<style>
+:root{--bg:#fafaf7;--fg:#1d1d1b;--mute:#6b6b66;--line:#dedcd4;--head:#efede6;--warn:#8a5a00;--bad:#a1261a;--good:#1f6b3a}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#171716;--fg:#ecebe6;--mute:#9a9a93;--line:#34332f;--head:#23221f;--warn:#e0a93b;--bad:#f07b6c;--good:#6cc48a}}
+:root[data-theme=dark]{--bg:#171716;--fg:#ecebe6;--mute:#9a9a93;--line:#34332f;--head:#23221f;--warn:#e0a93b;--bad:#f07b6c;--good:#6cc48a}
+body{background:var(--bg);color:var(--fg);font:14px/1.45 system-ui,sans-serif;margin:0 auto;max-width:1100px;padding:2rem 1.2rem}
+h1{font-size:1.5rem;margin:0 0 .3rem}h2{font-size:1.15rem;margin:2.2rem 0 .4rem;border-top:1px solid var(--line);padding-top:1rem}
+h3{font-size:1rem;margin:1.6rem 0 .3rem}.mute{color:var(--mute)}.scroll{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums}
+th,td{border-bottom:1px solid var(--line);padding:.35rem .55rem;text-align:right;white-space:nowrap}
+th{background:var(--head);font-weight:600}td:first-child,th:first-child{text-align:left}
+.warn{color:var(--warn)}.bad{color:var(--bad)}.good{color:var(--good)}
+ul{margin:.3rem 0 .3rem 1.1rem;padding:0}li{margin:.1rem 0}details{margin:.4rem 0}
+</style>
+<h1>Cross-platform benchmark comparison</h1>
+<p class=mute>Generated 2026-09-16 11:10 from <code>/home/chad/Projects/bench/results</code>, runs since 2026-09-16 10:23. 4 runs found, 2 comparable, 2 excluded.</p>
+<p class=mute>Harness-level metrics only: confirmed TPS, end-to-end latency (scheduled send to observed commit), failure rate. Platform-native breakdowns are excluded by design. Each figure is the median over comparable replicates; the spread column is min&ndash;max.</p>
+<h2>Normalized comparison</h2><p class=mute>Identical workload, key space, seed, windows, sweep ladder, orderer batch parameters and total resource budget on every platform. This is the head-to-head.</p>
+<h3>probe-sweep &middot; kv-write <span class=mute>(profile local)</span></h3>
+<div class=scroll><table><tr><th>platform<th>confirmed TPS (hold)<th>spread<th>saturation TPS<th>e2e p50 ms<th>e2e p99 ms<th>fail rate<th>runs</tr>
+<tr><td>fabricx<td>4500.0<td>&ndash;<td>5000<td>670.7<td>1112.1<td>0.0000<td>1 <span class=warn title="single run: no replicate, spread unknown">&#9888;</span></tr>
+<tr><td>fabric-cft<td>1800.0<td>&ndash;<td>2000<td>133.4<td>718.9<td>0.0000<td>1 <span class=warn title="single run: no replicate, spread unknown">&#9888;</span></tr>
+<tr><td>drunix<td colspan=7 class=bad style=text-align:left>no comparable run (1 excluded, see below)</tr>
+<tr><td>fabric-bft<td colspan=7 class=bad style=text-align:left>no comparable run (1 excluded, see below)</tr>
+</table></div>
+<ul><li><b>fabricx</b> <span class=mute>fabricx-committer-v1.0.5-orderer-v1.0.6 &middot; 11 CPU / 11 GB over 4 containers &middot; sig ECDSA-P256, hash SHA-256, per-tx endorsement verify true</span><ul><li class=warn>fabricx on the local profile is resource-constrained; absolute throughput is NOT comparable to its published scale-out ceiling</li><li class=warn>state-db parity not held: run requested leveldb, platform actually ran postgres</li><li class=warn>native metrics scrape of http://localhost:9643/metrics failed: scrape http://localhost:9643/metrics: parser panic: Invalid name validation scheme requested: unset (informational metrics only; harness numbers unaffected)</li></ul></li><li><b>fabric-cft</b> <span class=mute>2.5.16 &middot; 11 CPU / 11 GB over 5 containers &middot; sig ECDSA-P256, hash SHA-256, per-tx endorsement verify true</span><ul><li class=warn>sweep aborted early after 2 consecutive failed steps; 2 higher step(s) were never offered</li><li class=warn>native metrics scrape of http://localhost:9443/metrics failed: scrape http://localhost:9443/metrics: parser panic: Invalid name validation scheme requested: unset (informational metrics only; harness numbers unaffected)</li></ul></li></ul>
+<details><summary>2 excluded run(s) and why</summary><ul><li><b>drunix</b> 2026-09-16 10:48 <span class=mute>/home/chad/Projects/bench/results/drunix/20260916-104840/result.json</span><ul><li class=bad>platform failed mid-run: lp1.org1 was OOM-killed at its memory limit and exited (after 10:53:42, exit code 137); dev-peer0.org1.example.com-kvstore_1.0-e88284a33ff8806958375f99312782794164d62aac26fe22876f2c72fb6294d9 exited (after 10:53:41, status exited, exit code 2)</li><li class=bad>no headline result</li></ul></li><li><b>fabric-bft</b> 2026-09-16 10:40 <span class=mute>/home/chad/Projects/bench/results/fabric-bft/20260916-104021/result.json</span><ul><li class=bad>platform failed mid-run: peer0.org1.example.com was OOM-killed at its memory limit and exited (after 10:45:16, exit code 137); dev-peer0.org1.example.com-kvstore_1.0-e88284a33ff8806958375f99312782794164d62aac26fe22876f2c72fb6294d9 exited (after 10:45:16, status exited, exit code 2)</li><li class=bad>no headline result</li></ul></li></ul></details>

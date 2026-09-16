@@ -1,0 +1,87 @@
+time=2026-09-16T09:10:39.989+05:30 level=INFO msg="run starting" platform=fabric-cft run=quick-smoke workload=kv-write profile=local normalized=true out_dir=results/fabric-cft/20260916-091039
+time=2026-09-16T09:10:39.989+05:30 level=INFO msg="adapter setup" platform=fabric-cft run=quick-smoke
+[34m2026-09-16 09:10:39.990 IST 0001 INFO[0m [grpc] [34;1mInfof[0m -> [core] original dial target is: "localhost:7051"
+[34m2026-09-16 09:10:39.990 IST 0002 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1] Channel created for target "localhost:7051"
+[34m2026-09-16 09:10:39.990 IST 0003 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1] parsed dial target is: resolver.Target{URL:url.URL{Scheme:"dns", Opaque:"", User:(*url.Userinfo)(nil), Host:"", Path:"/localhost:7051", Fragment:"", RawQuery:"", RawPath:"", RawFragment:"", ForceQuery:false, OmitHost:false}}
+[34m2026-09-16 09:10:39.990 IST 0004 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1] Channel authority set to "peer0.org1.example.com"
+[34m2026-09-16 09:10:39.991 IST 0005 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1] Channel Connectivity change to CONNECTING
+[34m2026-09-16 09:10:39.991 IST 0006 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1] Channel exiting idle mode
+[34m2026-09-16 09:10:40.020 IST 0007 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1] Resolver state updated: {
+  "Addresses": [
+    {
+      "Addr": "127.0.0.1:7051",
+      "ServerName": "",
+      "Attributes": null,
+      "BalancerAttributes": null,
+      "Metadata": null
+    }
+  ],
+  "Endpoints": [
+    {
+      "Addresses": [
+        {
+          "Addr": "127.0.0.1:7051",
+          "ServerName": "",
+          "Attributes": null,
+          "BalancerAttributes": null,
+          "Metadata": null
+        }
+      ],
+      "Attributes": null
+    }
+  ],
+  "ServiceConfig": null,
+  "Attributes": null
+} (resolver returned new addresses)
+[34m2026-09-16 09:10:40.020 IST 0008 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1] Channel switches to new LB policy "pick_first"
+[34m2026-09-16 09:10:40.021 IST 0009 INFO[0m [grpc] [34;1mInfof[0m -> [pick-first-leaf-lb] [pick-first-leaf-lb 0xa0216900b40] Received new config {
+  "shuffleAddressList": false
+}, resolver state {
+  "Addresses": [
+    {
+      "Addr": "127.0.0.1:7051",
+      "ServerName": "",
+      "Attributes": null,
+      "BalancerAttributes": null,
+      "Metadata": null
+    }
+  ],
+  "Endpoints": [
+    {
+      "Addresses": [
+        {
+          "Addr": "127.0.0.1:7051",
+          "ServerName": "",
+          "Attributes": null,
+          "BalancerAttributes": null,
+          "Metadata": null
+        }
+      ],
+      "Attributes": null
+    }
+  ],
+  "ServiceConfig": null,
+  "Attributes": null
+}
+[34m2026-09-16 09:10:40.022 IST 000a INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1 SubChannel #2] Subchannel created
+[34m2026-09-16 09:10:40.022 IST 000b INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1 SubChannel #2] Subchannel Connectivity change to CONNECTING
+[34m2026-09-16 09:10:40.022 IST 000c INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1 SubChannel #2] Subchannel picks a new address "127.0.0.1:7051" to connect
+[34m2026-09-16 09:10:40.024 IST 000d INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1 SubChannel #2] Subchannel Connectivity change to READY
+[34m2026-09-16 09:10:40.025 IST 000e INFO[0m [grpc] [34;1mInfof[0m -> [pick-first-leaf-lb] [pick-first-leaf-lb 0xa0216900b40] SubConn 0xa0216887b80 reported connectivity state READY and the health listener is disabled. Transitioning SubConn to READY.
+[34m2026-09-16 09:10:40.025 IST 000f INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1] Channel Connectivity change to READY
+time=2026-09-16T09:10:40.029+05:30 level=INFO msg="setup complete" platform=fabric-cft run=quick-smoke component=adapter gateway=localhost:7051 finality_from=localhost:7051
+time=2026-09-16T09:10:40.029+05:30 level=INFO msg="phase start" platform=fabric-cft run=quick-smoke phase=single offered_tps=50 workers=0 duration=30s
+time=2026-09-16T09:11:10.532+05:30 level=INFO msg="phase end" platform=fabric-cft run=quick-smoke phase=single submitted=1100 committed=1100 confirmed_tps=50.0 fail_rate=0.0000 e2e_p99_ms=1032.19
+time=2026-09-16T09:11:10.534+05:30 level=WARN msg=caveat platform=fabric-cft run=quick-smoke text="native metrics scrape of http://localhost:9443/metrics failed: scrape http://localhost:9443/metrics: parser panic: Invalid name validation scheme requested: unset (informational metrics only; harness numbers unaffected)"
+time=2026-09-16T09:11:10.535+05:30 level=INFO msg="run finished" platform=fabric-cft run=quick-smoke out_dir=results/fabric-cft/20260916-091039 caveats=1
+results written to results/fabric-cft/20260916-091039
+[34m2026-09-16 09:11:10.535 IST 0010 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1] Channel Connectivity change to SHUTDOWN
+[34m2026-09-16 09:11:10.535 IST 0011 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1] Closing the name resolver
+[34m2026-09-16 09:11:10.535 IST 0012 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1] ccBalancerWrapper: closing
+[34m2026-09-16 09:11:10.535 IST 0013 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1 SubChannel #2] Subchannel Connectivity change to SHUTDOWN
+[34m2026-09-16 09:11:10.535 IST 0014 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1 SubChannel #2] Subchannel deleted
+[34m2026-09-16 09:11:10.535 IST 0015 INFO[0m [grpc] [34;1mInfof[0m -> [transport] [client-transport 0xa02168e3b08] Closing: rpc error: code = Canceled desc = grpc: the client connection is closing
+[34m2026-09-16 09:11:10.535 IST 0016 INFO[0m [grpc] [34;1mInfof[0m -> [transport] [client-transport 0xa02168e3b08] loopyWriter exiting with error: rpc error: code = Canceled desc = grpc: the client connection is closing
+[34m2026-09-16 09:11:10.535 IST 0017 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1] Channel deleted
+monitoring report: results/fabric-cft/20260916-091039/monitoring-report.html
+run book: results/index.html

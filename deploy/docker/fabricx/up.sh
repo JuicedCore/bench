@@ -8,7 +8,8 @@
 # writes connection.env for the adapter.
 #
 # The adapter talks gRPC: broadcast to all four Arma routers (:6022, :6122,
-# :6222, :6322), finality from the sidecar's deliver stream on :4001.
+# :6222, :6322), finality from the sidecar's deliver stream on :4001, and
+# kv-read via QueryService.GetRows on :7001.
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "${HERE}/../lib.sh"
 
@@ -75,6 +76,8 @@ for port in 6022 6122 6222 6322; do
 done
 wait_for "sidecar deliver on :4001" 120 port_open 127.0.0.1 4001 \
   || die "sidecar deliver endpoint never came up" "'docker compose logs fabricx-pipeline' has the detail"
+wait_for "QueryService on :7001" 120 port_open 127.0.0.1 7001 \
+  || die "QueryService never came up on :7001" "'docker compose logs fabricx-committer' has the detail (query.yaml endpoint :7001)"
 unset WAIT_FOR_ON_TIMEOUT
 
 # --- namespace bootstrap ----------------------------------------------------
@@ -127,6 +130,7 @@ cat > "${HERE}/connection.env" <<ENVEOF
 # Every party's router: the adapter broadcasts each envelope to all of them.
 BENCH_ADAPTER_BROADCAST_ENDPOINT=localhost:6022,localhost:6122,localhost:6222,localhost:6322
 BENCH_ADAPTER_DELIVER_ENDPOINT=localhost:4001
+BENCH_ADAPTER_QUERY_ENDPOINT=localhost:7001
 BENCH_ADAPTER_CHANNEL_ID=arma
 BENCH_ADAPTER_NAMESPACE=${NS}
 BENCH_ADAPTER_SIGNING_KEY_PATH=${KEYDIR}/ns-signing-key.pem
@@ -137,5 +141,5 @@ BENCH_ACTUAL_STATE_DB=postgres
 ${RES_ENV}
 ENVEOF
 
-log "fabricx up. broadcast :6022,:6122,:6222,:6322  deliver :4001  metrics :9643"
+log "fabricx up. broadcast :6022,:6122,:6222,:6322  deliver :4001  query :7001  metrics :9643"
 log "wrote ${HERE}/connection.env"

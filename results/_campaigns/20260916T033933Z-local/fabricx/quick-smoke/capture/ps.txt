@@ -1,0 +1,14 @@
+NAMES                               IMAGE                            STATUS                         CREATED
+bench-fabricx-fabricx-committer-1   bench/fabricx:local              Up 40 seconds                  43 seconds ago
+bench-fabricx-fabricx-pipeline-1    bench/fabricx:local              Up 40 seconds                  43 seconds ago
+bench-fabricx-fabricx-arma-1        bench/fabricx:local              Up 40 seconds                  43 seconds ago
+bench-fabricx-fabricx-db-1          bench/fabricx:local              Up 43 seconds (healthy)        43 seconds ago
+bench-monitoring-cadvisor-1         ghcr.io/google/cadvisor:0.57.0   Up 16 hours (healthy)          17 hours ago
+bench-monitoring-node_exporter-1    prom/node-exporter:v1.9.0        Up 9 minutes                   17 hours ago
+bench-monitoring-grafana-1          grafana/grafana:11.4.0           Up 16 hours                    17 hours ago
+bench-monitoring-prometheus-1       prom/prometheus:v3.1.0           Up 16 hours                    17 hours ago
+nucleus-headlamp-1                  weaverai/nucleus-k8-dashboard    Up 16 hours                    5 weeks ago
+feast-control-plane                 kindest/node:v1.36.1             Up 16 hours                    6 weeks ago
+feast-worker                        kindest/node:v1.36.1             Up 16 hours                    6 weeks ago
+feast-worker2                       kindest/node:v1.36.1             Up 16 hours                    6 weeks ago
+untitled-cassandra                  cassandra:5.0                    Restarting (3) 3 seconds ago   7 weeks ago

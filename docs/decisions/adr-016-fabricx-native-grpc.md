@@ -40,9 +40,10 @@ Fabric protos. The wire format still comes from upstream, so it cannot drift.
 - **Fabric-X gains a real T2.** Submit and commit are separate operations, so
   submit latency is meaningful for the first time and Fabric-X stops being
   exempt from that column of the comparison.
-- **`kv-read` needs a dummy write.** The validator rejects read-only
-  transactions (`MALFORMED_NO_WRITES`), so reads carry a unique blind write —
-  overhead no other platform pays, disclosed in the run caveats.
+- **`kv-read` uses QueryService.** A read-only transaction is still illegal
+  (`MALFORMED_NO_WRITES`). The adapter does not attach a dummy write; it calls
+  `GetRows` on the query process (`:7001`), which is Fabric-X's default point
+  lookup. T2 is the RPC return; WaitForFinality is immediate.
 - **`transfer` is a two-key read-modify-write** rather than a token transfer.
   There is no chaincode to evaluate a predicate, so the workload's own values are
   written; contention behaviour is comparable, token semantics are not exercised.

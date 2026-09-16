@@ -1,0 +1,6 @@
+platform	config	stage	status	reason	dir
+fabric-cft	probe-sweep	run	ok		fabric-cft/probe-sweep
+fabric-bft	probe-sweep	run	container-failed	error: platform container failed during the run: peer0.org1.example.com was OOM-killed at its memory limit and exited (after 10:45:16, exit code 137); dev-peer0.org1.example.com-kvstore_1.0-e88284a33ff8806958375f99312782794164d62aac26fe22876f2c72fb6294d9 exited (after 10:45:16, status exited, exit c	fabric-bft/probe-sweep
+drunix	probe-sweep	run	container-failed	error: platform container failed during the run: lp1.org1 was OOM-killed at its memory limit and exited (after 10:53:42, exit code 137); dev-peer0.org1.example.com-kvstore_1.0-e88284a33ff8806958375f99312782794164d62aac26fe22876f2c72fb6294d9 exited (after 10:53:41, status exited, exit code 2) (result	drunix/probe-sweep
+fabricx	probe-sweep	run	ok		fabricx/probe-sweep
+neuchain	probe-sweep	run	run-failed	error: adapter setup (neuchain): neuchain: dial block server submit socket localhost:5001: zmq4: could not open a ZMTP connection: zmq4: could not initialize ZMTP connection: zmq4: could not exchange greetings: zmq4: could not recv greeting: could not read ZMTP greeting: read tcp 127.0.0.1:49092->12	neuchain/probe-sweep

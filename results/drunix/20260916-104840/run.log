@@ -1,0 +1,32 @@
+time=2026-09-16T10:48:40.862+05:30 level=INFO msg="run starting" workload=kv-write profile=local normalized=true out_dir=results/drunix/20260916-104840
+time=2026-09-16T10:48:40.862+05:30 level=WARN msg=caveat text="drunix ran on YugabyteDB (its shipped test-network default); LevelDB parity is unavailable, so the state-DB variable is NOT held constant vs fabric-cft for this run"
+time=2026-09-16T10:48:40.862+05:30 level=WARN msg=caveat text="drunix write values are JSON-wrapped client-side to survive a YugabyteDB statedb bug (non-JSON values panic the Committing Peer); the on-wire payload format differs from the shared kv workload on other platforms for this run"
+time=2026-09-16T10:48:40.862+05:30 level=WARN msg=caveat text="state-db parity not held: run requested leveldb, platform actually ran yugabyte"
+time=2026-09-16T10:48:40.862+05:30 level=INFO msg="adapter setup"
+time=2026-09-16T10:48:40.862+05:30 level=DEBUG msg="gateway connection configured" component=adapter endpoint=localhost:7051 tls_server_name=peer0.org1.example.com msp_id=Org1MSP channel=mychannel chaincode=kvstore
+time=2026-09-16T10:48:40.897+05:30 level=DEBUG msg="block event stream open" component=adapter stream=filtered-block-events endpoint=localhost:7061 channel=mychannel
+time=2026-09-16T10:48:40.931+05:30 level=INFO msg="setup complete" component=adapter gateway=localhost:7051 finality_from=localhost:7061
+time=2026-09-16T10:48:40.931+05:30 level=INFO msg="phase start" phase=probe offered_tps=10 workers=0 duration=30s
+time=2026-09-16T10:49:12.971+05:30 level=DEBUG msg="phase shorter than warmup+cooldown; measuring whole phase" phase=probe
+time=2026-09-16T10:49:12.972+05:30 level=INFO msg="phase end" phase=probe submitted=300 committed=300 confirmed_tps=10.0 fail_rate=0.0000 e2e_p99_ms=2967.55
+time=2026-09-16T10:49:12.972+05:30 level=INFO msg="phase start" phase=sweep-100 offered_tps=100 workers=0 duration=1m0s
+time=2026-09-16T10:50:15.010+05:30 level=INFO msg="phase end" phase=sweep-100 submitted=1500 committed=1500 confirmed_tps=100.0 fail_rate=0.0000 e2e_p99_ms=2260.99
+time=2026-09-16T10:50:15.010+05:30 level=INFO msg="phase start" phase=sweep-250 offered_tps=250 workers=0 duration=1m0s
+time=2026-09-16T10:51:17.044+05:30 level=INFO msg="phase end" phase=sweep-250 submitted=3750 committed=3750 confirmed_tps=250.0 fail_rate=0.0000 e2e_p99_ms=1080.32
+time=2026-09-16T10:51:17.044+05:30 level=INFO msg="phase start" phase=sweep-500 offered_tps=500 workers=0 duration=1m0s
+time=2026-09-16T10:52:19.085+05:30 level=INFO msg="phase end" phase=sweep-500 submitted=7500 committed=7500 confirmed_tps=500.0 fail_rate=0.0000 e2e_p99_ms=694.27
+time=2026-09-16T10:52:19.085+05:30 level=INFO msg="phase start" phase=sweep-1000 offered_tps=1000 workers=0 duration=1m0s
+time=2026-09-16T10:53:28.672+05:30 level=INFO msg="phase end" phase=sweep-1000 submitted=15000 committed=10740 confirmed_tps=716.0 fail_rate=0.2840 e2e_p99_ms=11255.81
+time=2026-09-16T10:53:28.672+05:30 level=WARN msg="phase errors" phase=sweep-1000 count=4260 message="not sent: N transactions already in flight (platform is not finalizing)"
+time=2026-09-16T10:53:28.672+05:30 level=INFO msg="phase start" phase=sweep-2000 offered_tps=2000 workers=0 duration=1m0s
+time=2026-09-16T10:54:28.844+05:30 level=INFO msg="phase end" phase=sweep-2000 submitted=30000 committed=0 confirmed_tps=0.0 fail_rate=1.0000 e2e_p99_ms=0.00
+time=2026-09-16T10:54:28.844+05:30 level=WARN msg="phase errors" phase=sweep-2000 count=30000 message="endorse Put: rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:7051: connect: connection refused\""
+time=2026-09-16T10:54:28.844+05:30 level=WARN msg=caveat text="platform container lp1.org1 was OOM-killed at its memory limit and exited (after 10:53:42, exit code 137)"
+time=2026-09-16T10:54:29.041+05:30 level=INFO msg="captured container log" container=lp1.org1 path=results/drunix/20260916-104840/container-logs/lp1.org1.log
+time=2026-09-16T10:54:29.041+05:30 level=WARN msg=caveat text="platform container dev-peer0.org1.example.com-kvstore_1.0-e88284a33ff8806958375f99312782794164d62aac26fe22876f2c72fb6294d9 exited (after 10:53:41, status exited, exit code 2)"
+time=2026-09-16T10:54:29.244+05:30 level=INFO msg="captured container log" container=dev-peer0.org1.example.com-kvstore_1.0-e88284a33ff8806958375f99312782794164d62aac26fe22876f2c72fb6294d9 path=results/drunix/20260916-104840/container-logs/dev-peer0.org1.example.com-kvstore_1.0-e88284a33ff8806958375f99312782794164d62aac26fe22876f2c72fb6294d9.log
+time=2026-09-16T10:54:29.244+05:30 level=WARN msg=caveat text="run stopped during sweep-2000 because a platform container failed; phases never run: sweep-3500, sweep-5000, sweep-7500, sweep-10000, hold"
+time=2026-09-16T10:54:29.258+05:30 level=WARN msg=caveat text="4262 latency observations were out of range (negative: T3 before T1/T2, usually adapter or clock timestamp error; or above 5 min) and were clamped"
+time=2026-09-16T10:54:29.258+05:30 level=WARN msg=caveat text="native metrics scrape of http://localhost:9444/metrics failed: Get \"http://localhost:9444/metrics\": dial tcp 127.0.0.1:9444: connect: connection refused (informational metrics only; harness numbers unaffected)"
+time=2026-09-16T10:54:29.259+05:30 level=WARN msg="run has no headline: it did not complete a headline phase on a healthy platform; see caveats in summary.txt" dir=results/drunix/20260916-104840
+time=2026-09-16T10:54:29.259+05:30 level=INFO msg="run finished" out_dir=results/drunix/20260916-104840 caveats=8

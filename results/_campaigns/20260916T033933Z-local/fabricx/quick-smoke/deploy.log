@@ -1,0 +1,448 @@
+[deploy 09:16:12] fetching fabric-x-committer-src @ v1.0.5 (attempt 1)
+[deploy 09:16:14] fetching fabric-x-orderer-src @ v1.0.6 (attempt 1)
+[deploy 09:16:16] orderer batch from profile 'local': timeout=1s maxMessageCount=100
+[deploy 09:16:16] building bench/fabricx:local (first build pulls a Go toolchain and compiles Arma + committer; several minutes)
+#0 building with "default" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile
+#1 transferring dockerfile: 3.83kB done
+#1 DONE 0.0s
+
+#2 resolve image config for docker-image://docker.io/docker/dockerfile:1
+#2 DONE 2.2s
+
+#3 docker-image://docker.io/docker/dockerfile:1@sha256:ecfaec9ed6d810b56388c508f4121597bfbba70d41a6dfeee4d8cad5f295fc32
+#3 resolve docker.io/docker/dockerfile:1@sha256:ecfaec9ed6d810b56388c508f4121597bfbba70d41a6dfeee4d8cad5f295fc32 done
+#3 sha256:ecfaec9ed6d810b56388c508f4121597bfbba70d41a6dfeee4d8cad5f295fc32 9.08kB / 9.08kB done
+#3 sha256:34b128e419449565adc5ed7f487a6f503a73f1077012cfed86354c731338c44f 1.13kB / 1.13kB done
+#3 sha256:c844dc65644b70ea8b391444db20ff38537384d800ea9896d46ab8f3ce897f51 1.33kB / 1.33kB done
+#3 sha256:9f624ef51ad55db0ea52d755cc777566386156106fbb4f465eecb22c67ac55ed 0B / 14.14MB 0.1s
+#3 sha256:9f624ef51ad55db0ea52d755cc777566386156106fbb4f465eecb22c67ac55ed 2.10MB / 14.14MB 0.4s
+#3 sha256:9f624ef51ad55db0ea52d755cc777566386156106fbb4f465eecb22c67ac55ed 3.15MB / 14.14MB 0.5s
+#3 sha256:9f624ef51ad55db0ea52d755cc777566386156106fbb4f465eecb22c67ac55ed 5.24MB / 14.14MB 0.6s
+#3 sha256:9f624ef51ad55db0ea52d755cc777566386156106fbb4f465eecb22c67ac55ed 7.34MB / 14.14MB 0.8s
+#3 sha256:9f624ef51ad55db0ea52d755cc777566386156106fbb4f465eecb22c67ac55ed 10.49MB / 14.14MB 1.0s
+#3 sha256:9f624ef51ad55db0ea52d755cc777566386156106fbb4f465eecb22c67ac55ed 11.53MB / 14.14MB 1.1s
+#3 sha256:9f624ef51ad55db0ea52d755cc777566386156106fbb4f465eecb22c67ac55ed 13.63MB / 14.14MB 1.2s
+#3 extracting sha256:9f624ef51ad55db0ea52d755cc777566386156106fbb4f465eecb22c67ac55ed
+#3 sha256:9f624ef51ad55db0ea52d755cc777566386156106fbb4f465eecb22c67ac55ed 14.14MB / 14.14MB 1.2s done
+#3 extracting sha256:9f624ef51ad55db0ea52d755cc777566386156106fbb4f465eecb22c67ac55ed 0.1s done
+#3 DONE 1.3s
+
+#4 [internal] load metadata for docker.io/library/golang:1.27-bookworm
+#4 DONE 2.2s
+
+#5 [internal] load metadata for docker.io/library/postgres:18.3-alpine3.23
+#5 DONE 2.2s
+
+#6 [internal] load .dockerignore
+#6 transferring context: 2B done
+#6 DONE 0.0s
+
+#7 [build 1/8] FROM docker.io/library/golang:1.27-bookworm@sha256:648f440f42a0958804efb24df176f806f9d353b41f1c0627f666428e40310f6b
+#7 resolve docker.io/library/golang:1.27-bookworm@sha256:648f440f42a0958804efb24df176f806f9d353b41f1c0627f666428e40310f6b 0.0s done
+#7 sha256:08457856946d74c8aede7d750e185d1e479a79b8123d1b805182a580d224a6e2 0B / 24.06MB 0.1s
+#7 sha256:6860a573025fcd35aba4f1b23e858b1c1dcd425d53fa73562e169a6ab1c2339a 2.32kB / 2.32kB done
+#7 sha256:abf56b2f87242de589f03ea56779358079c07c4c099bd1e454d083538eb6666d 0B / 48.50MB 0.1s
+#7 sha256:8cab6ce149c24516f80b26a762b6b9aaebcaf4fbe51d4c6844af7d7dbc372f2d 0B / 64.41MB 0.1s
+#7 sha256:648f440f42a0958804efb24df176f806f9d353b41f1c0627f666428e40310f6b 6.53kB / 6.53kB done
+#7 sha256:29958228b8eac13e193f057abbc30b42ed1bacea2ead149fe4a4252470cccbd8 3.06kB / 3.06kB done
+#7 ...
+
+#8 [internal] load build context
+#8 transferring context: 56.02MB 0.3s done
+#8 DONE 0.3s
+
+#7 [build 1/8] FROM docker.io/library/golang:1.27-bookworm@sha256:648f440f42a0958804efb24df176f806f9d353b41f1c0627f666428e40310f6b
+#7 sha256:08457856946d74c8aede7d750e185d1e479a79b8123d1b805182a580d224a6e2 4.19MB / 24.06MB 0.6s
+#7 sha256:08457856946d74c8aede7d750e185d1e479a79b8123d1b805182a580d224a6e2 7.34MB / 24.06MB 0.9s
+#7 sha256:08457856946d74c8aede7d750e185d1e479a79b8123d1b805182a580d224a6e2 10.49MB / 24.06MB 1.2s
+#7 sha256:08457856946d74c8aede7d750e185d1e479a79b8123d1b805182a580d224a6e2 12.58MB / 24.06MB 1.4s
+#7 sha256:08457856946d74c8aede7d750e185d1e479a79b8123d1b805182a580d224a6e2 14.68MB / 24.06MB 1.6s
+#7 sha256:08457856946d74c8aede7d750e185d1e479a79b8123d1b805182a580d224a6e2 16.78MB / 24.06MB 1.9s
+#7 sha256:08457856946d74c8aede7d750e185d1e479a79b8123d1b805182a580d224a6e2 18.87MB / 24.06MB 2.1s
+#7 sha256:08457856946d74c8aede7d750e185d1e479a79b8123d1b805182a580d224a6e2 20.97MB / 24.06MB 2.4s
+#7 sha256:abf56b2f87242de589f03ea56779358079c07c4c099bd1e454d083538eb6666d 3.15MB / 48.50MB 2.4s
+#7 sha256:08457856946d74c8aede7d750e185d1e479a79b8123d1b805182a580d224a6e2 23.07MB / 24.06MB 2.6s
+#7 sha256:08457856946d74c8aede7d750e185d1e479a79b8123d1b805182a580d224a6e2 24.06MB / 24.06MB 2.7s done
+#7 sha256:fafb2443b508ce518d3bdd6e383cc7f009adeb44e3df90c0ba4c30ceaf03a830 0B / 92.55MB 2.8s
+#7 sha256:abf56b2f87242de589f03ea56779358079c07c4c099bd1e454d083538eb6666d 6.29MB / 48.50MB 3.5s
+#7 sha256:8cab6ce149c24516f80b26a762b6b9aaebcaf4fbe51d4c6844af7d7dbc372f2d 4.19MB / 64.41MB 3.5s
+#7 sha256:fafb2443b508ce518d3bdd6e383cc7f009adeb44e3df90c0ba4c30ceaf03a830 5.24MB / 92.55MB 3.7s
+#7 sha256:abf56b2f87242de589f03ea56779358079c07c4c099bd1e454d083538eb6666d 9.44MB / 48.50MB 4.2s
+#7 sha256:fafb2443b508ce518d3bdd6e383cc7f009adeb44e3df90c0ba4c30ceaf03a830 10.49MB / 92.55MB 4.4s
+#7 sha256:8cab6ce149c24516f80b26a762b6b9aaebcaf4fbe51d4c6844af7d7dbc372f2d 8.39MB / 64.41MB 4.7s
+#7 sha256:abf56b2f87242de589f03ea56779358079c07c4c099bd1e454d083538eb6666d 12.58MB / 48.50MB 5.1s
+#7 sha256:fafb2443b508ce518d3bdd6e383cc7f009adeb44e3df90c0ba4c30ceaf03a830 16.78MB / 92.55MB 5.3s
+#7 sha256:abf56b2f87242de589f03ea56779358079c07c4c099bd1e454d083538eb6666d 15.73MB / 48.50MB 5.9s
+#7 sha256:8cab6ce149c24516f80b26a762b6b9aaebcaf4fbe51d4c6844af7d7dbc372f2d 12.58MB / 64.41MB 5.9s
+#7 sha256:fafb2443b508ce518d3bdd6e383cc7f009adeb44e3df90c0ba4c30ceaf03a830 22.02MB / 92.55MB 6.0s
+#7 sha256:abf56b2f87242de589f03ea56779358079c07c4c099bd1e454d083538eb6666d 18.87MB / 48.50MB 6.7s
+#7 sha256:8cab6ce149c24516f80b26a762b6b9aaebcaf4fbe51d4c6844af7d7dbc372f2d 16.78MB / 64.41MB 6.8s
+#7 sha256:fafb2443b508ce518d3bdd6e383cc7f009adeb44e3df90c0ba4c30ceaf03a830 27.26MB / 92.55MB 6.8s
+#7 sha256:abf56b2f87242de589f03ea56779358079c07c4c099bd1e454d083538eb6666d 22.02MB / 48.50MB 7.5s
+#7 sha256:fafb2443b508ce518d3bdd6e383cc7f009adeb44e3df90c0ba4c30ceaf03a830 32.51MB / 92.55MB 7.6s
+#7 sha256:8cab6ce149c24516f80b26a762b6b9aaebcaf4fbe51d4c6844af7d7dbc372f2d 20.97MB / 64.41MB 8.0s
+#7 sha256:abf56b2f87242de589f03ea56779358079c07c4c099bd1e454d083538eb6666d 25.17MB / 48.50MB 8.4s
+#7 sha256:fafb2443b508ce518d3bdd6e383cc7f009adeb44e3df90c0ba4c30ceaf03a830 37.75MB / 92.55MB 8.4s
+#7 sha256:8cab6ce149c24516f80b26a762b6b9aaebcaf4fbe51d4c6844af7d7dbc372f2d 25.17MB / 64.41MB 9.0s
+#7 sha256:abf56b2f87242de589f03ea56779358079c07c4c099bd1e454d083538eb6666d 28.31MB / 48.50MB 9.3s
+#7 sha256:fafb2443b508ce518d3bdd6e383cc7f009adeb44e3df90c0ba4c30ceaf03a830 42.99MB / 92.55MB 9.3s
+#7 sha256:abf56b2f87242de589f03ea56779358079c07c4c099bd1e454d083538eb6666d 31.46MB / 48.50MB 10.1s
+#7 sha256:8cab6ce149c24516f80b26a762b6b9aaebcaf4fbe51d4c6844af7d7dbc372f2d 29.36MB / 64.41MB 10.1s
+#7 sha256:fafb2443b508ce518d3bdd6e383cc7f009adeb44e3df90c0ba4c30ceaf03a830 48.23MB / 92.55MB 10.1s
+#7 ...
+
+#9 [stage-1  1/12] FROM docker.io/library/postgres:18.3-alpine3.23@sha256:54451ecb8ab38c24c3ec123f2fd501303a3a1856a5c66e98cecf2460d5e1e9d7
+#9 resolve docker.io/library/postgres:18.3-alpine3.23@sha256:54451ecb8ab38c24c3ec123f2fd501303a3a1856a5c66e98cecf2460d5e1e9d7 0.0s done
+#9 sha256:f6d4985d97e69bb9de4d5e24f9f24cbfaa90d30877ce935a8ee872f62efbb621 8.51kB / 8.51kB done
+#9 sha256:54451ecb8ab38c24c3ec123f2fd501303a3a1856a5c66e98cecf2460d5e1e9d7 10.29kB / 10.29kB done
+#9 sha256:1b13c640ae11f2f165d1e89667e5862b0017baf4c80fec2fb7377d86319859ba 2.68kB / 2.68kB done
+#9 ...
+
+#7 [build 1/8] FROM docker.io/library/golang:1.27-bookworm@sha256:648f440f42a0958804efb24df176f806f9d353b41f1c0627f666428e40310f6b
+#7 sha256:abf56b2f87242de589f03ea56779358079c07c4c099bd1e454d083538eb6666d 34.60MB / 48.50MB 10.8s
+#7 sha256:8cab6ce149c24516f80b26a762b6b9aaebcaf4fbe51d4c6844af7d7dbc372f2d 33.55MB / 64.41MB 10.8s
+#7 sha256:abf56b2f87242de589f03ea56779358079c07c4c099bd1e454d083538eb6666d 37.75MB / 48.50MB 11.5s
+#7 sha256:8cab6ce149c24516f80b26a762b6b9aaebcaf4fbe51d4c6844af7d7dbc372f2d 37.75MB / 64.41MB 11.6s
+#7 sha256:fafb2443b508ce518d3bdd6e383cc7f009adeb44e3df90c0ba4c30ceaf03a830 53.48MB / 92.55MB 11.6s
+#7 sha256:abf56b2f87242de589f03ea56779358079c07c4c099bd1e454d083538eb6666d 40.89MB / 48.50MB 12.1s
+#7 sha256:8cab6ce149c24516f80b26a762b6b9aaebcaf4fbe51d4c6844af7d7dbc372f2d 41.94MB / 64.41MB 12.5s
+#7 sha256:abf56b2f87242de589f03ea56779358079c07c4c099bd1e454d083538eb6666d 44.04MB / 48.50MB 12.8s
+#7 sha256:fafb2443b508ce518d3bdd6e383cc7f009adeb44e3df90c0ba4c30ceaf03a830 59.77MB / 92.55MB 13.1s
+#7 sha256:8cab6ce149c24516f80b26a762b6b9aaebcaf4fbe51d4c6844af7d7dbc372f2d 46.14MB / 64.41MB 13.5s
+#7 sha256:abf56b2f87242de589f03ea56779358079c07c4c099bd1e454d083538eb6666d 47.19MB / 48.50MB 13.7s
+#7 sha256:fafb2443b508ce518d3bdd6e383cc7f009adeb44e3df90c0ba4c30ceaf03a830 65.01MB / 92.55MB 14.0s
+#7 sha256:abf56b2f87242de589f03ea56779358079c07c4c099bd1e454d083538eb6666d 48.50MB / 48.50MB 14.1s done
+#7 sha256:ef1dbfdbb5d59bdeac07b1398a9f0808b453513bf6a76eb3ffd509a284483095 0B / 71.08MB 14.1s
+#7 extracting sha256:abf56b2f87242de589f03ea56779358079c07c4c099bd1e454d083538eb6666d
+#7 sha256:8cab6ce149c24516f80b26a762b6b9aaebcaf4fbe51d4c6844af7d7dbc372f2d 50.33MB / 64.41MB 14.6s
+#7 sha256:fafb2443b508ce518d3bdd6e383cc7f009adeb44e3df90c0ba4c30ceaf03a830 70.25MB / 92.55MB 14.6s
+#7 sha256:fafb2443b508ce518d3bdd6e383cc7f009adeb44e3df90c0ba4c30ceaf03a830 75.50MB / 92.55MB 15.4s
+#7 extracting sha256:abf56b2f87242de589f03ea56779358079c07c4c099bd1e454d083538eb6666d 1.4s done
+#7 sha256:8cab6ce149c24516f80b26a762b6b9aaebcaf4fbe51d4c6844af7d7dbc372f2d 54.53MB / 64.41MB 15.6s
+#7 extracting sha256:08457856946d74c8aede7d750e185d1e479a79b8123d1b805182a580d224a6e2
+#7 sha256:ef1dbfdbb5d59bdeac07b1398a9f0808b453513bf6a76eb3ffd509a284483095 4.19MB / 71.08MB 15.8s
+#7 extracting sha256:08457856946d74c8aede7d750e185d1e479a79b8123d1b805182a580d224a6e2 0.4s done
+#7 sha256:fafb2443b508ce518d3bdd6e383cc7f009adeb44e3df90c0ba4c30ceaf03a830 80.74MB / 92.55MB 16.3s
+#7 sha256:8cab6ce149c24516f80b26a762b6b9aaebcaf4fbe51d4c6844af7d7dbc372f2d 58.72MB / 64.41MB 16.4s
+#7 sha256:fafb2443b508ce518d3bdd6e383cc7f009adeb44e3df90c0ba4c30ceaf03a830 85.98MB / 92.55MB 17.0s
+#7 sha256:8cab6ce149c24516f80b26a762b6b9aaebcaf4fbe51d4c6844af7d7dbc372f2d 62.91MB / 64.41MB 17.3s
+#7 sha256:ef1dbfdbb5d59bdeac07b1398a9f0808b453513bf6a76eb3ffd509a284483095 8.39MB / 71.08MB 17.3s
+#7 sha256:8cab6ce149c24516f80b26a762b6b9aaebcaf4fbe51d4c6844af7d7dbc372f2d 64.41MB / 64.41MB 17.6s done
+#7 extracting sha256:8cab6ce149c24516f80b26a762b6b9aaebcaf4fbe51d4c6844af7d7dbc372f2d 0.1s
+#7 sha256:03d42cd6437e3ce630d1a287fab870684cb77487c6c250110c92e66586668a48 0B / 127B 17.7s
+#7 sha256:fafb2443b508ce518d3bdd6e383cc7f009adeb44e3df90c0ba4c30ceaf03a830 91.23MB / 92.55MB 17.8s
+#7 sha256:fafb2443b508ce518d3bdd6e383cc7f009adeb44e3df90c0ba4c30ceaf03a830 92.55MB / 92.55MB 17.9s done
+#7 sha256:03d42cd6437e3ce630d1a287fab870684cb77487c6c250110c92e66586668a48 127B / 127B 17.9s done
+#7 sha256:4f4fb700ef54461cfa02571ae0db9a0dc1e0cdb5577484a6d75e68dc38e8acc1 0B / 32B 18.1s
+#7 sha256:ef1dbfdbb5d59bdeac07b1398a9f0808b453513bf6a76eb3ffd509a284483095 12.58MB / 71.08MB 18.2s
+#7 sha256:4f4fb700ef54461cfa02571ae0db9a0dc1e0cdb5577484a6d75e68dc38e8acc1 32B / 32B 18.2s done
+#7 sha256:ef1dbfdbb5d59bdeac07b1398a9f0808b453513bf6a76eb3ffd509a284483095 16.78MB / 71.08MB 18.5s
+#7 sha256:ef1dbfdbb5d59bdeac07b1398a9f0808b453513bf6a76eb3ffd509a284483095 20.97MB / 71.08MB 18.9s
+#7 sha256:ef1dbfdbb5d59bdeac07b1398a9f0808b453513bf6a76eb3ffd509a284483095 25.17MB / 71.08MB 19.3s
+#7 extracting sha256:8cab6ce149c24516f80b26a762b6b9aaebcaf4fbe51d4c6844af7d7dbc372f2d 1.6s done
+#7 extracting sha256:fafb2443b508ce518d3bdd6e383cc7f009adeb44e3df90c0ba4c30ceaf03a830
+#7 sha256:ef1dbfdbb5d59bdeac07b1398a9f0808b453513bf6a76eb3ffd509a284483095 29.36MB / 71.08MB 19.9s
+#7 sha256:ef1dbfdbb5d59bdeac07b1398a9f0808b453513bf6a76eb3ffd509a284483095 33.55MB / 71.08MB 20.4s
+#7 extracting sha256:fafb2443b508ce518d3bdd6e383cc7f009adeb44e3df90c0ba4c30ceaf03a830 1.3s done
+#7 sha256:ef1dbfdbb5d59bdeac07b1398a9f0808b453513bf6a76eb3ffd509a284483095 38.80MB / 71.08MB 21.1s
+#7 sha256:ef1dbfdbb5d59bdeac07b1398a9f0808b453513bf6a76eb3ffd509a284483095 42.99MB / 71.08MB 21.7s
+#7 sha256:ef1dbfdbb5d59bdeac07b1398a9f0808b453513bf6a76eb3ffd509a284483095 47.19MB / 71.08MB 22.3s
+#7 sha256:ef1dbfdbb5d59bdeac07b1398a9f0808b453513bf6a76eb3ffd509a284483095 51.38MB / 71.08MB 22.9s
+#7 sha256:ef1dbfdbb5d59bdeac07b1398a9f0808b453513bf6a76eb3ffd509a284483095 55.57MB / 71.08MB 23.4s
+#7 sha256:ef1dbfdbb5d59bdeac07b1398a9f0808b453513bf6a76eb3ffd509a284483095 59.77MB / 71.08MB 24.0s
+#7 sha256:ef1dbfdbb5d59bdeac07b1398a9f0808b453513bf6a76eb3ffd509a284483095 63.96MB / 71.08MB 24.7s
+#7 sha256:ef1dbfdbb5d59bdeac07b1398a9f0808b453513bf6a76eb3ffd509a284483095 68.16MB / 71.08MB 25.2s
+#7 sha256:ef1dbfdbb5d59bdeac07b1398a9f0808b453513bf6a76eb3ffd509a284483095 71.08MB / 71.08MB 25.7s done
+#7 extracting sha256:ef1dbfdbb5d59bdeac07b1398a9f0808b453513bf6a76eb3ffd509a284483095
+#7 ...
+
+#9 [stage-1  1/12] FROM docker.io/library/postgres:18.3-alpine3.23@sha256:54451ecb8ab38c24c3ec123f2fd501303a3a1856a5c66e98cecf2460d5e1e9d7
+#9 sha256:2d60466be50cc8e798e6e08d1c6a3a849b87084af4bb85c4bba83145ba4088ec 969B / 969B 18.2s done
+#9 extracting sha256:2d60466be50cc8e798e6e08d1c6a3a849b87084af4bb85c4bba83145ba4088ec done
+#9 sha256:6389c679d44878ab8083dc65af7ef93b0f28475a1199bf3a270cea0dfeb558bf 919.06kB / 919.06kB 18.6s done
+#9 sha256:561ed1490a5cefb71c984cfb31e264c0a9770dfbca01c029bc30c15298a938f4 116B / 116B 18.7s done
+#9 extracting sha256:6389c679d44878ab8083dc65af7ef93b0f28475a1199bf3a270cea0dfeb558bf 0.0s done
+#9 extracting sha256:561ed1490a5cefb71c984cfb31e264c0a9770dfbca01c029bc30c15298a938f4 done
+#9 sha256:bad9a60af1cb841ed609924aa95030799bb4d52c5fefebdfba8278c1dc9ca6d4 74.45MB / 109.19MB 28.0s
+#9 sha256:6964af6a94004efc887928769aba148ba556ae0e406f7d389499ddfec28d216a 18.92kB / 18.92kB 19.3s done
+#9 sha256:2f94990e3c9b86b33b17eeb9f758cf43ea8e294c5f54dd3b559395275441e850 128B / 128B 19.6s done
+#9 sha256:5993a5f080460d3be8223750769c6dd6e8aef199a85d37d04640e5c3d9e1af9d 6.10kB / 6.10kB 20.1s done
+#9 sha256:fe238b783bbd4bc37882cd6057ae64f08317b03bc415aa16662f90c959a0b06f 185B / 185B 20.3s done
+#9 ...
+
+#7 [build 1/8] FROM docker.io/library/golang:1.27-bookworm@sha256:648f440f42a0958804efb24df176f806f9d353b41f1c0627f666428e40310f6b
+#7 extracting sha256:ef1dbfdbb5d59bdeac07b1398a9f0808b453513bf6a76eb3ffd509a284483095 3.9s done
+#7 extracting sha256:03d42cd6437e3ce630d1a287fab870684cb77487c6c250110c92e66586668a48 done
+#7 extracting sha256:4f4fb700ef54461cfa02571ae0db9a0dc1e0cdb5577484a6d75e68dc38e8acc1 done
+#7 DONE 29.9s
+
+#9 [stage-1  1/12] FROM docker.io/library/postgres:18.3-alpine3.23@sha256:54451ecb8ab38c24c3ec123f2fd501303a3a1856a5c66e98cecf2460d5e1e9d7
+#9 sha256:bad9a60af1cb841ed609924aa95030799bb4d52c5fefebdfba8278c1dc9ca6d4 99.61MB / 109.19MB 29.8s
+#9 ...
+
+#10 [build 2/8] WORKDIR /src
+#10 DONE 0.5s
+
+#9 [stage-1  1/12] FROM docker.io/library/postgres:18.3-alpine3.23@sha256:54451ecb8ab38c24c3ec123f2fd501303a3a1856a5c66e98cecf2460d5e1e9d7
+#9 sha256:bad9a60af1cb841ed609924aa95030799bb4d52c5fefebdfba8278c1dc9ca6d4 105.91MB / 109.19MB 30.3s
+#9 ...
+
+#11 [build 3/8] COPY .cache/fabric-x-committer-src /src/committer
+#11 DONE 0.1s
+
+#12 [build 4/8] WORKDIR /src/committer
+#12 DONE 0.0s
+
+#9 [stage-1  1/12] FROM docker.io/library/postgres:18.3-alpine3.23@sha256:54451ecb8ab38c24c3ec123f2fd501303a3a1856a5c66e98cecf2460d5e1e9d7
+#9 sha256:bad9a60af1cb841ed609924aa95030799bb4d52c5fefebdfba8278c1dc9ca6d4 109.19MB / 109.19MB 30.5s done
+#9 extracting sha256:bad9a60af1cb841ed609924aa95030799bb4d52c5fefebdfba8278c1dc9ca6d4 0.1s
+#9 extracting sha256:bad9a60af1cb841ed609924aa95030799bb4d52c5fefebdfba8278c1dc9ca6d4 1.3s done
+#9 extracting sha256:6964af6a94004efc887928769aba148ba556ae0e406f7d389499ddfec28d216a
+#9 extracting sha256:6964af6a94004efc887928769aba148ba556ae0e406f7d389499ddfec28d216a done
+#9 extracting sha256:2f94990e3c9b86b33b17eeb9f758cf43ea8e294c5f54dd3b559395275441e850 done
+#9 extracting sha256:5993a5f080460d3be8223750769c6dd6e8aef199a85d37d04640e5c3d9e1af9d done
+#9 extracting sha256:fe238b783bbd4bc37882cd6057ae64f08317b03bc415aa16662f90c959a0b06f done
+#9 DONE 32.1s
+
+#13 [build 5/8] RUN go build -o /out/committer ./cmd/committer  && go build -o /out/loadgen   ./cmd/loadgen
+#13 0.260 go: downloading github.com/stretchr/testify v1.11.1
+#13 0.261 go: downloading github.com/spf13/cobra v1.10.2
+#13 0.261 go: downloading github.com/hyperledger/fabric-x-common v0.2.9-0.20260723091942-e43f1af10c7e
+#13 0.261 go: downloading github.com/cockroachdb/errors v1.14.0
+#13 0.261 go: downloading golang.org/x/sync v0.22.0
+#13 0.262 go: downloading github.com/hyperledger/fabric-lib-go v1.1.5-0.20260708100132-163bcc919208
+#13 0.266 go: downloading github.com/prometheus/client_golang v1.23.2
+#13 0.266 go: downloading google.golang.org/grpc v1.83.1
+#13 0.289 go: downloading github.com/cenkalti/backoff/v5 v5.0.3
+#13 0.812 go: downloading golang.org/x/time v0.15.0
+#13 0.814 go: downloading github.com/fsouza/go-dockerclient v1.13.2
+#13 0.988 go: downloading github.com/prometheus/client_model v0.6.2
+#13 0.988 go: downloading github.com/prometheus/common v0.67.5
+#13 0.988 go: downloading google.golang.org/protobuf v1.36.11
+#13 0.989 go: downloading github.com/google/uuid v1.6.0
+#13 0.989 go: downloading github.com/yugabyte/pgx/v5 v5.7.6-yb-1
+#13 0.991 go: downloading github.com/jackc/pgerrcode v0.0.0-20250907135507-afb5586c32a6
+#13 1.194 go: downloading go.uber.org/zap v1.28.0
+#13 1.292 go: downloading github.com/hyperledger/fabric-protos-go-apiv2 v0.3.7
+#13 1.666 go: downloading github.com/golang/protobuf v1.5.4
+#13 1.920 go: downloading golang.org/x/exp v0.0.0-20260709172345-9ea1abe57597
+#13 1.920 go: downloading github.com/consensys/gnark-crypto v0.20.1
+#13 1.920 go: downloading google.golang.org/genproto/googleapis/api v0.0.0-20260706201446-f0a921348800
+#13 1.920 go: downloading github.com/grpc-ecosystem/grpc-gateway/v2 v2.29.0
+#13 1.921 go: downloading github.com/go-playground/validator/v10 v10.30.3
+#13 1.921 go: downloading github.com/go-viper/mapstructure/v2 v2.5.0
+#13 1.921 go: downloading github.com/spf13/viper v1.21.0
+#13 1.921 go: downloading github.com/go-task/slim-sprig/v3 v3.0.0
+#13 1.921 go: downloading github.com/jackc/puddle/v2 v2.2.2
+#13 1.929 go: downloading github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc
+#13 1.929 go: downloading github.com/spf13/pflag v1.0.10
+#13 1.930 go: downloading github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2
+#13 1.930 go: downloading github.com/prometheus/procfs v0.20.1
+#13 1.930 go: downloading github.com/cespare/xxhash/v2 v2.3.0
+#13 1.930 go: downloading github.com/beorn7/perks v1.0.1
+#13 2.127 go: downloading golang.org/x/net v0.57.0
+#13 2.129 go: downloading google.golang.org/genproto/googleapis/rpc v0.0.0-20260630182238-925bb5da69e7
+#13 2.131 go: downloading go.uber.org/multierr v1.11.0
+#13 2.170 go: downloading github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822
+#13 2.170 go: downloading go.yaml.in/yaml/v2 v2.4.4
+#13 2.172 go: downloading github.com/cockroachdb/logtags v0.0.0-20241215232642-bb51bb14a506
+#13 2.178 go: downloading github.com/cockroachdb/redact v1.1.8
+#13 2.399 go: downloading github.com/getsentry/sentry-go v0.46.2
+#13 2.399 go: downloading github.com/pkg/errors v0.9.1
+#13 2.399 go: downloading github.com/docker/go-units v0.5.0
+#13 2.400 go: downloading github.com/moby/go-archive v0.3.0
+#13 2.461 go: downloading github.com/moby/moby/api v1.55.0
+#13 2.492 go: downloading github.com/moby/moby/client v0.5.0
+#13 2.492 go: downloading github.com/moby/patternmatcher v0.6.1
+#13 2.492 go: downloading go.yaml.in/yaml/v3 v3.0.4
+#13 2.493 go: downloading github.com/expr-lang/expr v1.17.8
+#13 2.600 go: downloading github.com/IBM/idemix v0.2.0
+#13 2.677 go: downloading gopkg.in/yaml.v3 v3.0.1
+#13 2.683 go: downloading github.com/fsnotify/fsnotify v1.10.1
+#13 2.742 go: downloading github.com/sagikazarmark/locafero v0.12.0
+#13 2.870 go: downloading github.com/spf13/afero v1.15.0
+#13 2.915 go: downloading github.com/spf13/cast v1.10.0
+#13 2.916 go: downloading golang.org/x/sys v0.47.0
+#13 2.919 go: downloading github.com/gogo/protobuf v1.3.2
+#13 2.955 go: downloading github.com/kr/pretty v0.3.1
+#13 2.956 go: downloading github.com/go-logfmt/logfmt v0.6.1
+#13 3.068 go: downloading github.com/gabriel-vasile/mimetype v1.4.13
+#13 3.259 go: downloading github.com/go-playground/universal-translator v0.18.1
+#13 3.260 go: downloading github.com/leodido/go-urn v1.4.0
+#13 3.269 go: downloading golang.org/x/crypto v0.54.0
+#13 3.309 go: downloading golang.org/x/text v0.40.0
+#13 3.309 go: downloading github.com/jackc/pgpassfile v1.0.0
+#13 3.309 go: downloading github.com/jackc/pgservicefile v0.0.0-20240606120523-5a60cdf6a761
+#13 3.581 go: downloading github.com/hyperledger-labs/SmartBFT v1.0.1
+#13 3.659 go: downloading github.com/syndtr/goleveldb v1.0.1-0.20220721030215-126854af5e6d
+#13 3.980 go: downloading github.com/subosito/gotenv v1.6.0
+#13 3.980 go: downloading github.com/pelletier/go-toml/v2 v2.3.1
+#13 4.059 go: downloading github.com/containerd/log v0.1.0
+#13 4.253 go: downloading github.com/moby/sys/sequential v0.7.0
+#13 4.253 go: downloading github.com/moby/sys/user v0.4.1
+#13 4.338 go: downloading github.com/moby/sys/userns v0.1.0
+#13 4.338 go: downloading github.com/klauspost/compress v1.18.7
+#13 4.341 go: downloading github.com/opencontainers/image-spec v1.1.1
+#13 4.819 go: downloading github.com/moby/term v0.5.2
+#13 4.819 go: downloading github.com/kr/text v0.2.0
+#13 4.819 go: downloading github.com/rogpeppe/go-internal v1.14.1
+#13 4.873 go: downloading github.com/go-playground/locales v0.14.1
+#13 4.911 go: downloading github.com/IBM/mathlib v0.3.0
+#13 4.975 go: downloading github.com/sirupsen/logrus v1.9.4
+#13 5.319 go: downloading github.com/opencontainers/go-digest v1.0.0
+#13 5.321 go: downloading github.com/golang/snappy v1.0.0
+#13 5.395 go: downloading github.com/bits-and-blooms/bitset v1.24.4
+#13 5.630 go: downloading github.com/hyperledger/fabric-amcl v0.0.0-20230602173724-9e02669dceb2
+#13 ...
+
+#14 [stage-1  2/12] RUN apk add --no-cache ca-certificates python3  && mkdir -p /root/bin /root/config /root/artifacts /data/ledger /data/arma /opt/fabric-x
+#14 3.131 ( 1/10) Installing ca-certificates (20260611-r0)
+#14 3.288 ( 2/10) Installing libexpat (2.8.4-r0)
+#14 3.332 ( 3/10) Installing libbz2 (1.0.8-r6)
+#14 3.466 ( 4/10) Installing mpdecimal (4.0.1-r0)
+#14 3.516 ( 5/10) Installing libpanelw (6.5_p20251123-r0)
+#14 3.556 ( 6/10) Installing sqlite-libs (3.53.4-r0)
+#14 3.820 ( 7/10) Installing python3 (3.12.14-r0)
+#14 4.626 ( 8/10) Installing python3-pycache-pyc0 (3.12.14-r0)
+#14 4.988 ( 9/10) Installing pyc (3.12.14-r0)
+#14 4.988 (10/10) Installing python3-pyc (3.12.14-r0)
+#14 4.988 Executing busybox-1.37.0-r30.trigger
+#14 4.992 Executing ca-certificates-20260611-r0.trigger
+#14 5.013 OK: 247.0 MiB in 64 packages
+#14 DONE 5.2s
+
+#13 [build 5/8] RUN go build -o /out/committer ./cmd/committer  && go build -o /out/loadgen   ./cmd/loadgen
+#13 DONE 19.4s
+
+#15 [build 6/8] COPY .cache/fabric-x-orderer-src /src/orderer
+#15 DONE 0.3s
+
+#16 [build 7/8] WORKDIR /src/orderer
+#16 DONE 0.0s
+
+#17 [build 8/8] RUN go build -o /out/arma       ./cmd/arma  && go build -o /out/armageddon ./cmd/armageddon
+#17 DONE 5.2s
+
+#18 [stage-1  3/12] COPY --from=build /out/committer /out/loadgen /out/arma /out/armageddon /root/bin/
+#18 DONE 0.2s
+
+#19 [stage-1  4/12] COPY .cache/fabric-x-committer-src/cmd/config/samples          /root/config
+#19 DONE 0.0s
+
+#20 [stage-1  5/12] COPY .cache/fabric-x-orderer-src/testutil/fabric/sampleconfig  /root/arma-sampleconfig
+#20 DONE 0.0s
+
+#21 [stage-1  6/12] COPY image/run.sh image/start-arma.sh image/start-node2.sh image/start-node3.sh      image/generate-arma.sh image/patch-configs.py image/entrypoint.sh /opt/fabric-x/
+#21 DONE 0.1s
+
+#22 [stage-1  7/12] COPY image/arma-deployment.yaml /opt/fabric-x/arma-deployment.yaml
+#22 DONE 0.0s
+
+#23 [stage-1  8/12] RUN chmod a+x /root/bin/* /opt/fabric-x/*.sh /opt/fabric-x/patch-configs.py
+#23 DONE 0.3s
+
+#24 [stage-1  9/12] RUN apk add --no-cache openssl  && openssl genpkey -algorithm EC -pkeyopt ec_paramgen_curve:P-256       -outform PEM -out /root/artifacts/ns-signing-key.pem  && openssl pkey -in /root/artifacts/ns-signing-key.pem -pubout       -out /root/artifacts/ns-verification-key.pem  && chmod 600 /root/artifacts/ns-signing-key.pem
+#24 0.797 (1/3) Upgrading libcrypto3 (3.5.6-r0 -> 3.5.8-r0)
+#24 0.968 (2/3) Upgrading libssl3 (3.5.6-r0 -> 3.5.8-r0)
+#24 1.015 (3/3) Installing openssl (3.5.8-r0)
+#24 1.056 Executing busybox-1.37.0-r30.trigger
+#24 1.059 Executing ca-certificates-20260611-r0.trigger
+#24 1.072 OK: 247.8 MiB in 65 packages
+#24 DONE 1.1s
+
+#25 [stage-1 10/12] RUN python3 /opt/fabric-x/patch-configs.py
+#25 DONE 0.3s
+
+#26 [stage-1 11/12] RUN ARMA_OUT=/root/arma DEPLOY=/opt/fabric-x/arma-deployment.yaml     SAMPLE=/root/arma-sampleconfig ARMAGEDDON=/root/bin/armageddon     /opt/fabric-x/generate-arma.sh  && loadgen make-artifacts -c /root/config/loadgen.yaml  && cp /root/arma/bootstrap/bootstrap.block /root/artifacts/config-block.pb.bin
+#26 0.286 [34m2026-09-16 03:47:21.211 UTC 0001 INFO[0m [common.tools.configtxgen] [34;1mcompleteInitialization[0m -> orderer type: arma
+#26 0.303 [34m2026-09-16 03:47:21.228 UTC 0002 INFO[0m [common.tools.configtxgen] [34;1mGetOutputBlock[0m -> Generating genesis block
+#26 0.303 [34m2026-09-16 03:47:21.228 UTC 0003 INFO[0m [common.tools.configtxgen] [34;1mGetOutputBlock[0m -> Creating application channel genesis block
+#26 0.314 [34m2026-09-16 03:47:21.240 UTC 0004 INFO[0m [armageddon] [34;1mRun[0m -> Configuration material was created successfully in /root/arma
+#26 0.315 applying profile orderer_batch: timeout=1s maxMessageCount=100
+#26 0.318   BatchCreationTimeout = 1s
+#26 0.321   MaxMessageCount = 100
+#26 0.359 [34m2026-09-16 03:47:21.284 UTC 0001 INFO[0m [common.tools.configtxgen] [34;1mcompleteInitialization[0m -> Orderer.BatchSize.PreferredMaxBytes unset, setting to 2097152
+#26 0.359 [34m2026-09-16 03:47:21.285 UTC 0002 INFO[0m [common.tools.configtxgen] [34;1mcompleteInitialization[0m -> orderer type: arma
+#26 0.359 [34m2026-09-16 03:47:21.285 UTC 0003 INFO[0m [common.tools.configtxgen] [34;1mcompleteInitialization[0m -> Orderer.Arma unset, setting to &{}
+#26 0.359 [34m2026-09-16 03:47:21.285 UTC 0004 INFO[0m [common.tools.configtxgen] [34;1mLoad[0m -> Loaded configuration: /root/arma-sampleconfig/configtx.yaml
+#26 0.361 [34m2026-09-16 03:47:21.286 UTC 0005 INFO[0m [common.tools.configtxgen] [34;1mGetOutputBlock[0m -> Generating genesis block
+#26 0.361 [34m2026-09-16 03:47:21.286 UTC 0006 INFO[0m [common.tools.configtxgen] [34;1mGetOutputBlock[0m -> Creating application channel genesis block
+#26 0.404 Generating crypto artifacts and config block...
+#26 0.407 [34m2026-09-16 03:47:21.333 UTC [common.tools.configtxgen] completeInitialization -> INFO[0m orderer type: arma
+#26 0.424 [34m2026-09-16 03:47:21.350 UTC [common.tools.configtxgen] GetOutputBlock -> INFO[0m Generating genesis block
+#26 0.424 [34m2026-09-16 03:47:21.350 UTC [common.tools.configtxgen] GetOutputBlock -> INFO[0m Creating application channel genesis block
+#26 0.425 Artifacts path: /root/artifacts
+#26 DONE 0.5s
+
+#27 [stage-1 12/12] WORKDIR /data
+#27 DONE 0.0s
+
+#28 exporting to image
+#28 exporting layers
+#28 exporting layers 0.2s done
+#28 writing image sha256:69e9bce6e4783627635dfa905ec07273f5a67daec46fcc4d3bafad07d65e469d done
+#28 naming to docker.io/bench/fabricx:local done
+#28 DONE 0.2s
+
+ [33m3 warnings found (use docker --debug to expand):
+[0m - SecretsUsedInArgOrEnv: Do not use ARG or ENV instructions for sensitive data (ENV "POSTGRES_PASSWORD") (line 37)
+ - SecretsUsedInArgOrEnv: Do not use ARG or ENV instructions for sensitive data (ENV "SC_VC_DATABASE_PASSWORD") (line 37)
+ - SecretsUsedInArgOrEnv: Do not use ARG or ENV instructions for sensitive data (ENV "SC_QUERY_DATABASE_PASSWORD") (line 37)
+[deploy 09:17:22] WARN: could not drop page cache (needs root); continuing
+[deploy 09:17:22] starting stack
+ Network bench-fabricx_fx Creating 
+ Volume bench-fabricx_fx-pgdata Creating 
+ Volume bench-fabricx_fx-arma Creating 
+ Volume bench-fabricx_fx-pgdata Creating 
+ Volume bench-fabricx_fx-arma Creating 
+ Network bench-fabricx_fx Creating 
+ Volume bench-fabricx_fx-ledger Creating 
+ Volume bench-fabricx_fx-ledger Creating 
+ Volume bench-fabricx_fx-pgdata Created 
+ Volume bench-fabricx_fx-pgdata Created 
+ Volume bench-fabricx_fx-arma Created 
+ Volume bench-fabricx_fx-arma Created 
+ Volume bench-fabricx_fx-ledger Created 
+ Volume bench-fabricx_fx-ledger Created 
+ Network bench-fabricx_fx Created 
+ Network bench-fabricx_fx Created 
+ Container bench-fabricx-fabricx-db-1 Creating 
+ Container bench-fabricx-fabricx-db-1 Created 
+ Container bench-fabricx-fabricx-arma-1 Creating 
+ Container bench-fabricx-fabricx-arma-1 Created 
+ Container bench-fabricx-fabricx-pipeline-1 Creating 
+ Container bench-fabricx-fabricx-pipeline-1 Created 
+ Container bench-fabricx-fabricx-committer-1 Creating 
+ Container bench-fabricx-fabricx-committer-1 Created 
+ Container bench-fabricx-fabricx-db-1 Starting 
+ Container bench-fabricx-fabricx-db-1 Started 
+ Container bench-fabricx-fabricx-db-1 Waiting 
+ Container bench-fabricx-fabricx-db-1 Healthy 
+ Container bench-fabricx-fabricx-arma-1 Starting 
+ Container bench-fabricx-fabricx-arma-1 Started 
+ Container bench-fabricx-fabricx-pipeline-1 Starting 
+ Container bench-fabricx-fabricx-pipeline-1 Started 
+ Container bench-fabricx-fabricx-committer-1 Starting 
+ Container bench-fabricx-fabricx-committer-1 Started 
+[deploy 09:17:28] resource budget for fabricx: 11 CPU / 11 GB across 4 containers = 2.75 CPU each; memory by role weight (peer=4 statedb=4 orderer=2 other=1, total weight 16)
+[deploy 09:17:28]   bench-fabricx-fabricx-arma-1  (peer) 2816m
+[deploy 09:17:29]   bench-fabricx-fabricx-committer-1  (peer) 2816m
+[deploy 09:17:30]   bench-fabricx-fabricx-db-1  (statedb) 2816m
+[deploy 09:17:30]   bench-fabricx-fabricx-pipeline-1  (peer) 2816m
+[deploy 09:17:30] waiting up to 120s for Arma router on :6022
+[deploy 09:17:30] Arma router on :6022: ready after 0s
+[deploy 09:17:30] waiting up to 120s for Arma router on :6122
+[deploy 09:17:30] Arma router on :6122: ready after 0s
+[deploy 09:17:30] waiting up to 120s for Arma router on :6222
+[deploy 09:17:30] Arma router on :6222: ready after 0s
+[deploy 09:17:30] waiting up to 120s for Arma router on :6322
+[deploy 09:17:30] Arma router on :6322: ready after 0s
+[deploy 09:17:30] waiting up to 120s for sidecar deliver on :4001
+[deploy 09:17:30] sidecar deliver on :4001: ready after 0s
+[deploy 09:17:30] registering application namespace '0'
+[deploy 09:17:33] namespace '0' committed with the image's ECDSA verification key
+[deploy 09:17:33] exported namespace signing key to /home/chad/Projects/bench/deploy/docker/fabricx/.cache/keys/ns-signing-key.pem
+[deploy 09:17:33] fabricx up. broadcast :6022,:6122,:6222,:6322  deliver :4001  metrics :9643
+[deploy 09:17:33] wrote /home/chad/Projects/bench/deploy/docker/fabricx/connection.env

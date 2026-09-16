@@ -1,8 +1,8 @@
 package harness
 
 // Page chrome for the run book. Colors follow the data-viz reference palette:
-// categorical slots 1-2 (blue, orange) for series, reserved status colors that
-// always travel with an icon and a label, and hairline recessive grid/axes.
+// categorical slots 1-12 for series, reserved status colors that always travel
+// with an icon and a label, and hairline recessive grid/axes.
 
 const runbookHead = `<!doctype html>
 <html lang="en">
@@ -16,7 +16,7 @@ const runbookHead = `<!doctype html>
   --page:#f9f9f7;--surface:#fcfcfb;--raised:#ffffff;
   --ink:#0b0b0b;--ink-2:#52514e;--muted:#6f6e69;
   --grid:#e1e0d9;--axis:#c3c2b7;--ring:rgba(11,11,11,.10);
-  --s1:#2a78d6;--s2:#eb6834;
+  --s1:#2a78d6;--s2:#eb6834;--s3:#0f9d8e;--s4:#7c5cbf;--s5:#3d8b40;--s6:#c43d7e;--s7:#8c6d3f;--s8:#1a8fb3;--s9:#6b8e23;--s10:#c45c26;--s11:#5c6b7a;--s12:#c4a035;
   --good:#006300;--good-bg:#e7f3e7;
   --warn:#8a5a00;--warn-bg:#fdf3dd;
   --serious:#9c4318;--serious-bg:#fbeae2;
@@ -28,7 +28,7 @@ const runbookHead = `<!doctype html>
   --page:#0d0d0d;--surface:#1a1a19;--raised:#20201f;
   --ink:#ffffff;--ink-2:#c3c2b7;--muted:#9a9990;
   --grid:#2c2c2a;--axis:#383835;--ring:rgba(255,255,255,.10);
-  --s1:#3987e5;--s2:#d95926;
+  --s1:#3987e5;--s2:#d95926;--s3:#2ec4b6;--s4:#9b7ee0;--s5:#5dce60;--s6:#e56aa0;--s7:#c49a6c;--s8:#4eb8d9;--s9:#a3c94a;--s10:#e08950;--s11:#8a9aab;--s12:#e0c14a;
   --good:#3fbf3f;--good-bg:#132613;
   --warn:#e8b030;--warn-bg:#2b2311;
   --serious:#ec835a;--serious-bg:#2e1c14;
@@ -40,7 +40,7 @@ const runbookHead = `<!doctype html>
   --page:#0d0d0d;--surface:#1a1a19;--raised:#20201f;
   --ink:#ffffff;--ink-2:#c3c2b7;--muted:#9a9990;
   --grid:#2c2c2a;--axis:#383835;--ring:rgba(255,255,255,.10);
-  --s1:#3987e5;--s2:#d95926;
+  --s1:#3987e5;--s2:#d95926;--s3:#2ec4b6;--s4:#9b7ee0;--s5:#5dce60;--s6:#e56aa0;--s7:#c49a6c;--s8:#4eb8d9;--s9:#a3c94a;--s10:#e08950;--s11:#8a9aab;--s12:#e0c14a;
   --good:#3fbf3f;--good-bg:#132613;
   --warn:#e8b030;--warn-bg:#2b2311;
   --serious:#ec835a;--serious-bg:#2e1c14;
@@ -108,19 +108,19 @@ table.runs tbody tr:hover{background:var(--accent-bg)}
 .charts{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(380px,100%),1fr));gap:16px}
 .chart{margin:0;background:var(--surface);border:1px solid var(--ring);border-radius:12px;padding:14px 16px 8px}
 .chart figcaption{font-weight:600;font-size:13.5px}
-.legend{display:flex;gap:16px;margin:6px 0 0;font-size:12.5px;color:var(--ink-2)}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;margin:6px 0 0;font-size:12px;color:var(--ink-2)}
 .legend span{display:inline-flex;align-items:center;gap:6px}
 .key{display:inline-block;width:14px;height:2px;border-radius:1px}
-.key.s1{background:var(--s1)}.key.s2{background:var(--s2)}
+.key.s1{background:var(--s1)}.key.s2{background:var(--s2)}.key.s3{background:var(--s3)}.key.s4{background:var(--s4)}.key.s5{background:var(--s5)}.key.s6{background:var(--s6)}.key.s7{background:var(--s7)}.key.s8{background:var(--s8)}.key.s9{background:var(--s9)}.key.s10{background:var(--s10)}.key.s11{background:var(--s11)}.key.s12{background:var(--s12)}
 .plot{position:relative}
 .chart svg{display:block;width:100%;height:auto;overflow:visible}
 .chart .grid{stroke:var(--grid);stroke-width:1}
 .chart .base{stroke:var(--axis);stroke-width:1}
 .chart .tick{fill:var(--muted);font-size:11.5px;font-variant-numeric:tabular-nums}
 .chart .line{fill:none;stroke-width:2;stroke-linejoin:round;stroke-linecap:round}
-.chart .line.s1{stroke:var(--s1)}.chart .line.s2{stroke:var(--s2)}
+.chart .line.s1{stroke:var(--s1)}.chart .line.s2{stroke:var(--s2)}.chart .line.s3{stroke:var(--s3)}.chart .line.s4{stroke:var(--s4)}.chart .line.s5{stroke:var(--s5)}.chart .line.s6{stroke:var(--s6)}.chart .line.s7{stroke:var(--s7)}.chart .line.s8{stroke:var(--s8)}.chart .line.s9{stroke:var(--s9)}.chart .line.s10{stroke:var(--s10)}.chart .line.s11{stroke:var(--s11)}.chart .line.s12{stroke:var(--s12)}
 .chart .dot{stroke:var(--surface);stroke-width:2}
-.chart .dot.s1{fill:var(--s1)}.chart .dot.s2{fill:var(--s2)}
+.chart .dot.s1{fill:var(--s1)}.chart .dot.s2{fill:var(--s2)}.chart .dot.s3{fill:var(--s3)}.chart .dot.s4{fill:var(--s4)}.chart .dot.s5{fill:var(--s5)}.chart .dot.s6{fill:var(--s6)}.chart .dot.s7{fill:var(--s7)}.chart .dot.s8{fill:var(--s8)}.chart .dot.s9{fill:var(--s9)}.chart .dot.s10{fill:var(--s10)}.chart .dot.s11{fill:var(--s11)}.chart .dot.s12{fill:var(--s12)}
 .chart .hit{fill:transparent;cursor:crosshair;outline:none}
 .chart .cross{stroke:var(--axis);stroke-width:1;visibility:hidden}
 .details{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(280px,100%),1fr));gap:12px}

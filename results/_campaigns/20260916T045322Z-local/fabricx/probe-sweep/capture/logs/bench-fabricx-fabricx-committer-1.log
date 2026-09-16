@@ -1,0 +1,40 @@
+2026-09-16T05:25:01.218983611Z [34m2026-09-16 05:25:01.218 UTC [db-init] NewPool -> INFO[0m DB source: db=postgres, endpoints=172.29.0.11:5432, load_balance=false, tls_mode=none
+2026-09-16T05:25:01.225304916Z [34m2026-09-16 05:25:01.225 UTC [db-init] SetupSystemTablesAndNamespaces -> INFO[0m Creating tx status table, metadata table, and their methods.
+2026-09-16T05:25:01.235852245Z [34m2026-09-16 05:25:01.235 UTC [db-init] SetupSystemTablesAndNamespaces -> INFO[0m namespace _meta: created table and its methods.
+2026-09-16T05:25:01.238572890Z [34m2026-09-16 05:25:01.238 UTC [db-init] SetupSystemTablesAndNamespaces -> INFO[0m namespace _config: created table and its methods.
+2026-09-16T05:25:01.241030584Z [34m2026-09-16 05:25:01.240 UTC [db-init] SetupSystemTablesAndNamespaces -> INFO[0m namespace _snapshot: created table and its methods.
+2026-09-16T05:25:01.243738677Z [34m2026-09-16 05:25:01.243 UTC [db-init] SetupSystemTablesAndNamespaces -> INFO[0m namespace _checkpoint: created table and its methods.
+2026-09-16T05:25:01.244065530Z Database initialized successfully
+2026-09-16T05:25:01.263004398Z Starting Validator-Committer
+2026-09-16T05:25:01.263961699Z [34m2026-09-16 05:25:01.263 UTC [validator-committer] NewValidatorCommitterService -> INFO[0m Initializing new validator committer service.
+2026-09-16T05:25:01.264054904Z [34m2026-09-16 05:25:01.263 UTC [validator-committer] newPreparer -> INFO[0m Initializing new preparer
+2026-09-16T05:25:01.264057321Z [34m2026-09-16 05:25:01.264 UTC [validator-committer] newValidator -> INFO[0m Initializing new validator
+2026-09-16T05:25:01.264058290Z [34m2026-09-16 05:25:01.264 UTC [validator-committer] newCommitter -> INFO[0m Initializing new committer
+2026-09-16T05:25:01.264219538Z [34m2026-09-16 05:25:01.264 UTC [validator-committer] Run -> INFO[0m Starting ValidatorCommitterService
+2026-09-16T05:25:01.264379093Z [34m2026-09-16 05:25:01.264 UTC [db-init] NewPool -> INFO[0m DB source: db=postgres, endpoints=172.29.0.11:5432, load_balance=false, tls_mode=none
+2026-09-16T05:25:01.287685922Z Starting Query-Service
+2026-09-16T05:25:01.287932906Z [34m2026-09-16 05:25:01.287 UTC [validator-committer] newDatabase -> INFO[0m validator persister connected to database at [172.29.0.11:5432]
+2026-09-16T05:25:01.287940511Z [34m2026-09-16 05:25:01.287 UTC [validator-committer] Run -> INFO[0m Starting 1 workers for the transaction preparer
+2026-09-16T05:25:01.287941725Z [34m2026-09-16 05:25:01.287 UTC [validator-committer] Run -> INFO[0m Starting 1 workers for the transaction validator
+2026-09-16T05:25:01.287942532Z [34m2026-09-16 05:25:01.287 UTC [validator-committer] Run -> INFO[0m Starting 20 workers for the transaction committer
+2026-09-16T05:25:01.287943194Z [34m2026-09-16 05:25:01.287 UTC [validator-committer] Run -> INFO[0m Starting the snapshot hash worker
+2026-09-16T05:25:01.288032694Z [34m2026-09-16 05:25:01.287 UTC [validator-committer] run -> INFO[0m Starting transaction preparer with 1 workers
+2026-09-16T05:25:01.288053870Z [34m2026-09-16 05:25:01.287 UTC [validator-committer] func2 -> INFO[0m Starting transaction batching and forwarding process
+2026-09-16T05:25:01.288124764Z [34m2026-09-16 05:25:01.288 UTC [validator-committer] run -> INFO[0m Starting Validator with 1 workers
+2026-09-16T05:25:01.288184417Z [34m2026-09-16 05:25:01.288 UTC [validator-committer] run -> INFO[0m Starting transactionCommitter with 20 workers
+2026-09-16T05:25:01.288453876Z [34m2026-09-16 05:25:01.288 UTC [db-init] NewPool -> INFO[0m DB source: db=postgres, endpoints=172.29.0.11:5432, load_balance=false, tls_mode=none
+2026-09-16T05:25:01.289501503Z [34m2026-09-16 05:25:01.289 UTC [serve] Listener -> INFO[0m Listening on: tcp://:6001
+2026-09-16T05:25:01.289503821Z [34m2026-09-16 05:25:01.289 UTC [serve] Listener -> INFO[0m Listening on: tcp://:2116
+2026-09-16T05:25:01.289561728Z [34m2026-09-16 05:25:01.289 UTC [serve] func2 -> INFO[0m Serving HTTP on [::]:2116...
+2026-09-16T05:25:01.289596789Z [34m2026-09-16 05:25:01.289 UTC [serve] func1 -> INFO[0m Serving gRPC on [::]:6001...
+2026-09-16T05:25:01.291709310Z [34m2026-09-16 05:25:01.291 UTC [serve] newGRPCServer -> INFO[0m Stream concurrency limit enabled: 10 max concurrent streams
+2026-09-16T05:25:01.292978968Z [34m2026-09-16 05:25:01.292 UTC [serve] Listener -> INFO[0m Listening on: tcp://:7001
+2026-09-16T05:25:01.292988799Z [34m2026-09-16 05:25:01.292 UTC [serve] Listener -> INFO[0m Listening on: tcp://:2117
+2026-09-16T05:25:01.293047878Z [34m2026-09-16 05:25:01.292 UTC [serve] func2 -> INFO[0m Serving HTTP on [::]:2117...
+2026-09-16T05:25:01.293053864Z [34m2026-09-16 05:25:01.292 UTC [serve] func1 -> INFO[0m Serving gRPC on [::]:7001...
+2026-09-16T05:25:02.548498922Z [34m2026-09-16 05:25:02.548 UTC [validator-committer] func2 -> INFO[0m Started a goroutine to send transaction status to the submitter
+2026-09-16T05:25:02.548524618Z [34m2026-09-16 05:25:02.548 UTC [validator-committer] sendTransactionStatus -> INFO[0m Send transaction status
+2026-09-16T05:25:02.548529508Z [34m2026-09-16 05:25:02.548 UTC [validator-committer] func1 -> INFO[0m Started a goroutine to receive and process transactions
+2026-09-16T05:25:08.292855926Z [34m2026-09-16 05:25:08.292 UTC [validator-committer] createTablesAndFunctionsForNamespaces -> INFO[0m Creating table [ns_0] and required functions for namespace [0]
+2026-09-16T05:25:08.295624527Z [34m2026-09-16 05:25:08.295 UTC [validator-committer] createTablesAndFunctionsForNamespaces -> INFO[0m Creating table [ns_1] and required functions for namespace [1]
+2026-09-16T05:26:01.325047010Z [34m2026-09-16 05:26:01.324 UTC [query] func1 -> INFO[0m Updated dynamic TLS with 4 CA certificates from config version 0

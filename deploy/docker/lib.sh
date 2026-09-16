@@ -221,6 +221,21 @@ _resume_get() {
          --connect-timeout 20 --speed-time 30 --speed-limit 1024 \
          -o "$dest" "$url" || rc=$?
     [ "$rc" -eq 0 ] && return 0
+    # GitHub release assets return HTTP 416 when -C - resumes a file that is
+    # already the full object. Treat a valid local archive as success; otherwise
+    # drop the partial and retry a fresh download.
+    if [ "$rc" -eq 22 ] && [ -s "$dest" ]; then
+      case "$dest" in
+        *.tar.gz|*.tgz)
+          if tar -tzf "$dest" >/dev/null 2>&1; then
+            log "download ${url##*/} already complete ($(wc -c <"$dest") bytes)"
+            return 0
+          fi
+          ;;
+      esac
+      warn "download ${url##*/} got HTTP 416 with a bad partial; restarting"
+      rm -f "$dest"
+    fi
     warn "download ${url##*/} attempt ${n}/6 failed (curl exit ${rc}); retrying in 5s"
     sleep 5
   done

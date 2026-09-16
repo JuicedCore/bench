@@ -10,15 +10,15 @@ const (
 // dashboards' own note/caveat text panels so tone and meaning stay consistent
 // with what's already reviewed there.
 var panelExplanations = map[string]string{
-	"Container CPU cores (cAdvisor)":                   "CPU cores used by this platform's own containers during the run. High values explain resource pressure; they are not a fairness metric on their own.",
+	"Container CPU cores (cAdvisor)":                   "CPU cores used by each of this run's containers (1.0 = one full core). A line that flattens at 2.2 is that container hitting its CPU quota.",
 	"Container memory (RSS)":                           "Resident memory used by this platform's own containers during the run.",
 	"Host CPU utilisation (node_exporter)":             "Fraction of the test machine's CPU that was busy. If this saturates, the bottleneck may be the test machine, not the platform under test.",
 	"Host disk IO (bytes/s)":                           "Disk read/write throughput on the test machine — host-level resource context, not a platform metric.",
 	"Native /metrics up (informational only)":          "Whether the platform's own /metrics endpoint was reachable at each sample point; gaps mean scrape failures, not necessarily platform downtime.",
 	"Fabric/Drunix: blocks committed rate":             "Blocks committed per second, from the platform's own ledger metric. Informational only — block size/batching config differs per platform, so this is not comparable across platforms.",
 	"Fabric/Drunix: endorsement proposal duration p99": "p99 time for a peer to simulate and endorse one proposal, as reported by the platform itself. Excluded from cross-platform TPS comparisons, but useful for explaining where time goes inside one platform.",
-	systemCPUChartTitle:                                "CPU% summed across this run's containers, sampled directly by the harness via `docker stats` once per second. Independent of Prometheus - the one chart that still renders even when the monitoring stack is down.",
-	systemMemChartTitle:                                "Resident memory summed across this run's containers, sampled the same way as the CPU chart above - a coarse fallback, not a substitute for the cAdvisor chart when Prometheus is available.",
+	systemCPUChartTitle:                                "CPU% of each of this run's containers (100 = one full core), sampled via `docker stats` once per second. Independent of Prometheus.",
+	systemMemChartTitle:                                "Resident memory of each of this run's containers, sampled the same way as the CPU chart. Coarse fallback, not a substitute for the cAdvisor chart when Prometheus is available.",
 }
 
 // nativeScrapeCaveat is reused verbatim (paraphrased for HTML) from

@@ -1,0 +1,667 @@
+{
+  "manifest": {
+    "run_name": "quick-smoke",
+    "platform": "neuchain",
+    "workload": "kv-write",
+    "profile": "local",
+    "normalized": true,
+    "started_at": "2026-09-16T09:33:02.478209808+05:30",
+    "ended_at": "2026-09-16T09:33:33.036514271+05:30",
+    "harness_git_sha": "a034b6e",
+    "platform_version": "neuchain-ev-patched",
+    "state_db": "leveldb",
+    "state_db_requested": "leveldb",
+    "orderer_batch": {
+      "MaxMessageCount": 0,
+      "AbsoluteMaxBytes": "",
+      "PreferredMaxBytes": "",
+      "BatchTimeout": ""
+    },
+    "crypto": {
+      "signature_alg": "RSA-1024-PKCS1v15",
+      "hash_alg": "SHA-256",
+      "per_tx_endorsement_verify": false,
+      "msp_note": "NeuChain EV: RSA-1024 user signature over the serialized TransactionPayload; no endorsement phase, ordering implicit via deterministic execution"
+    },
+    "resource_limit_per_container": {
+      "CPUs": 2.75,
+      "Memory": ""
+    },
+    "resource_memory_by_container": {
+      "bench-neuchain-block-server-0": "2816m",
+      "bench-neuchain-block-server-1": "2816m",
+      "bench-neuchain-block-server-2": "2816m",
+      "bench-neuchain-block-server-3": "2816m"
+    },
+    "resource_memory_weights": "peer=4 statedb=4 orderer=2 other=1",
+    "resource_containers": 4,
+    "resource_cpus_total": 11,
+    "resource_memory_total_gb": 11,
+    "nodes": {
+      "block_server": 4,
+      "epoch_server": 4
+    },
+    "generators": 2,
+    "seed": 1,
+    "key_space": 5000,
+    "key_distribution": "uniform",
+    "zipfian_constant": 0,
+    "read_write_ratio": 0,
+    "value_size_bytes": 64,
+    "warmup_sec": 5,
+    "cooldown_sec": 3,
+    "caveats": [
+      "neuchain on the local profile is resource-constrained; absolute throughput is NOT comparable to its published scale-out ceiling",
+      "native metrics scrape of http://localhost:9443/metrics failed: Get \"http://localhost:9443/metrics\": dial tcp 127.0.0.1:9443: connect: connection refused (informational metrics only; harness numbers unaffected)"
+    ]
+  },
+  "phases": [
+    {
+      "name": "single",
+      "offered_tps": 50,
+      "window": {
+        "phase_start": "2026-09-16T09:33:02.682601794+05:30",
+        "win_start": "2026-09-16T09:33:07.682601794+05:30",
+        "win_end": "2026-09-16T09:33:29.682601794+05:30"
+      },
+      "result": {
+        "wall_clock_sec": 22,
+        "submitted": 1100,
+        "committed": 1099,
+        "invalid": 1,
+        "errored": 0,
+        "timed_out": 0,
+        "confirmed_tps": 49.95454545454545,
+        "offered_tps": 50,
+        "failure_rate": 0.0009090909090909091,
+        "e2e_latency": {
+          "name": "e2e",
+          "count": 1099,
+          "min_ms": 150.78,
+          "max_ms": 471.81,
+          "mean_ms": 253.96213284804364,
+          "stddev_ms": 62.050154609665164,
+          "percentiles_ms": {
+            "p1": 151.68,
+            "p10": 191.1,
+            "p25": 211.2,
+            "p5": 171.52,
+            "p50": 241.92,
+            "p75": 282.11,
+            "p90": 332.03,
+            "p95": 371.71,
+            "p99": 451.84,
+            "p99.9": 471.81,
+            "p99.99": 471.81
+          }
+        },
+        "submit_latency": {
+          "name": "submit",
+          "count": 1099,
+          "min_ms": 0.19,
+          "max_ms": 0.85,
+          "mean_ms": 0.2581146496815286,
+          "stddev_ms": 0.03792662752804035,
+          "percentiles_ms": {
+            "p1": 0.21,
+            "p10": 0.23,
+            "p25": 0.24,
+            "p5": 0.22,
+            "p50": 0.25,
+            "p75": 0.27,
+            "p90": 0.28,
+            "p95": 0.3,
+            "p99": 0.43,
+            "p99.9": 0.57,
+            "p99.99": 0.85
+          }
+        },
+        "commit_latency": {
+          "name": "commit",
+          "count": 1099,
+          "min_ms": 149.89,
+          "max_ms": 470.53,
+          "mean_ms": 253.08639854413093,
+          "stddev_ms": 62.05967430451129,
+          "percentiles_ms": {
+            "p1": 151.17,
+            "p10": 189.82,
+            "p25": 210.3,
+            "p5": 170.5,
+            "p50": 241.15,
+            "p75": 281.86,
+            "p90": 331.26,
+            "p95": 370.94,
+            "p99": 450.82,
+            "p99.9": 470.53,
+            "p99.99": 470.53
+          }
+        },
+        "send_gap": {
+          "name": "send_gap",
+          "count": 1099,
+          "min_ms": 0.01,
+          "max_ms": 3.75,
+          "mean_ms": 0.6138043676069158,
+          "stddev_ms": 0.33151450647958347,
+          "percentiles_ms": {
+            "p1": 0.03,
+            "p10": 0.17,
+            "p25": 0.35,
+            "p5": 0.1,
+            "p50": 0.64,
+            "p75": 0.87,
+            "p90": 1,
+            "p95": 1.06,
+            "p99": 1.11,
+            "p99.9": 3.43,
+            "p99.99": 3.75
+          }
+        },
+        "invariant_ok": true,
+        "errors": [
+          {
+            "message": "committed invalid",
+            "count": 1
+          }
+        ]
+      }
+    }
+  ],
+  "headline": {
+    "wall_clock_sec": 22,
+    "submitted": 1100,
+    "committed": 1099,
+    "invalid": 1,
+    "errored": 0,
+    "timed_out": 0,
+    "confirmed_tps": 49.95454545454545,
+    "offered_tps": 50,
+    "failure_rate": 0.0009090909090909091,
+    "e2e_latency": {
+      "name": "e2e",
+      "count": 1099,
+      "min_ms": 150.78,
+      "max_ms": 471.81,
+      "mean_ms": 253.96213284804364,
+      "stddev_ms": 62.050154609665164,
+      "percentiles_ms": {
+        "p1": 151.68,
+        "p10": 191.1,
+        "p25": 211.2,
+        "p5": 171.52,
+        "p50": 241.92,
+        "p75": 282.11,
+        "p90": 332.03,
+        "p95": 371.71,
+        "p99": 451.84,
+        "p99.9": 471.81,
+        "p99.99": 471.81
+      }
+    },
+    "submit_latency": {
+      "name": "submit",
+      "count": 1099,
+      "min_ms": 0.19,
+      "max_ms": 0.85,
+      "mean_ms": 0.2581146496815286,
+      "stddev_ms": 0.03792662752804035,
+      "percentiles_ms": {
+        "p1": 0.21,
+        "p10": 0.23,
+        "p25": 0.24,
+        "p5": 0.22,
+        "p50": 0.25,
+        "p75": 0.27,
+        "p90": 0.28,
+        "p95": 0.3,
+        "p99": 0.43,
+        "p99.9": 0.57,
+        "p99.99": 0.85
+      }
+    },
+    "commit_latency": {
+      "name": "commit",
+      "count": 1099,
+      "min_ms": 149.89,
+      "max_ms": 470.53,
+      "mean_ms": 253.08639854413093,
+      "stddev_ms": 62.05967430451129,
+      "percentiles_ms": {
+        "p1": 151.17,
+        "p10": 189.82,
+        "p25": 210.3,
+        "p5": 170.5,
+        "p50": 241.15,
+        "p75": 281.86,
+        "p90": 331.26,
+        "p95": 370.94,
+        "p99": 450.82,
+        "p99.9": 470.53,
+        "p99.99": 470.53
+      }
+    },
+    "send_gap": {
+      "name": "send_gap",
+      "count": 1099,
+      "min_ms": 0.01,
+      "max_ms": 3.75,
+      "mean_ms": 0.6138043676069158,
+      "stddev_ms": 0.33151450647958347,
+      "percentiles_ms": {
+        "p1": 0.03,
+        "p10": 0.17,
+        "p25": 0.35,
+        "p5": 0.1,
+        "p50": 0.64,
+        "p75": 0.87,
+        "p90": 1,
+        "p95": 1.06,
+        "p99": 1.11,
+        "p99.9": 3.43,
+        "p99.99": 3.75
+      }
+    },
+    "invariant_ok": true,
+    "errors": [
+      {
+        "message": "committed invalid",
+        "count": 1
+      }
+    ]
+  },
+  "system_samples": [
+    {
+      "t": "2026-09-16T09:33:05.885867355+05:30",
+      "cpu_percent": 47.67,
+      "mem_bytes": 725509733,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "block-server-0",
+          "cpu_percent": 9.351646042493586,
+          "mem_bytes": 172318720
+        },
+        {
+          "name": "block-server-1",
+          "cpu_percent": 9.597765534129175,
+          "mem_bytes": 171712512
+        },
+        {
+          "name": "block-server-2",
+          "cpu_percent": 8.336326436071657,
+          "mem_bytes": 173871104
+        },
+        {
+          "name": "block-server-3",
+          "cpu_percent": 8.580281690140845,
+          "mem_bytes": 171921408
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T09:33:07.905838769+05:30",
+      "cpu_percent": 47.45,
+      "mem_bytes": 726663166,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "block-server-0",
+          "cpu_percent": 9.351646042493586,
+          "mem_bytes": 172318720
+        },
+        {
+          "name": "block-server-1",
+          "cpu_percent": 9.597765534129175,
+          "mem_bytes": 171712512
+        },
+        {
+          "name": "block-server-2",
+          "cpu_percent": 8.336326436071657,
+          "mem_bytes": 173871104
+        },
+        {
+          "name": "block-server-3",
+          "cpu_percent": 8.580281690140845,
+          "mem_bytes": 171921408
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T09:33:09.92456243+05:30",
+      "cpu_percent": 48.61,
+      "mem_bytes": 728445746,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "block-server-0",
+          "cpu_percent": 11.242853993680663,
+          "mem_bytes": 173105152
+        },
+        {
+          "name": "block-server-1",
+          "cpu_percent": 11.479450933710297,
+          "mem_bytes": 172113920
+        },
+        {
+          "name": "block-server-2",
+          "cpu_percent": 9.955145136882651,
+          "mem_bytes": 174768128
+        },
+        {
+          "name": "block-server-3",
+          "cpu_percent": 9.822018215989587,
+          "mem_bytes": 172515328
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T09:33:11.944781039+05:30",
+      "cpu_percent": 51.33,
+      "mem_bytes": 730018611,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "block-server-0",
+          "cpu_percent": 11.242853993680663,
+          "mem_bytes": 173105152
+        },
+        {
+          "name": "block-server-1",
+          "cpu_percent": 11.479450933710297,
+          "mem_bytes": 172113920
+        },
+        {
+          "name": "block-server-2",
+          "cpu_percent": 9.955145136882651,
+          "mem_bytes": 174768128
+        },
+        {
+          "name": "block-server-3",
+          "cpu_percent": 9.822018215989587,
+          "mem_bytes": 172515328
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T09:33:13.963230792+05:30",
+      "cpu_percent": 47.84,
+      "mem_bytes": 731801188,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "block-server-0",
+          "cpu_percent": 11.242853993680663,
+          "mem_bytes": 173105152
+        },
+        {
+          "name": "block-server-1",
+          "cpu_percent": 11.479450933710297,
+          "mem_bytes": 172113920
+        },
+        {
+          "name": "block-server-2",
+          "cpu_percent": 9.955145136882651,
+          "mem_bytes": 174768128
+        },
+        {
+          "name": "block-server-3",
+          "cpu_percent": 9.822018215989587,
+          "mem_bytes": 172515328
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T09:33:15.981839624+05:30",
+      "cpu_percent": 49.14,
+      "mem_bytes": 734422629,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "block-server-0",
+          "cpu_percent": 13.019025655808598,
+          "mem_bytes": 173801472
+        },
+        {
+          "name": "block-server-1",
+          "cpu_percent": 12.05080659122251,
+          "mem_bytes": 173015040
+        },
+        {
+          "name": "block-server-2",
+          "cpu_percent": 11.494971620433288,
+          "mem_bytes": 175312896
+        },
+        {
+          "name": "block-server-3",
+          "cpu_percent": 11.350593085491106,
+          "mem_bytes": 173707264
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T09:33:18.003624966+05:30",
+      "cpu_percent": 55.25,
+      "mem_bytes": 736834354,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "block-server-0",
+          "cpu_percent": 13.019025655808598,
+          "mem_bytes": 173801472
+        },
+        {
+          "name": "block-server-1",
+          "cpu_percent": 12.05080659122251,
+          "mem_bytes": 173015040
+        },
+        {
+          "name": "block-server-2",
+          "cpu_percent": 11.494971620433288,
+          "mem_bytes": 175312896
+        },
+        {
+          "name": "block-server-3",
+          "cpu_percent": 11.350593085491106,
+          "mem_bytes": 173707264
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T09:33:20.023881272+05:30",
+      "cpu_percent": 50.78,
+      "mem_bytes": 737987787,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "block-server-0",
+          "cpu_percent": 13.482113080641764,
+          "mem_bytes": 174645248
+        },
+        {
+          "name": "block-server-1",
+          "cpu_percent": 13.282948823927255,
+          "mem_bytes": 173858816
+        },
+        {
+          "name": "block-server-2",
+          "cpu_percent": 12.01012598211867,
+          "mem_bytes": 176193536
+        },
+        {
+          "name": "block-server-3",
+          "cpu_percent": 11.633034839792927,
+          "mem_bytes": 174178304
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T09:33:22.041832357+05:30",
+      "cpu_percent": 51.540000000000006,
+      "mem_bytes": 739665508,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "block-server-0",
+          "cpu_percent": 13.482113080641764,
+          "mem_bytes": 174645248
+        },
+        {
+          "name": "block-server-1",
+          "cpu_percent": 13.282948823927255,
+          "mem_bytes": 173858816
+        },
+        {
+          "name": "block-server-2",
+          "cpu_percent": 12.01012598211867,
+          "mem_bytes": 176193536
+        },
+        {
+          "name": "block-server-3",
+          "cpu_percent": 11.633034839792927,
+          "mem_bytes": 174178304
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T09:33:24.058422068+05:30",
+      "cpu_percent": 51.84,
+      "mem_bytes": 742077233,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "block-server-0",
+          "cpu_percent": 13.482113080641764,
+          "mem_bytes": 174645248
+        },
+        {
+          "name": "block-server-1",
+          "cpu_percent": 13.282948823927255,
+          "mem_bytes": 173858816
+        },
+        {
+          "name": "block-server-2",
+          "cpu_percent": 12.01012598211867,
+          "mem_bytes": 176193536
+        },
+        {
+          "name": "block-server-3",
+          "cpu_percent": 11.633034839792927,
+          "mem_bytes": 174178304
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T09:33:26.075961865+05:30",
+      "cpu_percent": 50.510000000000005,
+      "mem_bytes": 744908389,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "block-server-0",
+          "cpu_percent": 13.642025569602168,
+          "mem_bytes": 175419392
+        },
+        {
+          "name": "block-server-1",
+          "cpu_percent": 13.54882834671208,
+          "mem_bytes": 174669824
+        },
+        {
+          "name": "block-server-2",
+          "cpu_percent": 12.274112345583092,
+          "mem_bytes": 176783360
+        },
+        {
+          "name": "block-server-3",
+          "cpu_percent": 11.75221597780465,
+          "mem_bytes": 174649344
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T09:33:28.093615973+05:30",
+      "cpu_percent": 51.059999999999995,
+      "mem_bytes": 745852107,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "block-server-0",
+          "cpu_percent": 13.642025569602168,
+          "mem_bytes": 175419392
+        },
+        {
+          "name": "block-server-1",
+          "cpu_percent": 13.54882834671208,
+          "mem_bytes": 174669824
+        },
+        {
+          "name": "block-server-2",
+          "cpu_percent": 12.274112345583092,
+          "mem_bytes": 176783360
+        },
+        {
+          "name": "block-server-3",
+          "cpu_percent": 11.75221597780465,
+          "mem_bytes": 174649344
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T09:33:30.111267775+05:30",
+      "cpu_percent": 49.699999999999996,
+      "mem_bytes": 746900684,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "block-server-0",
+          "cpu_percent": 13.70982263640462,
+          "mem_bytes": 176037888
+        },
+        {
+          "name": "block-server-1",
+          "cpu_percent": 13.594258612081871,
+          "mem_bytes": 175341568
+        },
+        {
+          "name": "block-server-2",
+          "cpu_percent": 12.365917843388967,
+          "mem_bytes": 177532928
+        },
+        {
+          "name": "block-server-3",
+          "cpu_percent": 11.738208246811045,
+          "mem_bytes": 175239168
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T09:33:32.131159969+05:30",
+      "cpu_percent": 49.65,
+      "mem_bytes": 749207550,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "block-server-0",
+          "cpu_percent": 13.70982263640462,
+          "mem_bytes": 176037888
+        },
+        {
+          "name": "block-server-1",
+          "cpu_percent": 13.594258612081871,
+          "mem_bytes": 175341568
+        },
+        {
+          "name": "block-server-2",
+          "cpu_percent": 12.365917843388967,
+          "mem_bytes": 177532928
+        },
+        {
+          "name": "block-server-3",
+          "cpu_percent": 11.738208246811045,
+          "mem_bytes": 175239168
+        }
+      ]
+    }
+  ]
+}

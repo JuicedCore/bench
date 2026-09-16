@@ -1,0 +1,33 @@
+run:        probe-sweep
+platform:   fabricx  (version fabricx-committer-v1.0.5-orderer-v1.0.6)
+workload:   kv-write   normalized=true
+profile:    local   state_db=postgres (requested leveldb - PARITY NOT HELD)
+resources:  11 CPU / 11 GB total over 4 containers (2.75 CPU each; memory by role weight peer=4 statedb=4 orderer=2 other=1)
+              2816m    bench-fabricx-fabricx-arma-1
+              2816m    bench-fabricx-fabricx-committer-1
+              2816m    bench-fabricx-fabricx-db-1
+              2816m    bench-fabricx-fabricx-pipeline-1
+batch:      msgcount=100 timeout=1s preferred=2 MB
+crypto:     sig=ECDSA-P256 hash=SHA-256 per_tx_endorse_verify=true
+caveats:
+  - fabricx on the local profile is resource-constrained; absolute throughput is NOT comparable to its published scale-out ceiling
+  - state-db parity not held: run requested leveldb, platform actually ran postgres
+  - native metrics scrape of http://localhost:9643/metrics failed: scrape http://localhost:9643/metrics: parser panic: Invalid name validation scheme requested: unset (informational metrics only; harness numbers unaffected)
+
+phase           offered     conf_tps  goodput  fail_rate    e2e_p50    e2e_p99    gap_p99    com_p50  verdict
+probe                10         10.0     100%     0.0000     835.07    1467.39       1.14     833.54  
+sweep-100           100        100.0     100%     0.0000     733.18    1485.82       1.16     732.67  held
+sweep-250           250        250.0     100%     0.0000     503.81     889.34       1.10     502.78  held
+sweep-500           500        500.0     100%     0.0000     398.59     706.05       1.09     397.82  held
+sweep-1000         1000       1000.0     100%     0.0000     356.86     621.57       1.08     356.10  held
+sweep-2000         2000       2000.0     100%     0.0000     354.56     588.80       1.12     354.05  held
+sweep-3500         3500       3500.0     100%     0.0000     400.38     602.11       1.14     399.62  held
+sweep-5000         5000       5000.0     100%     0.0000     657.41     769.02       1.72     630.27  held
+sweep-7500         7500       3992.5      53%     0.4677   17514.50   18923.52       6.63   17481.73  failure rate 46.77% > 2.00%
+sweep-10000       10000       3379.9      34%     0.6620   22282.24   24084.48       2.88   22249.47  failure rate 66.20% > 2.00%
+hold               4500       4500.0     100%     0.0000     670.72    1112.06       1.22     640.00  
+
+errors sweep-7500      52613 x not sent: N transactions already in flight (platform is not finalizing)
+errors sweep-10000     99301 x not sent: N transactions already in flight (platform is not finalizing)
+detected saturation: ~5000 offered TPS
+HEADLINE  confirmed_tps=4500.0  fail_rate=0.0000  e2e p50/p99=670.72/1112.06 ms  invariant_ok=true

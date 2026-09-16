@@ -141,8 +141,8 @@ and the HTML report:
   the ~200 k TPS (Fabric-X) or VLDB (NeuChain) figures. The *shape* of the
   latency curve and the relative behaviour under contention are still
   informative. Full-scale numbers require the `gcp-full` profile.
-- **Mismatched workloads on Fabric-X** — reads carry a dummy blind write, and
-  `transfer` writes values rather than computing balances; see
+- **Mismatched workloads on Fabric-X** — `transfer` writes values rather than
+  computing balances; reads use QueryService rather than Evaluate. See
   [workloads/mismatches.md](../workloads/mismatches.md) and
   [adr-010](../decisions/adr-010-mismatch-report.md).
 - **State-DB parity not held** — emitted automatically whenever `state_db`

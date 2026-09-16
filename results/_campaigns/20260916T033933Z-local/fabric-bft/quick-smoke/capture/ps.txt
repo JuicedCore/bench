@@ -1,0 +1,10 @@
+NAMES                              IMAGE                            STATUS                          CREATED
+bench-monitoring-cadvisor-1        ghcr.io/google/cadvisor:0.57.0   Up 16 hours (healthy)           17 hours ago
+bench-monitoring-node_exporter-1   prom/node-exporter:v1.9.0        Up 3 minutes                    17 hours ago
+bench-monitoring-grafana-1         grafana/grafana:11.4.0           Up 16 hours                     17 hours ago
+bench-monitoring-prometheus-1      prom/prometheus:v3.1.0           Up 16 hours                     17 hours ago
+nucleus-headlamp-1                 weaverai/nucleus-k8-dashboard    Up 16 hours                     5 weeks ago
+feast-control-plane                kindest/node:v1.36.1             Up 16 hours                     6 weeks ago
+feast-worker                       kindest/node:v1.36.1             Up 16 hours                     6 weeks ago
+feast-worker2                      kindest/node:v1.36.1             Up 16 hours                     6 weeks ago
+untitled-cassandra                 cassandra:5.0                    Restarting (3) 37 seconds ago   7 weeks ago

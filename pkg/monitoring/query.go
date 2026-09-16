@@ -11,6 +11,8 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/juicedcore/bench/pkg/metrics"
 )
 
 // Point is one sample of a queried series.
@@ -145,6 +147,9 @@ func expandLegend(format string, labels map[string]string) string {
 	}
 	out := format
 	for k, v := range labels {
+		if k == "name" {
+			v = metrics.ShortContainerName(v)
+		}
 		out = strings.ReplaceAll(out, "{{"+k+"}}", v)
 	}
 	return out

@@ -1,8 +1,12 @@
 // Package fabricx is the PlatformAdapter for Hyperledger Fabric-X.
 //
-// Transactions are submitted by broadcasting a signed envelope to an Arma
+// Writes are submitted by broadcasting a signed envelope to an Arma
 // router over gRPC, and outcomes are read from the sidecar's deliver stream.
-// Those are separate operations on separate connections, so unlike the previous
+// Reads use QueryService.GetRows against committed state (PostgreSQL behind
+// the query process) — Fabric-X's default point-lookup path, not a dummy
+// write through Arma.
+//
+// Those write operations are separate on separate connections, so unlike the previous
 // REST-based integration this adapter observes the router's own acknowledgement
 // of each envelope (T2), distinct from finality (T3). See the broadcaster in
 // stream.go for how replies are matched to envelopes.
@@ -35,8 +39,11 @@ type Config struct {
 	// which is what finality is decided on.
 	DeliverEndpoint string `yaml:"deliver_endpoint"`
 
-	// ChannelID is the Arma channel. armageddon hardcodes "arma".
-	ChannelID string `yaml:"channel_id"`
+	// QueryEndpoint is the QueryService gRPC address (sample default :7001).
+	// Used for kv-read / kv-mixed and Adapter.Query. Empty is allowed for
+	// write-only runs so an older connection.env still works.
+	QueryEndpoint string `yaml:"query_endpoint"`
+	ChannelID     string `yaml:"channel_id"`
 	// Namespace is the application namespace transactions are written to.
 	Namespace string `yaml:"namespace"`
 	// SigningKeyPath is a PKCS#8 PEM ECDSA private key whose public half was
@@ -115,6 +122,7 @@ func configFromExtra(extra map[string]any) (*Config, error) {
 			}
 		}
 		c.DeliverEndpoint = str("deliver_endpoint")
+		c.QueryEndpoint = str("query_endpoint")
 		c.SigningKeyPath = str("signing_key_path")
 		c.MetricsEndpointURL = str("metrics_endpoint")
 		if s := str("channel_id"); s != "" {

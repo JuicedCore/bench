@@ -1,0 +1,1006 @@
+{
+  "manifest": {
+    "run_name": "probe-sweep",
+    "platform": "mock",
+    "workload": "kv-write",
+    "profile": "local",
+    "normalized": true,
+    "started_at": "2026-09-16T09:54:59.972699843+05:30",
+    "ended_at": "2026-09-16T10:03:27.086753908+05:30",
+    "harness_git_sha": "a034b6e",
+    "platform_version": "mock-0",
+    "state_db": "leveldb",
+    "state_db_requested": "leveldb",
+    "orderer_batch": {
+      "MaxMessageCount": 100,
+      "AbsoluteMaxBytes": "10 MB",
+      "PreferredMaxBytes": "2 MB",
+      "BatchTimeout": "1s"
+    },
+    "crypto": {
+      "signature_alg": "",
+      "hash_alg": "",
+      "per_tx_endorsement_verify": false
+    },
+    "resource_limit_per_container": {
+      "CPUs": 0,
+      "Memory": ""
+    },
+    "resource_containers": 0,
+    "resource_cpus_total": 0,
+    "resource_memory_total_gb": 0,
+    "nodes": {
+      "node": 1
+    },
+    "generators": 2,
+    "seed": 1,
+    "key_space": 200000,
+    "key_distribution": "uniform",
+    "zipfian_constant": 0,
+    "read_write_ratio": 0,
+    "value_size_bytes": 64,
+    "warmup_sec": 30,
+    "cooldown_sec": 15,
+    "caveats": [
+      "resource budget not reported by the deploy script (BENCH_RESOURCE_CONTAINERS unset - was connection.env sourced?): container limits are unverified, so this run's hardware share is unknown",
+      "run interrupted (signal or cancelled context) during phase sweep-7500 after 56s: that phase is partial and not a headline; phases never run: sweep-10000, hold"
+    ]
+  },
+  "phases": [
+    {
+      "name": "probe",
+      "offered_tps": 10,
+      "window": {
+        "phase_start": "2026-09-16T09:54:59.974271921+05:30",
+        "win_start": "2026-09-16T09:54:59.974271921+05:30",
+        "win_end": "2026-09-16T09:55:29.974271921+05:30"
+      },
+      "result": {
+        "wall_clock_sec": 30,
+        "submitted": 300,
+        "committed": 300,
+        "invalid": 0,
+        "errored": 0,
+        "timed_out": 0,
+        "confirmed_tps": 10,
+        "offered_tps": 10,
+        "failure_rate": 0,
+        "e2e_latency": {
+          "name": "e2e",
+          "count": 300,
+          "min_ms": 44.13,
+          "max_ms": 72.7,
+          "mean_ms": 59.53194666666666,
+          "stddev_ms": 6.129626850835938,
+          "percentiles_ms": {
+            "p1": 45.54,
+            "p10": 51.84,
+            "p25": 55.17,
+            "p5": 49.57,
+            "p50": 59.04,
+            "p75": 64.06,
+            "p90": 67.97,
+            "p95": 69.7,
+            "p99": 71.94,
+            "p99.9": 72.7,
+            "p99.99": 72.7
+          }
+        },
+        "submit_latency": {
+          "name": "submit",
+          "count": 300,
+          "min_ms": 2.1,
+          "max_ms": 17.57,
+          "mean_ms": 10.476896666666663,
+          "stddev_ms": 4.312370001053816,
+          "percentiles_ms": {
+            "p1": 3.15,
+            "p10": 4.18,
+            "p25": 7.16,
+            "p5": 3.2,
+            "p50": 10.38,
+            "p75": 14.24,
+            "p90": 16.26,
+            "p95": 16.83,
+            "p99": 17.47,
+            "p99.9": 17.57,
+            "p99.99": 17.57
+          }
+        },
+        "commit_latency": {
+          "name": "commit",
+          "count": 300,
+          "min_ms": 40.32,
+          "max_ms": 55.97,
+          "mean_ms": 48.508799999999994,
+          "stddev_ms": 4.433740596832431,
+          "percentiles_ms": {
+            "p1": 40.45,
+            "p10": 42.4,
+            "p25": 44.38,
+            "p5": 41.5,
+            "p50": 48.48,
+            "p75": 52.38,
+            "p90": 54.43,
+            "p95": 55.46,
+            "p99": 55.55,
+            "p99.9": 55.97,
+            "p99.99": 55.97
+          }
+        },
+        "send_gap": {
+          "name": "send_gap",
+          "count": 300,
+          "min_ms": 0.01,
+          "max_ms": 1.16,
+          "mean_ms": 0.5445833333333333,
+          "stddev_ms": 0.32228451672741315,
+          "percentiles_ms": {
+            "p1": 0.02,
+            "p10": 0.09,
+            "p25": 0.28,
+            "p5": 0.06,
+            "p50": 0.55,
+            "p75": 0.82,
+            "p90": 1,
+            "p95": 1.04,
+            "p99": 1.11,
+            "p99.9": 1.16,
+            "p99.99": 1.16
+          }
+        },
+        "invariant_ok": true
+      }
+    },
+    {
+      "name": "sweep-100",
+      "offered_tps": 100,
+      "window": {
+        "phase_start": "2026-09-16T09:55:30.036330736+05:30",
+        "win_start": "2026-09-16T09:56:00.036330736+05:30",
+        "win_end": "2026-09-16T09:56:15.036330736+05:30"
+      },
+      "result": {
+        "wall_clock_sec": 15,
+        "submitted": 1500,
+        "committed": 1500,
+        "invalid": 0,
+        "errored": 0,
+        "timed_out": 0,
+        "confirmed_tps": 100,
+        "offered_tps": 100,
+        "failure_rate": 0,
+        "e2e_latency": {
+          "name": "e2e",
+          "count": 1500,
+          "min_ms": 43.87,
+          "max_ms": 73.73,
+          "mean_ms": 58.71061333333338,
+          "stddev_ms": 6.139866216769078,
+          "percentiles_ms": {
+            "p1": 45.89,
+            "p10": 50.34,
+            "p25": 54.43,
+            "p5": 48.45,
+            "p50": 58.78,
+            "p75": 63.17,
+            "p90": 66.88,
+            "p95": 69.25,
+            "p99": 71.94,
+            "p99.9": 73.47,
+            "p99.99": 73.73
+          }
+        },
+        "submit_latency": {
+          "name": "submit",
+          "count": 1500,
+          "min_ms": 2.07,
+          "max_ms": 17.89,
+          "mean_ms": 10.150695333333324,
+          "stddev_ms": 4.351534289096,
+          "percentiles_ms": {
+            "p1": 3.13,
+            "p10": 4.19,
+            "p25": 6.29,
+            "p5": 3.2,
+            "p50": 10.26,
+            "p75": 14.02,
+            "p90": 15.95,
+            "p95": 16.7,
+            "p99": 17.63,
+            "p99.9": 17.86,
+            "p99.99": 17.89
+          }
+        },
+        "commit_latency": {
+          "name": "commit",
+          "count": 1500,
+          "min_ms": 40.19,
+          "max_ms": 56,
+          "mean_ms": 47.97638399999998,
+          "stddev_ms": 4.270685523333538,
+          "percentiles_ms": {
+            "p1": 40.64,
+            "p10": 42.02,
+            "p25": 44.42,
+            "p5": 41.38,
+            "p50": 47.97,
+            "p75": 51.62,
+            "p90": 53.95,
+            "p95": 54.75,
+            "p99": 55.52,
+            "p99.9": 55.97,
+            "p99.99": 56
+          }
+        },
+        "send_gap": {
+          "name": "send_gap",
+          "count": 1500,
+          "min_ms": 0.01,
+          "max_ms": 1.87,
+          "mean_ms": 0.5831433333333329,
+          "stddev_ms": 0.3041490426127004,
+          "percentiles_ms": {
+            "p1": 0.03,
+            "p10": 0.18,
+            "p25": 0.33,
+            "p5": 0.1,
+            "p50": 0.57,
+            "p75": 0.84,
+            "p90": 1,
+            "p95": 1.06,
+            "p99": 1.1,
+            "p99.9": 1.83,
+            "p99.99": 1.87
+          }
+        },
+        "invariant_ok": true
+      },
+      "verdict": "held"
+    },
+    {
+      "name": "sweep-250",
+      "offered_tps": 250,
+      "window": {
+        "phase_start": "2026-09-16T09:56:30.102898617+05:30",
+        "win_start": "2026-09-16T09:57:00.102898617+05:30",
+        "win_end": "2026-09-16T09:57:15.102898617+05:30"
+      },
+      "result": {
+        "wall_clock_sec": 15,
+        "submitted": 3750,
+        "committed": 3750,
+        "invalid": 0,
+        "errored": 0,
+        "timed_out": 0,
+        "confirmed_tps": 250,
+        "offered_tps": 250,
+        "failure_rate": 0,
+        "e2e_latency": {
+          "name": "e2e",
+          "count": 3750,
+          "min_ms": 42.62,
+          "max_ms": 73.98,
+          "mean_ms": 58.589580800000036,
+          "stddev_ms": 6.178575818056399,
+          "percentiles_ms": {
+            "p1": 45.38,
+            "p10": 50.27,
+            "p25": 54.24,
+            "p5": 48.32,
+            "p50": 58.53,
+            "p75": 63.04,
+            "p90": 67.01,
+            "p95": 68.99,
+            "p99": 71.74,
+            "p99.9": 72.96,
+            "p99.99": 73.98
+          }
+        },
+        "submit_latency": {
+          "name": "submit",
+          "count": 3750,
+          "min_ms": 2.07,
+          "max_ms": 18.06,
+          "mean_ms": 10.080942933333317,
+          "stddev_ms": 4.371173685065608,
+          "percentiles_ms": {
+            "p1": 2.26,
+            "p10": 4.22,
+            "p25": 6.39,
+            "p5": 3.26,
+            "p50": 9.98,
+            "p75": 13.88,
+            "p90": 16.06,
+            "p95": 16.9,
+            "p99": 17.38,
+            "p99.9": 17.86,
+            "p99.99": 18.06
+          }
+        },
+        "commit_latency": {
+          "name": "commit",
+          "count": 3750,
+          "min_ms": 40.1,
+          "max_ms": 56.03,
+          "mean_ms": 47.96575573333331,
+          "stddev_ms": 4.3374324047375215,
+          "percentiles_ms": {
+            "p1": 40.61,
+            "p10": 41.98,
+            "p25": 44.29,
+            "p5": 41.28,
+            "p50": 47.97,
+            "p75": 51.62,
+            "p90": 53.98,
+            "p95": 54.75,
+            "p99": 55.52,
+            "p99.9": 55.84,
+            "p99.99": 56.03
+          }
+        },
+        "send_gap": {
+          "name": "send_gap",
+          "count": 3750,
+          "min_ms": 0,
+          "max_ms": 1.93,
+          "mean_ms": 0.5425050666666668,
+          "stddev_ms": 0.31488516230682473,
+          "percentiles_ms": {
+            "p1": 0.02,
+            "p10": 0.1,
+            "p25": 0.27,
+            "p5": 0.05,
+            "p50": 0.54,
+            "p75": 0.81,
+            "p90": 0.97,
+            "p95": 1.04,
+            "p99": 1.12,
+            "p99.9": 1.32,
+            "p99.99": 1.93
+          }
+        },
+        "invariant_ok": true
+      },
+      "verdict": "held"
+    },
+    {
+      "name": "sweep-500",
+      "offered_tps": 500,
+      "window": {
+        "phase_start": "2026-09-16T09:57:30.17525364+05:30",
+        "win_start": "2026-09-16T09:58:00.17525364+05:30",
+        "win_end": "2026-09-16T09:58:15.17525364+05:30"
+      },
+      "result": {
+        "wall_clock_sec": 15,
+        "submitted": 7500,
+        "committed": 7500,
+        "invalid": 0,
+        "errored": 0,
+        "timed_out": 0,
+        "confirmed_tps": 500,
+        "offered_tps": 500,
+        "failure_rate": 0,
+        "e2e_latency": {
+          "name": "e2e",
+          "count": 7500,
+          "min_ms": 42.78,
+          "max_ms": 74.56,
+          "mean_ms": 58.54509013333325,
+          "stddev_ms": 6.120184833625748,
+          "percentiles_ms": {
+            "p1": 45.66,
+            "p10": 50.11,
+            "p25": 54.18,
+            "p5": 48.19,
+            "p50": 58.72,
+            "p75": 62.91,
+            "p90": 66.75,
+            "p95": 68.8,
+            "p99": 71.55,
+            "p99.9": 73.15,
+            "p99.99": 73.79
+          }
+        },
+        "submit_latency": {
+          "name": "submit",
+          "count": 7500,
+          "min_ms": 2.11,
+          "max_ms": 18.16,
+          "mean_ms": 10.025999066666646,
+          "stddev_ms": 4.361970118971371,
+          "percentiles_ms": {
+            "p1": 2.26,
+            "p10": 4.3,
+            "p25": 6.46,
+            "p5": 3.3,
+            "p50": 9.97,
+            "p75": 13.88,
+            "p90": 16.15,
+            "p95": 16.69,
+            "p99": 17.58,
+            "p99.9": 17.92,
+            "p99.99": 18.06
+          }
+        },
+        "commit_latency": {
+          "name": "commit",
+          "count": 7500,
+          "min_ms": 40.1,
+          "max_ms": 56.03,
+          "mean_ms": 47.989815466666656,
+          "stddev_ms": 4.311859388440301,
+          "percentiles_ms": {
+            "p1": 40.61,
+            "p10": 42.08,
+            "p25": 44.19,
+            "p5": 41.31,
+            "p50": 48.06,
+            "p75": 51.74,
+            "p90": 53.98,
+            "p95": 54.75,
+            "p99": 55.42,
+            "p99.9": 55.84,
+            "p99.99": 55.97
+          }
+        },
+        "send_gap": {
+          "name": "send_gap",
+          "count": 7500,
+          "min_ms": 0,
+          "max_ms": 2.47,
+          "mean_ms": 0.5287478666666663,
+          "stddev_ms": 0.3230762684394851,
+          "percentiles_ms": {
+            "p1": 0.01,
+            "p10": 0.08,
+            "p25": 0.25,
+            "p5": 0.04,
+            "p50": 0.53,
+            "p75": 0.8,
+            "p90": 0.97,
+            "p95": 1.02,
+            "p99": 1.09,
+            "p99.9": 1.29,
+            "p99.99": 2.46
+          }
+        },
+        "invariant_ok": true
+      },
+      "verdict": "held"
+    },
+    {
+      "name": "sweep-1000",
+      "offered_tps": 1000,
+      "window": {
+        "phase_start": "2026-09-16T09:58:30.244693947+05:30",
+        "win_start": "2026-09-16T09:59:00.244693947+05:30",
+        "win_end": "2026-09-16T09:59:15.244693947+05:30"
+      },
+      "result": {
+        "wall_clock_sec": 15,
+        "submitted": 15000,
+        "committed": 15000,
+        "invalid": 0,
+        "errored": 0,
+        "timed_out": 0,
+        "confirmed_tps": 1000,
+        "offered_tps": 1000,
+        "failure_rate": 0,
+        "e2e_latency": {
+          "name": "e2e",
+          "count": 15000,
+          "min_ms": 42.59,
+          "max_ms": 74.62,
+          "mean_ms": 58.55265813333331,
+          "stddev_ms": 6.133999656727016,
+          "percentiles_ms": {
+            "p1": 45.7,
+            "p10": 50.3,
+            "p25": 54.21,
+            "p5": 48.29,
+            "p50": 58.56,
+            "p75": 62.91,
+            "p90": 66.88,
+            "p95": 68.74,
+            "p99": 71.55,
+            "p99.9": 73.02,
+            "p99.99": 73.6
+          }
+        },
+        "submit_latency": {
+          "name": "submit",
+          "count": 15000,
+          "min_ms": 2.11,
+          "max_ms": 18.26,
+          "mean_ms": 10.009604866666669,
+          "stddev_ms": 4.32285023007618,
+          "percentiles_ms": {
+            "p1": 2.3,
+            "p10": 4.35,
+            "p25": 6.56,
+            "p5": 3.33,
+            "p50": 10.03,
+            "p75": 13.66,
+            "p90": 15.93,
+            "p95": 16.83,
+            "p99": 17.49,
+            "p99.9": 17.95,
+            "p99.99": 18.02
+          }
+        },
+        "commit_latency": {
+          "name": "commit",
+          "count": 15000,
+          "min_ms": 40.06,
+          "max_ms": 56.06,
+          "mean_ms": 48.02310613333334,
+          "stddev_ms": 4.3305483803558165,
+          "percentiles_ms": {
+            "p1": 40.54,
+            "p10": 42.05,
+            "p25": 44.32,
+            "p5": 41.28,
+            "p50": 48.03,
+            "p75": 51.74,
+            "p90": 54.02,
+            "p95": 54.78,
+            "p99": 55.55,
+            "p99.9": 55.94,
+            "p99.99": 56.03
+          }
+        },
+        "send_gap": {
+          "name": "send_gap",
+          "count": 15000,
+          "min_ms": 0,
+          "max_ms": 1.67,
+          "mean_ms": 0.5193463999999999,
+          "stddev_ms": 0.32255459197946645,
+          "percentiles_ms": {
+            "p1": 0.01,
+            "p10": 0.08,
+            "p25": 0.23,
+            "p5": 0.03,
+            "p50": 0.52,
+            "p75": 0.8,
+            "p90": 0.97,
+            "p95": 1.03,
+            "p99": 1.1,
+            "p99.9": 1.34,
+            "p99.99": 1.52
+          }
+        },
+        "invariant_ok": true
+      },
+      "verdict": "held"
+    },
+    {
+      "name": "sweep-2000",
+      "offered_tps": 2000,
+      "window": {
+        "phase_start": "2026-09-16T09:59:30.336175676+05:30",
+        "win_start": "2026-09-16T10:00:00.336175676+05:30",
+        "win_end": "2026-09-16T10:00:15.336175676+05:30"
+      },
+      "result": {
+        "wall_clock_sec": 15,
+        "submitted": 30000,
+        "committed": 30000,
+        "invalid": 0,
+        "errored": 0,
+        "timed_out": 0,
+        "confirmed_tps": 2000,
+        "offered_tps": 2000,
+        "failure_rate": 0,
+        "e2e_latency": {
+          "name": "e2e",
+          "count": 30000,
+          "min_ms": 42.82,
+          "max_ms": 74.24,
+          "mean_ms": 58.51125706666666,
+          "stddev_ms": 6.143063692766291,
+          "percentiles_ms": {
+            "p1": 45.5,
+            "p10": 50.18,
+            "p25": 54.14,
+            "p5": 48.26,
+            "p50": 58.53,
+            "p75": 62.91,
+            "p90": 66.82,
+            "p95": 68.86,
+            "p99": 71.49,
+            "p99.9": 73.09,
+            "p99.99": 73.79
+          }
+        },
+        "submit_latency": {
+          "name": "submit",
+          "count": 30000,
+          "min_ms": 2.08,
+          "max_ms": 19.36,
+          "mean_ms": 10.005010266666675,
+          "stddev_ms": 4.328205706759783,
+          "percentiles_ms": {
+            "p1": 2.3,
+            "p10": 4.05,
+            "p25": 6.25,
+            "p5": 3.36,
+            "p50": 10.1,
+            "p75": 13.71,
+            "p90": 15.97,
+            "p95": 16.78,
+            "p99": 17.42,
+            "p99.9": 17.9,
+            "p99.99": 18.18
+          }
+        },
+        "commit_latency": {
+          "name": "commit",
+          "count": 30000,
+          "min_ms": 40,
+          "max_ms": 56.32,
+          "mean_ms": 48.00983573333334,
+          "stddev_ms": 4.364047488492361,
+          "percentiles_ms": {
+            "p1": 40.51,
+            "p10": 41.95,
+            "p25": 44.26,
+            "p5": 41.25,
+            "p50": 48.06,
+            "p75": 51.78,
+            "p90": 54.08,
+            "p95": 54.82,
+            "p99": 55.49,
+            "p99.9": 55.9,
+            "p99.99": 56.1
+          }
+        },
+        "send_gap": {
+          "name": "send_gap",
+          "count": 30000,
+          "min_ms": 0,
+          "max_ms": 3.31,
+          "mean_ms": 0.4960039333333336,
+          "stddev_ms": 0.3321465874949328,
+          "percentiles_ms": {
+            "p1": 0,
+            "p10": 0.05,
+            "p25": 0.2,
+            "p5": 0.02,
+            "p50": 0.48,
+            "p75": 0.78,
+            "p90": 0.96,
+            "p95": 1.02,
+            "p99": 1.1,
+            "p99.9": 1.35,
+            "p99.99": 2.52
+          }
+        },
+        "invariant_ok": true
+      },
+      "verdict": "held"
+    },
+    {
+      "name": "sweep-3500",
+      "offered_tps": 3500,
+      "window": {
+        "phase_start": "2026-09-16T10:00:30.47063157+05:30",
+        "win_start": "2026-09-16T10:01:00.47063157+05:30",
+        "win_end": "2026-09-16T10:01:15.47063157+05:30"
+      },
+      "result": {
+        "wall_clock_sec": 15,
+        "submitted": 52500,
+        "committed": 52500,
+        "invalid": 0,
+        "errored": 0,
+        "timed_out": 0,
+        "confirmed_tps": 3500,
+        "offered_tps": 3500,
+        "failure_rate": 0,
+        "e2e_latency": {
+          "name": "e2e",
+          "count": 52500,
+          "min_ms": 42.56,
+          "max_ms": 74.3,
+          "mean_ms": 58.55385813333342,
+          "stddev_ms": 6.165051155685303,
+          "percentiles_ms": {
+            "p1": 45.57,
+            "p10": 50.21,
+            "p25": 54.11,
+            "p5": 48.29,
+            "p50": 58.59,
+            "p75": 63.01,
+            "p90": 66.88,
+            "p95": 68.93,
+            "p99": 71.62,
+            "p99.9": 73.28,
+            "p99.99": 74.05
+          }
+        },
+        "submit_latency": {
+          "name": "submit",
+          "count": 52500,
+          "min_ms": 2.09,
+          "max_ms": 19.04,
+          "mean_ms": 10.0141211238095,
+          "stddev_ms": 4.340112003011145,
+          "percentiles_ms": {
+            "p1": 2.29,
+            "p10": 4.02,
+            "p25": 6.24,
+            "p5": 3.38,
+            "p50": 10.16,
+            "p75": 13.73,
+            "p90": 15.99,
+            "p95": 16.91,
+            "p99": 17.36,
+            "p99.9": 17.94,
+            "p99.99": 18.13
+          }
+        },
+        "commit_latency": {
+          "name": "commit",
+          "count": 52500,
+          "min_ms": 40,
+          "max_ms": 56.61,
+          "mean_ms": 48.005335771428555,
+          "stddev_ms": 4.33301961057407,
+          "percentiles_ms": {
+            "p1": 40.61,
+            "p10": 42.08,
+            "p25": 44.32,
+            "p5": 41.25,
+            "p50": 47.97,
+            "p75": 51.74,
+            "p90": 53.98,
+            "p95": 54.78,
+            "p99": 55.52,
+            "p99.9": 55.94,
+            "p99.99": 56.1
+          }
+        },
+        "send_gap": {
+          "name": "send_gap",
+          "count": 52500,
+          "min_ms": 0,
+          "max_ms": 2.75,
+          "mean_ms": 0.5338416952380947,
+          "stddev_ms": 0.3309039250390801,
+          "percentiles_ms": {
+            "p1": 0,
+            "p10": 0.07,
+            "p25": 0.26,
+            "p5": 0.02,
+            "p50": 0.5,
+            "p75": 0.84,
+            "p90": 0.99,
+            "p95": 1.04,
+            "p99": 1.11,
+            "p99.9": 1.23,
+            "p99.99": 1.9
+          }
+        },
+        "invariant_ok": true
+      },
+      "verdict": "held"
+    },
+    {
+      "name": "sweep-5000",
+      "offered_tps": 5000,
+      "window": {
+        "phase_start": "2026-09-16T10:01:30.696258762+05:30",
+        "win_start": "2026-09-16T10:02:00.696258762+05:30",
+        "win_end": "2026-09-16T10:02:15.696258762+05:30"
+      },
+      "result": {
+        "wall_clock_sec": 15,
+        "submitted": 75000,
+        "committed": 75000,
+        "invalid": 0,
+        "errored": 0,
+        "timed_out": 0,
+        "confirmed_tps": 5000,
+        "offered_tps": 5000,
+        "failure_rate": 0,
+        "e2e_latency": {
+          "name": "e2e",
+          "count": 75000,
+          "min_ms": 42.59,
+          "max_ms": 84.8,
+          "mean_ms": 58.57039295999997,
+          "stddev_ms": 6.196987556541412,
+          "percentiles_ms": {
+            "p1": 45.5,
+            "p10": 50.21,
+            "p25": 54.14,
+            "p5": 48.22,
+            "p50": 58.59,
+            "p75": 63.01,
+            "p90": 66.94,
+            "p95": 68.93,
+            "p99": 71.62,
+            "p99.9": 73.66,
+            "p99.99": 81.98
+          }
+        },
+        "submit_latency": {
+          "name": "submit",
+          "count": 75000,
+          "min_ms": 2.02,
+          "max_ms": 31.47,
+          "mean_ms": 10.044947559999999,
+          "stddev_ms": 4.363434437954819,
+          "percentiles_ms": {
+            "p1": 2.3,
+            "p10": 3.86,
+            "p25": 6.07,
+            "p5": 3.39,
+            "p50": 10.22,
+            "p75": 13.8,
+            "p90": 16.06,
+            "p95": 16.9,
+            "p99": 17.44,
+            "p99.9": 17.98,
+            "p99.99": 27.9
+          }
+        },
+        "commit_latency": {
+          "name": "commit",
+          "count": 75000,
+          "min_ms": 40,
+          "max_ms": 70.59,
+          "mean_ms": 48.001226240000065,
+          "stddev_ms": 4.3640930944564085,
+          "percentiles_ms": {
+            "p1": 40.51,
+            "p10": 42.02,
+            "p25": 44.26,
+            "p5": 41.28,
+            "p50": 48.03,
+            "p75": 51.74,
+            "p90": 54.02,
+            "p95": 54.82,
+            "p99": 55.52,
+            "p99.9": 56.03,
+            "p99.99": 66.11
+          }
+        },
+        "send_gap": {
+          "name": "send_gap",
+          "count": 75000,
+          "min_ms": 0,
+          "max_ms": 17.65,
+          "mean_ms": 0.5237638133333326,
+          "stddev_ms": 0.48156245551592264,
+          "percentiles_ms": {
+            "p1": 0,
+            "p10": 0.06,
+            "p25": 0.21,
+            "p5": 0.02,
+            "p50": 0.51,
+            "p75": 0.8,
+            "p90": 0.98,
+            "p95": 1.04,
+            "p99": 1.12,
+            "p99.9": 4.5,
+            "p99.99": 16.06
+          }
+        },
+        "invariant_ok": true
+      },
+      "verdict": "held"
+    },
+    {
+      "name": "sweep-7500",
+      "offered_tps": 7500,
+      "window": {
+        "phase_start": "2026-09-16T10:02:31.012640716+05:30",
+        "win_start": "2026-09-16T10:03:01.012640716+05:30",
+        "win_end": "2026-09-16T10:03:11.481597588+05:30"
+      },
+      "result": {
+        "wall_clock_sec": 10.468956883,
+        "submitted": 78518,
+        "committed": 78518,
+        "invalid": 0,
+        "errored": 0,
+        "timed_out": 0,
+        "confirmed_tps": 7500.078649430808,
+        "offered_tps": 7500.078649430808,
+        "failure_rate": 0,
+        "e2e_latency": {
+          "name": "e2e",
+          "count": 78518,
+          "min_ms": 42.53,
+          "max_ms": 80.7,
+          "mean_ms": 58.532148857586776,
+          "stddev_ms": 6.1574233306432316,
+          "percentiles_ms": {
+            "p1": 45.54,
+            "p10": 50.24,
+            "p25": 54.14,
+            "p5": 48.26,
+            "p50": 58.53,
+            "p75": 62.94,
+            "p90": 66.88,
+            "p95": 68.86,
+            "p99": 71.49,
+            "p99.9": 73.22,
+            "p99.99": 76.35
+          }
+        },
+        "submit_latency": {
+          "name": "submit",
+          "count": 78518,
+          "min_ms": 2.04,
+          "max_ms": 25.38,
+          "mean_ms": 10.017788787284422,
+          "stddev_ms": 4.34729903076328,
+          "percentiles_ms": {
+            "p1": 2.34,
+            "p10": 3.76,
+            "p25": 6.08,
+            "p5": 3.43,
+            "p50": 10.16,
+            "p75": 13.86,
+            "p90": 16.1,
+            "p95": 16.69,
+            "p99": 17.57,
+            "p99.9": 17.97,
+            "p99.99": 23.2
+          }
+        },
+        "commit_latency": {
+          "name": "commit",
+          "count": 78518,
+          "min_ms": 40,
+          "max_ms": 63.17,
+          "mean_ms": 48.007580019868016,
+          "stddev_ms": 4.353678595686178,
+          "percentiles_ms": {
+            "p1": 40.54,
+            "p10": 42.02,
+            "p25": 44.29,
+            "p5": 41.25,
+            "p50": 48.03,
+            "p75": 51.78,
+            "p90": 54.02,
+            "p95": 54.75,
+            "p99": 55.52,
+            "p99.9": 55.97,
+            "p99.99": 60.7
+          }
+        },
+        "send_gap": {
+          "name": "send_gap",
+          "count": 78518,
+          "min_ms": 0,
+          "max_ms": 10.46,
+          "mean_ms": 0.5062748032298333,
+          "stddev_ms": 0.38646354329597976,
+          "percentiles_ms": {
+            "p1": 0,
+            "p10": 0.04,
+            "p25": 0.19,
+            "p5": 0.01,
+            "p50": 0.5,
+            "p75": 0.79,
+            "p90": 0.97,
+            "p95": 1.05,
+            "p99": 1.14,
+            "p99.9": 2.28,
+            "p99.99": 9.41
+          }
+        },
+        "invariant_ok": true
+      },
+      "verdict": "interrupted"
+    }
+  ],
+  "headline": null,
+  "saturation_tps": 7500
+}

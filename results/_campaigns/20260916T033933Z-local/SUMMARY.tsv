@@ -1,0 +1,6 @@
+platform	config	stage	status	reason	dir
+fabric-cft	quick-smoke	run	ok		fabric-cft/quick-smoke
+fabric-bft	quick-smoke	deploy	deploy-failed	[deploy 09:11:32] ERROR: up.sh failed (exit 1) near line 1: SAMPLES="$(fabric_samples_bootstrap "$FABRIC_VERSION" "$FABRIC_CA_VERSION" "$SAMPLES_REF")"	fabric-bft/quick-smoke
+drunix	quick-smoke	run	ok		drunix/quick-smoke
+fabricx	quick-smoke	run	ok		fabricx/quick-smoke
+neuchain	quick-smoke	deploy	deploy-failed	[deploy 09:18:23] ERROR: log-lib.sh failed (exit 1) near line 1: exit 1	neuchain/quick-smoke

@@ -96,31 +96,11 @@ func TestEndorsementVerifiesTheWayTheCommitterChecksIt(t *testing.T) {
 	}
 }
 
-// A read must carry a write. The validator rejects read-only transactions with
-// MALFORMED_NO_WRITES, so kv-read would report 100% failure without this.
-func TestReadCarriesAUniqueBlindWrite(t *testing.T) {
+func TestNamespaceForReadIsRejected(t *testing.T) {
 	a := &Adapter{cfg: &Config{Namespace: "0", ChannelID: "arma"}}
-
-	first, err := a.namespaceFor(&adapters.Transaction{Kind: adapters.TxRead, Key: "key-1", Seq: 1})
-	if err != nil {
-		t.Fatal(err)
-	}
-	if len(first.ReadsOnly) != 1 {
-		t.Errorf("read set has %d entries, want 1", len(first.ReadsOnly))
-	}
-	if len(first.BlindWrites) != 1 {
-		t.Fatalf("read must carry a blind write, got %d", len(first.BlindWrites))
-	}
-
-	// Two reads of the SAME key must write different keys, or concurrent reads
-	// write-after-write conflict with each other and abort.
-	second, err := a.namespaceFor(&adapters.Transaction{Kind: adapters.TxRead, Key: "key-1", Seq: 2})
-	if err != nil {
-		t.Fatal(err)
-	}
-	if string(first.BlindWrites[0].Key) == string(second.BlindWrites[0].Key) {
-		t.Errorf("two reads of the same key produced the same dummy write key %q; they would abort each other",
-			first.BlindWrites[0].Key)
+	_, err := a.namespaceFor(&adapters.Transaction{Kind: adapters.TxRead, Key: "key-1", Seq: 1})
+	if err == nil || !strings.Contains(err.Error(), "QueryService") {
+		t.Fatalf("reads must not become an envelope, got %v", err)
 	}
 }
 
@@ -173,6 +153,21 @@ func TestConfigIgnoresForeignKeys(t *testing.T) {
 	}
 	if cfg.ChannelID != "arma" || cfg.Namespace != "0" {
 		t.Errorf("defaults not applied: channel=%q ns=%q", cfg.ChannelID, cfg.Namespace)
+	}
+}
+
+func TestConfigReadsQueryEndpoint(t *testing.T) {
+	cfg, err := configFromExtra(map[string]any{
+		"broadcast_endpoint": "localhost:6022",
+		"deliver_endpoint":   "localhost:4001",
+		"signing_key_path":   "/tmp/k.pem",
+		"query_endpoint":     "localhost:7001",
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if cfg.QueryEndpoint != "localhost:7001" {
+		t.Errorf("QueryEndpoint = %q, want localhost:7001", cfg.QueryEndpoint)
 	}
 }
 

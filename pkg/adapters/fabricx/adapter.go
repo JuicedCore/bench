@@ -31,12 +31,14 @@ type Adapter struct {
 	signer *nsSigner
 	bc     *routerSet
 	dl     *deliverer
+	qc     *querier
 
 	log *slog.Logger
 
 	mu        sync.Mutex
 	waiters   map[string]chan blockOutcome
 	resolved  map[string]blockOutcome
+	reads     map[string]struct{} // query-path txs: WaitForFinality is immediate
 	lastPrune time.Time
 }
 
@@ -77,6 +79,7 @@ func (a *Adapter) Setup(ctx context.Context, ac adapters.AdapterConfig) error {
 	}
 	a.waiters = map[string]chan blockOutcome{}
 	a.resolved = map[string]blockOutcome{}
+	a.reads = map[string]struct{}{}
 
 	dctx, cancel := context.WithTimeout(ctx, cfg.DialTimeout)
 	defer cancel()
@@ -93,8 +96,31 @@ func (a *Adapter) Setup(ctx context.Context, ac adapters.AdapterConfig) error {
 		a.dl = nil
 		return err
 	}
+
+	needsQuery := ac.Workload == "kv-read" || ac.Workload == "kv-mixed"
+	if cfg.QueryEndpoint == "" {
+		if needsQuery {
+			a.bc.close()
+			a.bc = nil
+			a.dl.close()
+			a.dl = nil
+			return fmt.Errorf("fabricx: adapter.query_endpoint is required for workload %q (QueryService GetRows; deploy/docker/fabricx/up.sh exports BENCH_ADAPTER_QUERY_ENDPOINT=localhost:7001)", ac.Workload)
+		}
+	} else {
+		qctx, qcancel := context.WithTimeout(ctx, cfg.DialTimeout)
+		if a.qc, err = newQuerier(qctx, cfg.QueryEndpoint); err != nil {
+			qcancel()
+			a.bc.close()
+			a.bc = nil
+			a.dl.close()
+			a.dl = nil
+			return err
+		}
+		qcancel()
+	}
+
 	a.log.Info("setup complete", "routers", strings.Join(cfg.BroadcastEndpoints, ","), "deliver", cfg.DeliverEndpoint,
-		"channel", cfg.ChannelID, "namespace", cfg.Namespace, "broadcast_streams", cfg.BroadcastStreams)
+		"query", cfg.QueryEndpoint, "channel", cfg.ChannelID, "namespace", cfg.Namespace, "broadcast_streams", cfg.BroadcastStreams)
 	return nil
 }
 
@@ -107,9 +133,14 @@ func (a *Adapter) Teardown(context.Context) error {
 		a.dl.close()
 		a.dl = nil
 	}
+	if a.qc != nil {
+		a.qc.close()
+		a.qc = nil
+	}
 	a.mu.Lock()
 	a.waiters = map[string]chan blockOutcome{}
 	a.resolved = map[string]blockOutcome{}
+	a.reads = map[string]struct{}{}
 	a.mu.Unlock()
 	return nil
 }
@@ -154,6 +185,9 @@ const (
 // ordering, strictly before commit - the same point at which the Fabric
 // gateway's Submit returns.
 func (a *Adapter) Submit(ctx context.Context, tx *adapters.Transaction) (*adapters.SubmitResult, error) {
+	if tx.Kind == adapters.TxRead {
+		return a.submitQuery(ctx, tx)
+	}
 	if a.bc == nil {
 		return nil, fmt.Errorf("fabricx: %w", adapters.ErrNotSetUp)
 	}
@@ -185,7 +219,40 @@ func (a *Adapter) Submit(ctx context.Context, tx *adapters.Transaction) (*adapte
 	return &adapters.SubmitResult{TxID: txID, SubmitTime: t1, AckTime: ackAt}, nil
 }
 
+// submitQuery is Fabric-X's native read: QueryService.GetRows against committed
+// state. Same T2/T3 shape as Fabric Evaluate — the RPC return is the ack, and
+// WaitForFinality is immediate. Nothing is ordered or written.
+func (a *Adapter) submitQuery(ctx context.Context, tx *adapters.Transaction) (*adapters.SubmitResult, error) {
+	if a.qc == nil {
+		return nil, fmt.Errorf("fabricx: query service not configured (adapter.query_endpoint); cannot Submit a read")
+	}
+	t1 := time.Now()
+	id := fmt.Sprintf("q-%d-%s", tx.Seq, tx.Key)
+	if _, _, err := a.qc.get(ctx, a.cfg.Namespace, tx.Key); err != nil {
+		return &adapters.SubmitResult{TxID: id, SubmitTime: t1}, err
+	}
+	ack := time.Now()
+	a.mu.Lock()
+	if a.reads == nil {
+		a.reads = map[string]struct{}{}
+	}
+	a.reads[id] = struct{}{}
+	a.mu.Unlock()
+	return &adapters.SubmitResult{TxID: id, SubmitTime: t1, AckTime: ack}, nil
+}
+
 func (a *Adapter) WaitForFinality(ctx context.Context, txID string, timeout time.Duration) (*adapters.FinalityResult, error) {
+	if a.waiters == nil && a.reads == nil {
+		return nil, fmt.Errorf("fabricx: %w", adapters.ErrNotSetUp)
+	}
+	a.mu.Lock()
+	if _, ok := a.reads[txID]; ok {
+		delete(a.reads, txID)
+		a.mu.Unlock()
+		return &adapters.FinalityResult{TxID: txID, FinalityTime: time.Now(), Valid: true}, nil
+	}
+	a.mu.Unlock()
+
 	if a.waiters == nil {
 		return nil, fmt.Errorf("fabricx: %w", adapters.ErrNotSetUp)
 	}
@@ -247,11 +314,17 @@ func finality(o blockOutcome) *adapters.FinalityResult {
 	return r
 }
 
-// Query is not wired: Fabric-X's query service is a separate endpoint from the
-// benchmark path, and nothing in the harness calls Query. Returns not-found so
-// workload verification degrades visibly rather than reporting a wrong value.
-func (a *Adapter) Query(context.Context, string) (*adapters.QueryResult, error) {
-	return &adapters.QueryResult{Found: false}, nil
+// Query is a point read via QueryService.GetRows. Missing keys are not-found,
+// not an error — the same as Fabric Evaluate of an absent key.
+func (a *Adapter) Query(ctx context.Context, key string) (*adapters.QueryResult, error) {
+	if a.qc == nil {
+		return &adapters.QueryResult{Key: key, Found: false}, fmt.Errorf("fabricx: query service not configured (adapter.query_endpoint)")
+	}
+	val, found, err := a.qc.get(ctx, a.cfg.Namespace, key)
+	if err != nil {
+		return &adapters.QueryResult{Key: key}, err
+	}
+	return &adapters.QueryResult{Key: key, Value: val, Found: found}, nil
 }
 
 // buildEnvelope maps a normalized transaction onto a Fabric-X application
@@ -296,17 +369,7 @@ func (a *Adapter) namespaceFor(tx *adapters.Transaction) (*applicationpb.TxNames
 
 	switch tx.Kind {
 	case adapters.TxRead:
-		// The validator rejects read-only transactions outright
-		// (MALFORMED_NO_WRITES), so a read must carry a write to be accepted at
-		// all. A unique blind write is used rather than echoing the value back,
-		// which would make concurrent reads of one key abort each other. This is
-		// overhead no other platform pays and is disclosed in the run caveats -
-		// see docs/workloads/mismatches.md.
-		ns.ReadsOnly = []*applicationpb.Read{{Key: []byte(tx.Key)}}
-		ns.BlindWrites = []*applicationpb.Write{{
-			Key:   []byte(fmt.Sprintf("_r/%s/%d", tx.Key, tx.Seq)),
-			Value: []byte{1},
-		}}
+		return nil, fmt.Errorf("fabricx: reads go through QueryService.GetRows, not a transaction envelope")
 
 	case adapters.TxTransfer:
 		// Read-modify-write on both accounts. Values are the workload's, not a

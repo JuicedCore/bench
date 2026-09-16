@@ -1,0 +1,1568 @@
+{
+  "manifest": {
+    "run_name": "quick-smoke",
+    "platform": "fabricx",
+    "workload": "kv-write",
+    "profile": "local",
+    "normalized": true,
+    "started_at": "2026-09-16T09:17:33.991367501+05:30",
+    "ended_at": "2026-09-16T09:18:04.953529709+05:30",
+    "harness_git_sha": "a034b6e",
+    "platform_version": "fabricx-committer-v1.0.5-orderer-v1.0.6",
+    "state_db": "postgres",
+    "state_db_requested": "leveldb",
+    "orderer_batch": {
+      "MaxMessageCount": 100,
+      "AbsoluteMaxBytes": "10 MB",
+      "PreferredMaxBytes": "2 MB",
+      "BatchTimeout": "1s"
+    },
+    "crypto": {
+      "signature_alg": "ECDSA-P256",
+      "hash_alg": "SHA-256",
+      "per_tx_endorsement_verify": true,
+      "msp_note": "Fabric-X: client-signed ECDSA endorsement per namespace, verified by the committer against the namespace policy registered in _meta at deploy time. No peer endorsement round-trip."
+    },
+    "resource_limit_per_container": {
+      "CPUs": 2.75,
+      "Memory": ""
+    },
+    "resource_memory_by_container": {
+      "bench-fabricx-fabricx-arma-1": "2816m",
+      "bench-fabricx-fabricx-committer-1": "2816m",
+      "bench-fabricx-fabricx-db-1": "2816m",
+      "bench-fabricx-fabricx-pipeline-1": "2816m"
+    },
+    "resource_memory_weights": "peer=4 statedb=4 orderer=2 other=1",
+    "resource_containers": 4,
+    "resource_cpus_total": 11,
+    "resource_memory_total_gb": 11,
+    "nodes": {
+      "arma": 1,
+      "committer": 1,
+      "pipeline": 1,
+      "postgres": 1
+    },
+    "generators": 2,
+    "seed": 1,
+    "key_space": 5000,
+    "key_distribution": "uniform",
+    "zipfian_constant": 0,
+    "read_write_ratio": 0,
+    "value_size_bytes": 64,
+    "warmup_sec": 5,
+    "cooldown_sec": 3,
+    "caveats": [
+      "fabricx on the local profile is resource-constrained; absolute throughput is NOT comparable to its published scale-out ceiling",
+      "state-db parity not held: run requested leveldb, platform actually ran postgres",
+      "native metrics scrape of http://localhost:9643/metrics failed: scrape http://localhost:9643/metrics: parser panic: Invalid name validation scheme requested: unset (informational metrics only; harness numbers unaffected)"
+    ]
+  },
+  "phases": [
+    {
+      "name": "single",
+      "offered_tps": 50,
+      "window": {
+        "phase_start": "2026-09-16T09:17:34.142705133+05:30",
+        "win_start": "2026-09-16T09:17:39.142705133+05:30",
+        "win_end": "2026-09-16T09:18:01.142705133+05:30"
+      },
+      "result": {
+        "wall_clock_sec": 22,
+        "submitted": 1100,
+        "committed": 1100,
+        "invalid": 0,
+        "errored": 0,
+        "timed_out": 0,
+        "confirmed_tps": 50,
+        "offered_tps": 50,
+        "failure_rate": 0,
+        "e2e_latency": {
+          "name": "e2e",
+          "count": 1100,
+          "min_ms": 105.28,
+          "max_ms": 1280,
+          "mean_ms": 698.8318254545451,
+          "stddev_ms": 300.66149063094275,
+          "percentiles_ms": {
+            "p1": 147.33,
+            "p10": 287.49,
+            "p25": 443.39,
+            "p5": 230.27,
+            "p50": 698.37,
+            "p75": 956.42,
+            "p90": 1105.92,
+            "p95": 1164.29,
+            "p99": 1244.16,
+            "p99.9": 1280,
+            "p99.99": 1280
+          }
+        },
+        "submit_latency": {
+          "name": "submit",
+          "count": 1100,
+          "min_ms": 0.25,
+          "max_ms": 1.3,
+          "mean_ms": 0.5825899999999993,
+          "stddev_ms": 0.15408261092968636,
+          "percentiles_ms": {
+            "p1": 0.32,
+            "p10": 0.42,
+            "p25": 0.48,
+            "p5": 0.39,
+            "p50": 0.54,
+            "p75": 0.66,
+            "p90": 0.79,
+            "p95": 0.88,
+            "p99": 1.05,
+            "p99.9": 1.28,
+            "p99.99": 1.3
+          }
+        },
+        "commit_latency": {
+          "name": "commit",
+          "count": 1100,
+          "min_ms": 103.81,
+          "max_ms": 1278.98,
+          "mean_ms": 697.6919272727276,
+          "stddev_ms": 300.6862705173105,
+          "percentiles_ms": {
+            "p1": 145.92,
+            "p10": 286.21,
+            "p25": 442.11,
+            "p5": 229.25,
+            "p50": 696.83,
+            "p75": 955.39,
+            "p90": 1104.9,
+            "p95": 1163.26,
+            "p99": 1243.14,
+            "p99.9": 1278.98,
+            "p99.99": 1278.98
+          }
+        },
+        "send_gap": {
+          "name": "send_gap",
+          "count": 1100,
+          "min_ms": 0.01,
+          "max_ms": 2.73,
+          "mean_ms": 0.5491763636363639,
+          "stddev_ms": 0.3176943095971552,
+          "percentiles_ms": {
+            "p1": 0.02,
+            "p10": 0.11,
+            "p25": 0.3,
+            "p5": 0.06,
+            "p50": 0.56,
+            "p75": 0.8,
+            "p90": 0.96,
+            "p95": 1.04,
+            "p99": 1.12,
+            "p99.9": 2.53,
+            "p99.99": 2.73
+          }
+        },
+        "invariant_ok": true
+      }
+    }
+  ],
+  "headline": {
+    "wall_clock_sec": 22,
+    "submitted": 1100,
+    "committed": 1100,
+    "invalid": 0,
+    "errored": 0,
+    "timed_out": 0,
+    "confirmed_tps": 50,
+    "offered_tps": 50,
+    "failure_rate": 0,
+    "e2e_latency": {
+      "name": "e2e",
+      "count": 1100,
+      "min_ms": 105.28,
+      "max_ms": 1280,
+      "mean_ms": 698.8318254545451,
+      "stddev_ms": 300.66149063094275,
+      "percentiles_ms": {
+        "p1": 147.33,
+        "p10": 287.49,
+        "p25": 443.39,
+        "p5": 230.27,
+        "p50": 698.37,
+        "p75": 956.42,
+        "p90": 1105.92,
+        "p95": 1164.29,
+        "p99": 1244.16,
+        "p99.9": 1280,
+        "p99.99": 1280
+      }
+    },
+    "submit_latency": {
+      "name": "submit",
+      "count": 1100,
+      "min_ms": 0.25,
+      "max_ms": 1.3,
+      "mean_ms": 0.5825899999999993,
+      "stddev_ms": 0.15408261092968636,
+      "percentiles_ms": {
+        "p1": 0.32,
+        "p10": 0.42,
+        "p25": 0.48,
+        "p5": 0.39,
+        "p50": 0.54,
+        "p75": 0.66,
+        "p90": 0.79,
+        "p95": 0.88,
+        "p99": 1.05,
+        "p99.9": 1.28,
+        "p99.99": 1.3
+      }
+    },
+    "commit_latency": {
+      "name": "commit",
+      "count": 1100,
+      "min_ms": 103.81,
+      "max_ms": 1278.98,
+      "mean_ms": 697.6919272727276,
+      "stddev_ms": 300.6862705173105,
+      "percentiles_ms": {
+        "p1": 145.92,
+        "p10": 286.21,
+        "p25": 442.11,
+        "p5": 229.25,
+        "p50": 696.83,
+        "p75": 955.39,
+        "p90": 1104.9,
+        "p95": 1163.26,
+        "p99": 1243.14,
+        "p99.9": 1278.98,
+        "p99.99": 1278.98
+      }
+    },
+    "send_gap": {
+      "name": "send_gap",
+      "count": 1100,
+      "min_ms": 0.01,
+      "max_ms": 2.73,
+      "mean_ms": 0.5491763636363639,
+      "stddev_ms": 0.3176943095971552,
+      "percentiles_ms": {
+        "p1": 0.02,
+        "p10": 0.11,
+        "p25": 0.3,
+        "p5": 0.06,
+        "p50": 0.56,
+        "p75": 0.8,
+        "p90": 0.96,
+        "p95": 1.04,
+        "p99": 1.12,
+        "p99.9": 2.53,
+        "p99.99": 2.73
+      }
+    },
+    "invariant_ok": true
+  },
+  "system_samples": [
+    {
+      "t": "2026-09-16T09:17:37.3467222+05:30",
+      "cpu_percent": 23.53,
+      "mem_bytes": 443379873,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "arma-1",
+          "cpu_percent": 15.58142137796279,
+          "mem_bytes": 324730880
+        },
+        {
+          "name": "chaincode.peer0.org1",
+          "cpu_percent": 0,
+          "mem_bytes": 8151040
+        },
+        {
+          "name": "chaincode.peer0.org2",
+          "cpu_percent": 0,
+          "mem_bytes": 8388608
+        },
+        {
+          "name": "committer-1",
+          "cpu_percent": 0.75882504277412,
+          "mem_bytes": 18739200
+        },
+        {
+          "name": "cp.org1",
+          "cpu_percent": 0,
+          "mem_bytes": 101597184
+        },
+        {
+          "name": "cp.org2",
+          "cpu_percent": 0,
+          "mem_bytes": 94138368
+        },
+        {
+          "name": "db-1",
+          "cpu_percent": 1.621566492450639,
+          "mem_bytes": 24014848
+        },
+        {
+          "name": "hlf_keydb_org1msp",
+          "cpu_percent": 0,
+          "mem_bytes": 6905856
+        },
+        {
+          "name": "hlf_keydb_org2msp",
+          "cpu_percent": 0,
+          "mem_bytes": 6914048
+        },
+        {
+          "name": "lp1.org1",
+          "cpu_percent": 0,
+          "mem_bytes": 89292800
+        },
+        {
+          "name": "lp1.org2",
+          "cpu_percent": 0,
+          "mem_bytes": 85020672
+        },
+        {
+          "name": "orderer",
+          "cpu_percent": 0,
+          "mem_bytes": 52191232
+        },
+        {
+          "name": "pipeline-1",
+          "cpu_percent": 1.3092076537585422,
+          "mem_bytes": 38363136
+        },
+        {
+          "name": "vs1.org1",
+          "cpu_percent": 0,
+          "mem_bytes": 35074048
+        },
+        {
+          "name": "vs1.org2",
+          "cpu_percent": 0,
+          "mem_bytes": 42328064
+        },
+        {
+          "name": "yugabyte-org1",
+          "cpu_percent": 0,
+          "mem_bytes": 534020096
+        },
+        {
+          "name": "yugabyte-org2",
+          "cpu_percent": 0,
+          "mem_bytes": 564326400
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T09:17:39.36507032+05:30",
+      "cpu_percent": 22.240000000000002,
+      "mem_bytes": 474019265,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "arma-1",
+          "cpu_percent": 15.58142137796279,
+          "mem_bytes": 324730880
+        },
+        {
+          "name": "chaincode.peer0.org1",
+          "cpu_percent": 0,
+          "mem_bytes": 8151040
+        },
+        {
+          "name": "chaincode.peer0.org2",
+          "cpu_percent": 0,
+          "mem_bytes": 8388608
+        },
+        {
+          "name": "committer-1",
+          "cpu_percent": 0.75882504277412,
+          "mem_bytes": 18739200
+        },
+        {
+          "name": "cp.org1",
+          "cpu_percent": 0,
+          "mem_bytes": 101597184
+        },
+        {
+          "name": "cp.org2",
+          "cpu_percent": 0,
+          "mem_bytes": 94138368
+        },
+        {
+          "name": "db-1",
+          "cpu_percent": 1.621566492450639,
+          "mem_bytes": 24014848
+        },
+        {
+          "name": "hlf_keydb_org1msp",
+          "cpu_percent": 0,
+          "mem_bytes": 6905856
+        },
+        {
+          "name": "hlf_keydb_org2msp",
+          "cpu_percent": 0,
+          "mem_bytes": 6914048
+        },
+        {
+          "name": "lp1.org1",
+          "cpu_percent": 0,
+          "mem_bytes": 89292800
+        },
+        {
+          "name": "lp1.org2",
+          "cpu_percent": 0,
+          "mem_bytes": 85020672
+        },
+        {
+          "name": "orderer",
+          "cpu_percent": 0,
+          "mem_bytes": 52191232
+        },
+        {
+          "name": "pipeline-1",
+          "cpu_percent": 1.3092076537585422,
+          "mem_bytes": 38363136
+        },
+        {
+          "name": "vs1.org1",
+          "cpu_percent": 0,
+          "mem_bytes": 35074048
+        },
+        {
+          "name": "vs1.org2",
+          "cpu_percent": 0,
+          "mem_bytes": 42328064
+        },
+        {
+          "name": "yugabyte-org1",
+          "cpu_percent": 0,
+          "mem_bytes": 534020096
+        },
+        {
+          "name": "yugabyte-org2",
+          "cpu_percent": 0,
+          "mem_bytes": 564326400
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T09:17:41.383580708+05:30",
+      "cpu_percent": 22.66,
+      "mem_bytes": 482040871,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "arma-1",
+          "cpu_percent": 19.479941348973608,
+          "mem_bytes": 355020800
+        },
+        {
+          "name": "chaincode.peer0.org1",
+          "cpu_percent": 0,
+          "mem_bytes": 8151040
+        },
+        {
+          "name": "chaincode.peer0.org2",
+          "cpu_percent": 0,
+          "mem_bytes": 8388608
+        },
+        {
+          "name": "committer-1",
+          "cpu_percent": 0.2575647026431717,
+          "mem_bytes": 20910080
+        },
+        {
+          "name": "cp.org1",
+          "cpu_percent": 0,
+          "mem_bytes": 101597184
+        },
+        {
+          "name": "cp.org2",
+          "cpu_percent": 0,
+          "mem_bytes": 94138368
+        },
+        {
+          "name": "db-1",
+          "cpu_percent": 1.1069609004739334,
+          "mem_bytes": 24137728
+        },
+        {
+          "name": "hlf_keydb_org1msp",
+          "cpu_percent": 0,
+          "mem_bytes": 6905856
+        },
+        {
+          "name": "hlf_keydb_org2msp",
+          "cpu_percent": 0,
+          "mem_bytes": 6914048
+        },
+        {
+          "name": "lp1.org1",
+          "cpu_percent": 0,
+          "mem_bytes": 89292800
+        },
+        {
+          "name": "lp1.org2",
+          "cpu_percent": 0,
+          "mem_bytes": 85020672
+        },
+        {
+          "name": "orderer",
+          "cpu_percent": 0,
+          "mem_bytes": 52191232
+        },
+        {
+          "name": "pipeline-1",
+          "cpu_percent": 1.3338997718511523,
+          "mem_bytes": 40316928
+        },
+        {
+          "name": "vs1.org1",
+          "cpu_percent": 0,
+          "mem_bytes": 35074048
+        },
+        {
+          "name": "vs1.org2",
+          "cpu_percent": 0,
+          "mem_bytes": 42328064
+        },
+        {
+          "name": "yugabyte-org1",
+          "cpu_percent": 0,
+          "mem_bytes": 534020096
+        },
+        {
+          "name": "yugabyte-org2",
+          "cpu_percent": 0,
+          "mem_bytes": 564326400
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T09:17:43.401065347+05:30",
+      "cpu_percent": 19.86,
+      "mem_bytes": 498881002,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "arma-1",
+          "cpu_percent": 19.479941348973608,
+          "mem_bytes": 355020800
+        },
+        {
+          "name": "chaincode.peer0.org1",
+          "cpu_percent": 0,
+          "mem_bytes": 8151040
+        },
+        {
+          "name": "chaincode.peer0.org2",
+          "cpu_percent": 0,
+          "mem_bytes": 8388608
+        },
+        {
+          "name": "committer-1",
+          "cpu_percent": 0.2575647026431717,
+          "mem_bytes": 20910080
+        },
+        {
+          "name": "cp.org1",
+          "cpu_percent": 0,
+          "mem_bytes": 101597184
+        },
+        {
+          "name": "cp.org2",
+          "cpu_percent": 0,
+          "mem_bytes": 94138368
+        },
+        {
+          "name": "db-1",
+          "cpu_percent": 1.1069609004739334,
+          "mem_bytes": 24137728
+        },
+        {
+          "name": "hlf_keydb_org1msp",
+          "cpu_percent": 0,
+          "mem_bytes": 6905856
+        },
+        {
+          "name": "hlf_keydb_org2msp",
+          "cpu_percent": 0,
+          "mem_bytes": 6914048
+        },
+        {
+          "name": "lp1.org1",
+          "cpu_percent": 0,
+          "mem_bytes": 89292800
+        },
+        {
+          "name": "lp1.org2",
+          "cpu_percent": 0,
+          "mem_bytes": 85020672
+        },
+        {
+          "name": "orderer",
+          "cpu_percent": 0,
+          "mem_bytes": 52191232
+        },
+        {
+          "name": "pipeline-1",
+          "cpu_percent": 1.3338997718511523,
+          "mem_bytes": 40316928
+        },
+        {
+          "name": "vs1.org1",
+          "cpu_percent": 0,
+          "mem_bytes": 35074048
+        },
+        {
+          "name": "vs1.org2",
+          "cpu_percent": 0,
+          "mem_bytes": 42328064
+        },
+        {
+          "name": "yugabyte-org1",
+          "cpu_percent": 0,
+          "mem_bytes": 534020096
+        },
+        {
+          "name": "yugabyte-org2",
+          "cpu_percent": 0,
+          "mem_bytes": 564326400
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T09:17:45.418991353+05:30",
+      "cpu_percent": 22.02,
+      "mem_bytes": 512963377,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "arma-1",
+          "cpu_percent": 19.479941348973608,
+          "mem_bytes": 355020800
+        },
+        {
+          "name": "chaincode.peer0.org1",
+          "cpu_percent": 0,
+          "mem_bytes": 8151040
+        },
+        {
+          "name": "chaincode.peer0.org2",
+          "cpu_percent": 0,
+          "mem_bytes": 8388608
+        },
+        {
+          "name": "committer-1",
+          "cpu_percent": 0.2575647026431717,
+          "mem_bytes": 20910080
+        },
+        {
+          "name": "cp.org1",
+          "cpu_percent": 0,
+          "mem_bytes": 101597184
+        },
+        {
+          "name": "cp.org2",
+          "cpu_percent": 0,
+          "mem_bytes": 94138368
+        },
+        {
+          "name": "db-1",
+          "cpu_percent": 1.1069609004739334,
+          "mem_bytes": 24137728
+        },
+        {
+          "name": "hlf_keydb_org1msp",
+          "cpu_percent": 0,
+          "mem_bytes": 6905856
+        },
+        {
+          "name": "hlf_keydb_org2msp",
+          "cpu_percent": 0,
+          "mem_bytes": 6914048
+        },
+        {
+          "name": "lp1.org1",
+          "cpu_percent": 0,
+          "mem_bytes": 89292800
+        },
+        {
+          "name": "lp1.org2",
+          "cpu_percent": 0,
+          "mem_bytes": 85020672
+        },
+        {
+          "name": "orderer",
+          "cpu_percent": 0,
+          "mem_bytes": 52191232
+        },
+        {
+          "name": "pipeline-1",
+          "cpu_percent": 1.3338997718511523,
+          "mem_bytes": 40316928
+        },
+        {
+          "name": "vs1.org1",
+          "cpu_percent": 0,
+          "mem_bytes": 35074048
+        },
+        {
+          "name": "vs1.org2",
+          "cpu_percent": 0,
+          "mem_bytes": 42328064
+        },
+        {
+          "name": "yugabyte-org1",
+          "cpu_percent": 0,
+          "mem_bytes": 534020096
+        },
+        {
+          "name": "yugabyte-org2",
+          "cpu_percent": 0,
+          "mem_bytes": 564326400
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T09:17:47.438922583+05:30",
+      "cpu_percent": 22.59,
+      "mem_bytes": 526951382,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "arma-1",
+          "cpu_percent": 17.83828774883537,
+          "mem_bytes": 382316544
+        },
+        {
+          "name": "chaincode.peer0.org1",
+          "cpu_percent": 0,
+          "mem_bytes": 8151040
+        },
+        {
+          "name": "chaincode.peer0.org2",
+          "cpu_percent": 0,
+          "mem_bytes": 8388608
+        },
+        {
+          "name": "committer-1",
+          "cpu_percent": 0.29525845613499285,
+          "mem_bytes": 21794816
+        },
+        {
+          "name": "cp.org1",
+          "cpu_percent": 0,
+          "mem_bytes": 101597184
+        },
+        {
+          "name": "cp.org2",
+          "cpu_percent": 0,
+          "mem_bytes": 94138368
+        },
+        {
+          "name": "db-1",
+          "cpu_percent": 1.1264426366608384,
+          "mem_bytes": 24141824
+        },
+        {
+          "name": "hlf_keydb_org1msp",
+          "cpu_percent": 0,
+          "mem_bytes": 6905856
+        },
+        {
+          "name": "hlf_keydb_org2msp",
+          "cpu_percent": 0,
+          "mem_bytes": 6914048
+        },
+        {
+          "name": "lp1.org1",
+          "cpu_percent": 0,
+          "mem_bytes": 89292800
+        },
+        {
+          "name": "lp1.org2",
+          "cpu_percent": 0,
+          "mem_bytes": 85020672
+        },
+        {
+          "name": "orderer",
+          "cpu_percent": 0,
+          "mem_bytes": 52191232
+        },
+        {
+          "name": "pipeline-1",
+          "cpu_percent": 1.0406292626891527,
+          "mem_bytes": 41320448
+        },
+        {
+          "name": "vs1.org1",
+          "cpu_percent": 0,
+          "mem_bytes": 35074048
+        },
+        {
+          "name": "vs1.org2",
+          "cpu_percent": 0,
+          "mem_bytes": 42328064
+        },
+        {
+          "name": "yugabyte-org1",
+          "cpu_percent": 0,
+          "mem_bytes": 534020096
+        },
+        {
+          "name": "yugabyte-org2",
+          "cpu_percent": 0,
+          "mem_bytes": 564326400
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T09:17:49.459666596+05:30",
+      "cpu_percent": 20.14,
+      "mem_bytes": 544326285,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "arma-1",
+          "cpu_percent": 17.83828774883537,
+          "mem_bytes": 382316544
+        },
+        {
+          "name": "chaincode.peer0.org1",
+          "cpu_percent": 0,
+          "mem_bytes": 8151040
+        },
+        {
+          "name": "chaincode.peer0.org2",
+          "cpu_percent": 0,
+          "mem_bytes": 8388608
+        },
+        {
+          "name": "committer-1",
+          "cpu_percent": 0.29525845613499285,
+          "mem_bytes": 21794816
+        },
+        {
+          "name": "cp.org1",
+          "cpu_percent": 0,
+          "mem_bytes": 101597184
+        },
+        {
+          "name": "cp.org2",
+          "cpu_percent": 0,
+          "mem_bytes": 94138368
+        },
+        {
+          "name": "db-1",
+          "cpu_percent": 1.1264426366608384,
+          "mem_bytes": 24141824
+        },
+        {
+          "name": "hlf_keydb_org1msp",
+          "cpu_percent": 0,
+          "mem_bytes": 6905856
+        },
+        {
+          "name": "hlf_keydb_org2msp",
+          "cpu_percent": 0,
+          "mem_bytes": 6914048
+        },
+        {
+          "name": "lp1.org1",
+          "cpu_percent": 0,
+          "mem_bytes": 89292800
+        },
+        {
+          "name": "lp1.org2",
+          "cpu_percent": 0,
+          "mem_bytes": 85020672
+        },
+        {
+          "name": "orderer",
+          "cpu_percent": 0,
+          "mem_bytes": 52191232
+        },
+        {
+          "name": "pipeline-1",
+          "cpu_percent": 1.0406292626891527,
+          "mem_bytes": 41320448
+        },
+        {
+          "name": "vs1.org1",
+          "cpu_percent": 0,
+          "mem_bytes": 35074048
+        },
+        {
+          "name": "vs1.org2",
+          "cpu_percent": 0,
+          "mem_bytes": 42328064
+        },
+        {
+          "name": "yugabyte-org1",
+          "cpu_percent": 0,
+          "mem_bytes": 534020096
+        },
+        {
+          "name": "yugabyte-org2",
+          "cpu_percent": 0,
+          "mem_bytes": 564326400
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T09:17:51.48101645+05:30",
+      "cpu_percent": 21.23,
+      "mem_bytes": 556573654,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "arma-1",
+          "cpu_percent": 18.332343939070398,
+          "mem_bytes": 425664512
+        },
+        {
+          "name": "chaincode.peer0.org1",
+          "cpu_percent": 0,
+          "mem_bytes": 8151040
+        },
+        {
+          "name": "chaincode.peer0.org2",
+          "cpu_percent": 0,
+          "mem_bytes": 8388608
+        },
+        {
+          "name": "committer-1",
+          "cpu_percent": 0.277710399082193,
+          "mem_bytes": 21864448
+        },
+        {
+          "name": "cp.org1",
+          "cpu_percent": 0,
+          "mem_bytes": 101597184
+        },
+        {
+          "name": "cp.org2",
+          "cpu_percent": 0,
+          "mem_bytes": 94138368
+        },
+        {
+          "name": "db-1",
+          "cpu_percent": 1.0425951928636323,
+          "mem_bytes": 24145920
+        },
+        {
+          "name": "hlf_keydb_org1msp",
+          "cpu_percent": 0,
+          "mem_bytes": 6905856
+        },
+        {
+          "name": "hlf_keydb_org2msp",
+          "cpu_percent": 0,
+          "mem_bytes": 6914048
+        },
+        {
+          "name": "lp1.org1",
+          "cpu_percent": 0,
+          "mem_bytes": 89292800
+        },
+        {
+          "name": "lp1.org2",
+          "cpu_percent": 0,
+          "mem_bytes": 85020672
+        },
+        {
+          "name": "orderer",
+          "cpu_percent": 0,
+          "mem_bytes": 52191232
+        },
+        {
+          "name": "pipeline-1",
+          "cpu_percent": 1.1652237541400294,
+          "mem_bytes": 42254336
+        },
+        {
+          "name": "vs1.org1",
+          "cpu_percent": 0,
+          "mem_bytes": 35074048
+        },
+        {
+          "name": "vs1.org2",
+          "cpu_percent": 0,
+          "mem_bytes": 42328064
+        },
+        {
+          "name": "yugabyte-org1",
+          "cpu_percent": 0,
+          "mem_bytes": 534020096
+        },
+        {
+          "name": "yugabyte-org2",
+          "cpu_percent": 0,
+          "mem_bytes": 564326400
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T09:17:53.500219104+05:30",
+      "cpu_percent": 21.270000000000003,
+      "mem_bytes": 568611305,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "arma-1",
+          "cpu_percent": 18.332343939070398,
+          "mem_bytes": 425664512
+        },
+        {
+          "name": "chaincode.peer0.org1",
+          "cpu_percent": 0,
+          "mem_bytes": 8151040
+        },
+        {
+          "name": "chaincode.peer0.org2",
+          "cpu_percent": 0,
+          "mem_bytes": 8388608
+        },
+        {
+          "name": "committer-1",
+          "cpu_percent": 0.277710399082193,
+          "mem_bytes": 21864448
+        },
+        {
+          "name": "cp.org1",
+          "cpu_percent": 0,
+          "mem_bytes": 101597184
+        },
+        {
+          "name": "cp.org2",
+          "cpu_percent": 0,
+          "mem_bytes": 94138368
+        },
+        {
+          "name": "db-1",
+          "cpu_percent": 1.0425951928636323,
+          "mem_bytes": 24145920
+        },
+        {
+          "name": "hlf_keydb_org1msp",
+          "cpu_percent": 0,
+          "mem_bytes": 6905856
+        },
+        {
+          "name": "hlf_keydb_org2msp",
+          "cpu_percent": 0,
+          "mem_bytes": 6914048
+        },
+        {
+          "name": "lp1.org1",
+          "cpu_percent": 0,
+          "mem_bytes": 89292800
+        },
+        {
+          "name": "lp1.org2",
+          "cpu_percent": 0,
+          "mem_bytes": 85020672
+        },
+        {
+          "name": "orderer",
+          "cpu_percent": 0,
+          "mem_bytes": 52191232
+        },
+        {
+          "name": "pipeline-1",
+          "cpu_percent": 1.1652237541400294,
+          "mem_bytes": 42254336
+        },
+        {
+          "name": "vs1.org1",
+          "cpu_percent": 0,
+          "mem_bytes": 35074048
+        },
+        {
+          "name": "vs1.org2",
+          "cpu_percent": 0,
+          "mem_bytes": 42328064
+        },
+        {
+          "name": "yugabyte-org1",
+          "cpu_percent": 0,
+          "mem_bytes": 534020096
+        },
+        {
+          "name": "yugabyte-org2",
+          "cpu_percent": 0,
+          "mem_bytes": 564326400
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T09:17:55.517131008+05:30",
+      "cpu_percent": 21.6,
+      "mem_bytes": 575720651,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "arma-1",
+          "cpu_percent": 17.79403201324686,
+          "mem_bytes": 437911552
+        },
+        {
+          "name": "chaincode.peer0.org1",
+          "cpu_percent": 0,
+          "mem_bytes": 8151040
+        },
+        {
+          "name": "chaincode.peer0.org2",
+          "cpu_percent": 0,
+          "mem_bytes": 8388608
+        },
+        {
+          "name": "committer-1",
+          "cpu_percent": 0.245437462417318,
+          "mem_bytes": 21991424
+        },
+        {
+          "name": "cp.org1",
+          "cpu_percent": 0,
+          "mem_bytes": 101597184
+        },
+        {
+          "name": "cp.org2",
+          "cpu_percent": 0,
+          "mem_bytes": 94138368
+        },
+        {
+          "name": "db-1",
+          "cpu_percent": 1.130844438006952,
+          "mem_bytes": 25124864
+        },
+        {
+          "name": "hlf_keydb_org1msp",
+          "cpu_percent": 0,
+          "mem_bytes": 6905856
+        },
+        {
+          "name": "hlf_keydb_org2msp",
+          "cpu_percent": 0,
+          "mem_bytes": 6914048
+        },
+        {
+          "name": "lp1.org1",
+          "cpu_percent": 0,
+          "mem_bytes": 89292800
+        },
+        {
+          "name": "lp1.org2",
+          "cpu_percent": 0,
+          "mem_bytes": 85020672
+        },
+        {
+          "name": "orderer",
+          "cpu_percent": 0,
+          "mem_bytes": 52191232
+        },
+        {
+          "name": "pipeline-1",
+          "cpu_percent": 1.1411895807215489,
+          "mem_bytes": 41938944
+        },
+        {
+          "name": "vs1.org1",
+          "cpu_percent": 0,
+          "mem_bytes": 35074048
+        },
+        {
+          "name": "vs1.org2",
+          "cpu_percent": 0,
+          "mem_bytes": 42328064
+        },
+        {
+          "name": "yugabyte-org1",
+          "cpu_percent": 0,
+          "mem_bytes": 534020096
+        },
+        {
+          "name": "yugabyte-org2",
+          "cpu_percent": 0,
+          "mem_bytes": 564326400
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T09:17:57.534888681+05:30",
+      "cpu_percent": 19.92,
+      "mem_bytes": 578195290,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "arma-1",
+          "cpu_percent": 17.79403201324686,
+          "mem_bytes": 437911552
+        },
+        {
+          "name": "chaincode.peer0.org1",
+          "cpu_percent": 0,
+          "mem_bytes": 8151040
+        },
+        {
+          "name": "chaincode.peer0.org2",
+          "cpu_percent": 0,
+          "mem_bytes": 8388608
+        },
+        {
+          "name": "committer-1",
+          "cpu_percent": 0.245437462417318,
+          "mem_bytes": 21991424
+        },
+        {
+          "name": "cp.org1",
+          "cpu_percent": 0,
+          "mem_bytes": 101597184
+        },
+        {
+          "name": "cp.org2",
+          "cpu_percent": 0,
+          "mem_bytes": 94138368
+        },
+        {
+          "name": "db-1",
+          "cpu_percent": 1.130844438006952,
+          "mem_bytes": 25124864
+        },
+        {
+          "name": "hlf_keydb_org1msp",
+          "cpu_percent": 0,
+          "mem_bytes": 6905856
+        },
+        {
+          "name": "hlf_keydb_org2msp",
+          "cpu_percent": 0,
+          "mem_bytes": 6914048
+        },
+        {
+          "name": "lp1.org1",
+          "cpu_percent": 0,
+          "mem_bytes": 89292800
+        },
+        {
+          "name": "lp1.org2",
+          "cpu_percent": 0,
+          "mem_bytes": 85020672
+        },
+        {
+          "name": "orderer",
+          "cpu_percent": 0,
+          "mem_bytes": 52191232
+        },
+        {
+          "name": "pipeline-1",
+          "cpu_percent": 1.1411895807215489,
+          "mem_bytes": 41938944
+        },
+        {
+          "name": "vs1.org1",
+          "cpu_percent": 0,
+          "mem_bytes": 35074048
+        },
+        {
+          "name": "vs1.org2",
+          "cpu_percent": 0,
+          "mem_bytes": 42328064
+        },
+        {
+          "name": "yugabyte-org1",
+          "cpu_percent": 0,
+          "mem_bytes": 534020096
+        },
+        {
+          "name": "yugabyte-org2",
+          "cpu_percent": 0,
+          "mem_bytes": 564326400
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T09:17:59.554070861+05:30",
+      "cpu_percent": 19.45,
+      "mem_bytes": 579820584,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "arma-1",
+          "cpu_percent": 17.79403201324686,
+          "mem_bytes": 437911552
+        },
+        {
+          "name": "chaincode.peer0.org1",
+          "cpu_percent": 0,
+          "mem_bytes": 8151040
+        },
+        {
+          "name": "chaincode.peer0.org2",
+          "cpu_percent": 0,
+          "mem_bytes": 8388608
+        },
+        {
+          "name": "committer-1",
+          "cpu_percent": 0.245437462417318,
+          "mem_bytes": 21991424
+        },
+        {
+          "name": "cp.org1",
+          "cpu_percent": 0,
+          "mem_bytes": 101597184
+        },
+        {
+          "name": "cp.org2",
+          "cpu_percent": 0,
+          "mem_bytes": 94138368
+        },
+        {
+          "name": "db-1",
+          "cpu_percent": 1.130844438006952,
+          "mem_bytes": 25124864
+        },
+        {
+          "name": "hlf_keydb_org1msp",
+          "cpu_percent": 0,
+          "mem_bytes": 6905856
+        },
+        {
+          "name": "hlf_keydb_org2msp",
+          "cpu_percent": 0,
+          "mem_bytes": 6914048
+        },
+        {
+          "name": "lp1.org1",
+          "cpu_percent": 0,
+          "mem_bytes": 89292800
+        },
+        {
+          "name": "lp1.org2",
+          "cpu_percent": 0,
+          "mem_bytes": 85020672
+        },
+        {
+          "name": "orderer",
+          "cpu_percent": 0,
+          "mem_bytes": 52191232
+        },
+        {
+          "name": "pipeline-1",
+          "cpu_percent": 1.1411895807215489,
+          "mem_bytes": 41938944
+        },
+        {
+          "name": "vs1.org1",
+          "cpu_percent": 0,
+          "mem_bytes": 35074048
+        },
+        {
+          "name": "vs1.org2",
+          "cpu_percent": 0,
+          "mem_bytes": 42328064
+        },
+        {
+          "name": "yugabyte-org1",
+          "cpu_percent": 0,
+          "mem_bytes": 534020096
+        },
+        {
+          "name": "yugabyte-org2",
+          "cpu_percent": 0,
+          "mem_bytes": 564326400
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T09:18:01.575020344+05:30",
+      "cpu_percent": 28.779999999999998,
+      "mem_bytes": 584203631,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "arma-1",
+          "cpu_percent": 18.026323965541586,
+          "mem_bytes": 444207104
+        },
+        {
+          "name": "chaincode.peer0.org1",
+          "cpu_percent": 0,
+          "mem_bytes": 8151040
+        },
+        {
+          "name": "chaincode.peer0.org2",
+          "cpu_percent": 0,
+          "mem_bytes": 8388608
+        },
+        {
+          "name": "committer-1",
+          "cpu_percent": 0.24066416040100252,
+          "mem_bytes": 22151168
+        },
+        {
+          "name": "cp.org1",
+          "cpu_percent": 0,
+          "mem_bytes": 101597184
+        },
+        {
+          "name": "cp.org2",
+          "cpu_percent": 0,
+          "mem_bytes": 94138368
+        },
+        {
+          "name": "db-1",
+          "cpu_percent": 1.0714407927568266,
+          "mem_bytes": 25214976
+        },
+        {
+          "name": "hlf_keydb_org1msp",
+          "cpu_percent": 0,
+          "mem_bytes": 6905856
+        },
+        {
+          "name": "hlf_keydb_org2msp",
+          "cpu_percent": 0,
+          "mem_bytes": 6914048
+        },
+        {
+          "name": "lp1.org1",
+          "cpu_percent": 0,
+          "mem_bytes": 89292800
+        },
+        {
+          "name": "lp1.org2",
+          "cpu_percent": 0,
+          "mem_bytes": 85020672
+        },
+        {
+          "name": "orderer",
+          "cpu_percent": 0,
+          "mem_bytes": 52191232
+        },
+        {
+          "name": "pipeline-1",
+          "cpu_percent": 1.1788336762145912,
+          "mem_bytes": 42614784
+        },
+        {
+          "name": "vs1.org1",
+          "cpu_percent": 0,
+          "mem_bytes": 35074048
+        },
+        {
+          "name": "vs1.org2",
+          "cpu_percent": 0,
+          "mem_bytes": 42328064
+        },
+        {
+          "name": "yugabyte-org1",
+          "cpu_percent": 0,
+          "mem_bytes": 534020096
+        },
+        {
+          "name": "yugabyte-org2",
+          "cpu_percent": 0,
+          "mem_bytes": 564326400
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T09:18:03.595557063+05:30",
+      "cpu_percent": 20.52,
+      "mem_bytes": 586636327,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "arma-1",
+          "cpu_percent": 18.026323965541586,
+          "mem_bytes": 444207104
+        },
+        {
+          "name": "chaincode.peer0.org1",
+          "cpu_percent": 0,
+          "mem_bytes": 8151040
+        },
+        {
+          "name": "chaincode.peer0.org2",
+          "cpu_percent": 0,
+          "mem_bytes": 8388608
+        },
+        {
+          "name": "committer-1",
+          "cpu_percent": 0.24066416040100252,
+          "mem_bytes": 22151168
+        },
+        {
+          "name": "cp.org1",
+          "cpu_percent": 0,
+          "mem_bytes": 101597184
+        },
+        {
+          "name": "cp.org2",
+          "cpu_percent": 0,
+          "mem_bytes": 94138368
+        },
+        {
+          "name": "db-1",
+          "cpu_percent": 1.0714407927568266,
+          "mem_bytes": 25214976
+        },
+        {
+          "name": "hlf_keydb_org1msp",
+          "cpu_percent": 0,
+          "mem_bytes": 6905856
+        },
+        {
+          "name": "hlf_keydb_org2msp",
+          "cpu_percent": 0,
+          "mem_bytes": 6914048
+        },
+        {
+          "name": "lp1.org1",
+          "cpu_percent": 0,
+          "mem_bytes": 89292800
+        },
+        {
+          "name": "lp1.org2",
+          "cpu_percent": 0,
+          "mem_bytes": 85020672
+        },
+        {
+          "name": "orderer",
+          "cpu_percent": 0,
+          "mem_bytes": 52191232
+        },
+        {
+          "name": "pipeline-1",
+          "cpu_percent": 1.1788336762145912,
+          "mem_bytes": 42614784
+        },
+        {
+          "name": "vs1.org1",
+          "cpu_percent": 0,
+          "mem_bytes": 35074048
+        },
+        {
+          "name": "vs1.org2",
+          "cpu_percent": 0,
+          "mem_bytes": 42328064
+        },
+        {
+          "name": "yugabyte-org1",
+          "cpu_percent": 0,
+          "mem_bytes": 534020096
+        },
+        {
+          "name": "yugabyte-org2",
+          "cpu_percent": 0,
+          "mem_bytes": 564326400
+        }
+      ]
+    }
+  ]
+}

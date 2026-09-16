@@ -13,6 +13,8 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/juicedcore/bench/pkg/metrics"
 )
 
 // The run book is one self-contained HTML file with an overview of every run in
@@ -521,6 +523,8 @@ func phaseCharts(rr *RunResult) string {
 		`</div>`
 }
 
+const resourceChartSlots = 12
+
 func resourceCharts(rr *RunResult) string {
 	if rr == nil || len(rr.SystemSamples) < 2 {
 		return ""
@@ -532,20 +536,65 @@ func resourceCharts(rr *RunResult) string {
 	}
 	t0 := ss[0].T
 	var labels, titles []string
-	var cpu, mem []float64
+	var picked []metrics.SystemSample
 	for i := 0; i < len(ss); i += step {
 		s := ss[i]
 		el := s.T.Sub(t0).Round(time.Second)
 		labels = append(labels, fmtElapsed(el))
 		titles = append(titles, fmt.Sprintf("%s (+%s) · %d containers", s.T.Format("15:04:05"), fmtElapsed(el), s.Containers))
-		cpu = append(cpu, s.CPUPercent)
-		mem = append(mem, float64(s.MemBytes)/(1<<20))
+		picked = append(picked, s)
+	}
+	cpu, mem := resourceSeries(picked)
+	cpuTitle, memTitle := "Platform CPU (cores; 1.0 = one full core)", "Platform memory (MiB)"
+	if len(metrics.SampledContainerNames(picked)) > 0 {
+		cpuTitle, memTitle = "Platform CPU by container (cores; 1.0 = one full core)", "Platform memory by container (MiB)"
 	}
 	every := (len(labels) + 7) / 8
 	return `<div class="charts">` +
-		lineChart("Platform CPU, all containers (% of one core)", "%", labels, titles, []chartSeries{{Name: "CPU", Slot: 1, Values: cpu}}, every) +
-		lineChart("Platform memory, all containers (MiB)", " MiB", labels, titles, []chartSeries{{Name: "Memory", Slot: 1, Values: mem}}, every) +
+		lineChart(cpuTitle, " cores", labels, titles, cpu, every) +
+		lineChart(memTitle, " MiB", labels, titles, mem, every) +
 		`</div>`
+}
+
+func resourceSeries(samples []metrics.SystemSample) (cpu, mem []chartSeries) {
+	names := metrics.SampledContainerNames(samples)
+	n := len(samples)
+	if len(names) == 0 {
+		cpuVals, memVals := make([]float64, n), make([]float64, n)
+		for i, s := range samples {
+			cpuVals[i] = s.CPUPercent / 100 // docker stats: 100 = one core
+			memVals[i] = float64(s.MemBytes) / (1 << 20)
+		}
+		return []chartSeries{{Name: "all containers", Slot: 1, Values: cpuVals}},
+			[]chartSeries{{Name: "all containers", Slot: 1, Values: memVals}}
+	}
+	cpu = make([]chartSeries, len(names))
+	mem = make([]chartSeries, len(names))
+	for i, name := range names {
+		slot := (i % resourceChartSlots) + 1
+		label := metrics.ShortContainerName(name)
+		cpu[i] = chartSeries{Name: label, Slot: slot, Values: make([]float64, n)}
+		mem[i] = chartSeries{Name: label, Slot: slot, Values: make([]float64, n)}
+		for j := range samples {
+			cpu[i].Values[j] = math.NaN()
+			mem[i].Values[j] = math.NaN()
+		}
+	}
+	index := make(map[string]int, len(names))
+	for i, name := range names {
+		index[name] = i
+	}
+	for j, s := range samples {
+		for _, u := range s.ByContainer {
+			i, ok := index[u.Name]
+			if !ok {
+				continue
+			}
+			cpu[i].Values[j] = u.CPUPercent / 100 // docker stats: 100 = one core
+			mem[i].Values[j] = float64(u.MemBytes) / (1 << 20)
+		}
+	}
+	return cpu, mem
 }
 
 func fmtElapsed(d time.Duration) string {

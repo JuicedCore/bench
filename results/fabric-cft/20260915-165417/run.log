@@ -1,0 +1,9 @@
+time=2026-09-15T16:54:17.352+05:30 level=INFO msg="run starting" workload=kv-write profile=local normalized=true out_dir=results/fabric-cft/20260915-165417
+time=2026-09-15T16:54:17.352+05:30 level=INFO msg="adapter setup"
+time=2026-09-15T16:54:17.353+05:30 level=DEBUG msg="gateway connection configured" component=adapter endpoint=localhost:7051 tls_server_name=peer0.org1.example.com msp_id=Org1MSP channel=mychannel chaincode=kvstore
+time=2026-09-15T16:54:17.482+05:30 level=DEBUG msg="block event stream open" component=adapter stream=filtered-block-events endpoint=localhost:7051 channel=mychannel
+time=2026-09-15T16:54:17.486+05:30 level=INFO msg="setup complete" component=adapter gateway=localhost:7051 finality_from=localhost:7051
+time=2026-09-15T16:54:17.486+05:30 level=INFO msg="phase start" phase=single offered_tps=50 workers=0 duration=30s
+time=2026-09-15T16:54:48.074+05:30 level=INFO msg="phase end" phase=single submitted=1100 committed=1100 confirmed_tps=50.0 fail_rate=0.0000 e2e_p99_ms=1031.68
+time=2026-09-15T16:54:48.076+05:30 level=WARN msg=caveat text="native metrics scrape of http://localhost:9443/metrics failed: scrape http://localhost:9443/metrics: parser panic: Invalid name validation scheme requested: unset (informational metrics only; harness numbers unaffected)"
+time=2026-09-15T16:54:48.076+05:30 level=INFO msg="run finished" out_dir=results/fabric-cft/20260915-165417 caveats=1

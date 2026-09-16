@@ -1,0 +1,29 @@
+time=2026-09-16T10:24:25.952+05:30 level=INFO msg="run starting" workload=kv-write profile=local normalized=true out_dir=results/fabric-cft/20260916-102425
+time=2026-09-16T10:24:25.952+05:30 level=INFO msg="adapter setup"
+time=2026-09-16T10:24:25.952+05:30 level=DEBUG msg="gateway connection configured" component=adapter endpoint=localhost:7051 tls_server_name=peer0.org1.example.com msp_id=Org1MSP channel=mychannel chaincode=kvstore
+time=2026-09-16T10:24:25.984+05:30 level=DEBUG msg="block event stream open" component=adapter stream=filtered-block-events endpoint=localhost:7051 channel=mychannel
+time=2026-09-16T10:24:25.987+05:30 level=INFO msg="setup complete" component=adapter gateway=localhost:7051 finality_from=localhost:7051
+time=2026-09-16T10:24:25.987+05:30 level=INFO msg="phase start" phase=probe offered_tps=10 workers=0 duration=30s
+time=2026-09-16T10:24:56.409+05:30 level=DEBUG msg="phase shorter than warmup+cooldown; measuring whole phase" phase=probe
+time=2026-09-16T10:24:56.410+05:30 level=INFO msg="phase end" phase=probe submitted=300 committed=300 confirmed_tps=10.0 fail_rate=0.0000 e2e_p99_ms=1026.56
+time=2026-09-16T10:24:56.410+05:30 level=INFO msg="phase start" phase=sweep-100 offered_tps=100 workers=0 duration=1m0s
+time=2026-09-16T10:25:57.445+05:30 level=INFO msg="phase end" phase=sweep-100 submitted=1500 committed=1500 confirmed_tps=100.0 fail_rate=0.0000 e2e_p99_ms=1014.78
+time=2026-09-16T10:25:57.445+05:30 level=INFO msg="phase start" phase=sweep-250 offered_tps=250 workers=0 duration=1m0s
+time=2026-09-16T10:26:58.468+05:30 level=INFO msg="phase end" phase=sweep-250 submitted=3750 committed=3750 confirmed_tps=250.0 fail_rate=0.0000 e2e_p99_ms=427.01
+time=2026-09-16T10:26:58.468+05:30 level=INFO msg="phase start" phase=sweep-500 offered_tps=500 workers=0 duration=1m0s
+time=2026-09-16T10:27:59.500+05:30 level=INFO msg="phase end" phase=sweep-500 submitted=7500 committed=7500 confirmed_tps=500.0 fail_rate=0.0000 e2e_p99_ms=232.19
+time=2026-09-16T10:27:59.500+05:30 level=INFO msg="phase start" phase=sweep-1000 offered_tps=1000 workers=0 duration=1m0s
+time=2026-09-16T10:29:00.544+05:30 level=INFO msg="phase end" phase=sweep-1000 submitted=15000 committed=15000 confirmed_tps=1000.0 fail_rate=0.0000 e2e_p99_ms=138.62
+time=2026-09-16T10:29:00.544+05:30 level=INFO msg="phase start" phase=sweep-2000 offered_tps=2000 workers=0 duration=1m0s
+time=2026-09-16T10:30:01.667+05:30 level=INFO msg="phase end" phase=sweep-2000 submitted=30000 committed=30000 confirmed_tps=2000.0 fail_rate=0.0000 e2e_p99_ms=130.43
+time=2026-09-16T10:30:01.667+05:30 level=INFO msg="phase start" phase=sweep-3500 offered_tps=3500 workers=0 duration=1m0s
+time=2026-09-16T10:31:12.076+05:30 level=INFO msg="phase end" phase=sweep-3500 submitted=52500 committed=29465 confirmed_tps=1964.3 fail_rate=0.4388 e2e_p99_ms=14680.06
+time=2026-09-16T10:31:12.076+05:30 level=WARN msg="phase errors" phase=sweep-3500 count=23035 message="not sent: N transactions already in flight (platform is not finalizing)"
+time=2026-09-16T10:31:12.076+05:30 level=INFO msg="phase start" phase=sweep-5000 offered_tps=5000 workers=0 duration=1m0s
+time=2026-09-16T10:32:27.297+05:30 level=INFO msg="phase end" phase=sweep-5000 submitted=75000 committed=28093 confirmed_tps=1872.9 fail_rate=0.6254 e2e_p99_ms=21544.96
+time=2026-09-16T10:32:27.297+05:30 level=WARN msg="phase errors" phase=sweep-5000 count=46907 message="not sent: N transactions already in flight (platform is not finalizing)"
+time=2026-09-16T10:32:27.297+05:30 level=INFO msg="phase start" phase=hold offered_tps=1800 workers=0 duration=5m0s
+time=2026-09-16T10:37:28.944+05:30 level=INFO msg="phase end" phase=hold submitted=459000 committed=459000 confirmed_tps=1800.0 fail_rate=0.0000 e2e_p99_ms=718.85
+time=2026-09-16T10:37:28.944+05:30 level=WARN msg=caveat text="sweep aborted early after 2 consecutive failed steps; 2 higher step(s) were never offered"
+time=2026-09-16T10:37:29.103+05:30 level=WARN msg=caveat text="native metrics scrape of http://localhost:9443/metrics failed: scrape http://localhost:9443/metrics: parser panic: Invalid name validation scheme requested: unset (informational metrics only; harness numbers unaffected)"
+time=2026-09-16T10:37:29.104+05:30 level=INFO msg="run finished" out_dir=results/fabric-cft/20260916-102425 caveats=2

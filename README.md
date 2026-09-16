@@ -96,6 +96,7 @@ Every document in the repository, grouped by what you want to do.
 | Document | What it covers |
 | -------- | -------------- |
 | [workloads/normalized.md](docs/workloads/normalized.md) | `kv-write`, `kv-read`, `kv-mixed`, `transfer`; keys, values, distributions, knobs |
+| [workloads/payload-and-state.md](docs/workloads/payload-and-state.md) | generator struct → adapter wire payload → chaincode/validator → world-state bytes, per platform |
 | [workloads/platform-native.md](docs/workloads/platform-native.md) | per-platform best-case workloads (design only) |
 | [workloads/mismatches.md](docs/workloads/mismatches.md) | where a workload maps awkwardly onto a platform, and the caveat it carries |
 
@@ -221,7 +222,7 @@ Where each platform stamps T2 and T3:
 | -------- | -- | -- |
 | fabric-cft / fabric-bft | gateway returns after the orderer accepted | commit status (block event) |
 | drunix | same as Fabric | Committing Peer filtered-block event |
-| fabricx | first reply from the four Arma routers | sidecar deliver stream yields the block |
+| fabricx | writes: first reply from the four Arma routers; reads: QueryService GetRows | writes: sidecar deliver stream; reads: immediate |
 | neuchain | local call return (ZeroMQ is fire-and-forget: no real T2) | poller decodes the block |
 
 **Mechanics:**
@@ -278,7 +279,7 @@ enforces it:
 | Gap | Effect | Surfaced |
 | --- | ------ | -------- |
 | State DB: LevelDB requested; Drunix runs YugabyteDB, Fabric-X PostgreSQL | write-heavy numbers most exposed | automatic caveat |
-| Reads: Fabric/Drunix evaluate on one peer; Fabric-X/NeuChain order and commit | `read-profile` and `multi-client` not comparable across families | documented; do not quote across families |
+| Reads: Fabric/Drunix Evaluate and Fabric-X QueryService are point lookups; NeuChain commits every read | `read-profile` / `multi-client` vs NeuChain are not comparable; Fabric-X vs Fabric family carries the state-DB caveat | documented |
 | Block cutting: Fabric-X ignores byte limits; NeuChain not wired | cross-family throughput carries it | documented |
 | Crypto: ECDSA endorsement per tx (Fabric family, Fabric-X) vs RSA, no endorsement (NeuChain) | per-tx verification cost differs | manifest `crypto`, footnoted in reports |
 
@@ -287,7 +288,7 @@ enforces it:
 | Mode | Within the Fabric family | Across families |
 | ---- | ------------------------ | --------------- |
 | quick-smoke, probe-sweep, throughput-scan, latency-profile, contention | yes | yes, with the state-DB and block-cutting caveats |
-| read-profile, multi-client | yes | **no** |
+| read-profile, multi-client | yes | vs Fabric-X: yes, with the state-DB caveat; vs NeuChain: **no** |
 
 **Reject a run if any of these hold:**
 - `invariant_ok=false`
@@ -317,16 +318,20 @@ deterministic given `seed`, so every platform sees the same key-access pattern.
 | Workload | Transactions | Fabric / Drunix | Fabric-X | NeuChain |
 | -------- | ------------ | --------------- | -------- | -------- |
 | `kv-write` | `Put(key, value)` | chaincode `Put` ([`chaincodes/kvstore`](chaincodes/kvstore)); Drunix JSON-wraps the value | blind write in namespace `0` | YCSB update |
-| `kv-read` | `Get(key)` | Evaluate on one peer, nothing committed | read + unique dummy write, ordered and committed | read-set transaction, committed |
+| `kv-read` | `Get(key)` | Evaluate on one peer, nothing committed | QueryService GetRows, nothing committed | read-set transaction, committed |
 | `kv-mixed` | reads and writes per `read_write_ratio` | as above | as above | as above |
-| `transfer` | two-account read-modify-write | chaincode `Transfer`, balance computed | two-key read/write set with the workload's values | two-key read + update |
+| `transfer` | two-account read-modify-write | chaincode `Transfer`, balance computed | two-key read/write set (live values empty; no computed balance) | **not implemented** (YCSB is one key per call) |
 
 - **Keys:** `key-%09d` or `acct-%09d`.
 - **Distributions:** `uniform` (no contention), `zipfian` (hot keys), `fixed`
   (one key).
 - **Values:** 64 bytes by default, deterministic but non-constant.
 
+Exact bytes from generator struct through world state:
+[payload-and-state.md](docs/workloads/payload-and-state.md).
+
 Full detail: [workloads/normalized.md](docs/workloads/normalized.md) ·
+[payload-and-state.md](docs/workloads/payload-and-state.md) ·
 [mismatches.md](docs/workloads/mismatches.md) ·
 [platform-native.md](docs/workloads/platform-native.md) ·
 [ADR-009](docs/decisions/adr-009-workload-strategy.md) ·
@@ -344,7 +349,7 @@ platform: pass `--platform` (and `--profile`).
 | [`throughput-scan.yaml`](configs/normalized/throughput-scan.yaml) | rough saturation band, fast | kv-write | ramp 100 → 10 000 TPS over 5 min, hold 2 min | 7 min | yes, with caveats |
 | [`latency-profile.yaml`](configs/normalized/latency-profile.yaml) | clean tail latency below saturation | kv-write | 1000 TPS, 500k keys | 10 min | yes, with caveats |
 | [`contention.yaml`](configs/normalized/contention.yaml) | MVCC / hot-key behaviour | transfer | 800 TPS, Zipfian 1.2 over 2000 keys | 5 min | yes, with caveats |
-| [`read-profile.yaml`](configs/normalized/read-profile.yaml) | read path | kv-read | 1000 TPS, 500k keys | 5 min | **no**; needs a populated ledger |
+| [`read-profile.yaml`](configs/normalized/read-profile.yaml) | read path | kv-read | 1000 TPS, 500k keys | 5 min | vs Fabric-X with state-DB caveat; **not** vs NeuChain; needs a populated ledger |
 | [`multi-client.yaml`](configs/normalized/multi-client.yaml) | fixed concurrency capacity | kv-mixed (50% reads) | closed loop, 256 workers | 5 min | **no** |
 
 Config blocks:

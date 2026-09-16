@@ -1,0 +1,9 @@
+time=2026-09-16T09:33:02.479+05:30 level=INFO msg="run starting" workload=kv-write profile=local normalized=true out_dir=results/neuchain/20260916-093302
+time=2026-09-16T09:33:02.479+05:30 level=WARN msg=caveat text="neuchain on the local profile is resource-constrained; absolute throughput is NOT comparable to its published scale-out ceiling"
+time=2026-09-16T09:33:02.479+05:30 level=INFO msg="adapter setup"
+time=2026-09-16T09:33:02.682+05:30 level=INFO msg="setup complete" component=adapter block_servers="[localhost:5001 localhost:5011 localhost:5021 localhost:5031]" query=localhost:7003 tip=232 start_block=233 poll_interval=50ms
+time=2026-09-16T09:33:02.682+05:30 level=INFO msg="phase start" phase=single offered_tps=50 workers=0 duration=30s
+time=2026-09-16T09:33:33.036+05:30 level=INFO msg="phase end" phase=single submitted=1100 committed=1099 confirmed_tps=50.0 fail_rate=0.0009 e2e_p99_ms=451.84
+time=2026-09-16T09:33:33.036+05:30 level=WARN msg="phase errors" phase=single count=1 message="committed invalid"
+time=2026-09-16T09:33:33.036+05:30 level=WARN msg=caveat text="native metrics scrape of http://localhost:9443/metrics failed: Get \"http://localhost:9443/metrics\": dial tcp 127.0.0.1:9443: connect: connection refused (informational metrics only; harness numbers unaffected)"
+time=2026-09-16T09:33:33.036+05:30 level=INFO msg="run finished" out_dir=results/neuchain/20260916-093302 caveats=2

@@ -1,0 +1,34 @@
+run:        probe-sweep
+platform:   fabric-bft  (version 3.1.5)
+workload:   kv-write   normalized=true
+profile:    local   state_db=leveldb
+resources:  11 CPU / 11 GB total over 8 containers (1.38 CPU each; memory by role weight peer=4 statedb=4 orderer=2 other=1)
+              625m     dev-peer0.org1.example.com-kvstore_1.0-e88284a33ff8806958375f99312782794164d62aac26fe22876f2c72fb6294d9
+              625m     dev-peer0.org2.example.com-kvstore_1.0-e88284a33ff8806958375f99312782794164d62aac26fe22876f2c72fb6294d9
+              1251m    orderer.example.com
+              1251m    orderer2.example.com
+              1251m    orderer3.example.com
+              1251m    orderer4.example.com
+              2503m    peer0.org1.example.com
+              2503m    peer0.org2.example.com
+batch:      msgcount=100 timeout=1s preferred=2 MB
+crypto:     sig=ECDSA-P256 hash=SHA-256 per_tx_endorse_verify=true
+caveats:
+  - platform container peer0.org1.example.com was OOM-killed at its memory limit and exited (after 10:45:16, exit code 137)
+  - platform container dev-peer0.org1.example.com-kvstore_1.0-e88284a33ff8806958375f99312782794164d62aac26fe22876f2c72fb6294d9 exited (after 10:45:16, status exited, exit code 2)
+  - run stopped during sweep-2000 because a platform container failed; phases never run: sweep-3500, sweep-5000, sweep-7500, sweep-10000, hold
+  - native metrics scrape of http://localhost:9443/metrics failed: scrape http://localhost:9443/metrics: parser panic: Invalid name validation scheme requested: unset (informational metrics only; harness numbers unaffected)
+
+phase           offered     conf_tps  goodput  fail_rate    e2e_p50    e2e_p99    gap_p99    com_p50  verdict
+probe                10         10.0     100%     0.0000     526.85    1030.14       1.12     521.22  
+sweep-100           100        100.0     100%     0.0000     548.86    1042.43       1.10     544.77  held
+sweep-250           250        250.0     100%     0.0000     262.40     457.22       1.10     258.18  held
+sweep-500           500        500.0     100%     0.0000     162.05     261.12       1.08     158.34  held
+sweep-1000         1000       1000.0     100%     0.0000     146.69     219.78       1.08     129.54  held
+sweep-2000         2000          0.0       0%     1.0000       0.00       0.00       0.00       0.00  failure rate 100.00% > 2.00%
+
+errors sweep-2000      30000 x endorse Put: rpc error: code = Unavailable desc = connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:7051: connect: connection refused"
+PLATFORM FAILURE  peer0.org1.example.com was OOM-killed at its memory limit and exited (after 10:45:16, exit code 137)
+PLATFORM FAILURE  dev-peer0.org1.example.com-kvstore_1.0-e88284a33ff8806958375f99312782794164d62aac26fe22876f2c72fb6294d9 exited (after 10:45:16, status exited, exit code 2)
+detected saturation: ~1000 offered TPS
+HEADLINE  none - the run did not complete a headline phase on a healthy platform

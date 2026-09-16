@@ -1,0 +1,94 @@
+{
+  "run_name": "probe-sweep",
+  "platform": "drunix",
+  "workload": "kv-write",
+  "profile": "local",
+  "normalized": true,
+  "started_at": "2026-09-16T10:48:40.861310586+05:30",
+  "ended_at": "2026-09-16T10:54:29.258858298+05:30",
+  "harness_git_sha": "a034b6e",
+  "platform_version": "drunix-ddc0eae77815",
+  "state_db": "yugabyte",
+  "state_db_requested": "leveldb",
+  "orderer_batch": {
+    "MaxMessageCount": 100,
+    "AbsoluteMaxBytes": "10 MB",
+    "PreferredMaxBytes": "2 MB",
+    "BatchTimeout": "1s"
+  },
+  "crypto": {
+    "signature_alg": "ECDSA-P256",
+    "hash_alg": "SHA-256",
+    "per_tx_endorsement_verify": true,
+    "msp_note": "Drunix (HLF 2.5.x fork); Lite Peer endorses, Committing Peer validates+commits"
+  },
+  "resource_limit_per_container": {
+    "CPUs": 0.85,
+    "Memory": ""
+  },
+  "resource_memory_by_container": {
+    "cp.org1": "1408m",
+    "cp.org2": "1408m",
+    "dev-peer0.org1.example.com-kvstore_1.0-e88284a33ff8806958375f99312782794164d62aac26fe22876f2c72fb6294d9": "352m",
+    "dev-peer0.org2.example.com-kvstore_1.0-e88284a33ff8806958375f99312782794164d62aac26fe22876f2c72fb6294d9": "352m",
+    "hlf_keydb_org1msp": "352m",
+    "hlf_keydb_org2msp": "352m",
+    "lp1.org1": "1408m",
+    "lp1.org2": "1408m",
+    "orderer.example.com": "704m",
+    "vs1.org1": "352m",
+    "vs1.org2": "352m",
+    "yugabyte-org1": "1408m",
+    "yugabyte-org2": "1408m"
+  },
+  "resource_memory_weights": "peer=4 statedb=4 orderer=2 other=1",
+  "resource_containers": 13,
+  "resource_cpus_total": 11,
+  "resource_memory_total_gb": 11,
+  "nodes": {
+    "chaincode": 2,
+    "committing_peer": 2,
+    "keydb": 2,
+    "lite_peer": 2,
+    "orderer": 1,
+    "validation_service": 2,
+    "yugabyte": 2
+  },
+  "generators": 2,
+  "seed": 1,
+  "key_space": 200000,
+  "key_distribution": "uniform",
+  "zipfian_constant": 0,
+  "read_write_ratio": 0,
+  "value_size_bytes": 64,
+  "warmup_sec": 30,
+  "cooldown_sec": 15,
+  "container_failures": [
+    {
+      "name": "lp1.org1",
+      "at": "2026-09-16T10:53:42.749990964+05:30",
+      "oom_killed": true,
+      "exited": true,
+      "exit_code": 137,
+      "status": "exited"
+    },
+    {
+      "name": "dev-peer0.org1.example.com-kvstore_1.0-e88284a33ff8806958375f99312782794164d62aac26fe22876f2c72fb6294d9",
+      "at": "2026-09-16T10:53:41.197515382+05:30",
+      "oom_killed": false,
+      "exited": true,
+      "exit_code": 2,
+      "status": "exited"
+    }
+  ],
+  "caveats": [
+    "drunix ran on YugabyteDB (its shipped test-network default); LevelDB parity is unavailable, so the state-DB variable is NOT held constant vs fabric-cft for this run",
+    "drunix write values are JSON-wrapped client-side to survive a YugabyteDB statedb bug (non-JSON values panic the Committing Peer); the on-wire payload format differs from the shared kv workload on other platforms for this run",
+    "state-db parity not held: run requested leveldb, platform actually ran yugabyte",
+    "platform container lp1.org1 was OOM-killed at its memory limit and exited (after 10:53:42, exit code 137)",
+    "platform container dev-peer0.org1.example.com-kvstore_1.0-e88284a33ff8806958375f99312782794164d62aac26fe22876f2c72fb6294d9 exited (after 10:53:41, status exited, exit code 2)",
+    "run stopped during sweep-2000 because a platform container failed; phases never run: sweep-3500, sweep-5000, sweep-7500, sweep-10000, hold",
+    "4262 latency observations were out of range (negative: T3 before T1/T2, usually adapter or clock timestamp error; or above 5 min) and were clamped",
+    "native metrics scrape of http://localhost:9444/metrics failed: Get \"http://localhost:9444/metrics\": dial tcp 127.0.0.1:9444: connect: connection refused (informational metrics only; harness numbers unaffected)"
+  ]
+}

@@ -1,0 +1,4 @@
+time=2026-09-16T11:10:27.682+05:30 level=INFO msg="run starting" workload=kv-write profile=local normalized=true out_dir=results/neuchain/20260916-111027
+time=2026-09-16T11:10:27.682+05:30 level=WARN msg=caveat text="neuchain on the local profile is resource-constrained; absolute throughput is NOT comparable to its published scale-out ceiling"
+time=2026-09-16T11:10:27.682+05:30 level=INFO msg="adapter setup"
+time=2026-09-16T11:10:30.461+05:30 level=ERROR msg="adapter setup failed" err="neuchain: dial block server submit socket localhost:5001: zmq4: could not open a ZMTP connection: zmq4: could not initialize ZMTP connection: zmq4: could not exchange greetings: zmq4: could not recv greeting: could not read ZMTP greeting: read tcp 127.0.0.1:49092->127.0.0.1:5001: read: connection reset by peer (is the neuchain stack up? docker ps | grep block-server)" error_file=results/neuchain/20260916-111027/error.txt

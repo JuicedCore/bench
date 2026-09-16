@@ -1,0 +1,939 @@
+{
+  "manifest": {
+    "run_name": "quick-smoke",
+    "platform": "fabric-bft",
+    "workload": "kv-write",
+    "profile": "local",
+    "normalized": true,
+    "started_at": "2026-09-16T09:23:46.281533191+05:30",
+    "ended_at": "2026-09-16T09:24:16.672810893+05:30",
+    "harness_git_sha": "a034b6e",
+    "platform_version": "3.1.5",
+    "state_db": "leveldb",
+    "state_db_requested": "leveldb",
+    "orderer_batch": {
+      "MaxMessageCount": 100,
+      "AbsoluteMaxBytes": "10 MB",
+      "PreferredMaxBytes": "2 MB",
+      "BatchTimeout": "1s"
+    },
+    "crypto": {
+      "signature_alg": "ECDSA-P256",
+      "hash_alg": "SHA-256",
+      "per_tx_endorsement_verify": true,
+      "msp_note": "X.509 MSP; endorsement signatures verified by every committing peer during VSCC"
+    },
+    "resource_limit_per_container": {
+      "CPUs": 1.38,
+      "Memory": ""
+    },
+    "resource_memory_by_container": {
+      "dev-peer0.org1.example.com-kvstore_1.0-e88284a33ff8806958375f99312782794164d62aac26fe22876f2c72fb6294d9": "625m",
+      "dev-peer0.org2.example.com-kvstore_1.0-e88284a33ff8806958375f99312782794164d62aac26fe22876f2c72fb6294d9": "625m",
+      "orderer.example.com": "1251m",
+      "orderer2.example.com": "1251m",
+      "orderer3.example.com": "1251m",
+      "orderer4.example.com": "1251m",
+      "peer0.org1.example.com": "2503m",
+      "peer0.org2.example.com": "2503m"
+    },
+    "resource_memory_weights": "peer=4 statedb=4 orderer=2 other=1",
+    "resource_containers": 8,
+    "resource_cpus_total": 11,
+    "resource_memory_total_gb": 11,
+    "nodes": {
+      "chaincode": 2,
+      "orderer": 4,
+      "peer": 2
+    },
+    "generators": 2,
+    "seed": 1,
+    "key_space": 5000,
+    "key_distribution": "uniform",
+    "zipfian_constant": 0,
+    "read_write_ratio": 0,
+    "value_size_bytes": 64,
+    "warmup_sec": 5,
+    "cooldown_sec": 3,
+    "caveats": [
+      "native metrics scrape of http://localhost:9443/metrics failed: scrape http://localhost:9443/metrics: parser panic: Invalid name validation scheme requested: unset (informational metrics only; harness numbers unaffected)"
+    ]
+  },
+  "phases": [
+    {
+      "name": "single",
+      "offered_tps": 50,
+      "window": {
+        "phase_start": "2026-09-16T09:23:46.335283182+05:30",
+        "win_start": "2026-09-16T09:23:51.335283182+05:30",
+        "win_end": "2026-09-16T09:24:13.335283182+05:30"
+      },
+      "result": {
+        "wall_clock_sec": 22,
+        "submitted": 1100,
+        "committed": 1100,
+        "invalid": 0,
+        "errored": 0,
+        "timed_out": 0,
+        "confirmed_tps": 50,
+        "offered_tps": 50,
+        "failure_rate": 0,
+        "e2e_latency": {
+          "name": "e2e",
+          "count": 1100,
+          "min_ms": 44.13,
+          "max_ms": 1071.1,
+          "mean_ms": 557.1751563636366,
+          "stddev_ms": 291.42461199849566,
+          "percentiles_ms": {
+            "p1": 58.75,
+            "p10": 150.78,
+            "p25": 309.76,
+            "p5": 99.07,
+            "p50": 557.57,
+            "p75": 807.94,
+            "p90": 958.98,
+            "p95": 1011.2,
+            "p99": 1053.7,
+            "p99.9": 1071.1,
+            "p99.99": 1071.1
+          }
+        },
+        "submit_latency": {
+          "name": "submit",
+          "count": 1100,
+          "min_ms": 3.27,
+          "max_ms": 16.86,
+          "mean_ms": 4.349074545454544,
+          "stddev_ms": 1.1525820183346736,
+          "percentiles_ms": {
+            "p1": 3.45,
+            "p10": 3.68,
+            "p25": 3.88,
+            "p5": 3.57,
+            "p50": 4.15,
+            "p75": 4.5,
+            "p90": 4.83,
+            "p95": 5.31,
+            "p99": 10.05,
+            "p99.9": 15.88,
+            "p99.99": 16.86
+          }
+        },
+        "commit_latency": {
+          "name": "commit",
+          "count": 1100,
+          "min_ms": 40.26,
+          "max_ms": 1065.98,
+          "mean_ms": 552.2253381818186,
+          "stddev_ms": 291.2516054278565,
+          "percentiles_ms": {
+            "p1": 53.5,
+            "p10": 145.28,
+            "p25": 304.38,
+            "p5": 94.59,
+            "p50": 552.45,
+            "p75": 803.84,
+            "p90": 953.86,
+            "p95": 1006.59,
+            "p99": 1047.55,
+            "p99.9": 1065.98,
+            "p99.99": 1065.98
+          }
+        },
+        "send_gap": {
+          "name": "send_gap",
+          "count": 1100,
+          "min_ms": 0.01,
+          "max_ms": 6.39,
+          "mean_ms": 0.5990881818181821,
+          "stddev_ms": 0.3576345575715822,
+          "percentiles_ms": {
+            "p1": 0.03,
+            "p10": 0.15,
+            "p25": 0.34,
+            "p5": 0.08,
+            "p50": 0.6,
+            "p75": 0.84,
+            "p90": 1,
+            "p95": 1.05,
+            "p99": 1.16,
+            "p99.9": 2.55,
+            "p99.99": 6.39
+          }
+        },
+        "invariant_ok": true
+      }
+    }
+  ],
+  "headline": {
+    "wall_clock_sec": 22,
+    "submitted": 1100,
+    "committed": 1100,
+    "invalid": 0,
+    "errored": 0,
+    "timed_out": 0,
+    "confirmed_tps": 50,
+    "offered_tps": 50,
+    "failure_rate": 0,
+    "e2e_latency": {
+      "name": "e2e",
+      "count": 1100,
+      "min_ms": 44.13,
+      "max_ms": 1071.1,
+      "mean_ms": 557.1751563636366,
+      "stddev_ms": 291.42461199849566,
+      "percentiles_ms": {
+        "p1": 58.75,
+        "p10": 150.78,
+        "p25": 309.76,
+        "p5": 99.07,
+        "p50": 557.57,
+        "p75": 807.94,
+        "p90": 958.98,
+        "p95": 1011.2,
+        "p99": 1053.7,
+        "p99.9": 1071.1,
+        "p99.99": 1071.1
+      }
+    },
+    "submit_latency": {
+      "name": "submit",
+      "count": 1100,
+      "min_ms": 3.27,
+      "max_ms": 16.86,
+      "mean_ms": 4.349074545454544,
+      "stddev_ms": 1.1525820183346736,
+      "percentiles_ms": {
+        "p1": 3.45,
+        "p10": 3.68,
+        "p25": 3.88,
+        "p5": 3.57,
+        "p50": 4.15,
+        "p75": 4.5,
+        "p90": 4.83,
+        "p95": 5.31,
+        "p99": 10.05,
+        "p99.9": 15.88,
+        "p99.99": 16.86
+      }
+    },
+    "commit_latency": {
+      "name": "commit",
+      "count": 1100,
+      "min_ms": 40.26,
+      "max_ms": 1065.98,
+      "mean_ms": 552.2253381818186,
+      "stddev_ms": 291.2516054278565,
+      "percentiles_ms": {
+        "p1": 53.5,
+        "p10": 145.28,
+        "p25": 304.38,
+        "p5": 94.59,
+        "p50": 552.45,
+        "p75": 803.84,
+        "p90": 953.86,
+        "p95": 1006.59,
+        "p99": 1047.55,
+        "p99.9": 1065.98,
+        "p99.99": 1065.98
+      }
+    },
+    "send_gap": {
+      "name": "send_gap",
+      "count": 1100,
+      "min_ms": 0.01,
+      "max_ms": 6.39,
+      "mean_ms": 0.5990881818181821,
+      "stddev_ms": 0.3576345575715822,
+      "percentiles_ms": {
+        "p1": 0.03,
+        "p10": 0.15,
+        "p25": 0.34,
+        "p5": 0.08,
+        "p50": 0.6,
+        "p75": 0.84,
+        "p90": 1,
+        "p95": 1.05,
+        "p99": 1.16,
+        "p99.9": 2.55,
+        "p99.99": 6.39
+      }
+    },
+    "invariant_ok": true
+  },
+  "system_samples": [
+    {
+      "t": "2026-09-16T09:23:49.519387435+05:30",
+      "cpu_percent": 40.72,
+      "mem_bytes": 335221355,
+      "containers": 8,
+      "by_container": [
+        {
+          "name": "chaincode.peer0.org1",
+          "cpu_percent": 0.6641875681570337,
+          "mem_bytes": 8138752
+        },
+        {
+          "name": "chaincode.peer0.org2",
+          "cpu_percent": 0.7114542114188805,
+          "mem_bytes": 8294400
+        },
+        {
+          "name": "orderer",
+          "cpu_percent": 1.5873738091852694,
+          "mem_bytes": 29642752
+        },
+        {
+          "name": "orderer2",
+          "cpu_percent": 1.1904083055706205,
+          "mem_bytes": 27926528
+        },
+        {
+          "name": "orderer3",
+          "cpu_percent": 1.0943663090981326,
+          "mem_bytes": 24821760
+        },
+        {
+          "name": "orderer4",
+          "cpu_percent": 1.3221826988571859,
+          "mem_bytes": 23535616
+        },
+        {
+          "name": "peer0.org1",
+          "cpu_percent": 3.9757388220568806,
+          "mem_bytes": 101052416
+        },
+        {
+          "name": "peer0.org2",
+          "cpu_percent": 2.233476363636363,
+          "mem_bytes": 96591872
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T09:23:51.543205759+05:30",
+      "cpu_percent": 37.00000000000001,
+      "mem_bytes": 341613475,
+      "containers": 8,
+      "by_container": [
+        {
+          "name": "chaincode.peer0.org1",
+          "cpu_percent": 0.6641875681570337,
+          "mem_bytes": 8138752
+        },
+        {
+          "name": "chaincode.peer0.org2",
+          "cpu_percent": 0.7114542114188805,
+          "mem_bytes": 8294400
+        },
+        {
+          "name": "orderer",
+          "cpu_percent": 1.5873738091852694,
+          "mem_bytes": 29642752
+        },
+        {
+          "name": "orderer2",
+          "cpu_percent": 1.1904083055706205,
+          "mem_bytes": 27926528
+        },
+        {
+          "name": "orderer3",
+          "cpu_percent": 1.0943663090981326,
+          "mem_bytes": 24821760
+        },
+        {
+          "name": "orderer4",
+          "cpu_percent": 1.3221826988571859,
+          "mem_bytes": 23535616
+        },
+        {
+          "name": "peer0.org1",
+          "cpu_percent": 3.9757388220568806,
+          "mem_bytes": 101052416
+        },
+        {
+          "name": "peer0.org2",
+          "cpu_percent": 2.233476363636363,
+          "mem_bytes": 96591872
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T09:23:53.56528127+05:30",
+      "cpu_percent": 37.97,
+      "mem_bytes": 339759593,
+      "containers": 8,
+      "by_container": [
+        {
+          "name": "chaincode.peer0.org1",
+          "cpu_percent": 1.3885978920472692,
+          "mem_bytes": 8368128
+        },
+        {
+          "name": "chaincode.peer0.org2",
+          "cpu_percent": 1.4473647153832032,
+          "mem_bytes": 8499200
+        },
+        {
+          "name": "orderer",
+          "cpu_percent": 3.0217698349787416,
+          "mem_bytes": 33120256
+        },
+        {
+          "name": "orderer2",
+          "cpu_percent": 2.6590175205338804,
+          "mem_bytes": 32833536
+        },
+        {
+          "name": "orderer3",
+          "cpu_percent": 2.6316734928504704,
+          "mem_bytes": 26763264
+        },
+        {
+          "name": "orderer4",
+          "cpu_percent": 2.650396358213641,
+          "mem_bytes": 27451392
+        },
+        {
+          "name": "peer0.org1",
+          "cpu_percent": 7.820978500706728,
+          "mem_bytes": 97566720
+        },
+        {
+          "name": "peer0.org2",
+          "cpu_percent": 4.697023186237845,
+          "mem_bytes": 95629312
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T09:23:55.58936592+05:30",
+      "cpu_percent": 39.040000000000006,
+      "mem_bytes": 340442216,
+      "containers": 8,
+      "by_container": [
+        {
+          "name": "chaincode.peer0.org1",
+          "cpu_percent": 1.3885978920472692,
+          "mem_bytes": 8368128
+        },
+        {
+          "name": "chaincode.peer0.org2",
+          "cpu_percent": 1.4473647153832032,
+          "mem_bytes": 8499200
+        },
+        {
+          "name": "orderer",
+          "cpu_percent": 3.0217698349787416,
+          "mem_bytes": 33120256
+        },
+        {
+          "name": "orderer2",
+          "cpu_percent": 2.6590175205338804,
+          "mem_bytes": 32833536
+        },
+        {
+          "name": "orderer3",
+          "cpu_percent": 2.6316734928504704,
+          "mem_bytes": 26763264
+        },
+        {
+          "name": "orderer4",
+          "cpu_percent": 2.650396358213641,
+          "mem_bytes": 27451392
+        },
+        {
+          "name": "peer0.org1",
+          "cpu_percent": 7.820978500706728,
+          "mem_bytes": 97566720
+        },
+        {
+          "name": "peer0.org2",
+          "cpu_percent": 4.697023186237845,
+          "mem_bytes": 95629312
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T09:23:57.610204803+05:30",
+      "cpu_percent": 38.25,
+      "mem_bytes": 342868619,
+      "containers": 8,
+      "by_container": [
+        {
+          "name": "chaincode.peer0.org1",
+          "cpu_percent": 1.3885978920472692,
+          "mem_bytes": 8368128
+        },
+        {
+          "name": "chaincode.peer0.org2",
+          "cpu_percent": 1.4473647153832032,
+          "mem_bytes": 8499200
+        },
+        {
+          "name": "orderer",
+          "cpu_percent": 3.0217698349787416,
+          "mem_bytes": 33120256
+        },
+        {
+          "name": "orderer2",
+          "cpu_percent": 2.6590175205338804,
+          "mem_bytes": 32833536
+        },
+        {
+          "name": "orderer3",
+          "cpu_percent": 2.6316734928504704,
+          "mem_bytes": 26763264
+        },
+        {
+          "name": "orderer4",
+          "cpu_percent": 2.650396358213641,
+          "mem_bytes": 27451392
+        },
+        {
+          "name": "peer0.org1",
+          "cpu_percent": 7.820978500706728,
+          "mem_bytes": 97566720
+        },
+        {
+          "name": "peer0.org2",
+          "cpu_percent": 4.697023186237845,
+          "mem_bytes": 95629312
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T09:23:59.631667815+05:30",
+      "cpu_percent": 38.6,
+      "mem_bytes": 350862962,
+      "containers": 8,
+      "by_container": [
+        {
+          "name": "chaincode.peer0.org1",
+          "cpu_percent": 2.1232424561119645,
+          "mem_bytes": 8179712
+        },
+        {
+          "name": "chaincode.peer0.org2",
+          "cpu_percent": 1.996830617431604,
+          "mem_bytes": 8540160
+        },
+        {
+          "name": "orderer",
+          "cpu_percent": 4.270379298121234,
+          "mem_bytes": 34168832
+        },
+        {
+          "name": "orderer2",
+          "cpu_percent": 4.351762114537444,
+          "mem_bytes": 34865152
+        },
+        {
+          "name": "orderer3",
+          "cpu_percent": 3.8054824233358273,
+          "mem_bytes": 27639808
+        },
+        {
+          "name": "orderer4",
+          "cpu_percent": 3.905806938159879,
+          "mem_bytes": 29544448
+        },
+        {
+          "name": "peer0.org1",
+          "cpu_percent": 11.177130291368885,
+          "mem_bytes": 97800192
+        },
+        {
+          "name": "peer0.org2",
+          "cpu_percent": 6.396124031007752,
+          "mem_bytes": 96165888
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T09:24:01.653752343+05:30",
+      "cpu_percent": 38.019999999999996,
+      "mem_bytes": 360212067,
+      "containers": 8,
+      "by_container": [
+        {
+          "name": "chaincode.peer0.org1",
+          "cpu_percent": 2.1232424561119645,
+          "mem_bytes": 8179712
+        },
+        {
+          "name": "chaincode.peer0.org2",
+          "cpu_percent": 1.996830617431604,
+          "mem_bytes": 8540160
+        },
+        {
+          "name": "orderer",
+          "cpu_percent": 4.270379298121234,
+          "mem_bytes": 34168832
+        },
+        {
+          "name": "orderer2",
+          "cpu_percent": 4.351762114537444,
+          "mem_bytes": 34865152
+        },
+        {
+          "name": "orderer3",
+          "cpu_percent": 3.8054824233358273,
+          "mem_bytes": 27639808
+        },
+        {
+          "name": "orderer4",
+          "cpu_percent": 3.905806938159879,
+          "mem_bytes": 29544448
+        },
+        {
+          "name": "peer0.org1",
+          "cpu_percent": 11.177130291368885,
+          "mem_bytes": 97800192
+        },
+        {
+          "name": "peer0.org2",
+          "cpu_percent": 6.396124031007752,
+          "mem_bytes": 96165888
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T09:24:03.678404371+05:30",
+      "cpu_percent": 38.260000000000005,
+      "mem_bytes": 361367598,
+      "containers": 8,
+      "by_container": [
+        {
+          "name": "chaincode.peer0.org1",
+          "cpu_percent": 2.06034116699612,
+          "mem_bytes": 8261632
+        },
+        {
+          "name": "chaincode.peer0.org2",
+          "cpu_percent": 1.9736562860438294,
+          "mem_bytes": 8196096
+        },
+        {
+          "name": "orderer",
+          "cpu_percent": 4.216102407336645,
+          "mem_bytes": 40579072
+        },
+        {
+          "name": "orderer2",
+          "cpu_percent": 4.393058119784358,
+          "mem_bytes": 35278848
+        },
+        {
+          "name": "orderer3",
+          "cpu_percent": 3.8052207293666025,
+          "mem_bytes": 31350784
+        },
+        {
+          "name": "orderer4",
+          "cpu_percent": 3.931846432224058,
+          "mem_bytes": 31850496
+        },
+        {
+          "name": "peer0.org1",
+          "cpu_percent": 11.020134579439251,
+          "mem_bytes": 97996800
+        },
+        {
+          "name": "peer0.org2",
+          "cpu_percent": 6.144595945174188,
+          "mem_bytes": 96817152
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T09:24:05.702754685+05:30",
+      "cpu_percent": 37.58,
+      "mem_bytes": 370287834,
+      "containers": 8,
+      "by_container": [
+        {
+          "name": "chaincode.peer0.org1",
+          "cpu_percent": 2.06034116699612,
+          "mem_bytes": 8261632
+        },
+        {
+          "name": "chaincode.peer0.org2",
+          "cpu_percent": 1.9736562860438294,
+          "mem_bytes": 8196096
+        },
+        {
+          "name": "orderer",
+          "cpu_percent": 4.216102407336645,
+          "mem_bytes": 40579072
+        },
+        {
+          "name": "orderer2",
+          "cpu_percent": 4.393058119784358,
+          "mem_bytes": 35278848
+        },
+        {
+          "name": "orderer3",
+          "cpu_percent": 3.8052207293666025,
+          "mem_bytes": 31350784
+        },
+        {
+          "name": "orderer4",
+          "cpu_percent": 3.931846432224058,
+          "mem_bytes": 31850496
+        },
+        {
+          "name": "peer0.org1",
+          "cpu_percent": 11.020134579439251,
+          "mem_bytes": 97996800
+        },
+        {
+          "name": "peer0.org2",
+          "cpu_percent": 6.144595945174188,
+          "mem_bytes": 96817152
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T09:24:07.726277199+05:30",
+      "cpu_percent": 44.1,
+      "mem_bytes": 362068045,
+      "containers": 8,
+      "by_container": [
+        {
+          "name": "chaincode.peer0.org1",
+          "cpu_percent": 2.06034116699612,
+          "mem_bytes": 8261632
+        },
+        {
+          "name": "chaincode.peer0.org2",
+          "cpu_percent": 1.9736562860438294,
+          "mem_bytes": 8196096
+        },
+        {
+          "name": "orderer",
+          "cpu_percent": 4.216102407336645,
+          "mem_bytes": 40579072
+        },
+        {
+          "name": "orderer2",
+          "cpu_percent": 4.393058119784358,
+          "mem_bytes": 35278848
+        },
+        {
+          "name": "orderer3",
+          "cpu_percent": 3.8052207293666025,
+          "mem_bytes": 31350784
+        },
+        {
+          "name": "orderer4",
+          "cpu_percent": 3.931846432224058,
+          "mem_bytes": 31850496
+        },
+        {
+          "name": "peer0.org1",
+          "cpu_percent": 11.020134579439251,
+          "mem_bytes": 97996800
+        },
+        {
+          "name": "peer0.org2",
+          "cpu_percent": 6.144595945174188,
+          "mem_bytes": 96817152
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T09:24:09.758665228+05:30",
+      "cpu_percent": 42.839999999999996,
+      "mem_bytes": 376907494,
+      "containers": 8,
+      "by_container": [
+        {
+          "name": "chaincode.peer0.org1",
+          "cpu_percent": 2.180996777952972,
+          "mem_bytes": 8245248
+        },
+        {
+          "name": "chaincode.peer0.org2",
+          "cpu_percent": 1.9395492643288346,
+          "mem_bytes": 8138752
+        },
+        {
+          "name": "orderer",
+          "cpu_percent": 4.033295575414874,
+          "mem_bytes": 37146624
+        },
+        {
+          "name": "orderer2",
+          "cpu_percent": 4.5142335510146765,
+          "mem_bytes": 34177024
+        },
+        {
+          "name": "orderer3",
+          "cpu_percent": 3.5492500926791277,
+          "mem_bytes": 33107968
+        },
+        {
+          "name": "orderer4",
+          "cpu_percent": 3.9931661750245833,
+          "mem_bytes": 33742848
+        },
+        {
+          "name": "peer0.org1",
+          "cpu_percent": 11.649833282812972,
+          "mem_bytes": 100589568
+        },
+        {
+          "name": "peer0.org2",
+          "cpu_percent": 6.483587330046317,
+          "mem_bytes": 98934784
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T09:24:11.784198703+05:30",
+      "cpu_percent": 38.7,
+      "mem_bytes": 389151716,
+      "containers": 8,
+      "by_container": [
+        {
+          "name": "chaincode.peer0.org1",
+          "cpu_percent": 2.180996777952972,
+          "mem_bytes": 8245248
+        },
+        {
+          "name": "chaincode.peer0.org2",
+          "cpu_percent": 1.9395492643288346,
+          "mem_bytes": 8138752
+        },
+        {
+          "name": "orderer",
+          "cpu_percent": 4.033295575414874,
+          "mem_bytes": 37146624
+        },
+        {
+          "name": "orderer2",
+          "cpu_percent": 4.5142335510146765,
+          "mem_bytes": 34177024
+        },
+        {
+          "name": "orderer3",
+          "cpu_percent": 3.5492500926791277,
+          "mem_bytes": 33107968
+        },
+        {
+          "name": "orderer4",
+          "cpu_percent": 3.9931661750245833,
+          "mem_bytes": 33742848
+        },
+        {
+          "name": "peer0.org1",
+          "cpu_percent": 11.649833282812972,
+          "mem_bytes": 100589568
+        },
+        {
+          "name": "peer0.org2",
+          "cpu_percent": 6.483587330046317,
+          "mem_bytes": 98934784
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T09:24:13.807646089+05:30",
+      "cpu_percent": 38.1,
+      "mem_bytes": 396667909,
+      "containers": 8,
+      "by_container": [
+        {
+          "name": "chaincode.peer0.org1",
+          "cpu_percent": 2.205353728489484,
+          "mem_bytes": 8220672
+        },
+        {
+          "name": "chaincode.peer0.org2",
+          "cpu_percent": 2.096829925503249,
+          "mem_bytes": 8048640
+        },
+        {
+          "name": "orderer",
+          "cpu_percent": 4.331989131989132,
+          "mem_bytes": 45125632
+        },
+        {
+          "name": "orderer2",
+          "cpu_percent": 4.4965909090909095,
+          "mem_bytes": 40345600
+        },
+        {
+          "name": "orderer3",
+          "cpu_percent": 3.8227482106158326,
+          "mem_bytes": 37273600
+        },
+        {
+          "name": "orderer4",
+          "cpu_percent": 3.862954847797167,
+          "mem_bytes": 34484224
+        },
+        {
+          "name": "peer0.org1",
+          "cpu_percent": 11.653137239229482,
+          "mem_bytes": 103211008
+        },
+        {
+          "name": "peer0.org2",
+          "cpu_percent": 6.378572455434157,
+          "mem_bytes": 100192256
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T09:24:15.832325135+05:30",
+      "cpu_percent": 37.900000000000006,
+      "mem_bytes": 392881501,
+      "containers": 8,
+      "by_container": [
+        {
+          "name": "chaincode.peer0.org1",
+          "cpu_percent": 2.205353728489484,
+          "mem_bytes": 8220672
+        },
+        {
+          "name": "chaincode.peer0.org2",
+          "cpu_percent": 2.096829925503249,
+          "mem_bytes": 8048640
+        },
+        {
+          "name": "orderer",
+          "cpu_percent": 4.331989131989132,
+          "mem_bytes": 45125632
+        },
+        {
+          "name": "orderer2",
+          "cpu_percent": 4.4965909090909095,
+          "mem_bytes": 40345600
+        },
+        {
+          "name": "orderer3",
+          "cpu_percent": 3.8227482106158326,
+          "mem_bytes": 37273600
+        },
+        {
+          "name": "orderer4",
+          "cpu_percent": 3.862954847797167,
+          "mem_bytes": 34484224
+        },
+        {
+          "name": "peer0.org1",
+          "cpu_percent": 11.653137239229482,
+          "mem_bytes": 103211008
+        },
+        {
+          "name": "peer0.org2",
+          "cpu_percent": 6.378572455434157,
+          "mem_bytes": 100192256
+        }
+      ]
+    }
+  ]
+}

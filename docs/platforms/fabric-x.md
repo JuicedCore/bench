@@ -46,15 +46,15 @@ the decision.
 
 | | |
 | --- | --- |
-| Submit | broadcast a signed `common.Envelope` to every party's Arma router (`:6022`, `:6122`, `:6222`, `:6322`) and take the first reply as T2; a pool of streams per router, one unacknowledged envelope each. A single router is ~10s slower: only the primary batcher cuts batches, and a secondary forwards requests to it only after `FirstStrikeThreshold` |
-| Finality | sidecar deliver stream (`:4001`); per-transaction validation codes from the block's `TRANSACTIONS_FILTER` metadata |
+| Submit | writes: broadcast a signed `common.Envelope` to every party's Arma router (`:6022`, `:6122`, `:6222`, `:6322`) and take the first reply as T2. reads: `QueryService.GetRows` on `:7001` |
+| Finality | writes: sidecar deliver stream (`:4001`); reads: immediate after GetRows |
 | Signing | ECDSA-P256 over the namespace's ASN.1 marshalling, sha256-digested — upstream's own encoding via `fabric-x-common` |
-| Config keys | `broadcast_endpoint`, `deliver_endpoint`, `channel_id`, `namespace`, `signing_key_path`, `metrics_endpoint` |
+| Config keys | `broadcast_endpoint`, `deliver_endpoint`, `query_endpoint`, `channel_id`, `namespace`, `signing_key_path`, `metrics_endpoint` |
 
 Workload mapping: `kv-write` → a blind write; `transfer` → a two-key
-read-modify-write; `kv-read` → a read plus a **unique dummy blind write**,
-because the validator rejects read-only transactions (`MALFORMED_NO_WRITES`).
-That last one is disclosed in [../workloads/mismatches.md](../workloads/mismatches.md).
+read-modify-write; `kv-read` → QueryService `GetRows` (committed state, no
+Arma). A read-only transaction envelope is still illegal
+(`MALFORMED_NO_WRITES`); we do not work around that with a dummy write.
 
 Submit and commit are separate operations, so Fabric-X reports a genuine submit
 latency: T2 is the first reply from the four Arma routers the envelope was sent
@@ -84,7 +84,7 @@ attestations into consensus proposals and has no Raft counterpart.
 | --- | --- |
 | Versions | `fabric-x-committer` v1.0.5, `fabric-x-orderer` v1.0.6 (`COMMITTER_REF` / `ORDERER_REF` in `up.sh`) |
 | Containers | `fabricx-arma` (4 parties × router, batcher, consenter, assembler), `fabricx-db` (PostgreSQL), `fabricx-pipeline` (sidecar, verifier, coordinator), `fabricx-committer` (validator-committer, query) |
-| Host ports | routers 6022 / 6122 / 6222 / 6322, assembler 6023, sidecar deliver 4001, committer metrics 9643 |
+| Host ports | routers 6022 / 6122 / 6222 / 6322, assembler 6023, sidecar deliver 4001, QueryService 7001, committer metrics 9643 |
 | First deploy | compiles Arma and the committer from source: several minutes and several GB |
 | Namespace check | `up.sh` confirms the `ns__meta` row holds the exported key; it does not trust loadgen's exit code (upstream exits 1 on success) |
 

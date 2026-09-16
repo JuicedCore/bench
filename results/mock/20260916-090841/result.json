@@ -1,0 +1,251 @@
+{
+  "manifest": {
+    "run_name": "quick-smoke",
+    "platform": "mock",
+    "workload": "kv-write",
+    "profile": "local",
+    "normalized": true,
+    "started_at": "2026-09-16T09:08:41.634460373+05:30",
+    "ended_at": "2026-09-16T09:09:11.696873196+05:30",
+    "harness_git_sha": "a034b6e",
+    "platform_version": "mock-0",
+    "state_db": "leveldb",
+    "state_db_requested": "leveldb",
+    "orderer_batch": {
+      "MaxMessageCount": 100,
+      "AbsoluteMaxBytes": "10 MB",
+      "PreferredMaxBytes": "2 MB",
+      "BatchTimeout": "1s"
+    },
+    "crypto": {
+      "signature_alg": "",
+      "hash_alg": "",
+      "per_tx_endorsement_verify": false
+    },
+    "resource_limit_per_container": {
+      "CPUs": 0,
+      "Memory": ""
+    },
+    "resource_containers": 0,
+    "resource_cpus_total": 0,
+    "resource_memory_total_gb": 0,
+    "nodes": {
+      "node": 1
+    },
+    "generators": 2,
+    "seed": 1,
+    "key_space": 5000,
+    "key_distribution": "uniform",
+    "zipfian_constant": 0,
+    "read_write_ratio": 0,
+    "value_size_bytes": 64,
+    "warmup_sec": 5,
+    "cooldown_sec": 3,
+    "caveats": [
+      "resource budget not reported by the deploy script (BENCH_RESOURCE_CONTAINERS unset - was connection.env sourced?): container limits are unverified, so this run's hardware share is unknown"
+    ]
+  },
+  "phases": [
+    {
+      "name": "single",
+      "offered_tps": 50,
+      "window": {
+        "phase_start": "2026-09-16T09:08:41.637684669+05:30",
+        "win_start": "2026-09-16T09:08:46.637684669+05:30",
+        "win_end": "2026-09-16T09:09:08.637684669+05:30"
+      },
+      "result": {
+        "wall_clock_sec": 22,
+        "submitted": 1100,
+        "committed": 1100,
+        "invalid": 0,
+        "errored": 0,
+        "timed_out": 0,
+        "confirmed_tps": 50,
+        "offered_tps": 50,
+        "failure_rate": 0,
+        "e2e_latency": {
+          "name": "e2e",
+          "count": 1100,
+          "min_ms": 43.84,
+          "max_ms": 72.96,
+          "mean_ms": 58.87540363636369,
+          "stddev_ms": 6.29740186720505,
+          "percentiles_ms": {
+            "p1": 45.38,
+            "p10": 50.34,
+            "p25": 54.62,
+            "p5": 48.03,
+            "p50": 58.66,
+            "p75": 63.55,
+            "p90": 67.58,
+            "p95": 69.18,
+            "p99": 71.68,
+            "p99.9": 72.96,
+            "p99.99": 72.96
+          }
+        },
+        "submit_latency": {
+          "name": "submit",
+          "count": 1100,
+          "min_ms": 2.08,
+          "max_ms": 17.87,
+          "mean_ms": 10.128240000000002,
+          "stddev_ms": 4.365319946270729,
+          "percentiles_ms": {
+            "p1": 3.15,
+            "p10": 4.17,
+            "p25": 6.27,
+            "p5": 3.19,
+            "p50": 10.24,
+            "p75": 13.74,
+            "p90": 16.3,
+            "p95": 16.67,
+            "p99": 17.58,
+            "p99.9": 17.82,
+            "p99.99": 17.87
+          }
+        },
+        "commit_latency": {
+          "name": "commit",
+          "count": 1100,
+          "min_ms": 40.22,
+          "max_ms": 55.97,
+          "mean_ms": 48.160785454545504,
+          "stddev_ms": 4.412331159722846,
+          "percentiles_ms": {
+            "p1": 40.83,
+            "p10": 42.05,
+            "p25": 44.13,
+            "p5": 41.25,
+            "p50": 48.19,
+            "p75": 52.19,
+            "p90": 54.14,
+            "p95": 54.75,
+            "p99": 55.52,
+            "p99.9": 55.9,
+            "p99.99": 55.97
+          }
+        },
+        "send_gap": {
+          "name": "send_gap",
+          "count": 1100,
+          "min_ms": 0.02,
+          "max_ms": 1.29,
+          "mean_ms": 0.5859627272727277,
+          "stddev_ms": 0.301975771863509,
+          "percentiles_ms": {
+            "p1": 0.03,
+            "p10": 0.15,
+            "p25": 0.35,
+            "p5": 0.07,
+            "p50": 0.59,
+            "p75": 0.83,
+            "p90": 0.99,
+            "p95": 1.05,
+            "p99": 1.12,
+            "p99.9": 1.28,
+            "p99.99": 1.29
+          }
+        },
+        "invariant_ok": true
+      }
+    }
+  ],
+  "headline": {
+    "wall_clock_sec": 22,
+    "submitted": 1100,
+    "committed": 1100,
+    "invalid": 0,
+    "errored": 0,
+    "timed_out": 0,
+    "confirmed_tps": 50,
+    "offered_tps": 50,
+    "failure_rate": 0,
+    "e2e_latency": {
+      "name": "e2e",
+      "count": 1100,
+      "min_ms": 43.84,
+      "max_ms": 72.96,
+      "mean_ms": 58.87540363636369,
+      "stddev_ms": 6.29740186720505,
+      "percentiles_ms": {
+        "p1": 45.38,
+        "p10": 50.34,
+        "p25": 54.62,
+        "p5": 48.03,
+        "p50": 58.66,
+        "p75": 63.55,
+        "p90": 67.58,
+        "p95": 69.18,
+        "p99": 71.68,
+        "p99.9": 72.96,
+        "p99.99": 72.96
+      }
+    },
+    "submit_latency": {
+      "name": "submit",
+      "count": 1100,
+      "min_ms": 2.08,
+      "max_ms": 17.87,
+      "mean_ms": 10.128240000000002,
+      "stddev_ms": 4.365319946270729,
+      "percentiles_ms": {
+        "p1": 3.15,
+        "p10": 4.17,
+        "p25": 6.27,
+        "p5": 3.19,
+        "p50": 10.24,
+        "p75": 13.74,
+        "p90": 16.3,
+        "p95": 16.67,
+        "p99": 17.58,
+        "p99.9": 17.82,
+        "p99.99": 17.87
+      }
+    },
+    "commit_latency": {
+      "name": "commit",
+      "count": 1100,
+      "min_ms": 40.22,
+      "max_ms": 55.97,
+      "mean_ms": 48.160785454545504,
+      "stddev_ms": 4.412331159722846,
+      "percentiles_ms": {
+        "p1": 40.83,
+        "p10": 42.05,
+        "p25": 44.13,
+        "p5": 41.25,
+        "p50": 48.19,
+        "p75": 52.19,
+        "p90": 54.14,
+        "p95": 54.75,
+        "p99": 55.52,
+        "p99.9": 55.9,
+        "p99.99": 55.97
+      }
+    },
+    "send_gap": {
+      "name": "send_gap",
+      "count": 1100,
+      "min_ms": 0.02,
+      "max_ms": 1.29,
+      "mean_ms": 0.5859627272727277,
+      "stddev_ms": 0.301975771863509,
+      "percentiles_ms": {
+        "p1": 0.03,
+        "p10": 0.15,
+        "p25": 0.35,
+        "p5": 0.07,
+        "p50": 0.59,
+        "p75": 0.83,
+        "p90": 0.99,
+        "p95": 1.05,
+        "p99": 1.12,
+        "p99.9": 1.28,
+        "p99.99": 1.29
+      }
+    },
+    "invariant_ok": true
+  }
+}

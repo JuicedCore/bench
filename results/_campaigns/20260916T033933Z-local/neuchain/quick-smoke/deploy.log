@@ -1,0 +1,11 @@
+[deploy 09:18:23] ERROR: image bench/neuchain:ev missing
+  hint: copied from another machine? make images-import (scripts/images.sh import <dir>)
+  hint: patched build: see deploy/docker/neuchain/patched/README.md
+  hint: clean upstream build: deploy/docker/neuchain/build.sh (slow: ~1h, builds ~15 C++ deps from source)
+[deploy 09:18:23] ERROR: log-lib.sh failed (exit 1) near line 1: exit 1
+
+----- docker ps -a (matching /^bench-neuchain-/) -----
+NAMES                              STATUS                          IMAGE
+
+(full capture of a live network: scripts/capture.sh <out-dir>)
+

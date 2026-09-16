@@ -65,7 +65,10 @@ services:
     networks: { fx: { ipv4_address: 172.29.0.13 } }
     # Committer metrics. 9643 is already reserved for fabricx in
     # deploy/docker/monitoring/prometheus.yml and collides with nothing.
-    ports: ["9643:2116"]
+    # QueryService GetRows listens on :7001 (sample query.yaml). Publish it so
+    # kv-read can use the native query path from the host. Do not recreate a
+    # running stack just to pick this up — next up.sh applies it.
+    ports: ["9643:2116", "7001:7001"]
 
 networks:
   fx:

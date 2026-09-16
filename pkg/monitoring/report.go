@@ -137,17 +137,47 @@ func systemSampleChartSpecs(samples []metrics.SystemSample) []chartSpec {
 	if len(samples) == 0 {
 		return []chartSpec{cpu, mem}
 	}
-	cpuSeries := seriesSpec{Legend: "CPU %"}
-	memSeries := seriesSpec{Legend: "RSS"}
+	names := metrics.SampledContainerNames(samples)
+	if len(names) == 0 {
+		cpuSeries := seriesSpec{Legend: "all containers"}
+		memSeries := seriesSpec{Legend: "all containers"}
+		for _, s := range samples {
+			t := float64(s.T.Unix())
+			cpuSeries.Times = append(cpuSeries.Times, t)
+			cpuSeries.Values = append(cpuSeries.Values, s.CPUPercent)
+			memSeries.Times = append(memSeries.Times, t)
+			memSeries.Values = append(memSeries.Values, float64(s.MemBytes))
+		}
+		cpu.Series = []seriesSpec{cpuSeries}
+		mem.Series = []seriesSpec{memSeries}
+		return []chartSpec{cpu, mem}
+	}
+	cpuBy := make(map[string]*seriesSpec, len(names))
+	memBy := make(map[string]*seriesSpec, len(names))
+	for _, name := range names {
+		label := metrics.ShortContainerName(name)
+		cpuBy[name] = &seriesSpec{Legend: label}
+		memBy[name] = &seriesSpec{Legend: label}
+	}
 	for _, s := range samples {
 		t := float64(s.T.Unix())
-		cpuSeries.Times = append(cpuSeries.Times, t)
-		cpuSeries.Values = append(cpuSeries.Values, s.CPUPercent)
-		memSeries.Times = append(memSeries.Times, t)
-		memSeries.Values = append(memSeries.Values, float64(s.MemBytes))
+		for _, u := range s.ByContainer {
+			if ser, ok := cpuBy[u.Name]; ok {
+				ser.Times = append(ser.Times, t)
+				ser.Values = append(ser.Values, u.CPUPercent)
+			}
+			if ser, ok := memBy[u.Name]; ok {
+				ser.Times = append(ser.Times, t)
+				ser.Values = append(ser.Values, float64(u.MemBytes))
+			}
+		}
 	}
-	cpu.Series = []seriesSpec{cpuSeries}
-	mem.Series = []seriesSpec{memSeries}
+	cpu.Series = make([]seriesSpec, 0, len(names))
+	mem.Series = make([]seriesSpec, 0, len(names))
+	for _, name := range names {
+		cpu.Series = append(cpu.Series, *cpuBy[name])
+		mem.Series = append(mem.Series, *memBy[name])
+	}
 	return []chartSpec{cpu, mem}
 }
 
@@ -176,9 +206,26 @@ func containerRegex(names []string) string {
 	}
 	parts := make([]string, len(names))
 	for i, n := range names {
-		parts[i] = ".*" + regexp.QuoteMeta(n) + ".*"
+		parts[i] = ".*" + promQLRegexLiteral(n) + ".*"
 	}
 	return strings.Join(parts, "|")
+}
+
+// promQLRegexLiteral escapes s so it matches as a literal inside a PromQL
+// double-quoted regex (name=~"..."). regexp.QuoteMeta produces `\.`, which
+// PromQL then rejects as an unknown string escape; doubling the backslashes
+// makes the string decode to the RE2 we want.
+func promQLRegexLiteral(s string) string {
+	return strings.ReplaceAll(regexp.QuoteMeta(s), `\`, `\\`)
+}
+
+// chartUnit maps Grafana panel units onto the renderer. Grafana's "none" is
+// unlabeled; the cAdvisor CPU panel is cores (1.0 = one full core).
+func chartUnit(p Panel) string {
+	if p.Title == "Container CPU cores (cAdvisor)" {
+		return "cores"
+	}
+	return p.Unit
 }
 
 // queryPanels runs every target of every panel through Prometheus and returns
@@ -189,7 +236,7 @@ func queryPanels(ctx context.Context, client *Client, panels []Panel, start, end
 	var specs []chartSpec
 	var errs []string
 	for _, p := range panels {
-		spec := chartSpec{ID: slug(p.Title), Title: p.Title, Unit: p.Unit}
+		spec := chartSpec{ID: slug(p.Title), Title: p.Title, Unit: chartUnit(p)}
 		for _, t := range p.Targets {
 			expr := strings.ReplaceAll(t.Expr, "$container", containerRe)
 			expr = strings.ReplaceAll(expr, "$platform", platformRe)

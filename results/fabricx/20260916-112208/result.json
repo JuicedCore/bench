@@ -1,0 +1,658 @@
+{
+  "manifest": {
+    "run_name": "quick-smoke",
+    "platform": "fabricx",
+    "workload": "kv-write",
+    "profile": "local",
+    "normalized": true,
+    "started_at": "2026-09-16T11:22:08.805421978+05:30",
+    "ended_at": "2026-09-16T11:22:39.743486492+05:30",
+    "harness_git_sha": "unknown",
+    "platform_version": "fabricx-committer-v1.0.5-orderer-v1.0.6",
+    "state_db": "postgres",
+    "state_db_requested": "leveldb",
+    "orderer_batch": {
+      "MaxMessageCount": 100,
+      "AbsoluteMaxBytes": "10 MB",
+      "PreferredMaxBytes": "2 MB",
+      "BatchTimeout": "1s"
+    },
+    "crypto": {
+      "signature_alg": "ECDSA-P256",
+      "hash_alg": "SHA-256",
+      "per_tx_endorsement_verify": true,
+      "msp_note": "Fabric-X: client-signed ECDSA endorsement per namespace, verified by the committer against the namespace policy registered in _meta at deploy time. No peer endorsement round-trip."
+    },
+    "resource_limit_per_container": {
+      "CPUs": 2.75,
+      "Memory": ""
+    },
+    "resource_memory_by_container": {
+      "bench-fabricx-fabricx-arma-1": "2816m",
+      "bench-fabricx-fabricx-committer-1": "2816m",
+      "bench-fabricx-fabricx-db-1": "2816m",
+      "bench-fabricx-fabricx-pipeline-1": "2816m"
+    },
+    "resource_memory_weights": "peer=4 statedb=4 orderer=2 other=1",
+    "resource_containers": 4,
+    "resource_cpus_total": 11,
+    "resource_memory_total_gb": 11,
+    "nodes": {
+      "arma": 1,
+      "committer": 1,
+      "pipeline": 1,
+      "postgres": 1
+    },
+    "generators": 2,
+    "seed": 1,
+    "key_space": 5000,
+    "key_distribution": "uniform",
+    "zipfian_constant": 0,
+    "read_write_ratio": 0,
+    "value_size_bytes": 64,
+    "warmup_sec": 5,
+    "cooldown_sec": 3,
+    "caveats": [
+      "fabricx on the local profile is resource-constrained; absolute throughput is NOT comparable to its published scale-out ceiling",
+      "state-db parity not held: run requested leveldb, platform actually ran postgres",
+      "native metrics scrape of http://localhost:9643/metrics failed: scrape http://localhost:9643/metrics: parser panic: Invalid name validation scheme requested: unset (informational metrics only; harness numbers unaffected)"
+    ]
+  },
+  "phases": [
+    {
+      "name": "single",
+      "offered_tps": 50,
+      "window": {
+        "phase_start": "2026-09-16T11:22:09.283697997+05:30",
+        "win_start": "2026-09-16T11:22:14.283697997+05:30",
+        "win_end": "2026-09-16T11:22:36.283697997+05:30"
+      },
+      "result": {
+        "wall_clock_sec": 22,
+        "submitted": 1100,
+        "committed": 1100,
+        "invalid": 0,
+        "errored": 0,
+        "timed_out": 0,
+        "confirmed_tps": 50,
+        "offered_tps": 50,
+        "failure_rate": 0,
+        "e2e_latency": {
+          "name": "e2e",
+          "count": 1100,
+          "min_ms": 190.85,
+          "max_ms": 1320.96,
+          "mean_ms": 758.6295854545453,
+          "stddev_ms": 293.09262806773825,
+          "percentiles_ms": {
+            "p1": 230.91,
+            "p10": 354.05,
+            "p25": 509.18,
+            "p5": 301.57,
+            "p50": 759.81,
+            "p75": 1009.66,
+            "p90": 1160.19,
+            "p95": 1215.49,
+            "p99": 1281.02,
+            "p99.9": 1320.96,
+            "p99.99": 1320.96
+          }
+        },
+        "submit_latency": {
+          "name": "submit",
+          "count": 1100,
+          "min_ms": 0.23,
+          "max_ms": 1.1,
+          "mean_ms": 0.5327345454545452,
+          "stddev_ms": 0.15560990412296072,
+          "percentiles_ms": {
+            "p1": 0.29,
+            "p10": 0.36,
+            "p25": 0.42,
+            "p5": 0.32,
+            "p50": 0.51,
+            "p75": 0.62,
+            "p90": 0.74,
+            "p95": 0.84,
+            "p99": 0.99,
+            "p99.9": 1.1,
+            "p99.99": 1.1
+          }
+        },
+        "commit_latency": {
+          "name": "commit",
+          "count": 1100,
+          "min_ms": 190.46,
+          "max_ms": 1319.94,
+          "mean_ms": 757.5474036363635,
+          "stddev_ms": 293.0867971481622,
+          "percentiles_ms": {
+            "p1": 229.5,
+            "p10": 353.28,
+            "p25": 508.42,
+            "p5": 301.06,
+            "p50": 758.27,
+            "p75": 1009.15,
+            "p90": 1159.17,
+            "p95": 1214.46,
+            "p99": 1280,
+            "p99.9": 1319.94,
+            "p99.99": 1319.94
+          }
+        },
+        "send_gap": {
+          "name": "send_gap",
+          "count": 1100,
+          "min_ms": 0.02,
+          "max_ms": 1.2,
+          "mean_ms": 0.5508700000000003,
+          "stddev_ms": 0.2915566721925603,
+          "percentiles_ms": {
+            "p1": 0.03,
+            "p10": 0.14,
+            "p25": 0.32,
+            "p5": 0.08,
+            "p50": 0.55,
+            "p75": 0.79,
+            "p90": 0.95,
+            "p95": 1.01,
+            "p99": 1.08,
+            "p99.9": 1.15,
+            "p99.99": 1.2
+          }
+        },
+        "invariant_ok": true
+      }
+    }
+  ],
+  "headline": {
+    "wall_clock_sec": 22,
+    "submitted": 1100,
+    "committed": 1100,
+    "invalid": 0,
+    "errored": 0,
+    "timed_out": 0,
+    "confirmed_tps": 50,
+    "offered_tps": 50,
+    "failure_rate": 0,
+    "e2e_latency": {
+      "name": "e2e",
+      "count": 1100,
+      "min_ms": 190.85,
+      "max_ms": 1320.96,
+      "mean_ms": 758.6295854545453,
+      "stddev_ms": 293.09262806773825,
+      "percentiles_ms": {
+        "p1": 230.91,
+        "p10": 354.05,
+        "p25": 509.18,
+        "p5": 301.57,
+        "p50": 759.81,
+        "p75": 1009.66,
+        "p90": 1160.19,
+        "p95": 1215.49,
+        "p99": 1281.02,
+        "p99.9": 1320.96,
+        "p99.99": 1320.96
+      }
+    },
+    "submit_latency": {
+      "name": "submit",
+      "count": 1100,
+      "min_ms": 0.23,
+      "max_ms": 1.1,
+      "mean_ms": 0.5327345454545452,
+      "stddev_ms": 0.15560990412296072,
+      "percentiles_ms": {
+        "p1": 0.29,
+        "p10": 0.36,
+        "p25": 0.42,
+        "p5": 0.32,
+        "p50": 0.51,
+        "p75": 0.62,
+        "p90": 0.74,
+        "p95": 0.84,
+        "p99": 0.99,
+        "p99.9": 1.1,
+        "p99.99": 1.1
+      }
+    },
+    "commit_latency": {
+      "name": "commit",
+      "count": 1100,
+      "min_ms": 190.46,
+      "max_ms": 1319.94,
+      "mean_ms": 757.5474036363635,
+      "stddev_ms": 293.0867971481622,
+      "percentiles_ms": {
+        "p1": 229.5,
+        "p10": 353.28,
+        "p25": 508.42,
+        "p5": 301.06,
+        "p50": 758.27,
+        "p75": 1009.15,
+        "p90": 1159.17,
+        "p95": 1214.46,
+        "p99": 1280,
+        "p99.9": 1319.94,
+        "p99.99": 1319.94
+      }
+    },
+    "send_gap": {
+      "name": "send_gap",
+      "count": 1100,
+      "min_ms": 0.02,
+      "max_ms": 1.2,
+      "mean_ms": 0.5508700000000003,
+      "stddev_ms": 0.2915566721925603,
+      "percentiles_ms": {
+        "p1": 0.03,
+        "p10": 0.14,
+        "p25": 0.32,
+        "p5": 0.08,
+        "p50": 0.55,
+        "p75": 0.79,
+        "p90": 0.95,
+        "p95": 1.01,
+        "p99": 1.08,
+        "p99.9": 1.15,
+        "p99.99": 1.2
+      }
+    },
+    "invariant_ok": true
+  },
+  "system_samples": [
+    {
+      "t": "2026-09-16T11:22:12.458873037+05:30",
+      "cpu_percent": 18.59,
+      "mem_bytes": 404582563,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "arma-1",
+          "cpu_percent": 11.209662373825271,
+          "mem_bytes": 272310272
+        },
+        {
+          "name": "committer-1",
+          "cpu_percent": 0.155367354325009,
+          "mem_bytes": 18538496
+        },
+        {
+          "name": "db-1",
+          "cpu_percent": 0.9067202337472612,
+          "mem_bytes": 24174592
+        },
+        {
+          "name": "pipeline-1",
+          "cpu_percent": 0.6375705927946297,
+          "mem_bytes": 39768064
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T11:22:14.477262274+05:30",
+      "cpu_percent": 17.62,
+      "mem_bytes": 424432106,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "arma-1",
+          "cpu_percent": 11.209662373825271,
+          "mem_bytes": 272310272
+        },
+        {
+          "name": "committer-1",
+          "cpu_percent": 0.155367354325009,
+          "mem_bytes": 18538496
+        },
+        {
+          "name": "db-1",
+          "cpu_percent": 0.9067202337472612,
+          "mem_bytes": 24174592
+        },
+        {
+          "name": "pipeline-1",
+          "cpu_percent": 0.6375705927946297,
+          "mem_bytes": 39768064
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T11:22:16.492788193+05:30",
+      "cpu_percent": 20.540000000000003,
+      "mem_bytes": 424243361,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "arma-1",
+          "cpu_percent": 14.592843426883306,
+          "mem_bytes": 297177088
+        },
+        {
+          "name": "committer-1",
+          "cpu_percent": 0.2206915477497257,
+          "mem_bytes": 19279872
+        },
+        {
+          "name": "db-1",
+          "cpu_percent": 1.043585695113287,
+          "mem_bytes": 24272896
+        },
+        {
+          "name": "pipeline-1",
+          "cpu_percent": 0.8181997803968974,
+          "mem_bytes": 41287680
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T11:22:18.509810837+05:30",
+      "cpu_percent": 19.11,
+      "mem_bytes": 439625972,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "arma-1",
+          "cpu_percent": 14.592843426883306,
+          "mem_bytes": 297177088
+        },
+        {
+          "name": "committer-1",
+          "cpu_percent": 0.2206915477497257,
+          "mem_bytes": 19279872
+        },
+        {
+          "name": "db-1",
+          "cpu_percent": 1.043585695113287,
+          "mem_bytes": 24272896
+        },
+        {
+          "name": "pipeline-1",
+          "cpu_percent": 0.8181997803968974,
+          "mem_bytes": 41287680
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T11:22:20.527297385+05:30",
+      "cpu_percent": 21.06,
+      "mem_bytes": 464382852,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "arma-1",
+          "cpu_percent": 17.52827731951735,
+          "mem_bytes": 350076928
+        },
+        {
+          "name": "committer-1",
+          "cpu_percent": 0.24330117763876488,
+          "mem_bytes": 19939328
+        },
+        {
+          "name": "db-1",
+          "cpu_percent": 1.1502213592233006,
+          "mem_bytes": 25075712
+        },
+        {
+          "name": "pipeline-1",
+          "cpu_percent": 1.1456803774141233,
+          "mem_bytes": 43036672
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T11:22:22.544150343+05:30",
+      "cpu_percent": 18.14,
+      "mem_bytes": 489684990,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "arma-1",
+          "cpu_percent": 17.52827731951735,
+          "mem_bytes": 350076928
+        },
+        {
+          "name": "committer-1",
+          "cpu_percent": 0.24330117763876488,
+          "mem_bytes": 19939328
+        },
+        {
+          "name": "db-1",
+          "cpu_percent": 1.1502213592233006,
+          "mem_bytes": 25075712
+        },
+        {
+          "name": "pipeline-1",
+          "cpu_percent": 1.1456803774141233,
+          "mem_bytes": 43036672
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T11:22:24.562533388+05:30",
+      "cpu_percent": 16.779999999999998,
+      "mem_bytes": 500338523,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "arma-1",
+          "cpu_percent": 17.52827731951735,
+          "mem_bytes": 350076928
+        },
+        {
+          "name": "committer-1",
+          "cpu_percent": 0.24330117763876488,
+          "mem_bytes": 19939328
+        },
+        {
+          "name": "db-1",
+          "cpu_percent": 1.1502213592233006,
+          "mem_bytes": 25075712
+        },
+        {
+          "name": "pipeline-1",
+          "cpu_percent": 1.1456803774141233,
+          "mem_bytes": 43036672
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T11:22:26.582008123+05:30",
+      "cpu_percent": 17.53,
+      "mem_bytes": 511799458,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "arma-1",
+          "cpu_percent": 16.243389732047056,
+          "mem_bytes": 371621888
+        },
+        {
+          "name": "committer-1",
+          "cpu_percent": 0.2392799173675669,
+          "mem_bytes": 21209088
+        },
+        {
+          "name": "db-1",
+          "cpu_percent": 1.1182749170633202,
+          "mem_bytes": 26124288
+        },
+        {
+          "name": "pipeline-1",
+          "cpu_percent": 1.1348174799490292,
+          "mem_bytes": 43053056
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T11:22:28.598604776+05:30",
+      "cpu_percent": 17.9,
+      "mem_bytes": 521331014,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "arma-1",
+          "cpu_percent": 16.243389732047056,
+          "mem_bytes": 371621888
+        },
+        {
+          "name": "committer-1",
+          "cpu_percent": 0.2392799173675669,
+          "mem_bytes": 21209088
+        },
+        {
+          "name": "db-1",
+          "cpu_percent": 1.1182749170633202,
+          "mem_bytes": 26124288
+        },
+        {
+          "name": "pipeline-1",
+          "cpu_percent": 1.1348174799490292,
+          "mem_bytes": 43053056
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T11:22:30.616540333+05:30",
+      "cpu_percent": 19.93,
+      "mem_bytes": 523375737,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "arma-1",
+          "cpu_percent": 17.35607021342407,
+          "mem_bytes": 379949056
+        },
+        {
+          "name": "committer-1",
+          "cpu_percent": 0.24492642443685048,
+          "mem_bytes": 21807104
+        },
+        {
+          "name": "db-1",
+          "cpu_percent": 1.076115248103556,
+          "mem_bytes": 26124288
+        },
+        {
+          "name": "pipeline-1",
+          "cpu_percent": 1.1013205282112841,
+          "mem_bytes": 44130304
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T11:22:32.636403473+05:30",
+      "cpu_percent": 19.47,
+      "mem_bytes": 525493861,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "arma-1",
+          "cpu_percent": 17.35607021342407,
+          "mem_bytes": 379949056
+        },
+        {
+          "name": "committer-1",
+          "cpu_percent": 0.24492642443685048,
+          "mem_bytes": 21807104
+        },
+        {
+          "name": "db-1",
+          "cpu_percent": 1.076115248103556,
+          "mem_bytes": 26124288
+        },
+        {
+          "name": "pipeline-1",
+          "cpu_percent": 1.1013205282112841,
+          "mem_bytes": 44130304
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T11:22:34.656094348+05:30",
+      "cpu_percent": 16.78,
+      "mem_bytes": 526552923,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "arma-1",
+          "cpu_percent": 17.35607021342407,
+          "mem_bytes": 379949056
+        },
+        {
+          "name": "committer-1",
+          "cpu_percent": 0.24492642443685048,
+          "mem_bytes": 21807104
+        },
+        {
+          "name": "db-1",
+          "cpu_percent": 1.076115248103556,
+          "mem_bytes": 26124288
+        },
+        {
+          "name": "pipeline-1",
+          "cpu_percent": 1.1013205282112841,
+          "mem_bytes": 44130304
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T11:22:36.673280826+05:30",
+      "cpu_percent": 18.93,
+      "mem_bytes": 529677679,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "arma-1",
+          "cpu_percent": 17.443066860465112,
+          "mem_bytes": 386793472
+        },
+        {
+          "name": "committer-1",
+          "cpu_percent": 0.2374420238931833,
+          "mem_bytes": 22396928
+        },
+        {
+          "name": "db-1",
+          "cpu_percent": 0.9845169367740133,
+          "mem_bytes": 26128384
+        },
+        {
+          "name": "pipeline-1",
+          "cpu_percent": 1.128572452343414,
+          "mem_bytes": 44716032
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T11:22:38.690999098+05:30",
+      "cpu_percent": 17.6,
+      "mem_bytes": 530956941,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "arma-1",
+          "cpu_percent": 17.443066860465112,
+          "mem_bytes": 386793472
+        },
+        {
+          "name": "committer-1",
+          "cpu_percent": 0.2374420238931833,
+          "mem_bytes": 22396928
+        },
+        {
+          "name": "db-1",
+          "cpu_percent": 0.9845169367740133,
+          "mem_bytes": 26128384
+        },
+        {
+          "name": "pipeline-1",
+          "cpu_percent": 1.128572452343414,
+          "mem_bytes": 44716032
+        }
+      ]
+    }
+  ]
+}
