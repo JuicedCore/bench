@@ -52,8 +52,8 @@ structural rather than a convention someone has to maintain. Platform-specific
 settings live only in the union `adapter:` block, whose irrelevant keys each
 adapter ignores. `pkg/harness/configparity_test.go` enforces it.
 
-Per-platform tuned (`normalized: false`) runs would never be mixed with these;
-there are no native configs in the repo today.
+Per-platform tuned (`normalized: false`) runs live in `configs/native/` (kv-write)
+and `configs/native-kv-mixed/` (50% reads) and are never mixed with these.
 
 ## Config knobs (run config `load:` block)
 

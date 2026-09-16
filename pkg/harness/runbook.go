@@ -611,37 +611,35 @@ func renderRunbook(entries []runbookEntry, empty int, now time.Time) string {
 
 	counts := map[string]int{}
 	platforms := map[string]int{}
-	var platformOrder []string
 	for _, e := range entries {
 		counts[e.Status.Key]++
-		if platforms[e.Manifest.Platform] == 0 {
-			platformOrder = append(platformOrder, e.Manifest.Platform)
-		}
 		platforms[e.Manifest.Platform]++
 	}
-	sort.Strings(platformOrder)
+	platformOrder := runPlatformOrder(entries)
+	workloadOrder := runWorkloadOrder(entries)
+	workloadCounts := map[string]int{}
+	for _, e := range entries {
+		workloadCounts[runWorkload(e)]++
+	}
 
-	// Sidebar.
-	b.WriteString(`<div class="shell"><nav class="side" aria-label="Runs"><a class="brand" href="#overview">Benchmark runs</a>`)
+	// Sidebar grouped by platform. Workload grouping hid that structure; the
+	// overview table uses the same platform sections.
+	b.WriteString(`<div class="shell"><nav class="side" aria-label="Runs"><div class="brandrow"><a class="brand" href="#overview">Run book</a><div class="side-actions"><button class="theme" type="button" title="Toggle color theme" aria-label="Toggle color theme">Theme</button><button class="iconbtn sidetoggle" type="button" title="Collapse sidebar" aria-label="Collapse sidebar"></button></div></div>`)
 	b.WriteString(`<button class="navtoggle" type="button" aria-expanded="false">Browse runs</button><div class="navbody">`)
-	b.WriteString(`<input class="search" type="search" placeholder="Filter runs" aria-label="Filter runs">`)
+	b.WriteString(`<input class="search" type="search" placeholder="Filter runs…" aria-label="Filter runs">`)
 	for _, p := range platformOrder {
-		fmt.Fprintf(&b, `<div class="group"><div class="group-h">%s <span class="mute">%d</span></div><ul>`, esc(p), platforms[p])
+		fmt.Fprintf(&b, `<div class="group" data-group-platform="%s"><button type="button" class="group-h" aria-expanded="true"><span class="plat">%s</span> <span class="mute">%d</span></button><ul>`, esc(p), esc(p), platforms[p])
 		for _, e := range entries {
 			if e.Manifest.Platform != p {
 				continue
 			}
-			name := e.Manifest.RunName
-			if name == "" {
-				name = "unnamed run"
-			}
-			fmt.Fprintf(&b, `<li data-run="%s" data-status="%s" data-platform="%s" data-text="%s"><a href="#%s"><span class="st %s" title="%s">%s</span><span class="nm">%s</span><span class="when">%s</span></a></li>`,
-				esc(e.ID), e.Status.Key, esc(p), esc(strings.ToLower(p+" "+name+" "+e.Manifest.Profile+" "+e.Rel)), esc(e.ID),
-				e.Status.Key, esc(e.Status.Label), e.Status.Icon, esc(name), esc(shortWhen(e.started)))
+			fmt.Fprintf(&b, `<li %s><a href="#%s"><span class="st %s" title="%s">%s</span><span class="nm">%s</span><span class="when">%s</span><span class="sub">%s</span></a></li>`,
+				runFilterAttrs(e), esc(e.ID), e.Status.Key, esc(e.Status.Label), e.Status.Icon,
+				esc(runWorkload(e)), esc(shortWhen(e.started)), esc(runSidebarSub(e)))
 		}
 		b.WriteString(`</ul></div>`)
 	}
-	b.WriteString(`</div></nav><main>`)
+	b.WriteString(`</div></nav><button class="iconbtn side-reopen" type="button" title="Show sidebar" aria-label="Show sidebar">Runs</button><main>`)
 
 	// Overview.
 	b.WriteString(`<section class="page" id="overview"><header class="page-h"><h1>Benchmark runs</h1>`)
@@ -649,7 +647,19 @@ func renderRunbook(entries []runbookEntry, empty int, now time.Time) string {
 	if empty > 0 {
 		fmt.Fprintf(&b, ` · %d empty run folder(s) not listed`, empty)
 	}
-	b.WriteString(`</p></header><div class="tiles">`)
+	b.WriteString(`</p></header>`)
+	if platforms["neuchain"] > 0 {
+		b.WriteString(neuchainReadingNotes(true))
+	}
+	if len(platformOrder) > 0 {
+		b.WriteString(loadPathLegend(platformOrder))
+		b.WriteString(`<div class="wl-bar" aria-label="Platforms">`)
+		for _, p := range platformOrder {
+			fmt.Fprintf(&b, `<span class="wl-count"><span class="plat">%s</span> <b>%d</b></span>`, esc(p), platforms[p])
+		}
+		b.WriteString(`</div>`)
+	}
+	b.WriteString(`<div class="tiles">`)
 	tile(&b, "Runs", fmtInt(int64(len(entries))), "")
 	tile(&b, "Completed", fmtInt(int64(counts["completed"]+counts["excluded"])), fmt.Sprintf("%d not comparable", counts["excluded"]))
 	tile(&b, "Platform failures", fmtInt(int64(counts["failed"])), "a container exited or was OOM-killed")
@@ -658,30 +668,45 @@ func renderRunbook(entries []runbookEntry, empty int, now time.Time) string {
 	for _, p := range platformOrder {
 		fmt.Fprintf(&b, `<option>%s</option>`, esc(p))
 	}
-	b.WriteString(`</select></label><label>Status <select data-filter="status"><option value="">All</option>`)
+	b.WriteString(`</select></label><label>Workload <select data-filter="workload"><option value="">All</option>`)
+	for _, w := range workloadOrder {
+		fmt.Fprintf(&b, `<option>%s</option>`, esc(w))
+	}
+	b.WriteString(`</select></label><label>Mode <select data-filter="mode"><option value="">All</option><option value="native">native</option><option value="normalized">normalized</option></select></label><label>Status <select data-filter="status"><option value="">All</option>`)
 	for _, s := range []runStatus{statusCompleted, statusExcluded, statusFailed, statusAborted} {
 		fmt.Fprintf(&b, `<option value="%s">%s</option>`, s.Key, esc(s.Label))
 	}
-	b.WriteString(`</select></label></div><div class="scroll"><table class="runs"><thead><tr><th>Started</th><th>Platform</th><th>Run</th><th>Profile</th><th>Status</th><th class="num">Saturation TPS</th><th class="num">Peak confirmed TPS</th><th class="num">Headline p99</th><th class="num">Headline failures</th></tr></thead><tbody>`)
-	for _, e := range entries {
-		sat, peak, p99, fail := "–", "–", "–", "–"
-		if e.RR != nil {
-			if e.RR.SaturationTPS > 0 {
-				sat = fmtInt(int64(e.RR.SaturationTPS))
-			}
-			if v, _ := e.peakConfirmed(); v > 0 {
-				peak = fmtNum(v, 1)
-			}
-			if h := e.RR.Headline; h != nil && h.Committed > 0 {
-				p99 = fmtNum(pctl(h.E2E, "p99"), 1) + " ms"
-				fail = fmtPct(h.FailureRate)
-			} else if h != nil {
-				fail = fmtPct(h.FailureRate)
-			}
+	b.WriteString(`</select></label></div><div class="scroll"><table class="runs"><thead><tr><th>Started</th><th>Platform</th><th>Workload</th><th>Mode</th><th>Run</th><th>Profile</th><th>Status</th><th class="num">Saturation TPS</th><th class="num">Peak confirmed TPS</th><th class="num">Headline p99</th><th class="num">Headline failures</th></tr></thead><tbody>`)
+	for _, p := range platformOrder {
+		lp := platformLoadPath(p)
+		fmt.Fprintf(&b, `<tr class="plat-h"><th colspan="11">%s <span class="mute">%d runs</span>`, esc(p), platforms[p])
+		if lp.Protocol != "" {
+			fmt.Fprintf(&b, `<span class="lp">%s · %s</span>`, esc(lp.Protocol), esc(lp.Glance))
 		}
-		fmt.Fprintf(&b, `<tr data-run="%s" data-status="%s" data-platform="%s"><td><a href="#%s">%s</a></td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td class="num">%s</td><td class="num">%s</td><td class="num">%s</td><td class="num">%s</td></tr>`,
-			esc(e.ID), e.Status.Key, esc(e.Manifest.Platform), esc(e.ID), esc(fmtTime(e.started)), esc(e.Manifest.Platform), esc(orDash(e.Manifest.RunName)),
-			esc(orDash(e.Manifest.Profile)), statusBadge(e.Status), sat, peak, p99, fail)
+		b.WriteString(`</th></tr>`)
+		for _, e := range entries {
+			if e.Manifest.Platform != p {
+				continue
+			}
+			sat, peak, p99, fail := "–", "–", "–", "–"
+			if e.RR != nil {
+				if e.RR.SaturationTPS > 0 {
+					sat = fmtInt(int64(e.RR.SaturationTPS))
+				}
+				if v, _ := e.peakConfirmed(); v > 0 {
+					peak = fmtNum(v, 1)
+				}
+				if h := e.RR.Headline; h != nil && h.Committed > 0 {
+					p99 = fmtNum(pctl(h.E2E, "p99"), 1) + " ms"
+					fail = fmtPct(h.FailureRate)
+				} else if h != nil {
+					fail = fmtPct(h.FailureRate)
+				}
+			}
+			fmt.Fprintf(&b, `<tr %s><td><a href="#%s">%s</a></td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td class="num">%s</td><td class="num">%s</td><td class="num">%s</td><td class="num">%s</td></tr>`,
+				runFilterAttrs(e), esc(e.ID), esc(fmtTime(e.started)), esc(e.Manifest.Platform), workloadPill(runWorkload(e)), modePill(e.Manifest.Normalized),
+				esc(orDash(e.Manifest.RunName)), esc(orDash(e.Manifest.Profile)), statusBadge(e.Status), sat, peak, p99, fail)
+		}
 	}
 	b.WriteString(`</tbody></table></div></section>`)
 
@@ -714,6 +739,238 @@ func shortWhen(t time.Time) string {
 	return t.Format("Jan 02 15:04")
 }
 
+func runWorkload(e runbookEntry) string {
+	w := strings.TrimSpace(e.Manifest.Workload)
+	if w == "" {
+		return "unknown"
+	}
+	return w
+}
+
+func runMode(e runbookEntry) string {
+	if e.Manifest.Normalized {
+		return "normalized"
+	}
+	return "native"
+}
+
+func runWorkloadOrder(entries []runbookEntry) []string {
+	seen := map[string]bool{}
+	for _, e := range entries {
+		seen[runWorkload(e)] = true
+	}
+	pref := []string{"kv-write", "kv-mixed", "kv-read", "transfer"}
+	var out []string
+	for _, w := range pref {
+		if seen[w] {
+			out = append(out, w)
+			delete(seen, w)
+		}
+	}
+	var rest []string
+	for w := range seen {
+		rest = append(rest, w)
+	}
+	sort.Strings(rest)
+	return append(out, rest...)
+}
+
+func runPlatformOrder(entries []runbookEntry) []string {
+	seen := map[string]bool{}
+	for _, e := range entries {
+		if p := strings.TrimSpace(e.Manifest.Platform); p != "" {
+			seen[p] = true
+		}
+	}
+	pref := []string{"fabric-cft", "fabric-bft", "drunix", "fabricx", "neuchain", "mock"}
+	var out []string
+	for _, p := range pref {
+		if seen[p] {
+			out = append(out, p)
+			delete(seen, p)
+		}
+	}
+	var rest []string
+	for p := range seen {
+		rest = append(rest, p)
+	}
+	sort.Strings(rest)
+	return append(out, rest...)
+}
+
+// neuchainReadingNotes is the overview / per-run callout for why NeuChain
+// numbers look the way they do. Static HTML; no result-file strings.
+func neuchainReadingNotes(primary bool) string {
+	id := ""
+	if primary {
+		id = ` id="neuchain-notes"`
+	}
+	return `<details class="callout notes" open` + id + `>
+<summary><strong>NeuChain: do not rank these TPS figures against Fabric, Drunix, or Fabric-X.</strong></summary>
+<p>Native NeuChain uses a shorter clock, weaker crypto, and a fire-and-forget client path. Those are platform facts, disclosed here so a high confirmed-TPS cell is not read as a fair head-to-head.</p>
+<div class="scroll notes-table"><table>
+<thead><tr><th>Window</th><th>Everyone else</th><th>NeuChain native</th><th>VLDB 2022 paper</th></tr></thead>
+<tbody>
+<tr><td>Sweep step</td><td>60 s</td><td>30 s</td><td>not a sweep; fixed-rate run</td></tr>
+<tr><td>Hold / experiment</td><td>5 min hold</td><td>90 s hold</td><td>~150 s total</td></tr>
+<tr><td>Full probe-sweep</td><td>~17 min</td><td>~6–7 min (by design)</td><td>150 s, so they never hit our crash</td></tr>
+</tbody></table></div>
+<ol>
+<li><strong>Why we shortened it.</strong> Upstream sizes <code>validatedBlockNumber</code> to 10 000 epochs and indexes it with no bounds check. Every node SIGSEGVs together at epoch ~10 000, at any load. Epochs run about 15/s under load, so a network lives ~10–30 min after <code>up.sh</code>. Normalized probe-sweep (~17 min, 60 s steps + 5 min hold) reaches the crash; the native config therefore uses 30 s steps and a 90 s hold so the run finishes first. We bring the network up fresh each time rather than patching the vector (2026-09-15 decision, <code>docs/REMAINING-WORK.md</code> §1). Image is still <code>neuchain-ev-patched</code>.</li>
+<li><strong>Why the paper shortened it too.</strong> The VLDB 2022 evaluation used ~150 s YCSB / SmallBank runs on a 4-node EV deployment with high core counts. That is their methodology (short steady-state trials), not a workaround they documented. Those 150 s runs also never reach epoch 10 000, so the crash is invisible in the paper numbers. Our local-32gb run is 4 containers sharing one host, not that machine, and not a 150 s single-rate trial; do not quote this book as a reproduction of the paper.</li>
+<li><strong>RSA-1024, and roughly what ECDSA-P256 would cost.</strong> NeuChain fixes <code>RSA_KEY_LENGTH 1024</code> and verifies one user signature at submit. Fabric / Drunix / Fabric-X use ECDSA-P256 and set <code>per_tx_endorsement_verify: true</code>. OpenSSL-class ballpark on a modern x86 core: RSA-1024 verify ~10 µs, ECDSA-P256 verify ~80–150 µs (about 10×). At 9 000 TPS that is ~0.1 CPU-core of RSA verify versus ~0.7–1.4 cores of P256 verify: on the order of <strong>5–15% of NeuChain’s 4.5-core container</strong>, not a 3× collapse. The larger gap is architectural: Fabric also pays a peer endorsement RTT, chaincode execution, an endorser ECDSA sign, and committer-side endorsement verifies. A local Docker RTT of 0.3–1 ms, serialized, cannot sustain 9k TPS; that extra round is why the EOV platforms knee much earlier. Switching only the user-sig algorithm would not make NeuChain look like Fabric.</li>
+<li><strong>ZeroMQ PUB is not Gateway / Arma gRPC.</strong> Submit is a one-way ZMQ PUB of a YCSB protobuf. <strong>T2 is “bytes left the client socket”</strong>, not a platform ack. Fabric Gateway and Drunix are request/reply gRPC through chaincode endorsement; Fabric-X is Arma gRPC broadcast, and T2 is the first router SUCCESS. NeuChain finality is a client poll of tip/block on <code>:7003</code>, not a push event stream. Compare confirmed TPS and e2e (T3) only. NeuChain also does not apply the shared <code>orderer_batch</code> lever (50 ms epoch clock, not 100 msgs / 1 s or 500 / 500 ms).</li>
+</ol>
+<p class="mute">Sources: <code>configs/native/neuchain.yaml</code>, <code>docs/REMAINING-WORK.md</code> §1, <code>docs/decisions/adr-011-orderer-batch-params.md</code>, <code>docs/architecture/fairness-guarantees.md</code>. This is a reading note, not a measured counterfactual.</p>
+</details>`
+}
+
+func workloadClass(w string) string {
+	switch w {
+	case "kv-write":
+		return "w-write"
+	case "kv-read":
+		return "w-read"
+	case "kv-mixed":
+		return "w-mixed"
+	case "transfer":
+		return "w-xfer"
+	default:
+		return "w-other"
+	}
+}
+
+func pill(class, text string) string {
+	return fmt.Sprintf(`<span class="pill %s">%s</span>`, class, html.EscapeString(text))
+}
+
+func workloadPill(w string) string {
+	return pill("wl "+workloadClass(w), w)
+}
+
+func modePill(normalized bool) string {
+	if normalized {
+		return pill("mode normalized", "normalized")
+	}
+	return pill("mode native", "native")
+}
+
+func runSidebarSub(e runbookEntry) string {
+	parts := []string{runMode(e)}
+	if n := strings.TrimSpace(e.Manifest.RunName); n != "" {
+		parts = append(parts, n)
+	}
+	if p := strings.TrimSpace(e.Manifest.Profile); p != "" {
+		parts = append(parts, p)
+	}
+	return strings.Join(parts, " · ")
+}
+
+func runSearchText(e runbookEntry) string {
+	return strings.ToLower(strings.Join([]string{
+		e.Manifest.Platform, runWorkload(e), runMode(e), e.Manifest.RunName, e.Manifest.Profile, e.Rel,
+		platformLoadPath(e.Manifest.Platform).Protocol,
+	}, " "))
+}
+
+type loadPathInfo struct {
+	Protocol string // pill: "Gateway gRPC"
+	Glance   string // overview header / legend: "peer :7051 · chaincode Put"
+	Dial     string
+	Submit   string
+}
+
+func platformLoadPath(platform string) loadPathInfo {
+	switch platform {
+	case "fabric-cft":
+		return loadPathInfo{
+			Protocol: "Gateway gRPC",
+			Glance:   "peer :7051 · kvstore Put (EOV)",
+			Dial:     "peer gateway localhost:7051; orderer :7050 reached through the peer, not directly",
+			Submit:   "NewProposal(Put) → endorse kvstore chaincode → submit envelope. T2 = gateway/orderer accept.",
+		}
+	case "fabric-bft":
+		return loadPathInfo{
+			Protocol: "Gateway gRPC",
+			Glance:   "peer :7051 · same Put adapter as CFT; 4 SmartBFT orderers",
+			Dial:     "peer gateway localhost:7051 (same pkg/adapters/fabric as CFT)",
+			Submit:   "Same Put path as CFT. Only ordering changes: 4 SmartBFT orderers instead of 1 Raft.",
+		}
+	case "drunix":
+		return loadPathInfo{
+			Protocol: "Gateway gRPC",
+			Glance:   "Lite Peer :7051 · finality on CP :7061",
+			Dial:     "endorse/submit on Lite Peer :7051; commit events from Committing Peer :7061",
+			Submit:   "kvstore Put on the LP Gateway. LP Commit.Status never fires; CP events are T3. Values JSON-wrapped for Yugabyte.",
+		}
+	case "fabricx":
+		return loadPathInfo{
+			Protocol: "Arma gRPC",
+			Glance:   "4 routers :6022… · no chaincode",
+			Dial:     "broadcast to Arma routers :6022/:6122/:6222/:6322; deliver :4001 for T3; QueryService :7001 for reads",
+			Submit:   "Client-signed namespace RW-set, no Gateway, no chaincode. T2 = first router SUCCESS.",
+		}
+	case "neuchain":
+		return loadPathInfo{
+			Protocol: "ZMQ PUB/REQ",
+			Glance:   "PUB :5001… · fire-and-forget YCSB; T2 is local send",
+			Dial:     "ZMQ PUB to block servers :5001/:5011/:5021/:5031; REQ poll :7003… for commit",
+			Submit:   "Fire-and-forget YCSB protobuf + RSA-1024. T2 = bytes left the socket, not a platform ack.",
+		}
+	case "mock":
+		return loadPathInfo{
+			Protocol: "in-process",
+			Glance:   "no network · harness self-test",
+			Dial:     "no sockets",
+			Submit:   "In-process mock adapter. Not a ledger; used to test the harness.",
+		}
+	default:
+		return loadPathInfo{}
+	}
+}
+
+func loadPathPill(platform string) string {
+	lp := platformLoadPath(platform)
+	if lp.Protocol == "" {
+		return ""
+	}
+	return pill("proto", lp.Protocol)
+}
+
+func loadPathStrip(platform string) string {
+	lp := platformLoadPath(platform)
+	if lp.Protocol == "" {
+		return ""
+	}
+	esc := html.EscapeString
+	return fmt.Sprintf(
+		`<div class="loadpath"><div class="lp-k">Load in</div><div class="lp-v"><strong>%s</strong> · %s<br>%s</div></div>`,
+		esc(lp.Protocol), esc(lp.Dial), esc(lp.Submit),
+	)
+}
+
+func loadPathLegend(platforms []string) string {
+	var b strings.Builder
+	b.WriteString(`<h2>How load is offered</h2><p class="mute">The harness emits one logical Transaction. Each adapter dials that platform’s native client protocol. CFT, BFT and Drunix share Fabric Gateway gRPC + chaincode; Fabric-X is Arma gRPC with no chaincode; NeuChain is ZMQ, not gRPC.</p>`)
+	b.WriteString(`<div class="scroll"><table class="load-legend"><thead><tr><th>Platform</th><th>Protocol</th><th>Where we dial</th><th>What submit is</th></tr></thead><tbody>`)
+	for _, p := range platforms {
+		lp := platformLoadPath(p)
+		if lp.Protocol == "" {
+			continue
+		}
+		fmt.Fprintf(&b, `<tr><td>%s</td><td>%s</td><td class="wrap">%s</td><td class="wrap">%s</td></tr>`,
+			html.EscapeString(p), html.EscapeString(lp.Protocol), html.EscapeString(lp.Dial), html.EscapeString(lp.Submit))
+	}
+	b.WriteString(`</tbody></table></div>`)
+	return b.String()
+}
+
+func runFilterAttrs(e runbookEntry) string {
+	esc := html.EscapeString
+	return fmt.Sprintf(`data-run="%s" data-status="%s" data-platform="%s" data-workload="%s" data-mode="%s" data-text="%s"`,
+		esc(e.ID), e.Status.Key, esc(e.Manifest.Platform), esc(runWorkload(e)), esc(runMode(e)), esc(runSearchText(e)))
+}
+
 func statusBadge(s runStatus) string {
 	return fmt.Sprintf(`<span class="badge %s"><span aria-hidden="true">%s</span> %s</span>`, s.Key, s.Icon, html.EscapeString(s.Label))
 }
@@ -740,8 +997,14 @@ func renderRunPage(b *strings.Builder, e runbookEntry, prev, next *runbookEntry)
 	}
 	b.WriteString(`</span></div>`)
 	fmt.Fprintf(b, `<h1>%s <span class="mute">·</span> %s</h1>`, esc(m.Platform), esc(name))
-	fmt.Fprintf(b, `<p class="meta">%s <span>%s</span> <span>%s</span> <span>profile %s</span> <span><code>%s</code></span></p></header>`,
-		statusBadge(e.Status), esc(fmtTime(e.started)), esc(orDash(m.Workload)), esc(orDash(m.Profile)), esc(filepath.ToSlash(e.Rel)))
+	fmt.Fprintf(b, `<p class="meta">%s %s %s %s <span>%s</span> <span>profile %s</span> <span><code>%s</code></span></p></header>`,
+		statusBadge(e.Status), workloadPill(runWorkload(e)), modePill(m.Normalized), loadPathPill(m.Platform),
+		esc(fmtTime(e.started)), esc(orDash(m.Profile)), esc(filepath.ToSlash(e.Rel)))
+
+	b.WriteString(loadPathStrip(m.Platform))
+	if m.Platform == "neuchain" {
+		b.WriteString(neuchainReadingNotes(false))
+	}
 
 	if len(m.ContainerFailures) > 0 {
 		b.WriteString(`<div class="callout failed"><strong>✕ Platform failure.</strong> Load results after this point measure a broken network.<ul>`)

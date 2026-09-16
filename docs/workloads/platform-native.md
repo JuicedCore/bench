@@ -1,9 +1,10 @@
 # Platform-native workloads
 
-> **Status:** design only. No `normalized: false` configs exist in the repo
-> today, and the harness has only been run on the normalized set. The table
-> below is the intended native workload per platform, not something you can run
-> yet.
+> **Status:** runnable. Per-platform configs live in `configs/native/` (kv-write
+> ceiling) and `configs/native-kv-mixed/` (same levers, 50% reads). Deploy
+> honours `normalized: false` (`BENCH_NORMALIZED=false`): native orderer batch,
+> native state DB, per-platform generator count. Token SDK on Fabric-X is still
+> not implemented; those native files use the gRPC path instead.
 
 Each platform also runs the workload it is *built for*, tuned to its best
 configuration (`normalized: false`). These numbers show ceiling behaviour. They
@@ -16,9 +17,18 @@ batch params — all recorded in the manifest
 | -------- | --------------- | ----------------------- |
 | Fabric CFT | `kv-write` on LevelDB, single-org endorsement policy, batch tuned for throughput | minimal endorsement + validation overhead |
 | Fabric BFT | same, SmartBFT tuned (batch size / timeout) | isolates BFT ordering cost |
-| Drunix | `transfer` on YugabyteDB, LP/CP scaled out, Validation Service replicas | exercises the disaggregated-peer design + SQL state |
+| Drunix | `kv-write` on YugabyteDB, LP/CP scaled out, Validation Service replicas | same Put; native levers are SQL state + disaggregated peer |
 | Fabric-X | Token SDK `Issue` + `Transfer` + `Redeem` (UTXO), Arma sharded — would need a token client on the native gRPC path ([adr-016](../decisions/adr-016-fabricx-native-grpc.md)); the old REST route was removed | the workload the 200k-TPS benchmark used |
 | NeuChain | native KV + transfer at high concurrency, epoch/batch tuned per paper | deterministic-execution pipeline at full width |
+
+Native probe-sweep in `configs/native/` is **write-only** on purpose. `kv-mixed`
+mixes in reads, and on Fabric / Drunix / Fabric-X a read is Evaluate /
+QueryService — it never reaches the orderer or the commit path. The headline
+would blend two machines. That mix still has a native preset:
+`configs/native-kv-mixed/` (same platform levers, `read_write_ratio: 0.5`).
+Treat it as a separate campaign. Closed-loop mixed capacity is
+`configs/normalized/multi-client.yaml`. `transfer` belongs to `contention.yaml`
+(RMW / MVCC).
 
 ## Tuning record
 

@@ -21,24 +21,40 @@ _orderer_batch_normalized: &orderer_batch_normalized
   preferred_max_bytes: "2 MB"
   batch_timeout: "1s"
 
+_orderer_batch_native: &orderer_batch_native
+  max_message_count: 500
+  absolute_max_bytes: "10 MB"
+  preferred_max_bytes: "4 MB"
+  batch_timeout: "500ms"
+
+_orderer_batch_native_bft: &orderer_batch_native_bft
+  max_message_count: 250
+  absolute_max_bytes: "10 MB"
+  preferred_max_bytes: "4 MB"
+  batch_timeout: "1s"
+
 platforms:
   fabric-cft:
     nodes: {peer: 2, orderer: 1, chaincode: 2}
     state_db: leveldb
     orderer_batch: *orderer_batch_normalized
+    orderer_batch_native: *orderer_batch_native
   fabric-bft:
     nodes: {peer: 2, orderer: 4, chaincode: 2}
     state_db: leveldb
     orderer_batch: *orderer_batch_normalized
+    orderer_batch_native: *orderer_batch_native_bft
   drunix:
     nodes: {lite_peer: 2, committing_peer: 2, validation_service: 2, orderer: 1, keydb: 2, yugabyte: 2, chaincode: 2}
-    state_db: leveldb
+    state_db: yugabyte
     orderer_batch: *orderer_batch_normalized
+    orderer_batch_native: *orderer_batch_native
   fabricx:
     nodes: {arma: 1, postgres: 1, pipeline: 1, committer: 1}
     load_gen_cpus: 8
-    state_db: leveldb
+    state_db: postgres
     orderer_batch: *orderer_batch_normalized
+    orderer_batch_native: *orderer_batch_native
   neuchain:
     nodes: {block_server: 4, epoch_server: 4}  # epoch servers co-located, one per block-server container
     load_gen_cpus: 8

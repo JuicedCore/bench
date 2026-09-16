@@ -1,0 +1,33 @@
+run:        probe-sweep
+platform:   fabric-cft  (version 2.5.16)
+workload:   kv-write   normalized=true
+profile:    local-32gb   state_db=leveldb
+resources:  18 CPU / 20 GB total over 5 containers (3.60 CPU each; memory by role weight peer=4 statedb=4 orderer=2 other=1)
+              1706m    dev-peer0.org1.example.com-kvstore_1.0-e88284a33ff8806958375f99312782794164d62aac26fe22876f2c72fb6294d9
+              1706m    dev-peer0.org2.example.com-kvstore_1.0-e88284a33ff8806958375f99312782794164d62aac26fe22876f2c72fb6294d9
+              3413m    orderer.example.com
+              6826m    peer0.org1.example.com
+              6826m    peer0.org2.example.com
+batch:      msgcount=100 timeout=1s preferred=2 MB
+crypto:     sig=ECDSA-P256 hash=SHA-256 per_tx_endorse_verify=true
+caveats:
+  - sweep aborted early after 2 consecutive failed steps; 2 higher step(s) were never offered
+  - native metrics scrape of http://localhost:9443/metrics failed: scrape http://localhost:9443/metrics: parser panic: Invalid name validation scheme requested: unset (informational metrics only; harness numbers unaffected)
+
+phase           offered     conf_tps  goodput  fail_rate    e2e_p50    e2e_p99    gap_p99    com_p50  verdict
+probe                10         10.0     100%     0.0000     623.62    1029.12       1.17     618.50  
+sweep-100           100        100.0     100%     0.0000     521.73    1016.32       1.10     517.12  held
+sweep-250           250        250.0     100%     0.0000     235.01     428.03       1.09     231.30  held
+sweep-500           500        500.0     100%     0.0000     134.53     232.45       1.07     131.07  held
+sweep-1000         1000       1000.0     100%     0.0000      85.38     135.04       1.04      82.43  held
+sweep-2000         2000       2000.0     100%     0.0000      66.62     107.01       1.08      50.14  held
+sweep-3500         3500       2657.5      76%     0.2407   10633.22   11264.00       1.88   10600.45  failure rate 24.07% > 2.00%
+sweep-5000         5000       2304.8      46%     0.5390   17285.12   17481.73       2.28   17235.97  failure rate 53.90% > 2.00%
+hold               1800       1545.1      86%     0.1416      91.78   29884.42       1.19      81.22  
+
+errors sweep-3500      12637 x not sent: N transactions already in flight (platform is not finalizing)
+errors sweep-5000      40428 x not sent: N transactions already in flight (platform is not finalizing)
+errors hold            65000 x not sent: N transactions already in flight (platform is not finalizing)
+sweep aborted early; steps never offered: [7500 10000]
+detected saturation: ~2000 offered TPS
+HEADLINE  confirmed_tps=1545.1  fail_rate=0.1416  e2e p50/p99=91.78/29884.42 ms  invariant_ok=true

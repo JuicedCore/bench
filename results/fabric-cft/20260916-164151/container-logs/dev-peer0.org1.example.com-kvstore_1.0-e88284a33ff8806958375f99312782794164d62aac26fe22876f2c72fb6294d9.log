@@ -1,0 +1,5 @@
+2026-09-16T11:21:05.388295736Z panic: start kvstore chaincode: error sending: EOF
+2026-09-16T11:21:05.388335117Z 
+2026-09-16T11:21:05.388336695Z goroutine 1 [running]:
+2026-09-16T11:21:05.389223540Z main.main()
+2026-09-16T11:21:05.389233747Z 	/chaincode/input/src/kvstore.go:126 +0xac

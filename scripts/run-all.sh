@@ -8,6 +8,9 @@
 #
 # Use configs from configs/normalized/ for a comparison: one file serves every
 # platform, which is what makes running the same bytes against each meaningful.
+# Use configs/native/<platform>.yaml (or the directory configs/native) for
+# per-platform tuned kv-write runs; those files are not crossed onto other
+# platforms. Use configs/native-kv-mixed for the same levers with kv-mixed.
 #
 # Default platforms: fabric-cft fabric-bft drunix. fabricx works (verified on
 # local-small) but compiles from source on first deploy, and neuchain needs its
@@ -39,8 +42,20 @@ shift $(( $# >= 2 ? 2 : 1 ))
 PLATFORMS=("$@")
 [ ${#PLATFORMS[@]} -gt 0 ] || PLATFORMS=(fabric-cft fabric-bft drunix)
 
-IFS=, read -r -a CONFIG_LIST <<< "$CONFIGS"
-for c in "${CONFIG_LIST[@]}"; do [ -f "$c" ] || die "no such config: $c" "configs live in configs/normalized/ (see CONFIGS.md)"; done
+CONFIG_LIST=()
+IFS=, read -r -a _cfg_parts <<< "$CONFIGS"
+for part in "${_cfg_parts[@]}"; do
+  if [ -d "$part" ]; then
+    shopt -s nullglob
+    _yaml_files=( "$part"/*.yaml )
+    shopt -u nullglob
+    [ ${#_yaml_files[@]} -gt 0 ] || die "no yaml configs in directory $part" "configs live in configs/normalized/, configs/native/, and configs/native-kv-mixed/"
+    CONFIG_LIST+=("${_yaml_files[@]}")
+  else
+    CONFIG_LIST+=("$part")
+  fi
+done
+for c in "${CONFIG_LIST[@]}"; do [ -f "$c" ] || die "no such config: $c" "configs live in configs/normalized/, configs/native/, and configs/native-kv-mixed/ (see CONFIGS.md)"; done
 for p in "${PLATFORMS[@]}"; do
   [ -f "deploy/docker/$p/up.sh" ] || die "no deploy script for platform: $p" \
     "available: $(ls deploy/docker/*/up.sh | cut -d/ -f3 | grep -v monitoring | tr '\n' ' ')"
@@ -66,7 +81,9 @@ case "$pf" in
 esac
 
 BR="$ROOT/bin/benchrunner"
-go build -o "$BR" ./cmd/benchrunner || die "go build of benchrunner failed (compiler output above)"
+# Cross-user WSL checkouts trip git's "dubious ownership" VCS stamp; build without it.
+GOFLAGS="${GOFLAGS:--buildvcs=false}" go build -o "$BR" ./cmd/benchrunner \
+  || die "go build of benchrunner failed (compiler output above)"
 
 isolate() {
   echo "-- isolation: prune stopped containers + drop page cache"
@@ -81,7 +98,17 @@ isolate() {
 
 FAILED=()
 for CONFIG in "${CONFIG_LIST[@]}"; do
+  cfg_norm="$(yaml_top "$CONFIG" normalized)"
+  cfg_plat="$(yaml_top "$CONFIG" platform)"
+  if [ "$cfg_norm" = "false" ]; then
+    export BENCH_NORMALIZED=false
+  else
+    export BENCH_NORMALIZED=true
+  fi
   for p in "${PLATFORMS[@]}"; do
+    if [ "$cfg_norm" = "false" ] && [ -n "$cfg_plat" ] && [ "$cfg_plat" != "$p" ]; then
+      continue
+    fi
     echo "==================== $p : $CONFIG ===================="
     isolate
 

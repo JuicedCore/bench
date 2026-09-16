@@ -1,0 +1,49 @@
+=== date -u ===
+Wed Sep 16 10:19:52 UTC 2026
+
+=== free -m ===
+               total        used        free      shared  buff/cache   available
+Mem:           24030        8439        8528          11        7062       15272
+Swap:           8192        1292        6899
+
+=== df -h ===
+Filesystem      Size  Used Avail Use% Mounted on
+none             12G     0   12G   0% /usr/lib/modules/6.6.87.2-microsoft-standard-WSL2
+none             12G  4.0K   12G   1% /mnt/wsl
+drivers         1.9T  782G  1.1T  42% /usr/lib/wsl/drivers
+/dev/sdd       1007G  101G  856G  11% /
+none             12G   92K   12G   1% /mnt/wslg
+none             12G     0   12G   0% /usr/lib/wsl/lib
+rootfs           12G  2.7M   12G   1% /init
+none             12G  2.2M   12G   1% /run
+none             12G     0   12G   0% /run/lock
+none             12G     0   12G   0% /run/shm
+none             12G   76K   12G   1% /mnt/wslg/versions.txt
+none             12G   76K   12G   1% /mnt/wslg/doc
+C:\             1.9T  782G  1.1T  42% /mnt/c
+snapfuse         74M   74M     0 100% /snap/core22/2411
+snapfuse         64M   64M     0 100% /snap/core20/2866
+snapfuse         74M   74M     0 100% /snap/core22/2437
+snapfuse         67M   67M     0 100% /snap/core24/1587
+snapfuse         67M   67M     0 100% /snap/core24/1643
+snapfuse         22M   22M     0 100% /snap/helm/539
+snapfuse         22M   22M     0 100% /snap/helm/543
+snapfuse        1.7G  1.7G     0 100% /snap/intellij-idea-community/808
+snapfuse        1.7G  1.7G     0 100% /snap/intellij-idea-community/812
+snapfuse         14M   14M     0 100% /snap/kubectl/3833
+snapfuse        1.5G  1.5G     0 100% /snap/ollama/131
+snapfuse        1.6G  1.6G     0 100% /snap/ollama/134
+snapfuse         51M   51M     0 100% /snap/snapd/27710
+tmpfs           2.4G   28K  2.4G   1% /run/user/1000
+snapfuse         51M   51M     0 100% /snap/snapd/27738
+tmpfs           2.4G   28K  2.4G   1% /run/user/1002
+
+=== docker system df ===
+TYPE            TOTAL     ACTIVE    SIZE      RECLAIMABLE
+Images          81        8         22.87GB   17.18GB (75%)
+Containers      13        13        4.026GB   0B (0%)
+Local Volumes   334       6         31.72GB   16.07GB (50%)
+Build Cache     128       0         6.328GB   3.88GB
+
+=== dmesg (oom/killed/segfault) ===
+(passwordless sudo not available; dmesg not captured)

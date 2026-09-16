@@ -1,0 +1,42 @@
+run:        probe-sweep
+platform:   fabric-bft  (version 3.1.5)
+workload:   kv-write   normalized=false
+profile:    local-32gb   state_db=leveldb
+resources:  18 CPU / 20 GB total over 8 containers (2.25 CPU each; memory by role weight peer=4 statedb=4 orderer=2 other=1)
+              1137m    dev-peer0.org1.example.com-kvstore_1.0-e88284a33ff8806958375f99312782794164d62aac26fe22876f2c72fb6294d9
+              1137m    dev-peer0.org2.example.com-kvstore_1.0-e88284a33ff8806958375f99312782794164d62aac26fe22876f2c72fb6294d9
+              2275m    orderer.example.com
+              2275m    orderer2.example.com
+              2275m    orderer3.example.com
+              2275m    orderer4.example.com
+              4551m    peer0.org1.example.com
+              4551m    peer0.org2.example.com
+batch:      msgcount=250 timeout=1s preferred=4 MB
+crypto:     sig=ECDSA-P256 hash=SHA-256 per_tx_endorse_verify=true
+caveats:
+  - sweep aborted early after 2 consecutive failed steps; 3 higher step(s) were never offered
+  - native metrics scrape of http://localhost:9443/metrics failed: scrape http://localhost:9443/metrics: parser panic: Invalid name validation scheme requested: unset (informational metrics only; harness numbers unaffected)
+
+phase           offered     conf_tps  goodput  fail_rate    e2e_p50    e2e_p99    gap_p99    com_p50  verdict
+probe                10         10.0     100%     0.0000     525.31    1040.90       1.11     518.66  
+sweep-100           100        100.0     100%     0.0000     546.82    1063.94       1.11     542.72  held
+sweep-250           250        250.0     100%     0.0000     590.34    1081.34       1.09     587.26  held
+sweep-500           500        500.0     100%     0.0000     348.93     593.92       1.07     345.09  held
+sweep-1000         1000       1000.0     100%     0.0000     229.38     352.77       1.07     225.79  held
+sweep-2000         2000       1841.3      92%     0.0793    8290.30    8855.55       2.77    8224.77  failure rate 7.93% > 2.00%
+sweep-3500         3500       1277.4      36%     0.6350   17563.65   19972.10       3.35   16719.87  failure rate 63.50% > 2.00%
+hold                900        900.0     100%     0.0000     267.01     414.72       1.07     257.92  
+
+errors sweep-2000       2380 x not sent: N transactions already in flight (platform is not finalizing)
+errors sweep-3500      33068 x not sent: N transactions already in flight (platform is not finalizing)
+errors sweep-3500        271 x submit to orderer: rpc error: code = Unavailable desc = insufficient number of orderers could successfully process transaction to satisfy quorum requirement
+Details:
+  - Address: orderer4.example.com:7058
+    MspId: OrdererMSP
+    Message: received unsuccessful response from orderer: status=SERVICE_UNAVAILABLE, info=failed to submit request: request already processed
+  - Address: orderer.example.com:7050
+    MspId: OrdererMSP
+    Message: received unsuccessful response from orderer: status=SERVICE_UNAVAILABLE, info=failed to submit request: request already processed
+sweep aborted early; steps never offered: [5000 7500 10000]
+detected saturation: ~1000 offered TPS
+HEADLINE  confirmed_tps=900.0  fail_rate=0.0000  e2e p50/p99=267.01/414.72 ms  invariant_ok=true

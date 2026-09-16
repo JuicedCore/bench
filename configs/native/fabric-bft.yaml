@@ -1,0 +1,58 @@
+# NATIVE - fabric-bft only. Do not mix with normalized numbers.
+#
+# kv-write on LevelDB, SmartBFT (4 orderers), batch tuned separately from CFT
+# (250 msgs / 1s — agreement needs wall time Raft does not).
+#
+#   set -a; source deploy/docker/fabric-bft/connection.env; set +a
+#   benchrunner run --config configs/native/fabric-bft.yaml --platform fabric-bft
+name: probe-sweep
+platform: fabric-bft
+workload: kv-write
+profile: local
+normalized: false
+
+load:
+  mode: open-loop
+  key_distribution: uniform
+  key_space: 200000
+  value_size_bytes: 64
+  finality_wait: 60s
+  seed: 1
+  sweep:
+    enabled: true
+    probe_tps: 10
+    probe_duration: 30s
+    steps: [100, 250, 500, 1000, 2000, 3500, 5000, 7500, 10000]
+    step_duration: 60s
+    hold_fraction: 0.9
+    hold_duration: 5m
+    max_fail_rate: 0.02
+    abort_after_failed_steps: 2
+
+metrics:
+  warmup: 30s
+  cooldown: 15s
+  output_dir: ./results
+  output_format: csv
+
+system_metrics:
+  enabled: true
+  sample_interval: 1s
+  prometheus_url: http://localhost:9090
+  cadvisor_url: http://localhost:8080
+  container_names:
+    - peer
+    - orderer
+
+adapter:
+  peer_endpoint: "${BENCH_ADAPTER_PEER_ENDPOINT}"
+  endorse_endpoint: "${BENCH_ADAPTER_ENDORSE_ENDPOINT}"
+  commit_endpoint: "${BENCH_ADAPTER_COMMIT_ENDPOINT}"
+  gateway_peer: "${BENCH_ADAPTER_GATEWAY_PEER}"
+  msp_id: "${BENCH_ADAPTER_MSP_ID}"
+  cert_path: "${BENCH_ADAPTER_CERT_PATH}"
+  key_path: "${BENCH_ADAPTER_KEY_PATH}"
+  tls_ca_cert_path: "${BENCH_ADAPTER_TLS_CA_CERT_PATH}"
+  channel: "${BENCH_ADAPTER_CHANNEL}"
+  chaincode: "${BENCH_ADAPTER_CHAINCODE}"
+  metrics_endpoint: "${BENCH_ADAPTER_METRICS_ENDPOINT}"

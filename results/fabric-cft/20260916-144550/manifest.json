@@ -1,0 +1,61 @@
+{
+  "run_name": "probe-sweep",
+  "platform": "fabric-cft",
+  "workload": "kv-write",
+  "profile": "local-32gb",
+  "normalized": false,
+  "started_at": "2026-09-16T14:45:50.992272025+05:30",
+  "ended_at": "2026-09-16T14:59:48.59543008+05:30",
+  "harness_git_sha": "unknown",
+  "platform_version": "2.5.16",
+  "state_db": "leveldb",
+  "state_db_requested": "leveldb",
+  "orderer_batch": {
+    "MaxMessageCount": 500,
+    "AbsoluteMaxBytes": "10 MB",
+    "PreferredMaxBytes": "4 MB",
+    "BatchTimeout": "500ms"
+  },
+  "crypto": {
+    "signature_alg": "ECDSA-P256",
+    "hash_alg": "SHA-256",
+    "per_tx_endorsement_verify": true,
+    "msp_note": "X.509 MSP; endorsement signatures verified by every committing peer during VSCC"
+  },
+  "resource_limit_per_container": {
+    "CPUs": 3.6,
+    "Memory": ""
+  },
+  "resource_memory_by_container": {
+    "dev-peer0.org1.example.com-kvstore_1.0-e88284a33ff8806958375f99312782794164d62aac26fe22876f2c72fb6294d9": "1706m",
+    "dev-peer0.org2.example.com-kvstore_1.0-e88284a33ff8806958375f99312782794164d62aac26fe22876f2c72fb6294d9": "1706m",
+    "orderer.example.com": "3413m",
+    "peer0.org1.example.com": "6826m",
+    "peer0.org2.example.com": "6826m"
+  },
+  "resource_memory_weights": "peer=4 statedb=4 orderer=2 other=1",
+  "resource_containers": 5,
+  "resource_cpus_total": 18,
+  "resource_memory_total_gb": 20,
+  "nodes": {
+    "chaincode": 2,
+    "orderer": 1,
+    "peer": 2
+  },
+  "generators": 2,
+  "seed": 1,
+  "key_space": 200000,
+  "key_distribution": "uniform",
+  "zipfian_constant": 0,
+  "read_write_ratio": 0,
+  "value_size_bytes": 64,
+  "warmup_sec": 30,
+  "cooldown_sec": 15,
+  "skipped_steps": [
+    10000
+  ],
+  "caveats": [
+    "sweep aborted early after 2 consecutive failed steps; 1 higher step(s) were never offered",
+    "native metrics scrape of http://localhost:9443/metrics failed: scrape http://localhost:9443/metrics: parser panic: Invalid name validation scheme requested: unset (informational metrics only; harness numbers unaffected)"
+  ]
+}

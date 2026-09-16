@@ -1,0 +1,57 @@
+# NATIVE-KV-MIXED - fabricx only. Do not mix with normalized numbers
+# or with configs/native (kv-write ceiling).
+#
+# Same native levers as configs/native/fabricx.yaml (PostgreSQL, Arma 500 /
+# 500ms, 512 broadcast streams). Workload is kv-mixed at 50% reads.
+# Fabric-X reads are QueryService GetRows — not ordered. Token SDK is not
+# implemented. Headline TPS blends two paths.
+#
+#   scripts/run-all.sh configs/native-kv-mixed local-32gb fabric-cft fabric-bft drunix fabricx neuchain
+name: native-kv-mixed
+platform: fabricx
+workload: kv-mixed
+profile: local
+normalized: false
+
+load:
+  mode: open-loop
+  key_distribution: uniform
+  key_space: 200000
+  read_write_ratio: 0.5
+  value_size_bytes: 64
+  finality_wait: 60s
+  seed: 1
+  sweep:
+    enabled: true
+    probe_tps: 10
+    probe_duration: 30s
+    steps: [100, 250, 500, 1000, 2000, 3500, 5000, 7500, 10000, 15000]
+    step_duration: 60s
+    hold_fraction: 0.9
+    hold_duration: 5m
+    max_fail_rate: 0.02
+    abort_after_failed_steps: 2
+
+metrics:
+  warmup: 30s
+  cooldown: 15s
+  output_dir: ./results
+  output_format: csv
+
+system_metrics:
+  enabled: true
+  sample_interval: 1s
+  prometheus_url: http://localhost:9090
+  cadvisor_url: http://localhost:8080
+  container_names:
+    - fabricx
+
+adapter:
+  broadcast_endpoint: "${BENCH_ADAPTER_BROADCAST_ENDPOINT}"
+  deliver_endpoint: "${BENCH_ADAPTER_DELIVER_ENDPOINT}"
+  query_endpoint: "${BENCH_ADAPTER_QUERY_ENDPOINT}"
+  channel_id: "${BENCH_ADAPTER_CHANNEL_ID}"
+  namespace: "${BENCH_ADAPTER_NAMESPACE}"
+  signing_key_path: "${BENCH_ADAPTER_SIGNING_KEY_PATH}"
+  broadcast_streams: 512
+  metrics_endpoint: "${BENCH_ADAPTER_METRICS_ENDPOINT}"

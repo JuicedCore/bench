@@ -1,0 +1,59 @@
+{
+  "run_name": "probe-sweep",
+  "platform": "fabricx",
+  "workload": "kv-write",
+  "profile": "local-32gb",
+  "normalized": false,
+  "started_at": "2026-09-16T15:26:34.805818304+05:30",
+  "ended_at": "2026-09-16T15:42:42.431936774+05:30",
+  "harness_git_sha": "unknown",
+  "platform_version": "fabricx-committer-v1.0.5-orderer-v1.0.6",
+  "state_db": "postgres",
+  "state_db_requested": "postgres",
+  "orderer_batch": {
+    "MaxMessageCount": 500,
+    "AbsoluteMaxBytes": "10 MB",
+    "PreferredMaxBytes": "4 MB",
+    "BatchTimeout": "500ms"
+  },
+  "crypto": {
+    "signature_alg": "ECDSA-P256",
+    "hash_alg": "SHA-256",
+    "per_tx_endorsement_verify": true,
+    "msp_note": "Fabric-X: client-signed ECDSA endorsement per namespace, verified by the committer against the namespace policy registered in _meta at deploy time. No peer endorsement round-trip."
+  },
+  "resource_limit_per_container": {
+    "CPUs": 4.5,
+    "Memory": ""
+  },
+  "resource_memory_by_container": {
+    "bench-fabricx-fabricx-arma-1": "5120m",
+    "bench-fabricx-fabricx-committer-1": "5120m",
+    "bench-fabricx-fabricx-db-1": "5120m",
+    "bench-fabricx-fabricx-pipeline-1": "5120m"
+  },
+  "resource_memory_weights": "peer=4 statedb=4 orderer=2 other=1",
+  "resource_containers": 4,
+  "resource_cpus_total": 18,
+  "resource_memory_total_gb": 20,
+  "nodes": {
+    "arma": 1,
+    "committer": 1,
+    "pipeline": 1,
+    "postgres": 1
+  },
+  "generators": 3,
+  "seed": 1,
+  "key_space": 200000,
+  "key_distribution": "uniform",
+  "zipfian_constant": 0,
+  "read_write_ratio": 0,
+  "value_size_bytes": 64,
+  "warmup_sec": 30,
+  "cooldown_sec": 15,
+  "caveats": [
+    "fabricx native run uses kv-write over the gRPC path (adr-016); Token SDK Issue/Transfer/Redeem is not implemented (the old REST token configs were removed)",
+    "every sweep step held: the platform did not saturate within the ladder, so 15000 TPS is a lower bound on its knee, not the knee",
+    "native metrics scrape of http://localhost:9643/metrics failed: scrape http://localhost:9643/metrics: parser panic: Invalid name validation scheme requested: unset (informational metrics only; harness numbers unaffected)"
+  ]
+}

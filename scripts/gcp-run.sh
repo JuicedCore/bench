@@ -77,7 +77,7 @@ TF_DIR="$ROOT/deploy/terraform"
 HARNESS_SHA="$(git -C "$ROOT" describe --always --dirty --abbrev=12 2>/dev/null || echo unknown)"
 PROFILE_FILE="$ROOT/deploy/profiles/${PROFILE}.yaml"
 [ -f "$PROFILE_FILE" ] || die "no profile $PROFILE_FILE" "available: $(ls deploy/profiles/*.yaml | xargs -n1 basename | tr '\n' ' ')"
-for c in $CONFIGS; do [ -f "$c" ] || die "no config $c" "configs live in configs/normalized/"; done
+for c in $CONFIGS; do [ -f "$c" ] || die "no config $c" "configs live in configs/normalized/ and configs/native/"; done
 for p in $PLATFORMS; do [ -f "deploy/docker/$p/up.sh" ] || die "no deploy script for platform $p"; done
 
 gcp_field() {
@@ -376,10 +376,20 @@ for PLATFORM in $PLATFORMS; do
   rsh "$LOADGEN" 'cd ~/bench && make build' || { platform_failed infra "make build failed on ${LOADGEN} (output above)"; continue; }
 
   for CONFIG in $CONFIGS; do
+    cfg_norm="$(yaml_top "$CONFIG" normalized)"
+    cfg_plat="$(yaml_top "$CONFIG" platform)"
+    if [ "$cfg_norm" = "false" ] && [ -n "$cfg_plat" ] && [ "$cfg_plat" != "$PLATFORM" ]; then
+      continue
+    fi
+    if [ "$cfg_norm" = "false" ]; then
+      export BENCH_NORMALIZED=false
+    else
+      export BENCH_NORMALIZED=true
+    fi
     log "---- ${PLATFORM}: ${CONFIG} ----"
     DIR="$(step_dir "$CAMPAIGN_DIR" "$PLATFORM" "$CONFIG")"
     SINCE="$(date --rfc-3339=seconds)"
-    if ! rsh "$SUT" "cd ~/bench && bash deploy/docker/$PLATFORM/up.sh $PROFILE" 2>&1 | tee "$DIR/deploy.log"; then
+    if ! rsh "$SUT" "cd ~/bench && BENCH_NORMALIZED=${BENCH_NORMALIZED} bash deploy/docker/$PLATFORM/up.sh $PROFILE" 2>&1 | tee "$DIR/deploy.log"; then
       warn "deploy failed: ${PLATFORM} ${CONFIG}"
       FAILED+=("${PLATFORM}:${CONFIG}:deploy")
       capture_sut "$DIR" "$SINCE"

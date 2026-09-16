@@ -1,0 +1,55 @@
+# NATIVE - fabricx only. Do not mix with normalized numbers.
+#
+# kv-write over the native gRPC path (adr-016) on PostgreSQL, Arma batch 500 /
+# 500ms, extra broadcast streams. Token SDK UTXO is not implemented; the old
+# REST token configs were removed with that path.
+#
+#   set -a; source deploy/docker/fabricx/connection.env; set +a
+#   benchrunner run --config configs/native/fabricx.yaml --platform fabricx
+name: probe-sweep
+platform: fabricx
+workload: kv-write
+profile: local
+normalized: false
+
+load:
+  mode: open-loop
+  key_distribution: uniform
+  key_space: 200000
+  value_size_bytes: 64
+  finality_wait: 60s
+  seed: 1
+  sweep:
+    enabled: true
+    probe_tps: 10
+    probe_duration: 30s
+    steps: [100, 250, 500, 1000, 2000, 3500, 5000, 7500, 10000, 15000]
+    step_duration: 60s
+    hold_fraction: 0.9
+    hold_duration: 5m
+    max_fail_rate: 0.02
+    abort_after_failed_steps: 2
+
+metrics:
+  warmup: 30s
+  cooldown: 15s
+  output_dir: ./results
+  output_format: csv
+
+system_metrics:
+  enabled: true
+  sample_interval: 1s
+  prometheus_url: http://localhost:9090
+  cadvisor_url: http://localhost:8080
+  container_names:
+    - fabricx
+
+adapter:
+  broadcast_endpoint: "${BENCH_ADAPTER_BROADCAST_ENDPOINT}"
+  deliver_endpoint: "${BENCH_ADAPTER_DELIVER_ENDPOINT}"
+  query_endpoint: "${BENCH_ADAPTER_QUERY_ENDPOINT}"
+  channel_id: "${BENCH_ADAPTER_CHANNEL_ID}"
+  namespace: "${BENCH_ADAPTER_NAMESPACE}"
+  signing_key_path: "${BENCH_ADAPTER_SIGNING_KEY_PATH}"
+  broadcast_streams: 512
+  metrics_endpoint: "${BENCH_ADAPTER_METRICS_ENDPOINT}"

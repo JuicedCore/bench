@@ -1,0 +1,131 @@
+2026-09-16T07:45:49.747025731Z [epoch] WARNING: Logging before InitGoogleLogging() is written to STDERR
+2026-09-16T07:45:49.747045137Z [epoch] I20260916 07:45:49.746628     7 epoch_server.cpp:38] Set raft port to 8100 .
+2026-09-16T07:45:49.747258659Z [epoch] I20260916 07:45:49.746878     7 epoch_server.cpp:33] Set duration to 0.05 s.
+2026-09-16T07:45:49.747262248Z [epoch] I20260916 07:45:49.747151     7 consensus_manager.h:44] initial_conf 172.30.7.10:8100:0,172.30.7.11:8100:0,172.30.7.12:8100:0,172.30.7.13:8100:0.
+2026-09-16T07:45:49.752378309Z WARNING: Logging before InitGoogleLogging() is written to STDERR
+2026-09-16T07:45:49.752391432Z I20260916 07:45:49.752233     1 query_controller.cpp:21] Query listener start at 0.0.0.0:7003
+2026-09-16T07:45:49.761721211Z I20260916 07:45:49.761574     1 consensus_manager.h:63] initial_conf 172.30.7.10:18100:0,172.30.7.11:18100:0,172.30.7.12:18100:0,172.30.7.13:18100:0.
+2026-09-16T07:45:49.767529792Z [epoch] I20260916 07:45:49.767360     7 server.cpp:1066] Server[braft::RaftStatImpl+braft::FileServiceImpl+braft::RaftServiceImpl+braft::CliServiceImpl+raft::ChainServiceImpl] is serving on port=8100.
+2026-09-16T07:45:49.768252885Z [epoch] I20260916 07:45:49.767372     7 server.cpp:1069] Check out http://node1:8100 in web browser.
+2026-09-16T07:45:49.768331049Z [epoch] I20260916 07:45:49.768121     7 consensus_manager.h:84] Brpc service is running on 0.0.0.0:8100
+2026-09-16T07:45:49.769720440Z [epoch] I20260916 07:45:49.769536     7 log.cpp:674] Use crc32c as the checksum type of appending entries
+2026-09-16T07:45:49.769723970Z [epoch] W20260916 07:45:49.769564     7 protobuf_file.cpp:91] open file failed, path: ./raft_dataepoch_server_group/log/log_meta: FILE_ERROR_NOT_FOUND
+2026-09-16T07:45:49.769724946Z [epoch] W20260916 07:45:49.769569     7 log.cpp:685] ./raft_dataepoch_server_group/log is empty
+2026-09-16T07:45:49.770261503Z I20260916 07:45:49.770200     1 consensus_manager.h:63] initial_conf 172.30.7.10:18100:1,172.30.7.11:18100:1,172.30.7.12:18100:1,172.30.7.13:18100:1.
+2026-09-16T07:45:49.772413806Z [epoch] I20260916 07:45:49.772265     7 log.cpp:1137] log save_meta ./raft_dataepoch_server_group/log/log_meta first_log_index: 1 time: 2679
+2026-09-16T07:45:49.773029282Z [epoch] W20260916 07:45:49.772920     7 protobuf_file.cpp:91] open file failed, path: ./raft_dataepoch_server_group/raft_meta/raft_meta: FILE_ERROR_NOT_FOUND
+2026-09-16T07:45:49.773035649Z [epoch] I20260916 07:45:49.772959     7 raft_meta.cpp:521] Loaded single stable meta, path ./raft_dataepoch_server_group/raft_meta term 1 votedfor 0.0.0.0:0:0 time: 16
+2026-09-16T07:45:49.773353659Z [epoch] I20260916 07:45:49.773236     7 node.cpp:604] node epoch_server_group:172.30.7.11:8100:0 init, term: 1 last_log_id: (index=0,term=0) conf: 172.30.7.10:8100:0,172.30.7.11:8100:0,172.30.7.12:8100:0,172.30.7.13:8100:0 old_conf: 
+2026-09-16T07:45:49.773511876Z [epoch] I20260916 07:45:49.773391     7 chain_client.cpp:83] Sending Request to epoch_server_group at qps=0 latency=0
+2026-09-16T07:45:49.773518500Z [epoch] I20260916 07:45:49.773434    52 consensus_manager.h:214] Electing leader, waiting...
+2026-09-16T07:45:49.773675259Z [epoch] I20260916 07:45:49.773553    42 ev_consensus_manager.cpp:52] set epoch duration to 0.05s, receiver port 6002
+2026-09-16T07:45:49.776340360Z I20260916 07:45:49.776270     1 consensus_manager.h:63] initial_conf 172.30.7.10:18100:2,172.30.7.11:18100:2,172.30.7.12:18100:2,172.30.7.13:18100:2.
+2026-09-16T07:45:49.782682834Z I20260916 07:45:49.782625     1 consensus_manager.h:63] initial_conf 172.30.7.10:18100:3,172.30.7.11:18100:3,172.30.7.12:18100:3,172.30.7.13:18100:3.
+2026-09-16T07:45:49.789216135Z I20260916 07:45:49.789140     1 consensus_control_block.h:216] LOCAL id = 1
+2026-09-16T07:45:49.791678928Z I20260916 07:45:49.791623     1 server.cpp:1066] Server[braft::RaftStatImpl+braft::FileServiceImpl+braft::RaftServiceImpl+braft::CliServiceImpl+raft::ChainServiceImpl] is serving on port=18100.
+2026-09-16T07:45:49.791750750Z I20260916 07:45:49.791632     1 server.cpp:1069] Check out http://node1:18100 in web browser.
+2026-09-16T07:45:49.791759296Z I20260916 07:45:49.791702     1 consensus_manager.h:84] Brpc service is running on 0.0.0.0:18100
+2026-09-16T07:45:49.791760441Z I20260916 07:45:49.791708     1 consensus_manager.h:63] initial_conf 172.30.7.10:18100:0,172.30.7.11:18100:0,172.30.7.12:18100:0,172.30.7.13:18100:0.
+2026-09-16T07:45:49.792377422Z I20260916 07:45:49.792289     1 log.cpp:674] Use crc32c as the checksum type of appending entries
+2026-09-16T07:45:49.792380445Z W20260916 07:45:49.792313     1 protobuf_file.cpp:91] open file failed, path: ./raft_datablock_server_raft_0/log/log_meta: FILE_ERROR_NOT_FOUND
+2026-09-16T07:45:49.792381376Z W20260916 07:45:49.792317     1 log.cpp:685] ./raft_datablock_server_raft_0/log is empty
+2026-09-16T07:45:49.799650844Z I20260916 07:45:49.799558     1 log.cpp:1137] log save_meta ./raft_datablock_server_raft_0/log/log_meta first_log_index: 1 time: 7227
+2026-09-16T07:45:49.799878103Z W20260916 07:45:49.799818     1 protobuf_file.cpp:91] open file failed, path: ./raft_datablock_server_raft_0/raft_meta/raft_meta: FILE_ERROR_NOT_FOUND
+2026-09-16T07:45:49.799885150Z I20260916 07:45:49.799831     1 raft_meta.cpp:521] Loaded single stable meta, path ./raft_datablock_server_raft_0/raft_meta term 1 votedfor 0.0.0.0:0:0 time: 9
+2026-09-16T07:45:49.799888287Z I20260916 07:45:49.799840     1 node.cpp:604] node block_server_raft_0:172.30.7.11:18100:0 init, term: 1 last_log_id: (index=0,term=0) conf: 172.30.7.10:18100:0,172.30.7.11:18100:0,172.30.7.12:18100:0,172.30.7.13:18100:0 old_conf: 
+2026-09-16T07:45:49.799989716Z I20260916 07:45:49.799921     1 consensus_manager.h:63] initial_conf 172.30.7.10:18100:1,172.30.7.11:18100:1,172.30.7.12:18100:1,172.30.7.13:18100:1.
+2026-09-16T07:45:49.800139529Z W20260916 07:45:49.800081     1 protobuf_file.cpp:91] open file failed, path: ./raft_datablock_server_raft_1/log/log_meta: FILE_ERROR_NOT_FOUND
+2026-09-16T07:45:49.800145156Z W20260916 07:45:49.800083     1 log.cpp:685] ./raft_datablock_server_raft_1/log is empty
+2026-09-16T07:45:49.802639846Z I20260916 07:45:49.802558     1 log.cpp:1137] log save_meta ./raft_datablock_server_raft_1/log/log_meta first_log_index: 1 time: 2467
+2026-09-16T07:45:49.802913658Z I20260916 07:45:49.802845     1 snapshot.cpp:463] Deleting ./raft_datablock_server_raft_1/snapshot/temp
+2026-09-16T07:45:49.803045739Z W20260916 07:45:49.802965     1 protobuf_file.cpp:91] open file failed, path: ./raft_datablock_server_raft_1/raft_meta/raft_meta: FILE_ERROR_NOT_FOUND
+2026-09-16T07:45:49.803060973Z I20260916 07:45:49.802971     1 raft_meta.cpp:521] Loaded single stable meta, path ./raft_datablock_server_raft_1/raft_meta term 1 votedfor 0.0.0.0:0:0 time: 9
+2026-09-16T07:45:49.803062529Z I20260916 07:45:49.802975     1 node.cpp:604] node block_server_raft_1:172.30.7.11:18100:1 init, term: 1 last_log_id: (index=0,term=0) conf: 172.30.7.10:18100:1,172.30.7.11:18100:1,172.30.7.12:18100:1,172.30.7.13:18100:1 old_conf: 
+2026-09-16T07:45:49.803089423Z I20260916 07:45:49.803033     1 consensus_manager.h:63] initial_conf 172.30.7.10:18100:2,172.30.7.11:18100:2,172.30.7.12:18100:2,172.30.7.13:18100:2.
+2026-09-16T07:45:49.803274301Z W20260916 07:45:49.803190     1 protobuf_file.cpp:91] open file failed, path: ./raft_datablock_server_raft_2/log/log_meta: FILE_ERROR_NOT_FOUND
+2026-09-16T07:45:49.803278820Z W20260916 07:45:49.803196     1 log.cpp:685] ./raft_datablock_server_raft_2/log is empty
+2026-09-16T07:45:49.805487560Z I20260916 07:45:49.805403     1 log.cpp:1137] log save_meta ./raft_datablock_server_raft_2/log/log_meta first_log_index: 1 time: 2198
+2026-09-16T07:45:49.805817061Z I20260916 07:45:49.805724     1 snapshot.cpp:463] Deleting ./raft_datablock_server_raft_2/snapshot/temp
+2026-09-16T07:45:49.805873745Z W20260916 07:45:49.805826     1 protobuf_file.cpp:91] open file failed, path: ./raft_datablock_server_raft_2/raft_meta/raft_meta: FILE_ERROR_NOT_FOUND
+2026-09-16T07:45:49.805877278Z I20260916 07:45:49.805830     1 raft_meta.cpp:521] Loaded single stable meta, path ./raft_datablock_server_raft_2/raft_meta term 1 votedfor 0.0.0.0:0:0 time: 6
+2026-09-16T07:45:49.805878377Z I20260916 07:45:49.805835     1 node.cpp:604] node block_server_raft_2:172.30.7.11:18100:2 init, term: 1 last_log_id: (index=0,term=0) conf: 172.30.7.10:18100:2,172.30.7.11:18100:2,172.30.7.12:18100:2,172.30.7.13:18100:2 old_conf: 
+2026-09-16T07:45:49.805917699Z I20260916 07:45:49.805881     1 consensus_manager.h:63] initial_conf 172.30.7.10:18100:3,172.30.7.11:18100:3,172.30.7.12:18100:3,172.30.7.13:18100:3.
+2026-09-16T07:45:49.806099574Z W20260916 07:45:49.806033     1 protobuf_file.cpp:91] open file failed, path: ./raft_datablock_server_raft_3/log/log_meta: FILE_ERROR_NOT_FOUND
+2026-09-16T07:45:49.806105129Z W20260916 07:45:49.806035     1 log.cpp:685] ./raft_datablock_server_raft_3/log is empty
+2026-09-16T07:45:49.808104939Z I20260916 07:45:49.808029     1 log.cpp:1137] log save_meta ./raft_datablock_server_raft_3/log/log_meta first_log_index: 1 time: 1986
+2026-09-16T07:45:49.808338565Z I20260916 07:45:49.808262     1 snapshot.cpp:463] Deleting ./raft_datablock_server_raft_3/snapshot/temp
+2026-09-16T07:45:49.808425351Z W20260916 07:45:49.808372     1 protobuf_file.cpp:91] open file failed, path: ./raft_datablock_server_raft_3/raft_meta/raft_meta: FILE_ERROR_NOT_FOUND
+2026-09-16T07:45:49.808430635Z I20260916 07:45:49.808377     1 raft_meta.cpp:521] Loaded single stable meta, path ./raft_datablock_server_raft_3/raft_meta term 1 votedfor 0.0.0.0:0:0 time: 7
+2026-09-16T07:45:49.808431519Z I20260916 07:45:49.808382     1 node.cpp:604] node block_server_raft_3:172.30.7.11:18100:3 init, term: 1 last_log_id: (index=0,term=0) conf: 172.30.7.10:18100:3,172.30.7.11:18100:3,172.30.7.12:18100:3,172.30.7.13:18100:3 old_conf: 
+2026-09-16T07:45:49.873830139Z [epoch] I20260916 07:45:49.873549    52 consensus_manager.h:214] Electing leader, waiting...
+2026-09-16T07:45:49.973855068Z [epoch] I20260916 07:45:49.973667    52 consensus_manager.h:214] Electing leader, waiting...
+2026-09-16T07:45:50.073966741Z [epoch] I20260916 07:45:50.073786    52 consensus_manager.h:214] Electing leader, waiting...
+2026-09-16T07:45:50.174093882Z [epoch] I20260916 07:45:50.173902    52 consensus_manager.h:214] Electing leader, waiting...
+2026-09-16T07:45:50.274221583Z [epoch] I20260916 07:45:50.274019    52 consensus_manager.h:214] Electing leader, waiting...
+2026-09-16T07:45:50.374272433Z [epoch] I20260916 07:45:50.374136    52 consensus_manager.h:214] Electing leader, waiting...
+2026-09-16T07:45:50.474413018Z [epoch] I20260916 07:45:50.474249    52 consensus_manager.h:214] Electing leader, waiting...
+2026-09-16T07:45:50.574526790Z [epoch] I20260916 07:45:50.574359    52 consensus_manager.h:214] Electing leader, waiting...
+2026-09-16T07:45:50.674752263Z [epoch] I20260916 07:45:50.674479    52 consensus_manager.h:214] Electing leader, waiting...
+2026-09-16T07:45:50.773636471Z [epoch] I20260916 07:45:50.773428     7 chain_client.cpp:83] Sending Request to epoch_server_group at qps=0 latency=0
+2026-09-16T07:45:50.774681622Z [epoch] I20260916 07:45:50.774576    52 consensus_manager.h:214] Electing leader, waiting...
+2026-09-16T07:45:50.827262135Z I20260916 07:45:50.827147    83 node.cpp:2114] node block_server_raft_3:172.30.7.11:18100:3 received PreVote from 172.30.7.13:18100:3 in term 2 current_term 1 granted 1 rejected_by_lease 0
+2026-09-16T07:45:50.828364691Z I20260916 07:45:50.828281    83 node.cpp:2196] node block_server_raft_3:172.30.7.11:18100:3 received RequestVote from 172.30.7.13:18100:3 in term 2 current_term 1 log_is_ok 1 votable_time 0
+2026-09-16T07:45:50.830073008Z I20260916 07:45:50.830005    83 raft_meta.cpp:546] Saved single stable meta, path ./raft_datablock_server_raft_3/raft_meta term 2 votedfor 0.0.0.0:0:0 time: 1707
+2026-09-16T07:45:50.832686771Z I20260916 07:45:50.832628    83 raft_meta.cpp:546] Saved single stable meta, path ./raft_datablock_server_raft_3/raft_meta term 2 votedfor 172.30.7.13:18100:3 time: 2605
+2026-09-16T07:45:50.834814533Z I20260916 07:45:50.834731    77 chain.h:117] Node start following { leader_id=172.30.7.13:18100:3, term=2, status=Follower receives message from new leader with the same term.}
+2026-09-16T07:45:50.835119182Z I20260916 07:45:50.835050    79 log.cpp:108] Created new segment `./raft_datablock_server_raft_3/log/log_inprogress_00000000000000000001' with fd=54
+2026-09-16T07:45:50.874881896Z [epoch] I20260916 07:45:50.874680    52 consensus_manager.h:214] Electing leader, waiting...
+2026-09-16T07:45:50.934577058Z I20260916 07:45:50.934458    77 chain.h:109] Configuration of this group is 172.30.7.10:18100:3,172.30.7.11:18100:3,172.30.7.12:18100:3,172.30.7.13:18100:3
+2026-09-16T07:45:50.974925134Z [epoch] I20260916 07:45:50.974759    52 consensus_manager.h:214] Electing leader, waiting...
+2026-09-16T07:45:50.987885053Z [epoch] I20260916 07:45:50.987751    53 node.cpp:2114] node epoch_server_group:172.30.7.11:8100:0 received PreVote from 172.30.7.12:8100:0 in term 2 current_term 1 granted 1 rejected_by_lease 0
+2026-09-16T07:45:50.989114627Z [epoch] I20260916 07:45:50.988970    49 node.cpp:2196] node epoch_server_group:172.30.7.11:8100:0 received RequestVote from 172.30.7.12:8100:0 in term 2 current_term 1 log_is_ok 1 votable_time 0
+2026-09-16T07:45:51.000242992Z I20260916 07:45:51.000140    84 node.cpp:1575] node block_server_raft_1:172.30.7.11:18100:1 term 1 start pre_vote
+2026-09-16T07:45:51.000666845Z I20260916 07:45:51.000607    89 node.cpp:1500] node block_server_raft_1:172.30.7.11:18100:1 received PreVoteResponse from 172.30.7.10:18100:1 term 1 granted 1 rejected_by_lease 0 disrupted 0
+2026-09-16T07:45:51.000669056Z I20260916 07:45:51.000638    77 node.cpp:1500] node block_server_raft_1:172.30.7.11:18100:1 received PreVoteResponse from 172.30.7.12:18100:1 term 1 granted 1 rejected_by_lease 0 disrupted 0
+2026-09-16T07:45:51.000669883Z I20260916 07:45:51.000649    77 node.cpp:1640] node block_server_raft_1:172.30.7.11:18100:1 term 1 start vote and grant vote self
+2026-09-16T07:45:51.005171362Z I20260916 07:45:51.004930    77 raft_meta.cpp:546] Saved single stable meta, path ./raft_datablock_server_raft_1/raft_meta term 2 votedfor 172.30.7.11:18100:1 time: 4101
+2026-09-16T07:45:51.005180511Z W20260916 07:45:51.004967    79 node.cpp:1467] node block_server_raft_1:172.30.7.11:18100:1 received invalid PreVoteResponse from 172.30.7.13:18100:1 ctx_version 2 current_ctx_version 3
+2026-09-16T07:45:51.005220194Z [epoch] I20260916 07:45:51.004951    49 raft_meta.cpp:546] Saved single stable meta, path ./raft_dataepoch_server_group/raft_meta term 2 votedfor 0.0.0.0:0:0 time: 15944
+2026-09-16T07:45:51.008024077Z [epoch] I20260916 07:45:51.007790    49 raft_meta.cpp:546] Saved single stable meta, path ./raft_dataepoch_server_group/raft_meta term 2 votedfor 172.30.7.12:8100:0 time: 2818
+2026-09-16T07:45:51.008028915Z I20260916 07:45:51.007982    89 node.cpp:1391] node block_server_raft_1:172.30.7.11:18100:1 received RequestVoteResponse from 172.30.7.13:18100:1 term 2 granted 1 rejected_by_lease 0 disrupted 0
+2026-09-16T07:45:51.008113104Z I20260916 07:45:51.008039    46 node.cpp:1391] node block_server_raft_1:172.30.7.11:18100:1 received RequestVoteResponse from 172.30.7.10:18100:1 term 2 granted 1 rejected_by_lease 0 disrupted 0
+2026-09-16T07:45:51.008117613Z I20260916 07:45:51.008054    46 node.cpp:1893] node block_server_raft_1:172.30.7.11:18100:1 term 2 become leader of group 172.30.7.10:18100:1,172.30.7.11:18100:1,172.30.7.12:18100:1,172.30.7.13:18100:1 
+2026-09-16T07:45:51.008119352Z I20260916 07:45:51.008083    46 replicator.cpp:141] Replicator=5501853106177@172.30.7.10:18100:1 is started, group block_server_raft_1
+2026-09-16T07:45:51.008223073Z I20260916 07:45:51.008169    46 replicator.cpp:141] Replicator=5519032975361@172.30.7.12:18100:1 is started, group block_server_raft_1
+2026-09-16T07:45:51.008228461Z I20260916 07:45:51.008198    46 replicator.cpp:141] Replicator=5536212844545@172.30.7.13:18100:1 is started, group block_server_raft_1
+2026-09-16T07:45:51.008309774Z W20260916 07:45:51.008268    89 node.cpp:1358] node block_server_raft_1:172.30.7.11:18100:1 received invalid RequestVoteResponse from 172.30.7.12:18100:1 ctx_version 1 current_ctx_version 2
+2026-09-16T07:45:51.008636154Z I20260916 07:45:51.008302    46 log.cpp:108] Created new segment `./raft_datablock_server_raft_1/log/log_inprogress_00000000000000000001' with fd=55
+2026-09-16T07:45:51.008903880Z I20260916 07:45:51.008845    59 chain.h:109] Configuration of this group is 172.30.7.10:18100:1,172.30.7.11:18100:1,172.30.7.12:18100:1,172.30.7.13:18100:1
+2026-09-16T07:45:51.008912958Z I20260916 07:45:51.008862    59 node.cpp:3292] node block_server_raft_1:172.30.7.11:18100:1 reset ConfigurationCtx, new_peers: 172.30.7.10:18100:1,172.30.7.11:18100:1,172.30.7.12:18100:1,172.30.7.13:18100:1, old_peers: 172.30.7.10:18100:1,172.30.7.11:18100:1,172.30.7.12:18100:1,172.30.7.13:18100:1
+2026-09-16T07:45:51.008917328Z [epoch] I20260916 07:45:51.008795    49 chain.h:117] Node start following { leader_id=172.30.7.12:8100:0, term=2, status=Follower receives message from new leader with the same term.}
+2026-09-16T07:45:51.009174917Z I20260916 07:45:51.009097    79 chain.h:90] Node becomes leader
+2026-09-16T07:45:51.009213834Z [epoch] I20260916 07:45:51.009132    53 log.cpp:108] Created new segment `./raft_dataepoch_server_group/log/log_inprogress_00000000000000000001' with fd=16
+2026-09-16T07:45:51.062480504Z I20260916 07:45:51.062407    46 node.cpp:2114] node block_server_raft_2:172.30.7.11:18100:2 received PreVote from 172.30.7.13:18100:2 in term 2 current_term 1 granted 1 rejected_by_lease 0
+2026-09-16T07:45:51.062879596Z I20260916 07:45:51.062712    59 node.cpp:2196] node block_server_raft_2:172.30.7.11:18100:2 received RequestVote from 172.30.7.13:18100:2 in term 2 current_term 1 log_is_ok 1 votable_time 0
+2026-09-16T07:45:51.066493245Z I20260916 07:45:51.066401    59 raft_meta.cpp:546] Saved single stable meta, path ./raft_datablock_server_raft_2/raft_meta term 2 votedfor 0.0.0.0:0:0 time: 3658
+2026-09-16T07:45:51.069207073Z I20260916 07:45:51.069123    59 raft_meta.cpp:546] Saved single stable meta, path ./raft_datablock_server_raft_2/raft_meta term 2 votedfor 172.30.7.13:18100:2 time: 2702
+2026-09-16T07:45:51.069474506Z I20260916 07:45:51.069407    89 chain.h:117] Node start following { leader_id=172.30.7.13:18100:2, term=2, status=Follower receives message from new leader with the same term.}
+2026-09-16T07:45:51.069634839Z I20260916 07:45:51.069582    79 log.cpp:108] Created new segment `./raft_datablock_server_raft_2/log/log_inprogress_00000000000000000001' with fd=58
+2026-09-16T07:45:51.108641638Z [epoch] I20260916 07:45:51.108489    53 chain.h:109] Configuration of this group is 172.30.7.10:8100:0,172.30.7.11:8100:0,172.30.7.12:8100:0,172.30.7.13:8100:0
+2026-09-16T07:45:51.169749611Z I20260916 07:45:51.169574    46 chain.h:109] Configuration of this group is 172.30.7.10:18100:2,172.30.7.11:18100:2,172.30.7.12:18100:2,172.30.7.13:18100:2
+2026-09-16T07:45:51.233209508Z I20260916 07:45:51.232985    46 node.cpp:2114] node block_server_raft_0:172.30.7.11:18100:0 received PreVote from 172.30.7.10:18100:0 in term 2 current_term 1 granted 1 rejected_by_lease 0
+2026-09-16T07:45:51.233544303Z I20260916 07:45:51.233491    89 node.cpp:2196] node block_server_raft_0:172.30.7.11:18100:0 received RequestVote from 172.30.7.10:18100:0 in term 2 current_term 1 log_is_ok 1 votable_time 0
+2026-09-16T07:45:51.247277204Z I20260916 07:45:51.247071    89 raft_meta.cpp:546] Saved single stable meta, path ./raft_datablock_server_raft_0/raft_meta term 2 votedfor 0.0.0.0:0:0 time: 13551
+2026-09-16T07:45:51.250067979Z I20260916 07:45:51.249991    89 raft_meta.cpp:546] Saved single stable meta, path ./raft_datablock_server_raft_0/raft_meta term 2 votedfor 172.30.7.10:18100:0 time: 2903
+2026-09-16T07:45:51.250488695Z I20260916 07:45:51.250422    79 chain.h:117] Node start following { leader_id=172.30.7.10:18100:0, term=2, status=Follower receives message from new leader with the same term.}
+2026-09-16T07:45:51.250690200Z I20260916 07:45:51.250633    59 log.cpp:108] Created new segment `./raft_datablock_server_raft_0/log/log_inprogress_00000000000000000001' with fd=60
+2026-09-16T07:45:51.350698770Z I20260916 07:45:51.350561    59 chain.h:109] Configuration of this group is 172.30.7.10:18100:0,172.30.7.11:18100:0,172.30.7.12:18100:0,172.30.7.13:18100:0
+2026-09-16T07:45:51.773676376Z [epoch] I20260916 07:45:51.773520     7 chain_client.cpp:83] Sending Request to epoch_server_group at qps=0 latency=0
+2026-09-16T07:45:52.787913931Z [epoch] I20260916 07:45:52.787776     7 chain_client.cpp:83] Sending Request to epoch_server_group at qps=0 latency=0
+2026-09-16T07:45:53.787995151Z [epoch] I20260916 07:45:53.787863     7 chain_client.cpp:83] Sending Request to epoch_server_group at qps=0 latency=0
+2026-09-16T07:45:54.751105749Z W20260916 07:45:54.751026    11 block_broadcaster.cpp:54] block verifier haven't receive block for 5 seconds, please check the sender health.
+2026-09-16T07:45:54.788073331Z [epoch] I20260916 07:45:54.787949     7 chain_client.cpp:83] Sending Request to epoch_server_group at qps=0 latency=0
+2026-09-16T07:45:54.811040820Z I20260916 07:45:54.810911    84 node.cpp:2196] node block_server_raft_2:172.30.7.11:18100:2 received RequestVote from 172.30.7.12:18100:2 in term 3 current_term 2 log_is_ok 1 votable_time 0
+2026-09-16T07:45:54.811050073Z I20260916 07:45:54.810931    48 chain.h:113] Node stops following { leader_id=172.30.7.13:18100:2, term=2, status=Raft node receives higher term request_vote_request.}
+2026-09-16T07:45:54.812864919Z I20260916 07:45:54.812685     1 transaction_manager_impl.cpp:19] TransactionManagerImpl start with epoch = 1
+2026-09-16T07:45:54.813565117Z I20260916 07:45:54.813462   145 aria_coordinator.cpp:26] AriaCoordinator started.
+2026-09-16T07:45:54.822353912Z I20260916 07:45:54.822224    84 raft_meta.cpp:546] Saved single stable meta, path ./raft_datablock_server_raft_2/raft_meta term 3 votedfor 0.0.0.0:0:0 time: 11287
+2026-09-16T07:45:54.824120293Z I20260916 07:45:54.824035    84 raft_meta.cpp:546] Saved single stable meta, path ./raft_datablock_server_raft_2/raft_meta term 3 votedfor 172.30.7.12:18100:2 time: 1785
+2026-09-16T07:45:54.824608589Z I20260916 07:45:54.824558    58 chain.h:117] Node start following { leader_id=172.30.7.12:18100:2, term=3, status=Follower receives message from new leader with the same term.}
+2026-09-16T07:45:54.924786213Z I20260916 07:45:54.924664    51 chain.h:109] Configuration of this group is 172.30.7.10:18100:2,172.30.7.11:18100:2,172.30.7.12:18100:2,172.30.7.13:18100:2
+2026-09-16T07:45:55.788146059Z [epoch] I20260916 07:45:55.788023     7 chain_client.cpp:83] Sending Request to epoch_server_group at qps=0 latency=0

@@ -1,0 +1,6826 @@
+{
+  "manifest": {
+    "run_name": "native-kv-mixed",
+    "platform": "neuchain",
+    "workload": "kv-mixed",
+    "profile": "local-32gb",
+    "normalized": false,
+    "started_at": "2026-09-16T17:33:43.266642032+05:30",
+    "ended_at": "2026-09-16T17:40:18.879164299+05:30",
+    "harness_git_sha": "unknown",
+    "platform_version": "neuchain-ev-patched",
+    "state_db": "leveldb",
+    "state_db_requested": "leveldb",
+    "orderer_batch": {
+      "MaxMessageCount": 0,
+      "AbsoluteMaxBytes": "",
+      "PreferredMaxBytes": "",
+      "BatchTimeout": ""
+    },
+    "crypto": {
+      "signature_alg": "RSA-1024-PKCS1v15",
+      "hash_alg": "SHA-256",
+      "per_tx_endorsement_verify": false,
+      "msp_note": "NeuChain EV: RSA-1024 user signature over the serialized TransactionPayload; no endorsement phase, ordering implicit via deterministic execution"
+    },
+    "resource_limit_per_container": {
+      "CPUs": 4.5,
+      "Memory": ""
+    },
+    "resource_memory_by_container": {
+      "bench-neuchain-block-server-0": "5120m",
+      "bench-neuchain-block-server-1": "5120m",
+      "bench-neuchain-block-server-2": "5120m",
+      "bench-neuchain-block-server-3": "5120m"
+    },
+    "resource_memory_weights": "peer=4 statedb=4 orderer=2 other=1",
+    "resource_containers": 4,
+    "resource_cpus_total": 18,
+    "resource_memory_total_gb": 20,
+    "nodes": {
+      "block_server": 4,
+      "epoch_server": 4
+    },
+    "generators": 3,
+    "seed": 1,
+    "key_space": 200000,
+    "key_distribution": "uniform",
+    "zipfian_constant": 0,
+    "read_write_ratio": 0.5,
+    "value_size_bytes": 64,
+    "warmup_sec": 15,
+    "cooldown_sec": 10,
+    "caveats": [
+      "neuchain native run is shortened to stay under the upstream epoch-10000 crash (nodes SIGSEGV together; see docs/REMAINING-WORK.md)",
+      "kv-mixed native: Fabric/Drunix/Fabric-X reads are Evaluate/QueryService (not ordered); NeuChain reads are committed transactions. Headline TPS blends two paths.",
+      "every sweep step held: the platform did not saturate within the ladder, so 10000 TPS is a lower bound on its knee, not the knee"
+    ]
+  },
+  "phases": [
+    {
+      "name": "probe",
+      "offered_tps": 10,
+      "window": {
+        "phase_start": "2026-09-16T17:33:43.472607193+05:30",
+        "win_start": "2026-09-16T17:33:58.472607193+05:30",
+        "win_end": "2026-09-16T17:34:03.472607193+05:30"
+      },
+      "result": {
+        "wall_clock_sec": 5,
+        "submitted": 50,
+        "committed": 50,
+        "invalid": 0,
+        "errored": 0,
+        "timed_out": 0,
+        "confirmed_tps": 10,
+        "offered_tps": 10,
+        "failure_rate": 0,
+        "e2e_latency": {
+          "name": "e2e",
+          "count": 50,
+          "min_ms": 184.06,
+          "max_ms": 385.02,
+          "mean_ms": 251.37664,
+          "stddev_ms": 44.87006098402809,
+          "percentiles_ms": {
+            "p1": 184.19,
+            "p10": 184.83,
+            "p25": 218.11,
+            "p5": 184.58,
+            "p50": 251.39,
+            "p75": 284.42,
+            "p90": 302.08,
+            "p95": 318.21,
+            "p99": 385.02,
+            "p99.9": 385.02,
+            "p99.99": 385.02
+          }
+        },
+        "submit_latency": {
+          "name": "submit",
+          "count": 50,
+          "min_ms": 0.2,
+          "max_ms": 0.48,
+          "mean_ms": 0.26710000000000006,
+          "stddev_ms": 0.04228108324061719,
+          "percentiles_ms": {
+            "p1": 0.2,
+            "p10": 0.23,
+            "p25": 0.25,
+            "p5": 0.22,
+            "p50": 0.26,
+            "p75": 0.27,
+            "p90": 0.3,
+            "p95": 0.33,
+            "p99": 0.48,
+            "p99.9": 0.48,
+            "p99.99": 0.48
+          }
+        },
+        "commit_latency": {
+          "name": "commit",
+          "count": 50,
+          "min_ms": 183.17,
+          "max_ms": 384.26,
+          "mean_ms": 250.52416,
+          "stddev_ms": 44.98836589135462,
+          "percentiles_ms": {
+            "p1": 183.3,
+            "p10": 183.68,
+            "p25": 216.83,
+            "p5": 183.42,
+            "p50": 250.62,
+            "p75": 284.16,
+            "p90": 301.31,
+            "p95": 317.7,
+            "p99": 384.26,
+            "p99.9": 384.26,
+            "p99.99": 384.26
+          }
+        },
+        "send_gap": {
+          "name": "send_gap",
+          "count": 50,
+          "min_ms": 0.03,
+          "max_ms": 1.05,
+          "mean_ms": 0.59388,
+          "stddev_ms": 0.2770953366623119,
+          "percentiles_ms": {
+            "p1": 0.03,
+            "p10": 0.24,
+            "p25": 0.41,
+            "p5": 0.09,
+            "p50": 0.55,
+            "p75": 0.89,
+            "p90": 0.97,
+            "p95": 0.99,
+            "p99": 1.05,
+            "p99.9": 1.05,
+            "p99.99": 1.05
+          }
+        },
+        "invariant_ok": true
+      }
+    },
+    {
+      "name": "sweep-100",
+      "offered_tps": 100,
+      "window": {
+        "phase_start": "2026-09-16T17:34:13.825844065+05:30",
+        "win_start": "2026-09-16T17:34:28.825844065+05:30",
+        "win_end": "2026-09-16T17:34:33.825844065+05:30"
+      },
+      "result": {
+        "wall_clock_sec": 5,
+        "submitted": 500,
+        "committed": 500,
+        "invalid": 0,
+        "errored": 0,
+        "timed_out": 0,
+        "confirmed_tps": 100,
+        "offered_tps": 100,
+        "failure_rate": 0,
+        "e2e_latency": {
+          "name": "e2e",
+          "count": 500,
+          "min_ms": 82.11,
+          "max_ms": 280.06,
+          "mean_ms": 169.3655040000001,
+          "stddev_ms": 29.26844303358113,
+          "percentiles_ms": {
+            "p1": 103.55,
+            "p10": 132.86,
+            "p25": 148.61,
+            "p5": 124.93,
+            "p50": 168.7,
+            "p75": 189.44,
+            "p90": 207.36,
+            "p95": 219.14,
+            "p99": 233.34,
+            "p99.9": 280.06,
+            "p99.99": 280.06
+          }
+        },
+        "submit_latency": {
+          "name": "submit",
+          "count": 500,
+          "min_ms": 0.19,
+          "max_ms": 0.43,
+          "mean_ms": 0.24482399999999999,
+          "stddev_ms": 0.025523812881307527,
+          "percentiles_ms": {
+            "p1": 0.21,
+            "p10": 0.22,
+            "p25": 0.23,
+            "p5": 0.21,
+            "p50": 0.24,
+            "p75": 0.26,
+            "p90": 0.27,
+            "p95": 0.28,
+            "p99": 0.34,
+            "p99.9": 0.43,
+            "p99.99": 0.43
+          }
+        },
+        "commit_latency": {
+          "name": "commit",
+          "count": 500,
+          "min_ms": 81.15,
+          "max_ms": 279.3,
+          "mean_ms": 168.56441600000005,
+          "stddev_ms": 29.25087598912114,
+          "percentiles_ms": {
+            "p1": 102.4,
+            "p10": 131.84,
+            "p25": 148.1,
+            "p5": 123.65,
+            "p50": 167.94,
+            "p75": 188.8,
+            "p90": 206.34,
+            "p95": 217.98,
+            "p99": 232.58,
+            "p99.9": 279.3,
+            "p99.99": 279.3
+          }
+        },
+        "send_gap": {
+          "name": "send_gap",
+          "count": 500,
+          "min_ms": 0.02,
+          "max_ms": 1.11,
+          "mean_ms": 0.5517620000000001,
+          "stddev_ms": 0.2972758876128369,
+          "percentiles_ms": {
+            "p1": 0.03,
+            "p10": 0.12,
+            "p25": 0.31,
+            "p5": 0.07,
+            "p50": 0.54,
+            "p75": 0.81,
+            "p90": 0.96,
+            "p95": 1.03,
+            "p99": 1.09,
+            "p99.9": 1.11,
+            "p99.99": 1.11
+          }
+        },
+        "invariant_ok": true
+      },
+      "verdict": "held"
+    },
+    {
+      "name": "sweep-250",
+      "offered_tps": 250,
+      "window": {
+        "phase_start": "2026-09-16T17:34:44.226250023+05:30",
+        "win_start": "2026-09-16T17:34:59.226250023+05:30",
+        "win_end": "2026-09-16T17:35:04.226250023+05:30"
+      },
+      "result": {
+        "wall_clock_sec": 5,
+        "submitted": 1250,
+        "committed": 1250,
+        "invalid": 0,
+        "errored": 0,
+        "timed_out": 0,
+        "confirmed_tps": 250,
+        "offered_tps": 250,
+        "failure_rate": 0,
+        "e2e_latency": {
+          "name": "e2e",
+          "count": 1250,
+          "min_ms": 76.61,
+          "max_ms": 207.87,
+          "mean_ms": 136.1672191999999,
+          "stddev_ms": 23.49856955656559,
+          "percentiles_ms": {
+            "p1": 92.74,
+            "p10": 107.39,
+            "p25": 118.72,
+            "p5": 102.08,
+            "p50": 134.4,
+            "p75": 150.4,
+            "p90": 168.83,
+            "p95": 180.86,
+            "p99": 196.35,
+            "p99.9": 207.23,
+            "p99.99": 207.87
+          }
+        },
+        "submit_latency": {
+          "name": "submit",
+          "count": 1250,
+          "min_ms": 0.18,
+          "max_ms": 0.55,
+          "mean_ms": 0.23406800000000014,
+          "stddev_ms": 0.02691047706749176,
+          "percentiles_ms": {
+            "p1": 0.19,
+            "p10": 0.21,
+            "p25": 0.22,
+            "p5": 0.2,
+            "p50": 0.23,
+            "p75": 0.24,
+            "p90": 0.26,
+            "p95": 0.27,
+            "p99": 0.32,
+            "p99.9": 0.52,
+            "p99.99": 0.55
+          }
+        },
+        "commit_latency": {
+          "name": "commit",
+          "count": 1250,
+          "min_ms": 76.29,
+          "max_ms": 207.49,
+          "mean_ms": 135.39015680000017,
+          "stddev_ms": 23.492225954051563,
+          "percentiles_ms": {
+            "p1": 91.9,
+            "p10": 106.56,
+            "p25": 118.02,
+            "p5": 101.38,
+            "p50": 133.63,
+            "p75": 150.02,
+            "p90": 168.19,
+            "p95": 180.22,
+            "p99": 195.2,
+            "p99.9": 205.95,
+            "p99.99": 207.49
+          }
+        },
+        "send_gap": {
+          "name": "send_gap",
+          "count": 1250,
+          "min_ms": 0.01,
+          "max_ms": 1.29,
+          "mean_ms": 0.5427488000000008,
+          "stddev_ms": 0.30895169735503963,
+          "percentiles_ms": {
+            "p1": 0.02,
+            "p10": 0.13,
+            "p25": 0.28,
+            "p5": 0.05,
+            "p50": 0.53,
+            "p75": 0.8,
+            "p90": 0.96,
+            "p95": 1.04,
+            "p99": 1.09,
+            "p99.9": 1.26,
+            "p99.99": 1.29
+          }
+        },
+        "invariant_ok": true
+      },
+      "verdict": "held"
+    },
+    {
+      "name": "sweep-500",
+      "offered_tps": 500,
+      "window": {
+        "phase_start": "2026-09-16T17:35:14.427685094+05:30",
+        "win_start": "2026-09-16T17:35:29.427685094+05:30",
+        "win_end": "2026-09-16T17:35:34.427685094+05:30"
+      },
+      "result": {
+        "wall_clock_sec": 5,
+        "submitted": 2500,
+        "committed": 2500,
+        "invalid": 0,
+        "errored": 0,
+        "timed_out": 0,
+        "confirmed_tps": 500,
+        "offered_tps": 500,
+        "failure_rate": 0,
+        "e2e_latency": {
+          "name": "e2e",
+          "count": 2500,
+          "min_ms": 67.07,
+          "max_ms": 188.8,
+          "mean_ms": 120.75417599999984,
+          "stddev_ms": 23.924489565585805,
+          "percentiles_ms": {
+            "p1": 75.14,
+            "p10": 89.28,
+            "p25": 102.66,
+            "p5": 83.26,
+            "p50": 119.74,
+            "p75": 137.22,
+            "p90": 154.37,
+            "p95": 162.69,
+            "p99": 174.72,
+            "p99.9": 184.45,
+            "p99.99": 188.8
+          }
+        },
+        "submit_latency": {
+          "name": "submit",
+          "count": 2500,
+          "min_ms": 0.18,
+          "max_ms": 0.53,
+          "mean_ms": 0.22712880000000002,
+          "stddev_ms": 0.023367178061546073,
+          "percentiles_ms": {
+            "p1": 0.19,
+            "p10": 0.21,
+            "p25": 0.21,
+            "p5": 0.2,
+            "p50": 0.22,
+            "p75": 0.24,
+            "p90": 0.25,
+            "p95": 0.26,
+            "p99": 0.29,
+            "p99.9": 0.45,
+            "p99.99": 0.53
+          }
+        },
+        "commit_latency": {
+          "name": "commit",
+          "count": 2500,
+          "min_ms": 66.62,
+          "max_ms": 187.78,
+          "mean_ms": 120.00419839999995,
+          "stddev_ms": 23.919680554100978,
+          "percentiles_ms": {
+            "p1": 74.37,
+            "p10": 88.32,
+            "p25": 101.76,
+            "p5": 82.88,
+            "p50": 118.91,
+            "p75": 136.58,
+            "p90": 153.47,
+            "p95": 161.92,
+            "p99": 173.57,
+            "p99.9": 183.3,
+            "p99.99": 187.78
+          }
+        },
+        "send_gap": {
+          "name": "send_gap",
+          "count": 2500,
+          "min_ms": 0,
+          "max_ms": 1.12,
+          "mean_ms": 0.5226136,
+          "stddev_ms": 0.3087975846651654,
+          "percentiles_ms": {
+            "p1": 0.02,
+            "p10": 0.11,
+            "p25": 0.25,
+            "p5": 0.05,
+            "p50": 0.51,
+            "p75": 0.78,
+            "p90": 0.97,
+            "p95": 1.02,
+            "p99": 1.08,
+            "p99.9": 1.11,
+            "p99.99": 1.12
+          }
+        },
+        "invariant_ok": true
+      },
+      "verdict": "held"
+    },
+    {
+      "name": "sweep-1000",
+      "offered_tps": 1000,
+      "window": {
+        "phase_start": "2026-09-16T17:35:44.729313747+05:30",
+        "win_start": "2026-09-16T17:35:59.729313747+05:30",
+        "win_end": "2026-09-16T17:36:04.729313747+05:30"
+      },
+      "result": {
+        "wall_clock_sec": 5,
+        "submitted": 5000,
+        "committed": 5000,
+        "invalid": 0,
+        "errored": 0,
+        "timed_out": 0,
+        "confirmed_tps": 1000,
+        "offered_tps": 1000,
+        "failure_rate": 0,
+        "e2e_latency": {
+          "name": "e2e",
+          "count": 5000,
+          "min_ms": 67.52,
+          "max_ms": 199.55,
+          "mean_ms": 123.10425599999996,
+          "stddev_ms": 22.022058169645824,
+          "percentiles_ms": {
+            "p1": 77.25,
+            "p10": 95.04,
+            "p25": 107.39,
+            "p5": 88.06,
+            "p50": 122.3,
+            "p75": 137.86,
+            "p90": 151.68,
+            "p95": 160.64,
+            "p99": 180.22,
+            "p99.9": 195.2,
+            "p99.99": 198.14
+          }
+        },
+        "submit_latency": {
+          "name": "submit",
+          "count": 5000,
+          "min_ms": 0.18,
+          "max_ms": 2.79,
+          "mean_ms": 0.22309200000000004,
+          "stddev_ms": 0.04272589772023521,
+          "percentiles_ms": {
+            "p1": 0.19,
+            "p10": 0.2,
+            "p25": 0.21,
+            "p5": 0.19,
+            "p50": 0.22,
+            "p75": 0.23,
+            "p90": 0.25,
+            "p95": 0.26,
+            "p99": 0.3,
+            "p99.9": 0.43,
+            "p99.99": 0.62
+          }
+        },
+        "commit_latency": {
+          "name": "commit",
+          "count": 5000,
+          "min_ms": 67.2,
+          "max_ms": 198.66,
+          "mean_ms": 122.39806719999984,
+          "stddev_ms": 22.01314761875466,
+          "percentiles_ms": {
+            "p1": 76.74,
+            "p10": 94.34,
+            "p25": 106.69,
+            "p5": 87.49,
+            "p50": 121.54,
+            "p75": 137.22,
+            "p90": 151.04,
+            "p95": 159.87,
+            "p99": 179.2,
+            "p99.9": 194.3,
+            "p99.99": 197.5
+          }
+        },
+        "send_gap": {
+          "name": "send_gap",
+          "count": 5000,
+          "min_ms": 0,
+          "max_ms": 1.18,
+          "mean_ms": 0.4816386000000002,
+          "stddev_ms": 0.31071048194426887,
+          "percentiles_ms": {
+            "p1": 0.01,
+            "p10": 0.08,
+            "p25": 0.21,
+            "p5": 0.04,
+            "p50": 0.47,
+            "p75": 0.74,
+            "p90": 0.93,
+            "p95": 1.01,
+            "p99": 1.08,
+            "p99.9": 1.13,
+            "p99.99": 1.15
+          }
+        },
+        "invariant_ok": true
+      },
+      "verdict": "held"
+    },
+    {
+      "name": "sweep-2000",
+      "offered_tps": 2000,
+      "window": {
+        "phase_start": "2026-09-16T17:36:15.037486119+05:30",
+        "win_start": "2026-09-16T17:36:30.037486119+05:30",
+        "win_end": "2026-09-16T17:36:35.037486119+05:30"
+      },
+      "result": {
+        "wall_clock_sec": 5,
+        "submitted": 10000,
+        "committed": 9999,
+        "invalid": 1,
+        "errored": 0,
+        "timed_out": 0,
+        "confirmed_tps": 1999.8,
+        "offered_tps": 2000,
+        "failure_rate": 0.0001,
+        "e2e_latency": {
+          "name": "e2e",
+          "count": 9999,
+          "min_ms": 64.48,
+          "max_ms": 229.89,
+          "mean_ms": 122.24294749474957,
+          "stddev_ms": 26.740065383263648,
+          "percentiles_ms": {
+            "p1": 72.06,
+            "p10": 87.04,
+            "p25": 102.85,
+            "p5": 80.26,
+            "p50": 121.09,
+            "p75": 140.67,
+            "p90": 157.06,
+            "p95": 165.38,
+            "p99": 195.33,
+            "p99.9": 222.46,
+            "p99.99": 228.48
+          }
+        },
+        "submit_latency": {
+          "name": "submit",
+          "count": 9999,
+          "min_ms": 0.18,
+          "max_ms": 0.95,
+          "mean_ms": 0.21350815081508157,
+          "stddev_ms": 0.025763064299866755,
+          "percentiles_ms": {
+            "p1": 0.18,
+            "p10": 0.19,
+            "p25": 0.2,
+            "p5": 0.19,
+            "p50": 0.21,
+            "p75": 0.22,
+            "p90": 0.24,
+            "p95": 0.25,
+            "p99": 0.28,
+            "p99.9": 0.47,
+            "p99.99": 0.9
+          }
+        },
+        "commit_latency": {
+          "name": "commit",
+          "count": 9999,
+          "min_ms": 64,
+          "max_ms": 229.5,
+          "mean_ms": 121.59192399239915,
+          "stddev_ms": 26.731423597178225,
+          "percentiles_ms": {
+            "p1": 71.68,
+            "p10": 86.46,
+            "p25": 102.14,
+            "p5": 79.68,
+            "p50": 120.45,
+            "p75": 139.9,
+            "p90": 156.42,
+            "p95": 164.61,
+            "p99": 194.3,
+            "p99.9": 221.7,
+            "p99.99": 227.33
+          }
+        },
+        "send_gap": {
+          "name": "send_gap",
+          "count": 9999,
+          "min_ms": 0,
+          "max_ms": 1.24,
+          "mean_ms": 0.43573457345734595,
+          "stddev_ms": 0.3036368832857508,
+          "percentiles_ms": {
+            "p1": 0.01,
+            "p10": 0.06,
+            "p25": 0.16,
+            "p5": 0.03,
+            "p50": 0.41,
+            "p75": 0.69,
+            "p90": 0.86,
+            "p95": 0.98,
+            "p99": 1.08,
+            "p99.9": 1.13,
+            "p99.99": 1.24
+          }
+        },
+        "invariant_ok": true,
+        "errors": [
+          {
+            "message": "committed invalid",
+            "count": 1
+          }
+        ]
+      },
+      "verdict": "held"
+    },
+    {
+      "name": "sweep-3500",
+      "offered_tps": 3500,
+      "window": {
+        "phase_start": "2026-09-16T17:36:45.354491572+05:30",
+        "win_start": "2026-09-16T17:37:00.354491572+05:30",
+        "win_end": "2026-09-16T17:37:05.354491572+05:30"
+      },
+      "result": {
+        "wall_clock_sec": 5,
+        "submitted": 17500,
+        "committed": 17498,
+        "invalid": 2,
+        "errored": 0,
+        "timed_out": 0,
+        "confirmed_tps": 3499.6,
+        "offered_tps": 3500,
+        "failure_rate": 0.00011428571428571428,
+        "e2e_latency": {
+          "name": "e2e",
+          "count": 17498,
+          "min_ms": 61.98,
+          "max_ms": 230.27,
+          "mean_ms": 121.63154097611154,
+          "stddev_ms": 24.334865288510706,
+          "percentiles_ms": {
+            "p1": 77.7,
+            "p10": 91.97,
+            "p25": 104,
+            "p5": 86.08,
+            "p50": 119.81,
+            "p75": 136.06,
+            "p90": 153.98,
+            "p95": 165.12,
+            "p99": 188.8,
+            "p99.9": 220.8,
+            "p99.99": 227.71
+          }
+        },
+        "submit_latency": {
+          "name": "submit",
+          "count": 17498,
+          "min_ms": 0.17,
+          "max_ms": 2.16,
+          "mean_ms": 0.2111170990970397,
+          "stddev_ms": 0.03503963357260459,
+          "percentiles_ms": {
+            "p1": 0.18,
+            "p10": 0.19,
+            "p25": 0.2,
+            "p5": 0.18,
+            "p50": 0.21,
+            "p75": 0.22,
+            "p90": 0.24,
+            "p95": 0.25,
+            "p99": 0.29,
+            "p99.9": 0.53,
+            "p99.99": 1.42
+          }
+        },
+        "commit_latency": {
+          "name": "commit",
+          "count": 17498,
+          "min_ms": 61.5,
+          "max_ms": 229.89,
+          "mean_ms": 121.09518253514688,
+          "stddev_ms": 24.330503032740776,
+          "percentiles_ms": {
+            "p1": 77.18,
+            "p10": 91.33,
+            "p25": 103.42,
+            "p5": 85.44,
+            "p50": 119.3,
+            "p75": 135.55,
+            "p90": 153.34,
+            "p95": 164.48,
+            "p99": 188.29,
+            "p99.9": 220.42,
+            "p99.99": 227.46
+          }
+        },
+        "send_gap": {
+          "name": "send_gap",
+          "count": 17498,
+          "min_ms": 0,
+          "max_ms": 2.04,
+          "mean_ms": 0.3243559835409768,
+          "stddev_ms": 0.27532840287683313,
+          "percentiles_ms": {
+            "p1": 0.01,
+            "p10": 0.03,
+            "p25": 0.08,
+            "p5": 0.02,
+            "p50": 0.25,
+            "p75": 0.55,
+            "p90": 0.73,
+            "p95": 0.82,
+            "p99": 1.02,
+            "p99.9": 1.21,
+            "p99.99": 1.52
+          }
+        },
+        "invariant_ok": true,
+        "errors": [
+          {
+            "message": "committed invalid",
+            "count": 2
+          }
+        ]
+      },
+      "verdict": "held"
+    },
+    {
+      "name": "sweep-5000",
+      "offered_tps": 5000,
+      "window": {
+        "phase_start": "2026-09-16T17:37:15.884794691+05:30",
+        "win_start": "2026-09-16T17:37:30.884794691+05:30",
+        "win_end": "2026-09-16T17:37:35.884794691+05:30"
+      },
+      "result": {
+        "wall_clock_sec": 5,
+        "submitted": 25000,
+        "committed": 24992,
+        "invalid": 8,
+        "errored": 0,
+        "timed_out": 0,
+        "confirmed_tps": 4998.4,
+        "offered_tps": 5000,
+        "failure_rate": 0.00032,
+        "e2e_latency": {
+          "name": "e2e",
+          "count": 24992,
+          "min_ms": 65.54,
+          "max_ms": 244.35,
+          "mean_ms": 129.57011651728538,
+          "stddev_ms": 24.575174796809105,
+          "percentiles_ms": {
+            "p1": 82.94,
+            "p10": 100.93,
+            "p25": 112.13,
+            "p5": 94.72,
+            "p50": 127.49,
+            "p75": 143.36,
+            "p90": 160.77,
+            "p95": 174.85,
+            "p99": 199.81,
+            "p99.9": 234.62,
+            "p99.99": 242.43
+          }
+        },
+        "submit_latency": {
+          "name": "submit",
+          "count": 24992,
+          "min_ms": 0.17,
+          "max_ms": 6.94,
+          "mean_ms": 0.21097999359795125,
+          "stddev_ms": 0.07281613599033761,
+          "percentiles_ms": {
+            "p1": 0.18,
+            "p10": 0.19,
+            "p25": 0.19,
+            "p5": 0.18,
+            "p50": 0.21,
+            "p75": 0.22,
+            "p90": 0.23,
+            "p95": 0.25,
+            "p99": 0.29,
+            "p99.9": 0.7,
+            "p99.99": 4.09
+          }
+        },
+        "commit_latency": {
+          "name": "commit",
+          "count": 24992,
+          "min_ms": 64.58,
+          "max_ms": 243.84,
+          "mean_ms": 128.99279641485282,
+          "stddev_ms": 24.576031761826318,
+          "percentiles_ms": {
+            "p1": 82.5,
+            "p10": 100.42,
+            "p25": 111.62,
+            "p5": 94.14,
+            "p50": 126.85,
+            "p75": 142.85,
+            "p90": 160.26,
+            "p95": 174.46,
+            "p99": 199.55,
+            "p99.9": 234.24,
+            "p99.99": 242.18
+          }
+        },
+        "send_gap": {
+          "name": "send_gap",
+          "count": 24992,
+          "min_ms": 0,
+          "max_ms": 12.48,
+          "mean_ms": 0.3653185419334186,
+          "stddev_ms": 0.3999798814106497,
+          "percentiles_ms": {
+            "p1": 0.01,
+            "p10": 0.03,
+            "p25": 0.09,
+            "p5": 0.02,
+            "p50": 0.23,
+            "p75": 0.66,
+            "p90": 0.82,
+            "p95": 0.88,
+            "p99": 0.99,
+            "p99.9": 4.81,
+            "p99.99": 11.93
+          }
+        },
+        "invariant_ok": true,
+        "errors": [
+          {
+            "message": "committed invalid",
+            "count": 8
+          }
+        ]
+      },
+      "verdict": "held"
+    },
+    {
+      "name": "sweep-7500",
+      "offered_tps": 7500,
+      "window": {
+        "phase_start": "2026-09-16T17:37:46.335504957+05:30",
+        "win_start": "2026-09-16T17:38:01.335504957+05:30",
+        "win_end": "2026-09-16T17:38:06.335504957+05:30"
+      },
+      "result": {
+        "wall_clock_sec": 5,
+        "submitted": 37500,
+        "committed": 37487,
+        "invalid": 13,
+        "errored": 0,
+        "timed_out": 0,
+        "confirmed_tps": 7497.4,
+        "offered_tps": 7500,
+        "failure_rate": 0.00034666666666666667,
+        "e2e_latency": {
+          "name": "e2e",
+          "count": 37487,
+          "min_ms": 65.92,
+          "max_ms": 225.15,
+          "mean_ms": 136.07492986902125,
+          "stddev_ms": 25.777768277095483,
+          "percentiles_ms": {
+            "p1": 79.36,
+            "p10": 105.86,
+            "p25": 118.98,
+            "p5": 95.23,
+            "p50": 134.66,
+            "p75": 151.55,
+            "p90": 167.3,
+            "p95": 184.45,
+            "p99": 206.72,
+            "p99.9": 218.75,
+            "p99.99": 223.1
+          }
+        },
+        "submit_latency": {
+          "name": "submit",
+          "count": 37487,
+          "min_ms": 0.17,
+          "max_ms": 7.24,
+          "mean_ms": 0.21611617360685015,
+          "stddev_ms": 0.06579977264296698,
+          "percentiles_ms": {
+            "p1": 0.18,
+            "p10": 0.19,
+            "p25": 0.2,
+            "p5": 0.18,
+            "p50": 0.21,
+            "p75": 0.23,
+            "p90": 0.25,
+            "p95": 0.27,
+            "p99": 0.33,
+            "p99.9": 0.79,
+            "p99.99": 2.52
+          }
+        },
+        "commit_latency": {
+          "name": "commit",
+          "count": 37487,
+          "min_ms": 65.38,
+          "max_ms": 224,
+          "mean_ms": 135.56459956785014,
+          "stddev_ms": 25.763390291018155,
+          "percentiles_ms": {
+            "p1": 79.04,
+            "p10": 105.28,
+            "p25": 118.4,
+            "p5": 94.72,
+            "p50": 134.14,
+            "p75": 151.04,
+            "p90": 166.78,
+            "p95": 183.81,
+            "p99": 206.21,
+            "p99.9": 217.98,
+            "p99.99": 222.72
+          }
+        },
+        "send_gap": {
+          "name": "send_gap",
+          "count": 37487,
+          "min_ms": 0,
+          "max_ms": 9.46,
+          "mean_ms": 0.2932205831354872,
+          "stddev_ms": 0.3575613666939024,
+          "percentiles_ms": {
+            "p1": 0,
+            "p10": 0.02,
+            "p25": 0.04,
+            "p5": 0.01,
+            "p50": 0.15,
+            "p75": 0.55,
+            "p90": 0.7,
+            "p95": 0.88,
+            "p99": 1.06,
+            "p99.9": 3.38,
+            "p99.99": 8.65
+          }
+        },
+        "invariant_ok": true,
+        "errors": [
+          {
+            "message": "committed invalid",
+            "count": 13
+          }
+        ]
+      },
+      "verdict": "held"
+    },
+    {
+      "name": "sweep-10000",
+      "offered_tps": 10000,
+      "window": {
+        "phase_start": "2026-09-16T17:38:16.74889655+05:30",
+        "win_start": "2026-09-16T17:38:31.74889655+05:30",
+        "win_end": "2026-09-16T17:38:36.74889655+05:30"
+      },
+      "result": {
+        "wall_clock_sec": 5,
+        "submitted": 50000,
+        "committed": 49982,
+        "invalid": 18,
+        "errored": 0,
+        "timed_out": 0,
+        "confirmed_tps": 9996.4,
+        "offered_tps": 10000,
+        "failure_rate": 0.00036,
+        "e2e_latency": {
+          "name": "e2e",
+          "count": 49982,
+          "min_ms": 66.43,
+          "max_ms": 230.14,
+          "mean_ms": 123.72604281541338,
+          "stddev_ms": 27.717515891481316,
+          "percentiles_ms": {
+            "p1": 74.05,
+            "p10": 87.3,
+            "p25": 103.04,
+            "p5": 81.15,
+            "p50": 122.3,
+            "p75": 143.1,
+            "p90": 159.74,
+            "p95": 167.81,
+            "p99": 201.34,
+            "p99.9": 223.62,
+            "p99.99": 228.22
+          }
+        },
+        "submit_latency": {
+          "name": "submit",
+          "count": 49982,
+          "min_ms": 0.17,
+          "max_ms": 10.34,
+          "mean_ms": 0.20833742147172982,
+          "stddev_ms": 0.1711588780574681,
+          "percentiles_ms": {
+            "p1": 0.18,
+            "p10": 0.18,
+            "p25": 0.18,
+            "p5": 0.18,
+            "p50": 0.2,
+            "p75": 0.21,
+            "p90": 0.23,
+            "p95": 0.25,
+            "p99": 0.32,
+            "p99.9": 2.07,
+            "p99.99": 9.25
+          }
+        },
+        "commit_latency": {
+          "name": "commit",
+          "count": 49982,
+          "min_ms": 66.18,
+          "max_ms": 230.02,
+          "mean_ms": 123.40089984394388,
+          "stddev_ms": 27.719313051332747,
+          "percentiles_ms": {
+            "p1": 73.79,
+            "p10": 87.04,
+            "p25": 102.66,
+            "p5": 80.9,
+            "p50": 121.98,
+            "p75": 142.85,
+            "p90": 159.49,
+            "p95": 167.55,
+            "p99": 201.09,
+            "p99.9": 223.36,
+            "p99.99": 227.97
+          }
+        },
+        "send_gap": {
+          "name": "send_gap",
+          "count": 49982,
+          "min_ms": 0,
+          "max_ms": 11.65,
+          "mean_ms": 0.11603231163218743,
+          "stddev_ms": 0.3752994215988631,
+          "percentiles_ms": {
+            "p1": 0,
+            "p10": 0.01,
+            "p25": 0.02,
+            "p5": 0.01,
+            "p50": 0.06,
+            "p75": 0.12,
+            "p90": 0.18,
+            "p95": 0.24,
+            "p99": 1.01,
+            "p99.9": 6.28,
+            "p99.99": 10.31
+          }
+        },
+        "invariant_ok": true,
+        "errors": [
+          {
+            "message": "committed invalid",
+            "count": 18
+          }
+        ]
+      },
+      "verdict": "held"
+    },
+    {
+      "name": "hold",
+      "offered_tps": 9000,
+      "window": {
+        "phase_start": "2026-09-16T17:38:47.501714857+05:30",
+        "win_start": "2026-09-16T17:39:02.501714857+05:30",
+        "win_end": "2026-09-16T17:40:07.501714857+05:30"
+      },
+      "result": {
+        "wall_clock_sec": 65,
+        "submitted": 585000,
+        "committed": 584770,
+        "invalid": 230,
+        "errored": 0,
+        "timed_out": 0,
+        "confirmed_tps": 8996.461538461539,
+        "offered_tps": 9000,
+        "failure_rate": 0.00039316239316239317,
+        "e2e_latency": {
+          "name": "e2e",
+          "count": 584770,
+          "min_ms": 34.18,
+          "max_ms": 428.03,
+          "mean_ms": 139.64410157839868,
+          "stddev_ms": 38.3373572632887,
+          "percentiles_ms": {
+            "p1": 73.79,
+            "p10": 97.34,
+            "p25": 113.79,
+            "p5": 88.51,
+            "p50": 134.02,
+            "p75": 159.23,
+            "p90": 189.95,
+            "p95": 209.54,
+            "p99": 248.06,
+            "p99.9": 385.02,
+            "p99.99": 418.82
+          }
+        },
+        "submit_latency": {
+          "name": "submit",
+          "count": 584770,
+          "min_ms": 0.17,
+          "max_ms": 14.5,
+          "mean_ms": 0.21422194025001282,
+          "stddev_ms": 0.1285746387002173,
+          "percentiles_ms": {
+            "p1": 0.18,
+            "p10": 0.18,
+            "p25": 0.19,
+            "p5": 0.18,
+            "p50": 0.21,
+            "p75": 0.22,
+            "p90": 0.24,
+            "p95": 0.26,
+            "p99": 0.31,
+            "p99.9": 1.14,
+            "p99.99": 5.96
+          }
+        },
+        "commit_latency": {
+          "name": "commit",
+          "count": 584770,
+          "min_ms": 33.98,
+          "max_ms": 427.26,
+          "mean_ms": 139.12701518887735,
+          "stddev_ms": 38.330811109556926,
+          "percentiles_ms": {
+            "p1": 73.34,
+            "p10": 96.83,
+            "p25": 113.28,
+            "p5": 87.94,
+            "p50": 133.5,
+            "p75": 158.72,
+            "p90": 189.44,
+            "p95": 209.02,
+            "p99": 247.68,
+            "p99.9": 384.51,
+            "p99.99": 418.3
+          }
+        },
+        "send_gap": {
+          "name": "send_gap",
+          "count": 584770,
+          "min_ms": 0,
+          "max_ms": 19.81,
+          "mean_ms": 0.3018886126169259,
+          "stddev_ms": 0.5568658848862479,
+          "percentiles_ms": {
+            "p1": 0,
+            "p10": 0.02,
+            "p25": 0.04,
+            "p5": 0.01,
+            "p50": 0.14,
+            "p75": 0.5,
+            "p90": 0.76,
+            "p95": 0.91,
+            "p99": 1.26,
+            "p99.9": 8.08,
+            "p99.99": 17.1
+          }
+        },
+        "invariant_ok": true,
+        "errors": [
+          {
+            "message": "committed invalid",
+            "count": 230
+          }
+        ]
+      }
+    }
+  ],
+  "headline": {
+    "wall_clock_sec": 65,
+    "submitted": 585000,
+    "committed": 584770,
+    "invalid": 230,
+    "errored": 0,
+    "timed_out": 0,
+    "confirmed_tps": 8996.461538461539,
+    "offered_tps": 9000,
+    "failure_rate": 0.00039316239316239317,
+    "e2e_latency": {
+      "name": "e2e",
+      "count": 584770,
+      "min_ms": 34.18,
+      "max_ms": 428.03,
+      "mean_ms": 139.64410157839868,
+      "stddev_ms": 38.3373572632887,
+      "percentiles_ms": {
+        "p1": 73.79,
+        "p10": 97.34,
+        "p25": 113.79,
+        "p5": 88.51,
+        "p50": 134.02,
+        "p75": 159.23,
+        "p90": 189.95,
+        "p95": 209.54,
+        "p99": 248.06,
+        "p99.9": 385.02,
+        "p99.99": 418.82
+      }
+    },
+    "submit_latency": {
+      "name": "submit",
+      "count": 584770,
+      "min_ms": 0.17,
+      "max_ms": 14.5,
+      "mean_ms": 0.21422194025001282,
+      "stddev_ms": 0.1285746387002173,
+      "percentiles_ms": {
+        "p1": 0.18,
+        "p10": 0.18,
+        "p25": 0.19,
+        "p5": 0.18,
+        "p50": 0.21,
+        "p75": 0.22,
+        "p90": 0.24,
+        "p95": 0.26,
+        "p99": 0.31,
+        "p99.9": 1.14,
+        "p99.99": 5.96
+      }
+    },
+    "commit_latency": {
+      "name": "commit",
+      "count": 584770,
+      "min_ms": 33.98,
+      "max_ms": 427.26,
+      "mean_ms": 139.12701518887735,
+      "stddev_ms": 38.330811109556926,
+      "percentiles_ms": {
+        "p1": 73.34,
+        "p10": 96.83,
+        "p25": 113.28,
+        "p5": 87.94,
+        "p50": 133.5,
+        "p75": 158.72,
+        "p90": 189.44,
+        "p95": 209.02,
+        "p99": 247.68,
+        "p99.9": 384.51,
+        "p99.99": 418.3
+      }
+    },
+    "send_gap": {
+      "name": "send_gap",
+      "count": 584770,
+      "min_ms": 0,
+      "max_ms": 19.81,
+      "mean_ms": 0.3018886126169259,
+      "stddev_ms": 0.5568658848862479,
+      "percentiles_ms": {
+        "p1": 0,
+        "p10": 0.02,
+        "p25": 0.04,
+        "p5": 0.01,
+        "p50": 0.14,
+        "p75": 0.5,
+        "p90": 0.76,
+        "p95": 0.91,
+        "p99": 1.26,
+        "p99.9": 8.08,
+        "p99.99": 17.1
+      }
+    },
+    "invariant_ok": true,
+    "errors": [
+      {
+        "message": "committed invalid",
+        "count": 230
+      }
+    ]
+  },
+  "saturation_tps": 10000,
+  "system_samples": [
+    {
+      "t": "2026-09-16T17:33:46.689857856+05:30",
+      "cpu_percent": 48.2,
+      "mem_bytes": 682832689,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 12.64,
+          "mem_bytes": 177838489
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 12.05,
+          "mem_bytes": 167562444
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 11.55,
+          "mem_bytes": 169030451
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 11.96,
+          "mem_bytes": 168401305
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:33:48.708003623+05:30",
+      "cpu_percent": 48.82,
+      "mem_bytes": 688390141,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 12.91,
+          "mem_bytes": 179096780
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 12.47,
+          "mem_bytes": 169659596
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 11.86,
+          "mem_bytes": 169974169
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 11.58,
+          "mem_bytes": 169659596
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:33:50.728092075+05:30",
+      "cpu_percent": 51.94,
+      "mem_bytes": 690487295,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 14,
+          "mem_bytes": 179935641
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 13.07,
+          "mem_bytes": 170288742
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 12.42,
+          "mem_bytes": 170393600
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 12.45,
+          "mem_bytes": 169869312
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:33:52.746465992+05:30",
+      "cpu_percent": 49.49,
+      "mem_bytes": 693947595,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 13.04,
+          "mem_bytes": 180774502
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 12.46,
+          "mem_bytes": 171232460
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 12.1,
+          "mem_bytes": 171547033
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 11.89,
+          "mem_bytes": 170393600
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:33:54.766298658+05:30",
+      "cpu_percent": 51.4,
+      "mem_bytes": 696569035,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 13.31,
+          "mem_bytes": 181508505
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 13.23,
+          "mem_bytes": 171651891
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 12.6,
+          "mem_bytes": 172071321
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 12.26,
+          "mem_bytes": 171337318
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:33:56.786147891+05:30",
+      "cpu_percent": 51.48,
+      "mem_bytes": 699819621,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 13.66,
+          "mem_bytes": 183081369
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 13.17,
+          "mem_bytes": 172700467
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 12.18,
+          "mem_bytes": 172385894
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 12.47,
+          "mem_bytes": 171651891
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:33:58.805254209+05:30",
+      "cpu_percent": 49.97,
+      "mem_bytes": 700658482,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 13.21,
+          "mem_bytes": 182976512
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 12.85,
+          "mem_bytes": 172805324
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 11.97,
+          "mem_bytes": 172700467
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 11.94,
+          "mem_bytes": 172176179
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:34:00.825000674+05:30",
+      "cpu_percent": 51.17,
+      "mem_bytes": 702965348,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 13.82,
+          "mem_bytes": 183605657
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 12.91,
+          "mem_bytes": 173329612
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 12.3,
+          "mem_bytes": 173434470
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 12.14,
+          "mem_bytes": 172595609
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:34:02.84364584+05:30",
+      "cpu_percent": 49.849999999999994,
+      "mem_bytes": 704747929,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 13.41,
+          "mem_bytes": 184025088
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 12.68,
+          "mem_bytes": 173749043
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 11.82,
+          "mem_bytes": 173539328
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 11.94,
+          "mem_bytes": 173434470
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:34:04.861837664+05:30",
+      "cpu_percent": 52.03,
+      "mem_bytes": 707683942,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 13.69,
+          "mem_bytes": 185073664
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 13.52,
+          "mem_bytes": 174273331
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 12.48,
+          "mem_bytes": 174797619
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 12.34,
+          "mem_bytes": 173539328
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:34:06.880117905+05:30",
+      "cpu_percent": 50.39,
+      "mem_bytes": 709151947,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 13.2,
+          "mem_bytes": 185283379
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 13.06,
+          "mem_bytes": 175007334
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 12,
+          "mem_bytes": 174902476
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 12.13,
+          "mem_bytes": 173958758
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:34:08.898640943+05:30",
+      "cpu_percent": 48.989999999999995,
+      "mem_bytes": 710934527,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 12.9,
+          "mem_bytes": 185807667
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 12.67,
+          "mem_bytes": 175636480
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 11.69,
+          "mem_bytes": 175112192
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 11.73,
+          "mem_bytes": 174378188
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:34:10.916176684+05:30",
+      "cpu_percent": 49.78,
+      "mem_bytes": 713870538,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 13.09,
+          "mem_bytes": 186436812
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 12.83,
+          "mem_bytes": 176265625
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 11.97,
+          "mem_bytes": 175741337
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 11.89,
+          "mem_bytes": 175426764
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:34:12.933470203+05:30",
+      "cpu_percent": 48.95,
+      "mem_bytes": 715128831,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 12.82,
+          "mem_bytes": 186856243
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 12.56,
+          "mem_bytes": 176685056
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 11.86,
+          "mem_bytes": 175846195
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 11.71,
+          "mem_bytes": 175741337
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:34:14.951403847+05:30",
+      "cpu_percent": 65.19000000000001,
+      "mem_bytes": 718274558,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 18.07,
+          "mem_bytes": 188114534
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 17.05,
+          "mem_bytes": 177104486
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 14.98,
+          "mem_bytes": 176475340
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 15.09,
+          "mem_bytes": 176580198
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:34:16.970562069+05:30",
+      "cpu_percent": 65.01,
+      "mem_bytes": 721525145,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 17.93,
+          "mem_bytes": 188743680
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 17.02,
+          "mem_bytes": 178153062
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 15.08,
+          "mem_bytes": 177419059
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 14.98,
+          "mem_bytes": 177209344
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:34:18.99030295+05:30",
+      "cpu_percent": 65.39,
+      "mem_bytes": 725719448,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 18.16,
+          "mem_bytes": 189792256
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 17.28,
+          "mem_bytes": 179411353
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 15.09,
+          "mem_bytes": 178467635
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 14.86,
+          "mem_bytes": 178048204
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:34:21.010035758+05:30",
+      "cpu_percent": 66.28,
+      "mem_bytes": 730333183,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 17.95,
+          "mem_bytes": 191050547
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 17.22,
+          "mem_bytes": 180774502
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 15.51,
+          "mem_bytes": 179725926
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 15.6,
+          "mem_bytes": 178782208
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:34:23.030021789+05:30",
+      "cpu_percent": 64.67,
+      "mem_bytes": 732640050,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 17.69,
+          "mem_bytes": 191994265
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 16.9,
+          "mem_bytes": 181089075
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 14.93,
+          "mem_bytes": 180040499
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 15.15,
+          "mem_bytes": 179516211
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:34:25.049173757+05:30",
+      "cpu_percent": 64.52,
+      "mem_bytes": 737568357,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 17.92,
+          "mem_bytes": 192833126
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 17.11,
+          "mem_bytes": 182347366
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 14.64,
+          "mem_bytes": 181298790
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 14.85,
+          "mem_bytes": 181089075
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:34:27.067450226+05:30",
+      "cpu_percent": 66.41,
+      "mem_bytes": 738197502,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 18.38,
+          "mem_bytes": 193252556
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 17.22,
+          "mem_bytes": 182452224
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 15.31,
+          "mem_bytes": 181298790
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 15.5,
+          "mem_bytes": 181193932
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:34:29.087601702+05:30",
+      "cpu_percent": 65.35,
+      "mem_bytes": 741972376,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 17.94,
+          "mem_bytes": 194405990
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 17.14,
+          "mem_bytes": 183710515
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 14.97,
+          "mem_bytes": 181718220
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 15.3,
+          "mem_bytes": 182137651
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:34:31.107206962+05:30",
+      "cpu_percent": 65.25999999999999,
+      "mem_bytes": 743440382,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 17.95,
+          "mem_bytes": 195139993
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 17.06,
+          "mem_bytes": 183605657
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 15.22,
+          "mem_bytes": 182452224
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 15.03,
+          "mem_bytes": 182242508
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:34:33.125090274+05:30",
+      "cpu_percent": 65.42,
+      "mem_bytes": 746061822,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 17.84,
+          "mem_bytes": 195664281
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 17.23,
+          "mem_bytes": 184339660
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 15.14,
+          "mem_bytes": 183081369
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 15.21,
+          "mem_bytes": 182976512
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:34:35.144470881+05:30",
+      "cpu_percent": 65.30999999999999,
+      "mem_bytes": 749836695,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 17.86,
+          "mem_bytes": 196503142
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 16.99,
+          "mem_bytes": 185388236
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 15.26,
+          "mem_bytes": 184339660
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 15.2,
+          "mem_bytes": 183605657
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:34:37.162439389+05:30",
+      "cpu_percent": 63.72,
+      "mem_bytes": 753611569,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 17.64,
+          "mem_bytes": 197027430
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 16.77,
+          "mem_bytes": 186436812
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 14.65,
+          "mem_bytes": 185912524
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 14.66,
+          "mem_bytes": 184234803
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:34:39.179064518+05:30",
+      "cpu_percent": 62.91,
+      "mem_bytes": 754240715,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 17.29,
+          "mem_bytes": 197761433
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 16.5,
+          "mem_bytes": 186436812
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 14.5,
+          "mem_bytes": 185073664
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 14.62,
+          "mem_bytes": 184968806
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:34:41.199553784+05:30",
+      "cpu_percent": 65.03999999999999,
+      "mem_bytes": 756233009,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 18.31,
+          "mem_bytes": 198285721
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 16.65,
+          "mem_bytes": 187275673
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 14.94,
+          "mem_bytes": 185283379
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 15.14,
+          "mem_bytes": 185388236
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:34:43.219611402+05:30",
+      "cpu_percent": 66.06,
+      "mem_bytes": 758854450,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 18.39,
+          "mem_bytes": 199229440
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 17.16,
+          "mem_bytes": 187904819
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 15.22,
+          "mem_bytes": 185702809
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 15.29,
+          "mem_bytes": 186017382
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:34:45.238046106+05:30",
+      "cpu_percent": 80.47999999999999,
+      "mem_bytes": 762943896,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 22.92,
+          "mem_bytes": 200487731
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 21.63,
+          "mem_bytes": 188848537
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 18.05,
+          "mem_bytes": 186331955
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 17.88,
+          "mem_bytes": 187275673
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:34:47.255229026+05:30",
+      "cpu_percent": 77.78,
+      "mem_bytes": 765879909,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 21.81,
+          "mem_bytes": 201536307
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 21.03,
+          "mem_bytes": 189163110
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 17.36,
+          "mem_bytes": 187380531
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 17.58,
+          "mem_bytes": 187799961
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:34:49.27429374+05:30",
+      "cpu_percent": 78.12,
+      "mem_bytes": 772381081,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 22.13,
+          "mem_bytes": 202899456
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 20.9,
+          "mem_bytes": 191469977
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 17.56,
+          "mem_bytes": 189267968
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 17.53,
+          "mem_bytes": 188743680
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:34:51.293979182+05:30",
+      "cpu_percent": 90.00999999999999,
+      "mem_bytes": 775841382,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 26.01,
+          "mem_bytes": 203948032
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 24.18,
+          "mem_bytes": 191889408
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 19.94,
+          "mem_bytes": 190211686
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 19.88,
+          "mem_bytes": 189792256
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:34:53.311198796+05:30",
+      "cpu_percent": 77.83,
+      "mem_bytes": 779301682,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 22.26,
+          "mem_bytes": 204786892
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 20.93,
+          "mem_bytes": 192937984
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 17.15,
+          "mem_bytes": 190735974
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 17.49,
+          "mem_bytes": 190840832
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:34:55.329441967+05:30",
+      "cpu_percent": 77.5,
+      "mem_bytes": 782237695,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 21.81,
+          "mem_bytes": 206045184
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 21,
+          "mem_bytes": 193671987
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 17.24,
+          "mem_bytes": 191260262
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 17.45,
+          "mem_bytes": 191260262
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:34:57.347730974+05:30",
+      "cpu_percent": 77.6,
+      "mem_bytes": 784754277,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 22.12,
+          "mem_bytes": 206674329
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 20.84,
+          "mem_bytes": 193671987
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 17.28,
+          "mem_bytes": 191889408
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 17.36,
+          "mem_bytes": 192518553
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:34:59.367516971+05:30",
+      "cpu_percent": 77.27,
+      "mem_bytes": 787480575,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 21.91,
+          "mem_bytes": 207093760
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 20.74,
+          "mem_bytes": 194405990
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 17.24,
+          "mem_bytes": 192833126
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 17.38,
+          "mem_bytes": 193147699
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:35:01.384995719+05:30",
+      "cpu_percent": 78.91,
+      "mem_bytes": 790731159,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 22.29,
+          "mem_bytes": 208037478
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 21.26,
+          "mem_bytes": 195349708
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 17.67,
+          "mem_bytes": 193567129
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 17.69,
+          "mem_bytes": 193776844
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:35:03.406515751+05:30",
+      "cpu_percent": 79.05,
+      "mem_bytes": 793667173,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 22.53,
+          "mem_bytes": 208876339
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 21.15,
+          "mem_bytes": 196083712
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 17.53,
+          "mem_bytes": 194405990
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 17.84,
+          "mem_bytes": 194301132
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:35:05.429498935+05:30",
+      "cpu_percent": 79.68,
+      "mem_bytes": 796183755,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 22.67,
+          "mem_bytes": 209505484
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 21.3,
+          "mem_bytes": 196712857
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 17.87,
+          "mem_bytes": 194930278
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 17.84,
+          "mem_bytes": 195035136
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:35:07.44873821+05:30",
+      "cpu_percent": 78.97,
+      "mem_bytes": 800587774,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 22.34,
+          "mem_bytes": 211497779
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 21.13,
+          "mem_bytes": 197237145
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 17.85,
+          "mem_bytes": 196188569
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 17.65,
+          "mem_bytes": 195664281
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:35:09.465888371+05:30",
+      "cpu_percent": 76.6,
+      "mem_bytes": 803523786,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 21.71,
+          "mem_bytes": 211917209
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 20.58,
+          "mem_bytes": 198285721
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 17.16,
+          "mem_bytes": 196922572
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 17.15,
+          "mem_bytes": 196398284
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:35:11.48521452+05:30",
+      "cpu_percent": 78.05,
+      "mem_bytes": 806354942,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 22.13,
+          "mem_bytes": 212126924
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 20.97,
+          "mem_bytes": 199229440
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 17.45,
+          "mem_bytes": 197551718
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 17.5,
+          "mem_bytes": 197446860
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:35:13.505519992+05:30",
+      "cpu_percent": 77.65,
+      "mem_bytes": 808242379,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 22.02,
+          "mem_bytes": 212860928
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 20.69,
+          "mem_bytes": 199334297
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 17.53,
+          "mem_bytes": 198285721
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 17.41,
+          "mem_bytes": 197761433
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:35:15.523976421+05:30",
+      "cpu_percent": 91.22,
+      "mem_bytes": 814638693,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 26.22,
+          "mem_bytes": 214224076
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 24.73,
+          "mem_bytes": 201955737
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 20.09,
+          "mem_bytes": 199229440
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 20.18,
+          "mem_bytes": 199229440
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:35:17.545114278+05:30",
+      "cpu_percent": 92.57,
+      "mem_bytes": 821035007,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 26.45,
+          "mem_bytes": 216111513
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 25.38,
+          "mem_bytes": 203423744
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 20.33,
+          "mem_bytes": 200697446
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 20.41,
+          "mem_bytes": 200802304
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:35:19.563929419+05:30",
+      "cpu_percent": 93.08999999999999,
+      "mem_bytes": 826277887,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 26.9,
+          "mem_bytes": 217684377
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 25.28,
+          "mem_bytes": 204157747
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 20.39,
+          "mem_bytes": 202060595
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 20.52,
+          "mem_bytes": 202375168
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:35:21.587197797+05:30",
+      "cpu_percent": 93.56,
+      "mem_bytes": 833198488,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 26.67,
+          "mem_bytes": 219571814
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 25.41,
+          "mem_bytes": 206150041
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 20.78,
+          "mem_bytes": 203843174
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 20.7,
+          "mem_bytes": 203633459
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:35:23.604854544+05:30",
+      "cpu_percent": 91.47,
+      "mem_bytes": 836449073,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 26.48,
+          "mem_bytes": 220410675
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 24.78,
+          "mem_bytes": 206464614
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 19.88,
+          "mem_bytes": 204786892
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 20.33,
+          "mem_bytes": 204786892
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:35:25.624890008+05:30",
+      "cpu_percent": 92.49000000000001,
+      "mem_bytes": 840433663,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 27.1,
+          "mem_bytes": 221773824
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 24.86,
+          "mem_bytes": 207093760
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 20.22,
+          "mem_bytes": 205730611
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 20.31,
+          "mem_bytes": 205835468
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:35:27.644236065+05:30",
+      "cpu_percent": 97.46000000000001,
+      "mem_bytes": 845571685,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 27.96,
+          "mem_bytes": 222822400
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 26.66,
+          "mem_bytes": 208771481
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 21.45,
+          "mem_bytes": 207198617
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 21.39,
+          "mem_bytes": 206779187
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:35:29.662706792+05:30",
+      "cpu_percent": 93.53999999999999,
+      "mem_bytes": 848822271,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 26.77,
+          "mem_bytes": 223556403
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 25.4,
+          "mem_bytes": 210134630
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 20.65,
+          "mem_bytes": 207513190
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 20.72,
+          "mem_bytes": 207618048
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:35:31.679825511+05:30",
+      "cpu_percent": 93.48,
+      "mem_bytes": 853436005,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 26.73,
+          "mem_bytes": 225129267
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 25.31,
+          "mem_bytes": 210658918
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 20.77,
+          "mem_bytes": 208666624
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 20.67,
+          "mem_bytes": 208981196
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:35:33.698925158+05:30",
+      "cpu_percent": 92.52,
+      "mem_bytes": 856791449,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 26.73,
+          "mem_bytes": 225968128
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 25.15,
+          "mem_bytes": 211392921
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 20.27,
+          "mem_bytes": 209715200
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 20.37,
+          "mem_bytes": 209715200
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:35:35.718132083+05:30",
+      "cpu_percent": 92.37,
+      "mem_bytes": 860461464,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 26.35,
+          "mem_bytes": 226387558
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 25.11,
+          "mem_bytes": 212022067
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 20.41,
+          "mem_bytes": 211078348
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 20.5,
+          "mem_bytes": 210973491
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:35:37.736149198+05:30",
+      "cpu_percent": 91.38,
+      "mem_bytes": 863816908,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 26.31,
+          "mem_bytes": 227540992
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 24.84,
+          "mem_bytes": 213070643
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 20.06,
+          "mem_bytes": 212022067
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 20.17,
+          "mem_bytes": 211183206
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:35:39.75374876+05:30",
+      "cpu_percent": 92.21,
+      "mem_bytes": 866857778,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 26.4,
+          "mem_bytes": 228274995
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 24.99,
+          "mem_bytes": 214224076
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 20.24,
+          "mem_bytes": 212336640
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 20.58,
+          "mem_bytes": 212022067
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:35:41.772388067+05:30",
+      "cpu_percent": 93.3,
+      "mem_bytes": 869374360,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 27.16,
+          "mem_bytes": 228694425
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 25.16,
+          "mem_bytes": 214958080
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 20.43,
+          "mem_bytes": 212965785
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 20.55,
+          "mem_bytes": 212756070
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:35:43.79150069+05:30",
+      "cpu_percent": 93.98,
+      "mem_bytes": 874092952,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 26.92,
+          "mem_bytes": 229847859
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 25.62,
+          "mem_bytes": 215587225
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 20.86,
+          "mem_bytes": 214328934
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 20.58,
+          "mem_bytes": 214328934
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:35:45.811697159+05:30",
+      "cpu_percent": 108.82,
+      "mem_bytes": 882691275,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 30.31,
+          "mem_bytes": 231420723
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 29.15,
+          "mem_bytes": 218208665
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 24.48,
+          "mem_bytes": 216426086
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 24.88,
+          "mem_bytes": 216635801
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:35:47.831387344+05:30",
+      "cpu_percent": 109.01,
+      "mem_bytes": 891604171,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 30.82,
+          "mem_bytes": 234776166
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 29.46,
+          "mem_bytes": 219571814
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 24.34,
+          "mem_bytes": 218418380
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 24.39,
+          "mem_bytes": 218837811
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:35:49.853082707+05:30",
+      "cpu_percent": 107.14,
+      "mem_bytes": 900621924,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 29.91,
+          "mem_bytes": 237292748
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 28.64,
+          "mem_bytes": 222088396
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 24.48,
+          "mem_bytes": 220410675
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 24.11,
+          "mem_bytes": 220830105
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:35:51.872888887+05:30",
+      "cpu_percent": 124.05000000000001,
+      "mem_bytes": 908381388,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 35.17,
+          "mem_bytes": 239075328
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 33.39,
+          "mem_bytes": 224395264
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 27.45,
+          "mem_bytes": 222402969
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 28.04,
+          "mem_bytes": 222507827
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:35:53.890801357+05:30",
+      "cpu_percent": 104.85,
+      "mem_bytes": 916035992,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 29.58,
+          "mem_bytes": 240857907
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 28.17,
+          "mem_bytes": 226492416
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 23.64,
+          "mem_bytes": 223975833
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 23.46,
+          "mem_bytes": 224709836
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:35:55.909220569+05:30",
+      "cpu_percent": 108.25,
+      "mem_bytes": 921174014,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 30.68,
+          "mem_bytes": 241801625
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 29.11,
+          "mem_bytes": 227855564
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 23.99,
+          "mem_bytes": 225443840
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 24.47,
+          "mem_bytes": 226072985
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:35:57.926214253+05:30",
+      "cpu_percent": 107.32000000000001,
+      "mem_bytes": 928304331,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 30.35,
+          "mem_bytes": 244423065
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 28.88,
+          "mem_bytes": 229113856
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 24.1,
+          "mem_bytes": 226806988
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 23.99,
+          "mem_bytes": 227960422
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:35:59.94364092+05:30",
+      "cpu_percent": 112.02,
+      "mem_bytes": 933861784,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 31.78,
+          "mem_bytes": 245471641
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 30.27,
+          "mem_bytes": 230267289
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 24.8,
+          "mem_bytes": 228799283
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 25.17,
+          "mem_bytes": 229323571
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:36:01.963040977+05:30",
+      "cpu_percent": 108.5,
+      "mem_bytes": 940677529,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 31.03,
+          "mem_bytes": 246939648
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 29.19,
+          "mem_bytes": 232364441
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 24.22,
+          "mem_bytes": 230162432
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 24.06,
+          "mem_bytes": 231211008
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:36:03.982313803+05:30",
+      "cpu_percent": 106.64999999999999,
+      "mem_bytes": 945500977,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 30.38,
+          "mem_bytes": 248617369
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 28.72,
+          "mem_bytes": 233098444
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 23.91,
+          "mem_bytes": 231735296
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 23.64,
+          "mem_bytes": 232049868
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:36:06.001410866+05:30",
+      "cpu_percent": 106.24,
+      "mem_bytes": 953470156,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 30.36,
+          "mem_bytes": 250609664
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 28.3,
+          "mem_bytes": 235615027
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 23.86,
+          "mem_bytes": 233203302
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 23.72,
+          "mem_bytes": 234042163
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:36:08.019443913+05:30",
+      "cpu_percent": 106.44,
+      "mem_bytes": 956825599,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 29.9,
+          "mem_bytes": 250819379
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 28.86,
+          "mem_bytes": 236139315
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 23.85,
+          "mem_bytes": 235405312
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 23.83,
+          "mem_bytes": 234461593
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:36:10.037092272+05:30",
+      "cpu_percent": 104.81,
+      "mem_bytes": 964270487,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 29.89,
+          "mem_bytes": 252497100
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 28.13,
+          "mem_bytes": 238341324
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 23.51,
+          "mem_bytes": 237397606
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 23.28,
+          "mem_bytes": 236034457
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:36:12.056103764+05:30",
+      "cpu_percent": 107.88,
+      "mem_bytes": 969198795,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 30.43,
+          "mem_bytes": 254069964
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 28.86,
+          "mem_bytes": 239180185
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 24.1,
+          "mem_bytes": 238236467
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 24.49,
+          "mem_bytes": 237712179
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:36:14.074509937+05:30",
+      "cpu_percent": 114.36000000000001,
+      "mem_bytes": 975175679,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 32.31,
+          "mem_bytes": 255747686
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 30.78,
+          "mem_bytes": 240333619
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 25.51,
+          "mem_bytes": 239809331
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 25.76,
+          "mem_bytes": 239285043
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:36:16.093944897+05:30",
+      "cpu_percent": 127.34,
+      "mem_bytes": 985556581,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 35.46,
+          "mem_bytes": 258264268
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 33.89,
+          "mem_bytes": 243269632
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 29.01,
+          "mem_bytes": 242745344
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 28.98,
+          "mem_bytes": 241277337
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:36:18.113789826+05:30",
+      "cpu_percent": 125.17999999999999,
+      "mem_bytes": 999397784,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 35.02,
+          "mem_bytes": 261934284
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 33.05,
+          "mem_bytes": 246415360
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 28.56,
+          "mem_bytes": 245366784
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 28.55,
+          "mem_bytes": 245681356
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:36:20.135471465+05:30",
+      "cpu_percent": 128.19,
+      "mem_bytes": 1017328434,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 36.09,
+          "mem_bytes": 265709158
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 33.83,
+          "mem_bytes": 251658240
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 29.05,
+          "mem_bytes": 249141657
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 29.22,
+          "mem_bytes": 250819379
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:36:22.153845086+05:30",
+      "cpu_percent": 127.25,
+      "mem_bytes": 1029177342,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 35.42,
+          "mem_bytes": 269903462
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 33.89,
+          "mem_bytes": 254069964
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 28.98,
+          "mem_bytes": 252287385
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 28.96,
+          "mem_bytes": 252916531
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:36:24.172147154+05:30",
+      "cpu_percent": 127.27999999999999,
+      "mem_bytes": 1035259083,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 35.55,
+          "mem_bytes": 270847180
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 34.02,
+          "mem_bytes": 256271974
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 28.72,
+          "mem_bytes": 253650534
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 28.99,
+          "mem_bytes": 254489395
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:36:26.192109549+05:30",
+      "cpu_percent": 126.85,
+      "mem_bytes": 1042074828,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 35.35,
+          "mem_bytes": 272839475
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 33.72,
+          "mem_bytes": 257949696
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 28.93,
+          "mem_bytes": 255223398
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 28.85,
+          "mem_bytes": 256062259
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:36:28.210750569+05:30",
+      "cpu_percent": 131.64000000000001,
+      "mem_bytes": 1049939148,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 36.84,
+          "mem_bytes": 274936627
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 34.78,
+          "mem_bytes": 259732275
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 29.92,
+          "mem_bytes": 257425408
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 30.1,
+          "mem_bytes": 257844838
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:36:30.229566112+05:30",
+      "cpu_percent": 125.60999999999999,
+      "mem_bytes": 1056440319,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 35.26,
+          "mem_bytes": 276299776
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 33.07,
+          "mem_bytes": 261305139
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 28.46,
+          "mem_bytes": 259627417
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 28.82,
+          "mem_bytes": 259207987
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:36:32.249138736+05:30",
+      "cpu_percent": 130.34,
+      "mem_bytes": 1065143500,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 36.1,
+          "mem_bytes": 279864934
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 34.65,
+          "mem_bytes": 262878003
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 29.64,
+          "mem_bytes": 261095424
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 29.95,
+          "mem_bytes": 261305139
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:36:34.268692304+05:30",
+      "cpu_percent": 130.15,
+      "mem_bytes": 1071434955,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 36.48,
+          "mem_bytes": 280179507
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 34.77,
+          "mem_bytes": 264346009
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 29.23,
+          "mem_bytes": 262982860
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 29.67,
+          "mem_bytes": 263926579
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:36:36.290726356+05:30",
+      "cpu_percent": 131.42,
+      "mem_bytes": 1078774987,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 36.84,
+          "mem_bytes": 282905804
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 34.64,
+          "mem_bytes": 266128588
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 29.93,
+          "mem_bytes": 264450867
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 30.01,
+          "mem_bytes": 265289728
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:36:38.309289277+05:30",
+      "cpu_percent": 132.48,
+      "mem_bytes": 1087583025,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 36.99,
+          "mem_bytes": 284583526
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 35.05,
+          "mem_bytes": 268330598
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 30.07,
+          "mem_bytes": 266967449
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 30.37,
+          "mem_bytes": 267701452
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:36:40.327211176+05:30",
+      "cpu_percent": 126.85000000000001,
+      "mem_bytes": 1099327077,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 35.2,
+          "mem_bytes": 287729254
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 33.7,
+          "mem_bytes": 271056896
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 29.01,
+          "mem_bytes": 270218035
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 28.94,
+          "mem_bytes": 270322892
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:36:42.345641107+05:30",
+      "cpu_percent": 125.66999999999999,
+      "mem_bytes": 1106771966,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 34.75,
+          "mem_bytes": 289197260
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 33.54,
+          "mem_bytes": 273154048
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 28.48,
+          "mem_bytes": 272000614
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 28.9,
+          "mem_bytes": 272420044
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:36:44.366839662+05:30",
+      "cpu_percent": 128.49,
+      "mem_bytes": 1116418866,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 35.86,
+          "mem_bytes": 292238131
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 33.63,
+          "mem_bytes": 274307481
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 29.49,
+          "mem_bytes": 274412339
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 29.51,
+          "mem_bytes": 275460915
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:36:46.38555997+05:30",
+      "cpu_percent": 156.63000000000002,
+      "mem_bytes": 1131098929,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 42.82,
+          "mem_bytes": 296013004
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 41.45,
+          "mem_bytes": 278292070
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 36.37,
+          "mem_bytes": 277977497
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 35.99,
+          "mem_bytes": 278816358
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:36:48.403128884+05:30",
+      "cpu_percent": 177.31,
+      "mem_bytes": 1153853029,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 49.23,
+          "mem_bytes": 301465600
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 46.74,
+          "mem_bytes": 285107814
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 40.42,
+          "mem_bytes": 283430092
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 40.92,
+          "mem_bytes": 283849523
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:36:50.42376248+05:30",
+      "cpu_percent": 166.19,
+      "mem_bytes": 1177550847,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 45.31,
+          "mem_bytes": 306918195
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 43.53,
+          "mem_bytes": 291294412
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 38.7,
+          "mem_bytes": 289931264
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 38.65,
+          "mem_bytes": 289406976
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:36:52.444566655+05:30",
+      "cpu_percent": 162.54,
+      "mem_bytes": 1192545483,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 44.25,
+          "mem_bytes": 310588211
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 42.62,
+          "mem_bytes": 294754713
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 37.73,
+          "mem_bytes": 293496422
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 37.94,
+          "mem_bytes": 293706137
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:36:54.463364758+05:30",
+      "cpu_percent": 158.2,
+      "mem_bytes": 1206491543,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 43.36,
+          "mem_bytes": 313943654
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 41.03,
+          "mem_bytes": 298634444
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 36.69,
+          "mem_bytes": 296851865
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 37.12,
+          "mem_bytes": 297061580
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:36:56.483208726+05:30",
+      "cpu_percent": 162.16,
+      "mem_bytes": 1218655025,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 44.38,
+          "mem_bytes": 317508812
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 42.99,
+          "mem_bytes": 301570457
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 37.58,
+          "mem_bytes": 299683020
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 37.21,
+          "mem_bytes": 299892736
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:36:58.505035816+05:30",
+      "cpu_percent": 156.73000000000002,
+      "mem_bytes": 1233964235,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 43.03,
+          "mem_bytes": 321703116
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 41.49,
+          "mem_bytes": 303982182
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 36.01,
+          "mem_bytes": 303982182
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 36.2,
+          "mem_bytes": 304296755
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:37:00.523885474+05:30",
+      "cpu_percent": 165.89,
+      "mem_bytes": 1246127717,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 45.58,
+          "mem_bytes": 324114841
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 43.94,
+          "mem_bytes": 307966771
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 37.98,
+          "mem_bytes": 306918195
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 38.39,
+          "mem_bytes": 307127910
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:37:02.545607205+05:30",
+      "cpu_percent": 177.67999999999998,
+      "mem_bytes": 1260807781,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 49.5,
+          "mem_bytes": 327889715
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 46.98,
+          "mem_bytes": 311951360
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 40.44,
+          "mem_bytes": 309749350
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 40.76,
+          "mem_bytes": 311217356
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:37:04.567665905+05:30",
+      "cpu_percent": 174.82000000000002,
+      "mem_bytes": 1274858700,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 48.8,
+          "mem_bytes": 331245158
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 46.04,
+          "mem_bytes": 315097088
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 39.64,
+          "mem_bytes": 313419366
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 40.34,
+          "mem_bytes": 315097088
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:37:06.588378591+05:30",
+      "cpu_percent": 170.13,
+      "mem_bytes": 1288490187,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 46.94,
+          "mem_bytes": 334915174
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 44.61,
+          "mem_bytes": 319186534
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 39.27,
+          "mem_bytes": 316460236
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 39.31,
+          "mem_bytes": 317928243
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:37:08.610046669+05:30",
+      "cpu_percent": 171.41,
+      "mem_bytes": 1303065394,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 47.29,
+          "mem_bytes": 339109478
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 44.48,
+          "mem_bytes": 322122547
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 39.92,
+          "mem_bytes": 320339968
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 39.72,
+          "mem_bytes": 321493401
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:37:10.631093646+05:30",
+      "cpu_percent": 175.46999999999997,
+      "mem_bytes": 1317955173,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 48.32,
+          "mem_bytes": 342779494
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 45.47,
+          "mem_bytes": 325582848
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 40.51,
+          "mem_bytes": 324429414
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 41.17,
+          "mem_bytes": 325163417
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:37:12.648705927+05:30",
+      "cpu_percent": 164.58999999999997,
+      "mem_bytes": 1329174936,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 45.25,
+          "mem_bytes": 345610649
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 43.01,
+          "mem_bytes": 328728576
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 37.64,
+          "mem_bytes": 326945996
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 38.69,
+          "mem_bytes": 327889715
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:37:14.669037581+05:30",
+      "cpu_percent": 162.92000000000002,
+      "mem_bytes": 1341862707,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 44.57,
+          "mem_bytes": 348651520
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 43.09,
+          "mem_bytes": 331874304
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 37.4,
+          "mem_bytes": 330511155
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 37.86,
+          "mem_bytes": 330825728
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:37:16.688945366+05:30",
+      "cpu_percent": 169.26000000000002,
+      "mem_bytes": 1368181964,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 46.11,
+          "mem_bytes": 355467264
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 43.92,
+          "mem_bytes": 338375475
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 39.46,
+          "mem_bytes": 337012326
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 39.77,
+          "mem_bytes": 337326899
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:37:18.709227728+05:30",
+      "cpu_percent": 207.37,
+      "mem_bytes": 1386532043,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 55.98,
+          "mem_bytes": 359871283
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 54.42,
+          "mem_bytes": 343303782
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 48.58,
+          "mem_bytes": 341730918
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 48.39,
+          "mem_bytes": 341626060
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:37:20.729454567+05:30",
+      "cpu_percent": 201.51000000000002,
+      "mem_bytes": 1414948453,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 54.69,
+          "mem_bytes": 366687027
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 52.71,
+          "mem_bytes": 350853529
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 46.77,
+          "mem_bytes": 347707801
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 47.34,
+          "mem_bytes": 349700096
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:37:22.749512497+05:30",
+      "cpu_percent": 192.79999999999998,
+      "mem_bytes": 1443994007,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 52.11,
+          "mem_bytes": 374131916
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 50.14,
+          "mem_bytes": 357774131
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 45.23,
+          "mem_bytes": 355257548
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 45.32,
+          "mem_bytes": 356830412
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:37:24.768525591+05:30",
+      "cpu_percent": 196.26,
+      "mem_bytes": 1465594673,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 53.06,
+          "mem_bytes": 379374796
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 51.38,
+          "mem_bytes": 363436441
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 46.03,
+          "mem_bytes": 361339289
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 45.79,
+          "mem_bytes": 361444147
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:37:26.786852276+05:30",
+      "cpu_percent": 206.38,
+      "mem_bytes": 1485622474,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 55.69,
+          "mem_bytes": 384198246
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 53.91,
+          "mem_bytes": 367316172
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 48.66,
+          "mem_bytes": 366267596
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 48.12,
+          "mem_bytes": 367840460
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:37:28.807559686+05:30",
+      "cpu_percent": 193.68,
+      "mem_bytes": 1502609407,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 52.53,
+          "mem_bytes": 388707123
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 50.65,
+          "mem_bytes": 371720192
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 45.09,
+          "mem_bytes": 370776473
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 45.41,
+          "mem_bytes": 371405619
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:37:30.833138913+05:30",
+      "cpu_percent": 191.57,
+      "mem_bytes": 1518757477,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 51.72,
+          "mem_bytes": 392586854
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 50.13,
+          "mem_bytes": 375809638
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 44.84,
+          "mem_bytes": 374970777
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 44.88,
+          "mem_bytes": 375390208
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:37:32.8516326+05:30",
+      "cpu_percent": 210.93,
+      "mem_bytes": 1535849266,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 56.8,
+          "mem_bytes": 396886016
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 55.02,
+          "mem_bytes": 380318515
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 49.87,
+          "mem_bytes": 378745651
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 49.24,
+          "mem_bytes": 379899084
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:37:34.87129631+05:30",
+      "cpu_percent": 191,
+      "mem_bytes": 1552941055,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 51.69,
+          "mem_bytes": 401080320
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 49.73,
+          "mem_bytes": 384617676
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 44.87,
+          "mem_bytes": 383464243
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 44.71,
+          "mem_bytes": 383778816
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:37:36.893898001+05:30",
+      "cpu_percent": 200.98,
+      "mem_bytes": 1570976561,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 55.09,
+          "mem_bytes": 406218342
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 53.05,
+          "mem_bytes": 388811980
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 46.83,
+          "mem_bytes": 388287692
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 46.01,
+          "mem_bytes": 387658547
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:37:38.913494728+05:30",
+      "cpu_percent": 190.70999999999998,
+      "mem_bytes": 1592472370,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 52.05,
+          "mem_bytes": 411775795
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 49.58,
+          "mem_bytes": 394474291
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 44.19,
+          "mem_bytes": 393111142
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 44.89,
+          "mem_bytes": 393111142
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:37:40.933973177+05:30",
+      "cpu_percent": 185.71,
+      "mem_bytes": 1611241879,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 50.83,
+          "mem_bytes": 416179814
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 48.06,
+          "mem_bytes": 398773452
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 43.34,
+          "mem_bytes": 397724876
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 43.48,
+          "mem_bytes": 398563737
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:37:42.953062598+05:30",
+      "cpu_percent": 191.12,
+      "mem_bytes": 1629696817,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 51.61,
+          "mem_bytes": 420583833
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 49.67,
+          "mem_bytes": 403282329
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 44.46,
+          "mem_bytes": 402548326
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 45.38,
+          "mem_bytes": 403282329
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:37:44.972828941+05:30",
+      "cpu_percent": 193.61999999999998,
+      "mem_bytes": 1646474033,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 52.64,
+          "mem_bytes": 424778137
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 50.94,
+          "mem_bytes": 408000921
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 45.19,
+          "mem_bytes": 406428057
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 44.85,
+          "mem_bytes": 407266918
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:37:46.992725016+05:30",
+      "cpu_percent": 178.66,
+      "mem_bytes": 1666711551,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 47.38,
+          "mem_bytes": 430021017
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 46.71,
+          "mem_bytes": 412824371
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 42.36,
+          "mem_bytes": 411566080
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 42.21,
+          "mem_bytes": 412300083
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:37:49.016968589+05:30",
+      "cpu_percent": 239.37000000000003,
+      "mem_bytes": 1702048562,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 64.12,
+          "mem_bytes": 438304768
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 62.37,
+          "mem_bytes": 422785843
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 56.42,
+          "mem_bytes": 420059545
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 56.46,
+          "mem_bytes": 420898406
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:37:51.03974482+05:30",
+      "cpu_percent": 248.88,
+      "mem_bytes": 1749234482,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 66.98,
+          "mem_bytes": 450468249
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 64.51,
+          "mem_bytes": 433795891
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 58.53,
+          "mem_bytes": 432747315
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 58.86,
+          "mem_bytes": 432223027
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:37:53.061000784+05:30",
+      "cpu_percent": 243.76,
+      "mem_bytes": 1781950053,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 65.51,
+          "mem_bytes": 458437427
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 62.86,
+          "mem_bytes": 442499072
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 57.1,
+          "mem_bytes": 440716492
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 58.29,
+          "mem_bytes": 440297062
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:37:55.081040432+05:30",
+      "cpu_percent": 244.56,
+      "mem_bytes": 1821271653,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 65.75,
+          "mem_bytes": 469447475
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 63.49,
+          "mem_bytes": 451831398
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 57.52,
+          "mem_bytes": 449943961
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 57.8,
+          "mem_bytes": 450048819
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:37:57.104322462+05:30",
+      "cpu_percent": 246.15999999999997,
+      "mem_bytes": 1846227762,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 65.13,
+          "mem_bytes": 475634073
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 65.02,
+          "mem_bytes": 457598566
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 58.32,
+          "mem_bytes": 456654848
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 57.69,
+          "mem_bytes": 456340275
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:37:59.123534195+05:30",
+      "cpu_percent": 242.12,
+      "mem_bytes": 1874853887,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 64.5,
+          "mem_bytes": 482449817
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 62.68,
+          "mem_bytes": 465253171
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 57.68,
+          "mem_bytes": 463680307
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 57.26,
+          "mem_bytes": 463470592
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:38:01.142988283+05:30",
+      "cpu_percent": 247.16000000000003,
+      "mem_bytes": 1900753714,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 66.18,
+          "mem_bytes": 489580134
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 64.09,
+          "mem_bytes": 471334912
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 58,
+          "mem_bytes": 469971763
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 58.89,
+          "mem_bytes": 469866905
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:38:03.168152614+05:30",
+      "cpu_percent": 289.05,
+      "mem_bytes": 1927387544,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 78.06,
+          "mem_bytes": 495557017
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 75.18,
+          "mem_bytes": 477940940
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 68.06,
+          "mem_bytes": 476263219
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 67.75,
+          "mem_bytes": 477626368
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:38:05.193907086+05:30",
+      "cpu_percent": 263.46000000000004,
+      "mem_bytes": 1952553368,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 69.92,
+          "mem_bytes": 502267904
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 68.29,
+          "mem_bytes": 484022681
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 62.21,
+          "mem_bytes": 483183820
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 63.04,
+          "mem_bytes": 483078963
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:38:07.215643635+05:30",
+      "cpu_percent": 246.69,
+      "mem_bytes": 1978243480,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 65.91,
+          "mem_bytes": 508769075
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 64.12,
+          "mem_bytes": 490314137
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 58.68,
+          "mem_bytes": 489894707
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 57.98,
+          "mem_bytes": 489265561
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:38:09.242019157+05:30",
+      "cpu_percent": 260.62,
+      "mem_bytes": 2005401599,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 69.65,
+          "mem_bytes": 515794534
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 67.26,
+          "mem_bytes": 497654169
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 61.84,
+          "mem_bytes": 495976448
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 61.87,
+          "mem_bytes": 495976448
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:38:11.261674512+05:30",
+      "cpu_percent": 245.15999999999997,
+      "mem_bytes": 2030252849,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 65.63,
+          "mem_bytes": 521456844
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 63.32,
+          "mem_bytes": 503840768
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 58.48,
+          "mem_bytes": 502897049
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 57.73,
+          "mem_bytes": 502058188
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:38:13.281219209+05:30",
+      "cpu_percent": 244.07,
+      "mem_bytes": 2056467250,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 64.93,
+          "mem_bytes": 527958016
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 63.56,
+          "mem_bytes": 510237081
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 57.47,
+          "mem_bytes": 509293363
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 58.11,
+          "mem_bytes": 508978790
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:38:15.29993368+05:30",
+      "cpu_percent": 236.26000000000002,
+      "mem_bytes": 2082576793,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 63.25,
+          "mem_bytes": 534773760
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 61.49,
+          "mem_bytes": 516633395
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 55.55,
+          "mem_bytes": 515584819
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 55.97,
+          "mem_bytes": 515584819
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:38:17.321692877+05:30",
+      "cpu_percent": 207.3,
+      "mem_bytes": 2105435749,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 55.01,
+          "mem_bytes": 540121497
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 53.13,
+          "mem_bytes": 523344281
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 49.83,
+          "mem_bytes": 521351987
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 49.33,
+          "mem_bytes": 520617984
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:38:19.348080211+05:30",
+      "cpu_percent": 304.69,
+      "mem_bytes": 2145386495,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 81.03,
+          "mem_bytes": 549978112
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 78.03,
+          "mem_bytes": 533620326
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 73.7,
+          "mem_bytes": 530789171
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 71.93,
+          "mem_bytes": 530998886
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:38:21.368774455+05:30",
+      "cpu_percent": 291.7,
+      "mem_bytes": 2190370404,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 77.64,
+          "mem_bytes": 561617305
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 74.94,
+          "mem_bytes": 544001228
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 69.63,
+          "mem_bytes": 541694361
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 69.49,
+          "mem_bytes": 543057510
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:38:23.392271172+05:30",
+      "cpu_percent": 301.42999999999995,
+      "mem_bytes": 2248776088,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 80.13,
+          "mem_bytes": 576926515
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 77.83,
+          "mem_bytes": 558786150
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 71.77,
+          "mem_bytes": 556164710
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 71.7,
+          "mem_bytes": 556898713
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:38:25.413080786+05:30",
+      "cpu_percent": 314.03,
+      "mem_bytes": 2289251122,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 82.93,
+          "mem_bytes": 586887987
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 81.22,
+          "mem_bytes": 568957337
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 74.79,
+          "mem_bytes": 566231040
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 75.09,
+          "mem_bytes": 567174758
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:38:27.432657533+05:30",
+      "cpu_percent": 299.26000000000005,
+      "mem_bytes": 2325951282,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 78.88,
+          "mem_bytes": 595591168
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 76.92,
+          "mem_bytes": 578499379
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 71.67,
+          "mem_bytes": 575248793
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 71.79,
+          "mem_bytes": 576611942
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:38:29.455369144+05:30",
+      "cpu_percent": 302.8,
+      "mem_bytes": 2359925145,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 79.4,
+          "mem_bytes": 604504064
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 78.27,
+          "mem_bytes": 587202560
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 72.09,
+          "mem_bytes": 583532544
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 73.04,
+          "mem_bytes": 584685977
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:38:31.475107464+05:30",
+      "cpu_percent": 309.38,
+      "mem_bytes": 2394528151,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 81.85,
+          "mem_bytes": 612997529
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 80.34,
+          "mem_bytes": 595696025
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 73.12,
+          "mem_bytes": 592235724
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 74.07,
+          "mem_bytes": 593598873
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:38:33.500692137+05:30",
+      "cpu_percent": 297.21,
+      "mem_bytes": 2429131160,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 79.14,
+          "mem_bytes": 621595852
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 76.77,
+          "mem_bytes": 604504064
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 70.48,
+          "mem_bytes": 600834048
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 70.82,
+          "mem_bytes": 602197196
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:38:35.521832742+05:30",
+      "cpu_percent": 305.62,
+      "mem_bytes": 2464887601,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 81.1,
+          "mem_bytes": 630508748
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 78.48,
+          "mem_bytes": 613102387
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 72.61,
+          "mem_bytes": 610166374
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 73.43,
+          "mem_bytes": 611110092
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:38:37.547015981+05:30",
+      "cpu_percent": 298.71000000000004,
+      "mem_bytes": 2499805183,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 79.24,
+          "mem_bytes": 639211929
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 77.8,
+          "mem_bytes": 622329856
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 70.95,
+          "mem_bytes": 618869555
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 70.72,
+          "mem_bytes": 619393843
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:38:39.565821095+05:30",
+      "cpu_percent": 305.94,
+      "mem_bytes": 2534093617,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 81.37,
+          "mem_bytes": 647810252
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 78.46,
+          "mem_bytes": 630613606
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 72.85,
+          "mem_bytes": 627467878
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 73.26,
+          "mem_bytes": 628201881
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:38:41.587670975+05:30",
+      "cpu_percent": 318.66999999999996,
+      "mem_bytes": 2569220914,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 84.86,
+          "mem_bytes": 656618291
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 82.47,
+          "mem_bytes": 639421644
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 75.78,
+          "mem_bytes": 636171059
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 75.56,
+          "mem_bytes": 637009920
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:38:43.609287968+05:30",
+      "cpu_percent": 306.5,
+      "mem_bytes": 2604767640,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 80.37,
+          "mem_bytes": 665111756
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 79.61,
+          "mem_bytes": 648229683
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 73.56,
+          "mem_bytes": 645293670
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 72.96,
+          "mem_bytes": 646132531
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:38:45.628754568+05:30",
+      "cpu_percent": 316.31,
+      "mem_bytes": 2640104651,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 83.32,
+          "mem_bytes": 674129510
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 81.93,
+          "mem_bytes": 657037721
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 75.56,
+          "mem_bytes": 653996851
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 75.5,
+          "mem_bytes": 654940569
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:38:47.650731035+05:30",
+      "cpu_percent": 115.92999999999999,
+      "mem_bytes": 2662649035,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 31.06,
+          "mem_bytes": 679896678
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 29.51,
+          "mem_bytes": 662280601
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 27.59,
+          "mem_bytes": 659764019
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 27.77,
+          "mem_bytes": 660707737
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:38:49.671702774+05:30",
+      "cpu_percent": 288.19000000000005,
+      "mem_bytes": 2694106315,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 76.87,
+          "mem_bytes": 687551283
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 74.79,
+          "mem_bytes": 670354636
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 68.72,
+          "mem_bytes": 667838054
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 67.81,
+          "mem_bytes": 668362342
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:38:51.693612719+05:30",
+      "cpu_percent": 288.98,
+      "mem_bytes": 2725249021,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 77.05,
+          "mem_bytes": 695310745
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 73.71,
+          "mem_bytes": 678218956
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 68.92,
+          "mem_bytes": 675073228
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 69.3,
+          "mem_bytes": 676646092
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:38:53.715965066+05:30",
+      "cpu_percent": 298.64,
+      "mem_bytes": 2757650021,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 78.33,
+          "mem_bytes": 703384780
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 76.96,
+          "mem_bytes": 685978419
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 71.34,
+          "mem_bytes": 683356979
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 72.01,
+          "mem_bytes": 684929843
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:38:55.738547943+05:30",
+      "cpu_percent": 298.5,
+      "mem_bytes": 2790680165,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 79.6,
+          "mem_bytes": 711773388
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 77.23,
+          "mem_bytes": 694157312
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 70.33,
+          "mem_bytes": 691955302
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 71.34,
+          "mem_bytes": 692794163
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:38:57.757614747+05:30",
+      "cpu_percent": 273.61,
+      "mem_bytes": 2822032587,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 72.87,
+          "mem_bytes": 719637708
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 71.14,
+          "mem_bytes": 702021632
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 64.91,
+          "mem_bytes": 699609907
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 64.69,
+          "mem_bytes": 700763340
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:38:59.781159264+05:30",
+      "cpu_percent": 283.03,
+      "mem_bytes": 2853489867,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 75,
+          "mem_bytes": 727502028
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 73.08,
+          "mem_bytes": 709990809
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 67.11,
+          "mem_bytes": 707683942
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 67.84,
+          "mem_bytes": 708313088
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:39:01.802521743+05:30",
+      "cpu_percent": 292.13,
+      "mem_bytes": 2885471436,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 77.37,
+          "mem_bytes": 734946918
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 75.17,
+          "mem_bytes": 717959987
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 69.95,
+          "mem_bytes": 716177408
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 69.64,
+          "mem_bytes": 716387123
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:39:03.825447861+05:30",
+      "cpu_percent": 285.42,
+      "mem_bytes": 2917033572,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 76.24,
+          "mem_bytes": 743020953
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 72.94,
+          "mem_bytes": 725719449
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 67.66,
+          "mem_bytes": 723936870
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 68.58,
+          "mem_bytes": 724356300
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:39:05.84640422+05:30",
+      "cpu_percent": 296.81,
+      "mem_bytes": 2949119998,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 78.58,
+          "mem_bytes": 751199846
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 76.61,
+          "mem_bytes": 733793484
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 70.66,
+          "mem_bytes": 731696332
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 70.96,
+          "mem_bytes": 732430336
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:39:07.867906835+05:30",
+      "cpu_percent": 284.01,
+      "mem_bytes": 2980996709,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 75.78,
+          "mem_bytes": 759064166
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 72.85,
+          "mem_bytes": 741762662
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 67.9,
+          "mem_bytes": 739875225
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 67.48,
+          "mem_bytes": 740294656
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:39:09.890349714+05:30",
+      "cpu_percent": 273.29,
+      "mem_bytes": 3012978277,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 72.4,
+          "mem_bytes": 767138201
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 70.73,
+          "mem_bytes": 749417267
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 64.48,
+          "mem_bytes": 748054118
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 65.68,
+          "mem_bytes": 748368691
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:39:11.909992739+05:30",
+      "cpu_percent": 276.38,
+      "mem_bytes": 3044330700,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 74.18,
+          "mem_bytes": 775421952
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 70.59,
+          "mem_bytes": 757176729
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 65.81,
+          "mem_bytes": 755499008
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 65.8,
+          "mem_bytes": 756233011
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:39:13.929736572+05:30",
+      "cpu_percent": 279.65,
+      "mem_bytes": 3076941412,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 74.06,
+          "mem_bytes": 783495987
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 72.26,
+          "mem_bytes": 765250764
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 66.49,
+          "mem_bytes": 763677900
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 66.84,
+          "mem_bytes": 764516761
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:39:15.968212122+05:30",
+      "cpu_percent": 304.03,
+      "mem_bytes": 3107769548,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 80.47,
+          "mem_bytes": 791045734
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 77.86,
+          "mem_bytes": 773219942
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 72.29,
+          "mem_bytes": 771751936
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 73.41,
+          "mem_bytes": 771751936
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:39:17.993637219+05:30",
+      "cpu_percent": 288.6,
+      "mem_bytes": 3139960831,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 75.48,
+          "mem_bytes": 798700339
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 74.36,
+          "mem_bytes": 781398835
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 68.72,
+          "mem_bytes": 779721113
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 70.04,
+          "mem_bytes": 780140544
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:39:20.019359756+05:30",
+      "cpu_percent": 287.81,
+      "mem_bytes": 3171837541,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 76.08,
+          "mem_bytes": 806984089
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 73.91,
+          "mem_bytes": 789472870
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 68.59,
+          "mem_bytes": 787166003
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 69.23,
+          "mem_bytes": 788214579
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:39:22.040680086+05:30",
+      "cpu_percent": 283.56,
+      "mem_bytes": 3202980248,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 75.56,
+          "mem_bytes": 814848409
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 73.65,
+          "mem_bytes": 797442048
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 66.88,
+          "mem_bytes": 794925465
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 67.47,
+          "mem_bytes": 795764326
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:39:24.061379433+05:30",
+      "cpu_percent": 296.69,
+      "mem_bytes": 3236115250,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 79.28,
+          "mem_bytes": 823761305
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 76.6,
+          "mem_bytes": 805306368
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 70.12,
+          "mem_bytes": 803104358
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 70.69,
+          "mem_bytes": 803943219
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:39:26.08333139+05:30",
+      "cpu_percent": 271.86,
+      "mem_bytes": 3266628811,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 73.31,
+          "mem_bytes": 830577049
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 71.12,
+          "mem_bytes": 813485260
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 64.04,
+          "mem_bytes": 810968678
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 63.39,
+          "mem_bytes": 811597824
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:39:28.108880163+05:30",
+      "cpu_percent": 271.72999999999996,
+      "mem_bytes": 3299449240,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 72.19,
+          "mem_bytes": 838336512
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 69.71,
+          "mem_bytes": 821873868
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 65.5,
+          "mem_bytes": 819567001
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 64.33,
+          "mem_bytes": 819671859
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:39:30.128196152+05:30",
+      "cpu_percent": 284.9,
+      "mem_bytes": 3331430808,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 75.97,
+          "mem_bytes": 847144550
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 73.77,
+          "mem_bytes": 829528473
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 67.38,
+          "mem_bytes": 826907033
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 67.78,
+          "mem_bytes": 827850752
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:39:32.152460134+05:30",
+      "cpu_percent": 274.78999999999996,
+      "mem_bytes": 3362258942,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 72.13,
+          "mem_bytes": 854589440
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 72.21,
+          "mem_bytes": 837183078
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 63.84,
+          "mem_bytes": 834981068
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 66.61,
+          "mem_bytes": 835505356
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:39:34.17278134+05:30",
+      "cpu_percent": 285.31,
+      "mem_bytes": 3394240510,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 75.77,
+          "mem_bytes": 862558617
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 74.12,
+          "mem_bytes": 844942540
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 67.13,
+          "mem_bytes": 843159961
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 68.29,
+          "mem_bytes": 843579392
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:39:36.195109729+05:30",
+      "cpu_percent": 282.53999999999996,
+      "mem_bytes": 3427375512,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 75.05,
+          "mem_bytes": 870947225
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 72.66,
+          "mem_bytes": 853121433
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 67.64,
+          "mem_bytes": 850814566
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 67.19,
+          "mem_bytes": 852492288
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:39:38.218856133+05:30",
+      "cpu_percent": 278.7,
+      "mem_bytes": 3457784216,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 74.83,
+          "mem_bytes": 878811545
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 71.79,
+          "mem_bytes": 861090611
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 66.5,
+          "mem_bytes": 858364313
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 65.58,
+          "mem_bytes": 859517747
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:39:40.238126922+05:30",
+      "cpu_percent": 280.86,
+      "mem_bytes": 3490080356,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 74.46,
+          "mem_bytes": 886675865
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 72.21,
+          "mem_bytes": 869059788
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 66.51,
+          "mem_bytes": 866438348
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 67.68,
+          "mem_bytes": 867906355
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:39:42.259047768+05:30",
+      "cpu_percent": 285.56,
+      "mem_bytes": 3521852209,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 75.48,
+          "mem_bytes": 895064473
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 73.85,
+          "mem_bytes": 876924108
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 68.19,
+          "mem_bytes": 874407526
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 68.04,
+          "mem_bytes": 875456102
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:39:44.279928797+05:30",
+      "cpu_percent": 281.23,
+      "mem_bytes": 3554672638,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 73.99,
+          "mem_bytes": 903243366
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 73.05,
+          "mem_bytes": 885627289
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 67.18,
+          "mem_bytes": 882586419
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 67.01,
+          "mem_bytes": 883215564
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:39:46.300407562+05:30",
+      "cpu_percent": 302.88,
+      "mem_bytes": 3586444491,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 79.8,
+          "mem_bytes": 911107686
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 78.03,
+          "mem_bytes": 892967321
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 72.01,
+          "mem_bytes": 890555596
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 73.04,
+          "mem_bytes": 891813888
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:39:48.320994359+05:30",
+      "cpu_percent": 265.03,
+      "mem_bytes": 3617272626,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 71.2,
+          "mem_bytes": 918762291
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 68.12,
+          "mem_bytes": 900936499
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 62.35,
+          "mem_bytes": 898315059
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 63.36,
+          "mem_bytes": 899258777
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:39:50.34634458+05:30",
+      "cpu_percent": 282.2,
+      "mem_bytes": 3650302771,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 75.15,
+          "mem_bytes": 927465472
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 73.35,
+          "mem_bytes": 909639680
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 67.02,
+          "mem_bytes": 905969664
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 66.68,
+          "mem_bytes": 907227955
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:39:52.370570178+05:30",
+      "cpu_percent": 292.15999999999997,
+      "mem_bytes": 3682598910,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 77.54,
+          "mem_bytes": 935434649
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 76.1,
+          "mem_bytes": 916874854
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 68.77,
+          "mem_bytes": 914463129
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 69.75,
+          "mem_bytes": 915826278
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:39:54.390803337+05:30",
+      "cpu_percent": 289.97,
+      "mem_bytes": 3711329893,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 76.85,
+          "mem_bytes": 942460108
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 74.43,
+          "mem_bytes": 924529459
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 68.64,
+          "mem_bytes": 921698304
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 70.05,
+          "mem_bytes": 922642022
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:39:56.412219601+05:30",
+      "cpu_percent": 282.57,
+      "mem_bytes": 3743940606,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 76.41,
+          "mem_bytes": 950639001
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 73.21,
+          "mem_bytes": 932813209
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 66.77,
+          "mem_bytes": 929772339
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 66.18,
+          "mem_bytes": 930716057
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:39:58.432619574+05:30",
+      "cpu_percent": 273.51,
+      "mem_bytes": 3784625355,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 73.11,
+          "mem_bytes": 960390758
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 70.79,
+          "mem_bytes": 942774681
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 65.1,
+          "mem_bytes": 940153241
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 64.51,
+          "mem_bytes": 941306675
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:40:00.452297434+05:30",
+      "cpu_percent": 283.1,
+      "mem_bytes": 3820906086,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 75.65,
+          "mem_bytes": 969303654
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 72.01,
+          "mem_bytes": 952631296
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 67.14,
+          "mem_bytes": 948961280
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 68.3,
+          "mem_bytes": 950009856
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:40:02.471862089+05:30",
+      "cpu_percent": 272.16999999999996,
+      "mem_bytes": 3855823666,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 71.89,
+          "mem_bytes": 978426265
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 70.25,
+          "mem_bytes": 960915046
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 64.95,
+          "mem_bytes": 957874176
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 65.08,
+          "mem_bytes": 958608179
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:40:04.49376659+05:30",
+      "cpu_percent": 280.76,
+      "mem_bytes": 3886442084,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 74.71,
+          "mem_bytes": 985871155
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 72.66,
+          "mem_bytes": 968674508
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 66.44,
+          "mem_bytes": 965528780
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 66.95,
+          "mem_bytes": 966367641
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:40:06.522337792+05:30",
+      "cpu_percent": 316.75,
+      "mem_bytes": 3919052799,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 84.54,
+          "mem_bytes": 993945190
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 81.88,
+          "mem_bytes": 976958259
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 74.55,
+          "mem_bytes": 973497958
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 75.78,
+          "mem_bytes": 974651392
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:40:08.541287414+05:30",
+      "cpu_percent": 315.38,
+      "mem_bytes": 3951558654,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 83.53,
+          "mem_bytes": 1002228940
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 80.79,
+          "mem_bytes": 985032294
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 75.19,
+          "mem_bytes": 981781708
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 75.87,
+          "mem_bytes": 982515712
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:40:10.561382751+05:30",
+      "cpu_percent": 266.08,
+      "mem_bytes": 3982491647,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 71.22,
+          "mem_bytes": 1010302976
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 68.61,
+          "mem_bytes": 992791756
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 62.81,
+          "mem_bytes": 989331456
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 63.44,
+          "mem_bytes": 990065459
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:40:12.58374431+05:30",
+      "cpu_percent": 294.66,
+      "mem_bytes": 4015521791,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 78.07,
+          "mem_bytes": 1018167296
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 76.34,
+          "mem_bytes": 1001704652
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 69.2,
+          "mem_bytes": 997195776
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 71.05,
+          "mem_bytes": 998454067
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:40:14.607640713+05:30",
+      "cpu_percent": 303.93999999999994,
+      "mem_bytes": 4047398501,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 80.96,
+          "mem_bytes": 1026136473
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 78.69,
+          "mem_bytes": 1008625254
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 71.72,
+          "mem_bytes": 1006003814
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 72.57,
+          "mem_bytes": 1006632960
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:40:16.628371705+05:30",
+      "cpu_percent": 310.25,
+      "mem_bytes": 4079484926,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 82.56,
+          "mem_bytes": 1034105651
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 79.62,
+          "mem_bytes": 1016909004
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 74.12,
+          "mem_bytes": 1014077849
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 73.95,
+          "mem_bytes": 1014392422
+        }
+      ]
+    },
+    {
+      "t": "2026-09-16T17:40:18.648210814+05:30",
+      "cpu_percent": 49.730000000000004,
+      "mem_bytes": 4094794136,
+      "containers": 4,
+      "by_container": [
+        {
+          "name": "bench-neuchain-block-server-0",
+          "cpu_percent": 13.05,
+          "mem_bytes": 1038404812
+        },
+        {
+          "name": "bench-neuchain-block-server-1",
+          "cpu_percent": 12.69,
+          "mem_bytes": 1020369305
+        },
+        {
+          "name": "bench-neuchain-block-server-2",
+          "cpu_percent": 11.93,
+          "mem_bytes": 1017852723
+        },
+        {
+          "name": "bench-neuchain-block-server-3",
+          "cpu_percent": 12.06,
+          "mem_bytes": 1018167296
+        }
+      ]
+    }
+  ]
+}

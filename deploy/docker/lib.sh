@@ -7,6 +7,12 @@ set -euo pipefail
 shopt -s inherit_errexit
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+# WSL/multi-user: cache checkouts are often owned by another login (e.g. chad vs
+# npci). Git refuses "dubious ownership" unless the directory is allowlisted.
+# Scoped to deploy scripts only — never touches the user's global git config.
+export GIT_CONFIG_COUNT=1
+export GIT_CONFIG_KEY_0=safe.directory
+export GIT_CONFIG_VALUE_0='*'
 PROFILE="${1:-${BENCH_PROFILE:-local}}"
 PROFILE_FILE="${REPO_ROOT}/deploy/profiles/${PROFILE}.yaml"
 
@@ -254,12 +260,43 @@ drop_caches() {
   fi
 }
 
-# pin_state_db_for_normalized <platform> — echoes the state DB the deploy should
-# use. Normalized runs are always leveldb; the run config decides normalized, so
-# deploy scripts default to the profile value and the run itself asserts parity.
+# state_db <platform> — the world-state backend the deploy should start.
+# The profile value is the native (best-fit) backend. Normalized runs still
+# force leveldb in the harness request (EffectiveStateDB); deploy honours
+# BENCH_NORMALIZED=false by using the profile value as-is. When the shipped
+# network cannot honour leveldb (Drunix), up.sh records the actual DB.
 state_db() {
   local platform="$1"
   platform_field "$platform" state_db || echo leveldb
+}
+
+# native_run — true when this deploy is for a platform-native (normalized:false)
+# campaign. run-all.sh / gcp-run.sh export BENCH_NORMALIZED from the config.
+native_run() {
+  case "${BENCH_NORMALIZED:-true}" in
+    false|FALSE|0|no|NO) return 0 ;;
+    *) return 1 ;;
+  esac
+}
+
+# orderer_batch_prefix <platform> — "orderer_batch_native" when this is a native
+# run and the profile has a native block, else "orderer_batch" (the shared
+# normalized anchor).
+orderer_batch_prefix() {
+  local platform="$1"
+  if native_run && platform_field "$platform" orderer_batch_native.max_message_count >/dev/null; then
+    echo orderer_batch_native
+    return
+  fi
+  echo orderer_batch
+}
+
+# effective_orderer_batch_field <platform> <field> — batch_timeout etc., native
+# or normalized according to BENCH_NORMALIZED.
+effective_orderer_batch_field() {
+  local platform="$1" field="$2" prefix
+  prefix="$(orderer_batch_prefix "$platform")"
+  require_platform_field "$platform" "${prefix}.${field}"
 }
 
 export REPO_ROOT PROFILE PROFILE_FILE
@@ -403,10 +440,10 @@ warm_chaincode() {
 patch_orderer_batch() {
   local platform="$1" configtx="$2" bft="${3:-}"
   local bt mmc pmb amb
-  bt="$(require_platform_field "$platform" orderer_batch.batch_timeout)"
-  mmc="$(require_platform_field "$platform" orderer_batch.max_message_count)"
-  pmb="$(require_platform_field "$platform" orderer_batch.preferred_max_bytes)"
-  amb="$(require_platform_field "$platform" orderer_batch.absolute_max_bytes)"
+  bt="$(effective_orderer_batch_field "$platform" batch_timeout)"
+  mmc="$(effective_orderer_batch_field "$platform" max_message_count)"
+  pmb="$(effective_orderer_batch_field "$platform" preferred_max_bytes)"
+  amb="$(effective_orderer_batch_field "$platform" absolute_max_bytes)"
   [ -f "$configtx" ] || die "cannot pin orderer batch: ${configtx} does not exist (upstream layout changed?)"
   log "pinning orderer batch in ${configtx##*/}: timeout=${bt} maxMsgCount=${mmc} preferred=${pmb} absolute=${amb}"
   python3 - "$configtx" "$bt" "$mmc" "$pmb" "$amb" "$bft" <<'PY' || die "orderer batch patch failed for ${configtx} (see message above)"

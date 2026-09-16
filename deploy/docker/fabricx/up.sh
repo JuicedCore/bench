@@ -18,7 +18,6 @@ need git
 on_error_dump '^bench-fabricx-'
 
 CACHE="${HERE}/.cache"
-IMAGE="${BENCH_FX_IMAGE:-bench/fabricx:local}"
 NS="${BENCH_FX_NAMESPACE:-0}"
 
 # Pinned upstream refs. Keep these on one coherent set: mismatched committer /
@@ -31,12 +30,24 @@ git_checkout_pinned https://github.com/hyperledger/fabric-x-committer.git "${CAC
 git_checkout_pinned https://github.com/hyperledger/fabric-x-orderer.git   "${CACHE}/fabric-x-orderer-src"   "$ORDERER_REF"
 
 # --- block-cutting parameters from the profile (adr-011) --------------------
-# These must be identical across fabric-cft, fabric-bft, drunix and fabricx, or
-# the normalized comparison is meaningless. They are baked at image build time
-# because Arma's genesis block is generated there.
-BT="$(require_platform_field fabricx orderer_batch.batch_timeout)"
-MMC="$(require_platform_field fabricx orderer_batch.max_message_count)"
-log "orderer batch from profile '${PROFILE}': timeout=${BT} maxMessageCount=${MMC}"
+# Normalized runs use the shared Fabric-family anchor. Native runs use
+# orderer_batch_native when the profile defines it. Values are baked at image
+# build time because Arma's genesis block is generated there.
+BT="$(effective_orderer_batch_field fabricx batch_timeout)"
+MMC="$(effective_orderer_batch_field fabricx max_message_count)"
+log "orderer batch from profile '${PROFILE}' (normalized=${BENCH_NORMALIZED:-true}): timeout=${BT} maxMessageCount=${MMC}"
+
+# Keep normalized and native images distinct so switching campaigns does not
+# rebuild, and so a native genesis cannot leak into a normalized run.
+if [ -z "${BENCH_FX_IMAGE:-}" ]; then
+  if native_run; then
+    IMAGE="bench/fabricx:native-${MMC}-${BT}"
+  else
+    IMAGE="bench/fabricx:local"
+  fi
+else
+  IMAGE="$BENCH_FX_IMAGE"
+fi
 
 export BENCH_FX_IMAGE="$IMAGE"
 

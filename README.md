@@ -127,7 +127,7 @@ Every document in the repository, grouped by what you want to do.
 | [HARDWARE-REQUIREMENTS.md](docs/HARDWARE-REQUIREMENTS.md) | host specs per profile, monitoring footprint, why under-provisioned hosts OOM, scaling behaviour |
 | [REMAINING-WORK.md](docs/REMAINING-WORK.md) | project status and open issues |
 | [docs/README.md](docs/README.md) | troubleshooting and error lookup (the CLI links here) |
-| [docs/HTMLS/index.html](docs/HTMLS/index.html) | static HTML rendering of the docs; a snapshot that can lag the markdown |
+| [docs/HTMLS/index.html](docs/HTMLS/index.html) | static HTML site (overview, load path, platforms, normalization) — refreshed for native gRPC Fabric-X, Drunix JSON wrap, local-32gb status |
 
 ### Decision records (ADRs)
 
@@ -361,7 +361,9 @@ Config blocks:
 | `system_metrics` | 1 s sampling, Prometheus/cAdvisor URLs, container name filters |
 | `adapter` | union of every platform's keys, filled from `${BENCH_ADAPTER_*}`; each adapter ignores keys it doesn't know |
 
-`${VAR}` expands from the environment. There is no `configs/native/` today.
+`${VAR}` expands from the environment. Native kv-write ceilings live in [`configs/native/`](configs/native)
+(one file per platform, `normalized: false`). Native kv-mixed (same levers, 50% reads)
+is [`configs/native-kv-mixed/`](configs/native-kv-mixed).
 `latency-profile.yaml` suggests setting `target_tps` to about 60% of the knee you
 measured.
 

@@ -134,6 +134,10 @@ func configFromExtra(extra map[string]any) (*Config, error) {
 		switch v := extra["broadcast_streams"].(type) {
 		case int:
 			c.BroadcastStreams = v
+		case int64:
+			c.BroadcastStreams = int(v)
+		case float64:
+			c.BroadcastStreams = int(v)
 		case string:
 			if v != "" {
 				n, err := strconv.Atoi(v)

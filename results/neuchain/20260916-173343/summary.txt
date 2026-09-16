@@ -1,0 +1,38 @@
+run:        native-kv-mixed
+platform:   neuchain  (version neuchain-ev-patched)
+workload:   kv-mixed   normalized=false
+profile:    local-32gb   state_db=leveldb
+resources:  18 CPU / 20 GB total over 4 containers (4.50 CPU each; memory by role weight peer=4 statedb=4 orderer=2 other=1)
+              5120m    bench-neuchain-block-server-0
+              5120m    bench-neuchain-block-server-1
+              5120m    bench-neuchain-block-server-2
+              5120m    bench-neuchain-block-server-3
+batch:      msgcount=0 timeout= preferred=
+crypto:     sig=RSA-1024-PKCS1v15 hash=SHA-256 per_tx_endorse_verify=false
+caveats:
+  - neuchain native run is shortened to stay under the upstream epoch-10000 crash (nodes SIGSEGV together; see docs/REMAINING-WORK.md)
+  - kv-mixed native: Fabric/Drunix/Fabric-X reads are Evaluate/QueryService (not ordered); NeuChain reads are committed transactions. Headline TPS blends two paths.
+  - every sweep step held: the platform did not saturate within the ladder, so 10000 TPS is a lower bound on its knee, not the knee
+
+phase           offered     conf_tps  goodput  fail_rate    e2e_p50    e2e_p99    gap_p99    com_p50  verdict
+probe                10         10.0     100%     0.0000     251.39     385.02       1.05     250.62  
+sweep-100           100        100.0     100%     0.0000     168.70     233.34       1.09     167.94  held
+sweep-250           250        250.0     100%     0.0000     134.40     196.35       1.09     133.63  held
+sweep-500           500        500.0     100%     0.0000     119.74     174.72       1.08     118.91  held
+sweep-1000         1000       1000.0     100%     0.0000     122.30     180.22       1.08     121.54  held
+sweep-2000         2000       1999.8     100%     0.0001     121.09     195.33       1.08     120.45  held
+sweep-3500         3500       3499.6     100%     0.0001     119.81     188.80       1.02     119.30  held
+sweep-5000         5000       4998.4     100%     0.0003     127.49     199.81       0.99     126.85  held
+sweep-7500         7500       7497.4     100%     0.0003     134.66     206.72       1.06     134.14  held
+sweep-10000       10000       9996.4     100%     0.0004     122.30     201.34       1.01     121.98  held
+hold               9000       8996.5     100%     0.0004     134.02     248.06       1.26     133.50  
+
+errors sweep-2000          1 x committed invalid
+errors sweep-3500          2 x committed invalid
+errors sweep-5000          8 x committed invalid
+errors sweep-7500         13 x committed invalid
+errors sweep-10000        18 x committed invalid
+errors hold              230 x committed invalid
+detected saturation: NOT REACHED - every step held; the knee is above 10000 TPS.
+                     Extend the ladder to measure it.
+HEADLINE  confirmed_tps=8996.5  fail_rate=0.0004  e2e p50/p99=134.02/248.06 ms  invariant_ok=true

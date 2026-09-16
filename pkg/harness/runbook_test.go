@@ -28,7 +28,7 @@ func TestRunbookPagesEveryRun(t *testing.T) {
 	root := t.TempDir()
 	start := time.Date(2026, 9, 15, 12, 0, 0, 0, time.UTC)
 	ok := RunResult{
-		Manifest: Manifest{RunName: "probe-sweep", Platform: "mock", Profile: "local", StartedAt: start, EndedAt: start.Add(time.Minute), Generators: 1, ResourceContainers: 1},
+		Manifest: Manifest{RunName: "probe-sweep", Platform: "mock", Workload: "kv-write", Profile: "local", StartedAt: start, EndedAt: start.Add(time.Minute), Generators: 1, ResourceContainers: 1},
 		Phases: []PhaseResult{
 			{Name: "sweep-100", OfferedTPS: 100, Verdict: "held", Result: metrics.Result{Submitted: 100, Committed: 100, ConfirmedTPS: 100, InvariantOK: true}},
 			{Name: "sweep-200", OfferedTPS: 200, Verdict: "fail", Result: metrics.Result{Submitted: 200, Committed: 150, ConfirmedTPS: 150, Errors: []metrics.ErrorCount{{Message: "<script>alert(1)</script>", Count: 50}}}},
@@ -41,7 +41,12 @@ func TestRunbookPagesEveryRun(t *testing.T) {
 	failed.Manifest.ContainerFailures = []metrics.ContainerFailure{{Name: "node-0", Exited: true, ExitCode: 139}}
 	writeJSON(t, filepath.Join(root, "mock", "20260915-130000", "result.json"), failed)
 
-	writeJSON(t, filepath.Join(root, "mock", "20260915-140000", "manifest.json"), Manifest{RunName: "quick-smoke", Platform: "mock", StartedAt: start.Add(2 * time.Hour)})
+	writeJSON(t, filepath.Join(root, "mock", "20260915-140000", "manifest.json"), Manifest{RunName: "quick-smoke", Platform: "mock", Workload: "kv-mixed", Normalized: true, StartedAt: start.Add(2 * time.Hour)})
+	nc := ok
+	nc.Manifest.Platform = "neuchain"
+	nc.Manifest.Normalized = false
+	nc.Manifest.StartedAt = start.Add(3 * time.Hour)
+	writeJSON(t, filepath.Join(root, "neuchain", "20260915-150000", "result.json"), nc)
 	if err := os.MkdirAll(filepath.Join(root, "mock", "20260915-150000"), 0o755); err != nil {
 		t.Fatal(err)
 	}
@@ -72,8 +77,48 @@ func TestRunbookPagesEveryRun(t *testing.T) {
 		t.Error("error message was not escaped")
 	}
 	// Newest first.
-	if strings.Index(page, `data-run="mock-20260915-140000"`) > strings.Index(page, `data-run="mock-20260915-120000"`) {
-		t.Error("runs are not ordered newest first")
+	tableStart := strings.Index(page, `class="runs"`)
+	if tableStart < 0 {
+		t.Fatal("overview table missing")
+	}
+	table := page[tableStart:]
+	if strings.Index(table, `data-run="mock-20260915-140000"`) > strings.Index(table, `data-run="mock-20260915-120000"`) {
+		t.Error("overview table is not ordered newest first")
+	}
+	for _, want := range []string{
+		`data-workload="kv-write"`, `data-workload="kv-mixed"`,
+		`data-mode="native"`, `data-mode="normalized"`,
+		`data-filter="workload"`, `data-filter="mode"`,
+		`class="pill wl w-write"`, `class="pill wl w-mixed"`,
+		`class="pill mode native"`, `class="pill mode normalized"`,
+		`data-group-platform="mock"`, `data-group-platform="neuchain"`,
+		`id="neuchain-notes"`, "RSA-1024", "ZeroMQ PUB", "epoch ~10", "150 s",
+		"How load is offered", "in-process", "Load in",
+		"ZMQ PUB/REQ", "fire-and-forget YCSB",
+		`class="group-h"`, `class="iconbtn sidetoggle"`, `class="iconbtn side-reopen"`,
+	} {
+		if !strings.Contains(page, want) {
+			t.Errorf("run book is missing workload chrome %q", want)
+		}
+	}
+	if strings.Count(page, `id="neuchain-notes"`) != 1 {
+		t.Errorf("neuchain notes id should appear once on the overview, got %d", strings.Count(page, `id="neuchain-notes"`))
+	}
+}
+
+func TestLoadPathLegendCoversPlatforms(t *testing.T) {
+	html := loadPathLegend([]string{"fabric-cft", "fabric-bft", "drunix", "fabricx", "neuchain"})
+	for _, want := range []string{
+		"Gateway gRPC", "Arma gRPC", "ZMQ PUB/REQ",
+		"Lite Peer", "SmartBFT", "Fire-and-forget YCSB",
+		"first router SUCCESS", "kvstore",
+	} {
+		if !strings.Contains(html, want) {
+			t.Errorf("load-path legend missing %q", want)
+		}
+	}
+	if strip := loadPathStrip("fabricx"); !strings.Contains(strip, "Arma gRPC") {
+		t.Errorf("fabricx strip: %s", strip)
 	}
 }
 

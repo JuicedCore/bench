@@ -1,0 +1,3 @@
+time=2026-09-16T13:57:00.261+05:30 level=INFO msg="run starting" workload=kv-write profile=local-32gb normalized=false out_dir=results/neuchain/20260916-135700
+time=2026-09-16T13:57:00.261+05:30 level=WARN msg=caveat text="neuchain native run is shortened to stay under the upstream epoch-10000 crash (nodes SIGSEGV together; see docs/REMAINING-WORK.md)"
+time=2026-09-16T13:57:00.261+05:30 level=WARN msg=caveat text="resource budget not reported by the deploy script (BENCH_RESOURCE_CONTAINERS unset - was connection.env sourced?): container limits are unverified, so this run's hardware share is unknown"

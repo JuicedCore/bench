@@ -1,0 +1,76 @@
+2026-09-16T08:27:15.600488650Z logger=settings t=2026-09-16T08:27:15.600353719Z level=info msg="Starting Grafana" version=11.4.0 commit=b58701869e1a11b696010a6f28bd96b68a2cf0d0 branch=HEAD compiled=2026-09-16T08:27:15Z
+2026-09-16T08:27:15.601073693Z logger=settings t=2026-09-16T08:27:15.600993974Z level=info msg="Config loaded from" file=/usr/share/grafana/conf/defaults.ini
+2026-09-16T08:27:15.601081168Z logger=settings t=2026-09-16T08:27:15.60100537Z level=info msg="Config loaded from" file=/etc/grafana/grafana.ini
+2026-09-16T08:27:15.601082618Z logger=settings t=2026-09-16T08:27:15.601007139Z level=info msg="Config overridden from command line" arg="default.paths.data=/var/lib/grafana"
+2026-09-16T08:27:15.601083819Z logger=settings t=2026-09-16T08:27:15.601008367Z level=info msg="Config overridden from command line" arg="default.paths.logs=/var/log/grafana"
+2026-09-16T08:27:15.601084733Z logger=settings t=2026-09-16T08:27:15.601009602Z level=info msg="Config overridden from command line" arg="default.paths.plugins=/var/lib/grafana/plugins"
+2026-09-16T08:27:15.601088833Z logger=settings t=2026-09-16T08:27:15.601010634Z level=info msg="Config overridden from command line" arg="default.paths.provisioning=/etc/grafana/provisioning"
+2026-09-16T08:27:15.601089569Z logger=settings t=2026-09-16T08:27:15.601012486Z level=info msg="Config overridden from command line" arg="default.log.mode=console"
+2026-09-16T08:27:15.601090242Z logger=settings t=2026-09-16T08:27:15.601013748Z level=info msg="Config overridden from Environment variable" var="GF_PATHS_DATA=/var/lib/grafana"
+2026-09-16T08:27:15.601090973Z logger=settings t=2026-09-16T08:27:15.601014855Z level=info msg="Config overridden from Environment variable" var="GF_PATHS_LOGS=/var/log/grafana"
+2026-09-16T08:27:15.601091644Z logger=settings t=2026-09-16T08:27:15.601016226Z level=info msg="Config overridden from Environment variable" var="GF_PATHS_PLUGINS=/var/lib/grafana/plugins"
+2026-09-16T08:27:15.601092304Z logger=settings t=2026-09-16T08:27:15.601017345Z level=info msg="Config overridden from Environment variable" var="GF_PATHS_PROVISIONING=/etc/grafana/provisioning"
+2026-09-16T08:27:15.601092969Z logger=settings t=2026-09-16T08:27:15.60101829Z level=info msg="Config overridden from Environment variable" var="GF_SECURITY_ADMIN_USER=admin"
+2026-09-16T08:27:15.601093602Z logger=settings t=2026-09-16T08:27:15.60101944Z level=info msg="Config overridden from Environment variable" var="GF_SECURITY_ADMIN_PASSWORD=*********"
+2026-09-16T08:27:15.601094225Z logger=settings t=2026-09-16T08:27:15.601020438Z level=info msg="Config overridden from Environment variable" var="GF_USERS_DEFAULT_THEME=light"
+2026-09-16T08:27:15.601095179Z logger=settings t=2026-09-16T08:27:15.601021433Z level=info msg="Config overridden from Environment variable" var="GF_AUTH_ANONYMOUS_ENABLED=true"
+2026-09-16T08:27:15.601095890Z logger=settings t=2026-09-16T08:27:15.601022449Z level=info msg="Config overridden from Environment variable" var="GF_AUTH_ANONYMOUS_ORG_ROLE=Viewer"
+2026-09-16T08:27:15.601096527Z logger=settings t=2026-09-16T08:27:15.601023553Z level=info msg=Target target=[all]
+2026-09-16T08:27:15.601097154Z logger=settings t=2026-09-16T08:27:15.601027351Z level=info msg="Path Home" path=/usr/share/grafana
+2026-09-16T08:27:15.601097770Z logger=settings t=2026-09-16T08:27:15.601028403Z level=info msg="Path Data" path=/var/lib/grafana
+2026-09-16T08:27:15.601105835Z logger=settings t=2026-09-16T08:27:15.601029358Z level=info msg="Path Logs" path=/var/log/grafana
+2026-09-16T08:27:15.601106613Z logger=settings t=2026-09-16T08:27:15.601030353Z level=info msg="Path Plugins" path=/var/lib/grafana/plugins
+2026-09-16T08:27:15.601107289Z logger=settings t=2026-09-16T08:27:15.601031419Z level=info msg="Path Provisioning" path=/etc/grafana/provisioning
+2026-09-16T08:27:15.601108019Z logger=settings t=2026-09-16T08:27:15.601032371Z level=info msg="App mode production"
+2026-09-16T08:27:15.601247730Z logger=featuremgmt t=2026-09-16T08:27:15.60115476Z level=info msg=FeatureToggles alertingInsights=true dashboardSceneForViewers=true lokiQueryHints=true openSearchBackendFlowEnabled=true ssoSettingsApi=true cloudWatchNewLabelParsing=true logsInfiniteScrolling=true transformationsRedesign=true influxdbBackendMigration=true dataplaneFrontendFallback=true recoveryThreshold=true accessControlOnCall=true autoMigrateXYChartPanel=true recordedQueriesMulti=true publicDashboardsScene=true cloudWatchCrossAccountQuerying=true awsAsyncQueryCaching=true promQLScope=true logsContextDatasourceUi=true alertingNoDataErrorExecution=true prometheusConfigOverhaulAuth=true annotationPermissionUpdate=true managedPluginsInstall=true notificationBanner=true prometheusMetricEncyclopedia=true exploreMetrics=true kubernetesPlaylists=true tlsMemcached=true dashboardSceneSolo=true transformationsVariableSupport=true lokiStructuredMetadata=true cloudWatchRoundUpEndTime=true angularDeprecationUI=true dashboardScene=true addFieldFromCalculationStatFunctions=true lokiMetricDataplane=true topnav=true publicDashboards=true dashgpt=true pinNavItems=true groupToNestedTableTransformation=true lokiQuerySplitting=true prometheusAzureOverrideAudience=true alertingSimplifiedRouting=true panelMonitoring=true formatString=true correlations=true logsExploreTableVisualisation=true logRowsPopoverMenu=true nestedFolders=true
+2026-09-16T08:27:15.601253922Z logger=sqlstore t=2026-09-16T08:27:15.601208291Z level=info msg="Connecting to DB" dbtype=sqlite3
+2026-09-16T08:27:15.623696276Z logger=migrator t=2026-09-16T08:27:15.623542174Z level=info msg="Locking database"
+2026-09-16T08:27:15.623715391Z logger=migrator t=2026-09-16T08:27:15.623559619Z level=info msg="Starting DB migrations"
+2026-09-16T08:27:15.682664242Z logger=migrator t=2026-09-16T08:27:15.682540492Z level=info msg="migrations completed" performed=0 skipped=611 duration=222.969µs
+2026-09-16T08:27:15.682848405Z logger=migrator t=2026-09-16T08:27:15.682791775Z level=info msg="Unlocking database"
+2026-09-16T08:27:15.683152016Z logger=secrets t=2026-09-16T08:27:15.683092106Z level=info msg="Envelope encryption state" enabled=true currentprovider=secretKey.v1
+2026-09-16T08:27:15.781830710Z logger=plugin.angulardetectorsprovider.dynamic t=2026-09-16T08:27:15.781395251Z level=info msg="Restored cache from database" duration=970.764µs
+2026-09-16T08:27:15.790965249Z logger=plugin.store t=2026-09-16T08:27:15.790507354Z level=info msg="Loading plugins..."
+2026-09-16T08:27:15.936178673Z logger=plugins.registration t=2026-09-16T08:27:15.935699222Z level=error msg="Could not register plugin" pluginId=xychart error="plugin xychart is already registered"
+2026-09-16T08:27:15.936199999Z logger=plugins.initialization t=2026-09-16T08:27:15.935723116Z level=error msg="Could not initialize plugin" pluginId=xychart error="plugin xychart is already registered"
+2026-09-16T08:27:15.936209239Z logger=local.finder t=2026-09-16T08:27:15.935798126Z level=warn msg="Skipping finding plugins as directory does not exist" path=/usr/share/grafana/plugins-bundled
+2026-09-16T08:27:16.005172663Z logger=plugins.registration t=2026-09-16T08:27:16.004870897Z level=info msg="Plugin registered" pluginId=grafana-lokiexplore-app
+2026-09-16T08:27:16.005194799Z logger=plugin.store t=2026-09-16T08:27:16.00490045Z level=info msg="Plugins loaded" count=55 duration=214.393309ms
+2026-09-16T08:27:16.081428226Z logger=query_data t=2026-09-16T08:27:16.081292116Z level=info msg="Query Service initialization"
+2026-09-16T08:27:16.087152165Z logger=live.push_http t=2026-09-16T08:27:16.087041985Z level=info msg="Live Push Gateway initialization"
+2026-09-16T08:27:16.092041935Z logger=ngalert.notifier.alertmanager org=1 t=2026-09-16T08:27:16.09195612Z level=info msg="Applying new configuration to Alertmanager" configHash=d2c56faca6af2a5772ff4253222f7386
+2026-09-16T08:27:16.099562958Z logger=ngalert.state.manager t=2026-09-16T08:27:16.099435037Z level=info msg="Running in alternative execution of Error/NoData mode"
+2026-09-16T08:27:16.104060940Z logger=infra.usagestats.collector t=2026-09-16T08:27:16.10395203Z level=info msg="registering usage stat providers" usageStatsProvidersLen=2
+2026-09-16T08:27:16.178951187Z logger=provisioning.plugins t=2026-09-16T08:27:16.178807088Z level=error msg="Failed to read plugin provisioning files from directory" path=/etc/grafana/provisioning/plugins error="open /etc/grafana/provisioning/plugins: no such file or directory"
+2026-09-16T08:27:16.178973656Z logger=provisioning.alerting t=2026-09-16T08:27:16.178841302Z level=error msg="can't read alerting provisioning files from directory" path=/etc/grafana/provisioning/alerting error="open /etc/grafana/provisioning/alerting: no such file or directory"
+2026-09-16T08:27:16.178976622Z logger=provisioning.alerting t=2026-09-16T08:27:16.178843999Z level=info msg="starting to provision alerting"
+2026-09-16T08:27:16.178979361Z logger=provisioning.alerting t=2026-09-16T08:27:16.178848443Z level=info msg="finished to provision alerting"
+2026-09-16T08:27:16.180076382Z logger=grafanaStorageLogger t=2026-09-16T08:27:16.180008215Z level=info msg="Storage starting"
+2026-09-16T08:27:16.180275889Z logger=ngalert.multiorg.alertmanager t=2026-09-16T08:27:16.179779956Z level=info msg="Starting MultiOrg Alertmanager"
+2026-09-16T08:27:16.180786684Z logger=ngalert.state.manager t=2026-09-16T08:27:16.179541002Z level=info msg="Warming state cache for startup"
+2026-09-16T08:27:16.183076668Z logger=http.server t=2026-09-16T08:27:16.182957418Z level=info msg="HTTP Server Listen" address=[::]:3000 protocol=http subUrl= socket=
+2026-09-16T08:27:16.573983405Z logger=ngalert.state.manager t=2026-09-16T08:27:16.573809584Z level=info msg="State cache has been initialized" states=0 duration=394.26713ms
+2026-09-16T08:27:16.574007803Z logger=ngalert.scheduler t=2026-09-16T08:27:16.573847391Z level=info msg="Starting scheduler" tickInterval=10s maxAttempts=1
+2026-09-16T08:27:16.574009639Z logger=ticker t=2026-09-16T08:27:16.573881991Z level=info msg=starting first_tick=2026-09-16T08:27:20Z
+2026-09-16T08:27:16.575530429Z logger=provisioning.dashboard t=2026-09-16T08:27:16.575408473Z level=info msg="starting to provision dashboards"
+2026-09-16T08:27:16.576749694Z logger=provisioning.dashboard t=2026-09-16T08:27:16.576694653Z level=info msg="finished to provision dashboards"
+2026-09-16T08:27:16.799303510Z logger=grafana-apiserver t=2026-09-16T08:27:16.798559957Z level=info msg="Adding GroupVersion playlist.grafana.app v0alpha1 to ResourceManager"
+2026-09-16T08:27:16.799540010Z logger=grafana-apiserver t=2026-09-16T08:27:16.79945957Z level=info msg="Adding GroupVersion featuretoggle.grafana.app v0alpha1 to ResourceManager"
+2026-09-16T08:27:16.873896455Z logger=grafana-apiserver t=2026-09-16T08:27:16.873750543Z level=info msg="Adding GroupVersion iam.grafana.app v0alpha1 to ResourceManager"
+2026-09-16T08:27:16.966293602Z logger=plugins.update.checker t=2026-09-16T08:27:16.96599977Z level=info msg="Update check succeeded" duration=786.746834ms
+2026-09-16T08:27:16.966313520Z logger=grafana.update.checker t=2026-09-16T08:27:16.966177508Z level=info msg="Update check succeeded" duration=786.343659ms
+2026-09-16T08:28:36.184178036Z logger=infra.usagestats t=2026-09-16T08:28:36.184011994Z level=info msg="Usage stats are ready to report"
+2026-09-16T08:37:16.208675645Z logger=cleanup t=2026-09-16T08:37:16.208436449Z level=info msg="Completed cleanup jobs" duration=28.440814ms
+2026-09-16T08:37:17.324216494Z logger=plugins.update.checker t=2026-09-16T08:37:17.324048052Z level=info msg="Update check succeeded" duration=357.193405ms
+2026-09-16T08:47:16.190872866Z logger=cleanup t=2026-09-16T08:47:16.190758374Z level=info msg="Completed cleanup jobs" duration=10.141756ms
+2026-09-16T08:47:17.329295676Z logger=plugins.update.checker t=2026-09-16T08:47:17.329175831Z level=info msg="Update check succeeded" duration=362.654387ms
+2026-09-16T08:57:16.191299529Z logger=cleanup t=2026-09-16T08:57:16.191157783Z level=info msg="Completed cleanup jobs" duration=10.535464ms
+2026-09-16T08:57:17.324465226Z logger=plugins.update.checker t=2026-09-16T08:57:17.324318649Z level=info msg="Update check succeeded" duration=357.249967ms
+2026-09-16T08:58:36.187200183Z logger=infra.usagestats t=2026-09-16T08:58:36.18704335Z level=info msg="Usage stats are ready to report"
+2026-09-16T09:07:16.194217865Z logger=cleanup t=2026-09-16T09:07:16.194087172Z level=info msg="Completed cleanup jobs" duration=13.783064ms
+2026-09-16T09:07:17.320286498Z logger=plugins.update.checker t=2026-09-16T09:07:17.319984146Z level=info msg="Update check succeeded" duration=352.864156ms
+2026-09-16T09:17:16.193622467Z logger=cleanup t=2026-09-16T09:17:16.19353668Z level=info msg="Completed cleanup jobs" duration=12.959657ms
+2026-09-16T09:17:17.324409901Z logger=plugins.update.checker t=2026-09-16T09:17:17.324300159Z level=info msg="Update check succeeded" duration=358.041376ms
+2026-09-16T09:27:16.204590498Z logger=cleanup t=2026-09-16T09:27:16.20440848Z level=info msg="Completed cleanup jobs" duration=24.493635ms
+2026-09-16T09:27:17.359500720Z logger=plugins.update.checker t=2026-09-16T09:27:17.359365552Z level=info msg="Update check succeeded" duration=393.105475ms
+2026-09-16T09:28:36.204757245Z logger=infra.usagestats t=2026-09-16T09:28:36.20463902Z level=info msg="Usage stats are ready to report"

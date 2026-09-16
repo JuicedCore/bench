@@ -1,0 +1,26 @@
+time=2026-09-16T16:01:51.313+05:30 level=INFO msg="run starting" workload=kv-write profile=local-32gb normalized=false out_dir=results/drunix/20260916-160151
+time=2026-09-16T16:01:51.313+05:30 level=WARN msg=caveat text="drunix write values are JSON-wrapped client-side to survive a YugabyteDB statedb bug (non-JSON values panic the Committing Peer); the on-wire payload format differs from the shared kv workload on other platforms for this run"
+time=2026-09-16T16:01:51.313+05:30 level=INFO msg="adapter setup"
+time=2026-09-16T16:01:51.313+05:30 level=DEBUG msg="gateway connection configured" component=adapter endpoint=localhost:7051 tls_server_name=peer0.org1.example.com msp_id=Org1MSP channel=mychannel chaincode=kvstore
+time=2026-09-16T16:01:51.358+05:30 level=DEBUG msg="block event stream open" component=adapter stream=filtered-block-events endpoint=localhost:7061 channel=mychannel
+time=2026-09-16T16:01:51.399+05:30 level=INFO msg="setup complete" component=adapter gateway=localhost:7051 finality_from=localhost:7061
+time=2026-09-16T16:01:51.399+05:30 level=INFO msg="phase start" phase=probe offered_tps=10 workers=0 duration=30s
+time=2026-09-16T16:02:21.848+05:30 level=DEBUG msg="phase shorter than warmup+cooldown; measuring whole phase" phase=probe
+time=2026-09-16T16:02:21.850+05:30 level=INFO msg="phase end" phase=probe submitted=300 committed=300 confirmed_tps=10.0 fail_rate=0.0000 e2e_p99_ms=2344.96
+time=2026-09-16T16:02:21.850+05:30 level=INFO msg="phase start" phase=sweep-100 offered_tps=100 workers=0 duration=1m0s
+time=2026-09-16T16:03:23.885+05:30 level=INFO msg="phase end" phase=sweep-100 submitted=1500 committed=1500 confirmed_tps=100.0 fail_rate=0.0000 e2e_p99_ms=2248.70
+time=2026-09-16T16:03:23.885+05:30 level=INFO msg="phase start" phase=sweep-250 offered_tps=250 workers=0 duration=1m0s
+time=2026-09-16T16:04:25.921+05:30 level=INFO msg="phase end" phase=sweep-250 submitted=3750 committed=3750 confirmed_tps=250.0 fail_rate=0.0000 e2e_p99_ms=1086.46
+time=2026-09-16T16:04:25.921+05:30 level=INFO msg="phase start" phase=sweep-500 offered_tps=500 workers=0 duration=1m0s
+time=2026-09-16T16:05:27.963+05:30 level=INFO msg="phase end" phase=sweep-500 submitted=7500 committed=7500 confirmed_tps=500.0 fail_rate=0.0000 e2e_p99_ms=700.42
+time=2026-09-16T16:05:27.963+05:30 level=INFO msg="phase start" phase=sweep-1000 offered_tps=1000 workers=0 duration=1m0s
+time=2026-09-16T16:06:37.759+05:30 level=INFO msg="phase end" phase=sweep-1000 submitted=15000 committed=10404 confirmed_tps=693.6 fail_rate=0.3064 e2e_p99_ms=11681.79
+time=2026-09-16T16:06:37.759+05:30 level=WARN msg="phase errors" phase=sweep-1000 count=4596 message="not sent: N transactions already in flight (platform is not finalizing)"
+time=2026-09-16T16:06:37.759+05:30 level=INFO msg="phase start" phase=sweep-2000 offered_tps=2000 workers=0 duration=1m0s
+time=2026-09-16T16:07:57.875+05:30 level=INFO msg="phase end" phase=sweep-2000 submitted=30000 committed=10400 confirmed_tps=693.3 fail_rate=0.6533 e2e_p99_ms=22855.68
+time=2026-09-16T16:07:57.875+05:30 level=WARN msg="phase errors" phase=sweep-2000 count=19600 message="not sent: N transactions already in flight (platform is not finalizing)"
+time=2026-09-16T16:07:57.875+05:30 level=INFO msg="phase start" phase=hold offered_tps=450 workers=0 duration=5m0s
+time=2026-09-16T16:13:00.041+05:30 level=INFO msg="phase end" phase=hold submitted=114750 committed=114750 confirmed_tps=450.0 fail_rate=0.0000 e2e_p99_ms=751.10
+time=2026-09-16T16:13:00.041+05:30 level=WARN msg=caveat text="sweep aborted early after 2 consecutive failed steps; 4 higher step(s) were never offered"
+time=2026-09-16T16:13:00.074+05:30 level=WARN msg=caveat text="native metrics scrape of http://localhost:9444/metrics failed: scrape http://localhost:9444/metrics: parser panic: Invalid name validation scheme requested: unset (informational metrics only; harness numbers unaffected)"
+time=2026-09-16T16:13:00.078+05:30 level=INFO msg="run finished" out_dir=results/drunix/20260916-160151 caveats=3

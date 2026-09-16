@@ -88,8 +88,9 @@ union `adapter:` block, whose irrelevant keys each adapter ignores.
 
 For **platform-native runs** (`normalized: false`) each platform is tuned to its
 best and the tuning is recorded in the manifest. Native and normalized numbers
-are never mixed in one comparison. There are no native configs today: the old
-`configs/native/` Fabric-X files targeted the removed REST path.
+are never mixed in one comparison. Write-ceiling configs live in `configs/native/`
+(one file per platform). Mixed-read native configs live in `configs/native-kv-mixed/`. Deploy selects `orderer_batch_native` and the profile's native
+`state_db` when `BENCH_NORMALIZED=false`.
 
 ### State DB: requested vs actual
 

@@ -1,0 +1,57 @@
+# NATIVE-KV-MIXED - neuchain only. Do not mix with normalized numbers
+# or with configs/native (kv-write ceiling).
+#
+# Same native levers as configs/native/neuchain.yaml (shortened sweep/hold
+# so the run finishes before the epoch-10000 crash). Workload is kv-mixed
+# at 50% reads. NeuChain reads ARE committed transactions, unlike Fabric.
+#
+#   scripts/run-all.sh configs/native-kv-mixed local-32gb fabric-cft fabric-bft drunix fabricx neuchain
+name: native-kv-mixed
+platform: neuchain
+workload: kv-mixed
+profile: local
+normalized: false
+
+load:
+  mode: open-loop
+  key_distribution: uniform
+  key_space: 200000
+  read_write_ratio: 0.5
+  value_size_bytes: 64
+  finality_wait: 60s
+  seed: 1
+  sweep:
+    enabled: true
+    probe_tps: 10
+    probe_duration: 30s
+    steps: [100, 250, 500, 1000, 2000, 3500, 5000, 7500, 10000]
+    step_duration: 30s
+    hold_fraction: 0.9
+    hold_duration: 90s
+    max_fail_rate: 0.02
+    abort_after_failed_steps: 2
+
+metrics:
+  warmup: 15s
+  cooldown: 10s
+  output_dir: ./results
+  output_format: csv
+
+system_metrics:
+  enabled: true
+  sample_interval: 1s
+  prometheus_url: http://localhost:9090
+  cadvisor_url: http://localhost:8080
+  container_names:
+    - neuchain
+    - block-server
+    - epoch-server
+
+adapter:
+  block_servers: "${BENCH_ADAPTER_BLOCK_SERVERS}"
+  query_endpoint: "${BENCH_ADAPTER_QUERY_ENDPOINT}"
+  user_priv_key_path: "${BENCH_ADAPTER_USER_PRIV_KEY_PATH}"
+  user_pub_key_path: "${BENCH_ADAPTER_USER_PUB_KEY_PATH}"
+  table_name: "${BENCH_ADAPTER_TABLE_NAME}"
+  poll_interval: 50ms
+  metrics_endpoint: "${BENCH_ADAPTER_METRICS_ENDPOINT}"

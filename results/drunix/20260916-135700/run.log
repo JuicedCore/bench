@@ -1,0 +1,3 @@
+time=2026-09-16T13:57:00.238+05:30 level=INFO msg="run starting" workload=transfer profile=local-32gb normalized=false out_dir=results/drunix/20260916-135700
+time=2026-09-16T13:57:00.238+05:30 level=WARN msg=caveat text="drunix write values are JSON-wrapped client-side to survive a YugabyteDB statedb bug (non-JSON values panic the Committing Peer); the on-wire payload format differs from the shared kv workload on other platforms for this run"
+time=2026-09-16T13:57:00.238+05:30 level=WARN msg=caveat text="resource budget not reported by the deploy script (BENCH_RESOURCE_CONTAINERS unset - was connection.env sourced?): container limits are unverified, so this run's hardware share is unknown"

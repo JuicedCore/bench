@@ -1,0 +1,427 @@
+[deploy 17:07:23] drunix state_db=yugabyte
+[deploy 17:07:24] pinning orderer batch in configtx.yaml: timeout=500ms maxMsgCount=500 preferred=4 MB absolute=10 MB
+[deploy 17:07:24] drunix state DB: yugabyte
+[0;34mUsing docker and docker-compose[0m
+[0;34mStopping network[0m
+[0;34mRemoving remaining containers[0m
+Error response from daemon: get compose_orderer.example.com: no such volume
+Error response from daemon: get compose_peer0.org1.example.com: no such volume
+Error response from daemon: get compose_peer1.org1.example.com: no such volume
+Error response from daemon: get compose_peer2.org1.example.com: no such volume
+Error response from daemon: get compose_peer0.org2.example.com: no such volume
+Error response from daemon: get compose_peer1.org2.example.com: no such volume
+Error response from daemon: get compose_peer2.org2.example.com: no such volume
+[0;34mRemoving generated chaincode docker images[0m
+[deploy 17:07:30] WARN: could not drop page cache (needs root); continuing
+[0;34mUsing docker and docker-compose[0m
+[0;34mCreating channel 'mychannel'.[0m
+[0;34mIf network is not up, starting nodes with CLI timeout of '5' tries and CLI delay of '3' seconds and using database 'yugabyte with crypto from 'cryptogen'[0m
+[0;34mBringing up network[0m
+[0;34mLOCAL_VERSION=v2.5.16[0m
+[0;34mDOCKER_IMAGE_VERSION=1.0.0[0m
+[1;33mLocal fabric binaries and docker images are out of sync. This may cause problems.[0m
+/home/chad/Projects/bench/deploy/docker/drunix/.cache/drunix/drunix-network/test-network/bin/cryptogen
+[0;34mGenerating certificates using cryptogen tool[0m
+[0;34mCreating Org1 Identities[0m
++ cryptogen generate --config=./organizations/cryptogen/crypto-config-org1.yaml --output=organizations
+org1.example.com
++ res=0
+[0;34mCreating Org2 Identities[0m
++ cryptogen generate --config=./organizations/cryptogen/crypto-config-org2.yaml --output=organizations
+org2.example.com
++ res=0
+[0;34mCreating Orderer Org Identities[0m
++ cryptogen generate --config=./organizations/cryptogen/crypto-config-orderer.yaml --output=organizations
++ res=0
+[0;34mGenerating CCP files for Org1 and Org2[0m
+ Network drunix_test Creating 
+ Network drunix_test Creating 
+ Network drunix_test Created 
+ Network drunix_test Created 
+ Container yugabyte-org2 Creating 
+ Container yugabyte-org1 Creating 
+ Container hlf_keydb_org1msp Creating 
+ Container hlf_keydb_org2msp Creating 
+ Container hlf_keydb_org1msp Created 
+ Container hlf_keydb_org2msp Created 
+ Container yugabyte-org2 Created 
+ Container yugabyte-org1 Created 
+ Container yugabyte-org2 Starting 
+ Container yugabyte-org1 Starting 
+ Container hlf_keydb_org2msp Starting 
+ Container hlf_keydb_org1msp Starting 
+ Container yugabyte-org2 Started 
+ Container hlf_keydb_org1msp Started 
+ Container yugabyte-org1 Started 
+ Container hlf_keydb_org2msp Started 
+time="2026-09-16T17:08:03+05:30" level=warning msg="a network with name drunix_test exists but was not created for project \"compose\".\nSet `external: true` to use an existing network"
+ Container vs1.org2 Creating 
+ Volume compose_orderer.example.com Creating 
+ Volume compose_orderer.example.com Creating 
+ Volume compose_peer0.org2.example.com Creating 
+ Volume compose_peer0.org2.example.com Creating 
+ Volume compose_peer1.org1.example.com Creating 
+ Volume compose_peer1.org1.example.com Creating 
+ Volume compose_peer0.org1.example.com Creating 
+ Volume compose_peer0.org1.example.com Creating 
+ Volume compose_peer1.org2.example.com Creating 
+ Volume compose_peer1.org2.example.com Creating 
+ Container vs1.org1 Creating 
+ Volume compose_peer1.org1.example.com Created 
+ Volume compose_peer1.org1.example.com Created 
+ Container cp.org1 Creating 
+ Volume compose_peer0.org2.example.com Created 
+ Volume compose_peer0.org2.example.com Created 
+ Container lp1.org2 Creating 
+ Volume compose_orderer.example.com Created 
+ Volume compose_orderer.example.com Created 
+ Container orderer.example.com Creating 
+ Volume compose_peer0.org1.example.com Created 
+ Volume compose_peer0.org1.example.com Created 
+ Container lp1.org1 Creating 
+ Volume compose_peer1.org2.example.com Created 
+ Volume compose_peer1.org2.example.com Created 
+ Container cp.org2 Creating 
+ Container vs1.org2 Created 
+ Container vs1.org1 Created 
+ Container cp.org1 Created 
+ Container lp1.org2 Created 
+ Container cp.org2 Created 
+ Container lp1.org1 Created 
+ Container orderer.example.com Created 
+ Container vs1.org2 Starting 
+ Container cp.org1 Starting 
+ Container orderer.example.com Starting 
+ Container lp1.org2 Starting 
+ Container lp1.org1 Starting 
+ Container cp.org2 Starting 
+ Container vs1.org1 Starting 
+ Container orderer.example.com Started 
+ Container cp.org1 Started 
+ Container lp1.org1 Started 
+ Container vs1.org2 Started 
+ Container cp.org2 Started 
+ Container vs1.org1 Started 
+ Container lp1.org2 Started 
+CONTAINER ID   IMAGE                                 COMMAND                  CREATED                  STATUS                          PORTS                                                                                                                                                           NAMES
+fedf9b05472e   npcioss/drunix-peer:1.0.0             "peer node start"        Less than a second ago   Up Less than a second           0.0.0.0:9061->9061/tcp, [::]:9061->9061/tcp, 7051/tcp, 0.0.0.0:9455->9455/tcp, [::]:9455->9455/tcp                                                              cp.org2
+eb796bb3a1f3   npcioss/drunix-peer:1.0.0             "peer node start"        Less than a second ago   Up Less than a second           0.0.0.0:7051->7051/tcp, [::]:7051->7051/tcp, 0.0.0.0:9444->9444/tcp, [::]:9444->9444/tcp                                                                        lp1.org1
+7f13ee464f41   npcioss/drunix-orderer:1.0.0          "orderer"                Less than a second ago   Up Less than a second           0.0.0.0:7050->7050/tcp, [::]:7050->7050/tcp, 0.0.0.0:7053->7053/tcp, [::]:7053->7053/tcp, 0.0.0.0:9443->9443/tcp, [::]:9443->9443/tcp                           orderer.example.com
+92c1c6a1b2df   npcioss/drunix-peer:1.0.0             "peer node start"        Less than a second ago   Up Less than a second           0.0.0.0:9051->9051/tcp, [::]:9051->9051/tcp, 7051/tcp, 0.0.0.0:9445->9445/tcp, [::]:9445->9445/tcp                                                              lp1.org2
+08fd760191b5   npcioss/drunix-peer:1.0.0             "peer node start"        Less than a second ago   Up Less than a second           0.0.0.0:7061->7061/tcp, [::]:7061->7061/tcp, 7051/tcp, 0.0.0.0:9454->9454/tcp, [::]:9454->9454/tcp                                                              cp.org1
+eab45ab9adc4   npcioss/drunix-vscc:1.0.0             "vscc node start"        Less than a second ago   Up Less than a second           0.0.0.0:7071->7071/tcp, [::]:7071->7071/tcp, 7051/tcp, 0.0.0.0:9464->9464/tcp, [::]:9464->9464/tcp                                                              vs1.org1
+73e5bfbd2986   npcioss/drunix-vscc:1.0.0             "vscc node start"        Less than a second ago   Up Less than a second           0.0.0.0:9071->9071/tcp, [::]:9071->9071/tcp, 7051/tcp, 0.0.0.0:9465->9465/tcp, [::]:9465->9465/tcp                                                              vs1.org2
+d407f75b679a   yugabytedb/yugabyte:2025.2.0.0-b131   "/sbin/tini -- bin/y…"   31 seconds ago           Up 31 seconds                   6379/tcp, 7000/tcp, 7100/tcp, 7200/tcp, 9000/tcp, 9042/tcp, 9100/tcp, 10100/tcp, 11000/tcp, 12000/tcp, 18018/tcp, 0.0.0.0:5123->5433/tcp, [::]:5123->5433/tcp   yugabyte-org2
+3d2e4b32090d   eqalpha/keydb                         "docker-entrypoint.s…"   31 seconds ago           Up 31 seconds                   0.0.0.0:6479->6379/tcp, [::]:6479->6379/tcp                                                                                                                     hlf_keydb_org1msp
+27a90a3b6586   yugabytedb/yugabyte:2025.2.0.0-b131   "/sbin/tini -- bin/y…"   31 seconds ago           Up 31 seconds                   6379/tcp, 7000/tcp, 7100/tcp, 7200/tcp, 9000/tcp, 9042/tcp, 9100/tcp, 10100/tcp, 11000/tcp, 12000/tcp, 0.0.0.0:5433->5433/tcp, [::]:5433->5433/tcp, 18018/tcp   yugabyte-org1
+5b356c053089   eqalpha/keydb                         "docker-entrypoint.s…"   31 seconds ago           Up 31 seconds                   0.0.0.0:6389->6379/tcp, [::]:6389->6379/tcp                                                                                                                     hlf_keydb_org2msp
+ebca6f2a95cc   grafana/grafana:11.4.0                "/run.sh"                3 hours ago              Up 3 hours                      0.0.0.0:3000->3000/tcp, [::]:3000->3000/tcp                                                                                                                     bench-monitoring-grafana-1
+1d3b05a42ab0   prom/prometheus:v3.1.0                "/bin/prometheus --c…"   3 hours ago              Up 3 hours                      0.0.0.0:9090->9090/tcp, [::]:9090->9090/tcp                                                                                                                     bench-monitoring-prometheus-1
+09c75970ed81   ghcr.io/google/cadvisor:0.57.0        "/usr/bin/entrypoint…"   3 hours ago              Up 3 hours (healthy)            0.0.0.0:8080->8080/tcp, [::]:8080->8080/tcp                                                                                                                     bench-monitoring-cadvisor-1
+00ac483ebe75   prom/node-exporter:v1.9.0             "/bin/node_exporter …"   3 hours ago              Up 3 hours                      0.0.0.0:9100->9100/tcp, [::]:9100->9100/tcp                                                                                                                     bench-monitoring-node_exporter-1
+69c047fe19cc   weaverai/nucleus-k8-dashboard         "/headlamp/headlamp-…"   5 weeks ago              Up 24 hours                     0.0.0.0:4466->4466/tcp, [::]:4466->4466/tcp                                                                                                                     nucleus-headlamp-1
+b40f395fe4bc   kindest/node:v1.36.1                  "/usr/local/bin/entr…"   6 weeks ago              Up 24 hours                     127.0.0.1:40143->6443/tcp                                                                                                                                       feast-control-plane
+6c0089a7879b   kindest/node:v1.36.1                  "/usr/local/bin/entr…"   6 weeks ago              Up 24 hours                                                                                                                                                                                     feast-worker
+902f5fc63b1e   kindest/node:v1.36.1                  "/usr/local/bin/entr…"   6 weeks ago              Up 24 hours                                                                                                                                                                                     feast-worker2
+d64d947f6529   cassandra:5.0                         "docker-entrypoint.s…"   7 weeks ago              Restarting (3) 44 seconds ago                                                                                                                                                                   untitled-cassandra
+[0;34mUsing organization 2[0m
+[0;34mUsing docker and docker-compose[0m
+[0;34mGenerating channel genesis block 'mychannel.block'[0m
+[0;34mUsing organization 1[0m
+/home/chad/Projects/bench/deploy/docker/drunix/.cache/drunix/drunix-network/test-network/bin/configtxgen
++ configtxgen -profile ChannelUsingRaft -outputBlock ./channel-artifacts/mychannel.block -channelID mychannel
+[34m2026-09-16 17:08:04.026 IST 0001 INFO[0m [common.tools.configtxgen] [34;1mmain[0m -> Loading configuration
+[34m2026-09-16 17:08:04.028 IST 0002 INFO[0m [common.tools.configtxgen.localconfig] [34;1mcompleteInitialization[0m -> orderer type: etcdraft
+[34m2026-09-16 17:08:04.028 IST 0003 INFO[0m [common.tools.configtxgen.localconfig] [34;1mcompleteInitialization[0m -> Orderer.EtcdRaft.Options unset, setting to tick_interval:"500ms" election_tick:10 heartbeat_tick:1 max_inflight_blocks:5 snapshot_interval_size:16777216 
+[34m2026-09-16 17:08:04.028 IST 0004 INFO[0m [common.tools.configtxgen.localconfig] [34;1mLoad[0m -> Loaded configuration: /home/chad/Projects/bench/deploy/docker/drunix/.cache/drunix/drunix-network/test-network/configtx/configtx.yaml
+[34m2026-09-16 17:08:04.029 IST 0005 INFO[0m [common.tools.configtxgen] [34;1mdoOutputBlock[0m -> Generating genesis block
+[34m2026-09-16 17:08:04.029 IST 0006 INFO[0m [common.tools.configtxgen] [34;1mdoOutputBlock[0m -> Creating application channel genesis block
+[34m2026-09-16 17:08:04.029 IST 0007 INFO[0m [common.tools.configtxgen] [34;1mdoOutputBlock[0m -> Writing genesis block
++ res=0
+[0;34mCreating channel mychannel[0m
+[0;34mAdding orderers[0m
++ . scripts/orderer.sh mychannel
++ '[' 0 -eq 1 ']'
++ res=0
+Status: 201
+{
+	"name": "mychannel",
+	"url": "/participation/v1/channels/mychannel",
+	"consensusRelation": "consenter",
+	"status": "active",
+	"height": 1
+}
+
+[0;32mChannel 'mychannel' created[0m
+[0;34mJoining org1 CP to the channel...[0m
+[0;34mUsing organization 1[0m
+/home/chad/Projects/bench/deploy/docker/drunix/.cache/drunix/drunix-network/test-network/organizations/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp
+Org1MSP
++ peer channel join -b ./channel-artifacts/mychannel.block
++ res=0
+[34m2026-09-16 17:08:10.121 IST 0001 INFO[0m [channelCmd] [34;1mInitCmdFactory[0m -> Endorser and orderer connections initialized
+[34m2026-09-16 17:08:10.675 IST 0002 INFO[0m [channelCmd] [34;1mexecuteJoin[0m -> Successfully submitted proposal to join channel
+[0;34mJoining org1 LP to the channel...[0m
+[0;34mUsing organization 1[0m
+/home/chad/Projects/bench/deploy/docker/drunix/.cache/drunix/drunix-network/test-network/organizations/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp
+Org1MSP
++ peer channel join -b ./channel-artifacts/mychannel.block
++ res=0
+[34m2026-09-16 17:08:13.706 IST 0001 INFO[0m [channelCmd] [34;1mInitCmdFactory[0m -> Endorser and orderer connections initialized
+[34m2026-09-16 17:08:14.210 IST 0002 INFO[0m [channelCmd] [34;1mexecuteJoin[0m -> Successfully submitted proposal to join channel
+[0;34mJoining org2 CP to the channel...[0m
+[0;34mUsing organization 2[0m
+/home/chad/Projects/bench/deploy/docker/drunix/.cache/drunix/drunix-network/test-network/organizations/peerOrganizations/org2.example.com/users/Admin@org2.example.com/msp
+Org2MSP
++ peer channel join -b ./channel-artifacts/mychannel.block
++ res=0
+[34m2026-09-16 17:08:17.244 IST 0001 INFO[0m [channelCmd] [34;1mInitCmdFactory[0m -> Endorser and orderer connections initialized
+[34m2026-09-16 17:08:17.749 IST 0002 INFO[0m [channelCmd] [34;1mexecuteJoin[0m -> Successfully submitted proposal to join channel
+[0;34mJoining org1 CP to the channel...[0m
+[0;34mUsing organization 2[0m
+/home/chad/Projects/bench/deploy/docker/drunix/.cache/drunix/drunix-network/test-network/organizations/peerOrganizations/org2.example.com/users/Admin@org2.example.com/msp
+Org2MSP
++ peer channel join -b ./channel-artifacts/mychannel.block
++ res=0
+[34m2026-09-16 17:08:20.784 IST 0001 INFO[0m [channelCmd] [34;1mInitCmdFactory[0m -> Endorser and orderer connections initialized
+[34m2026-09-16 17:08:21.282 IST 0002 INFO[0m [channelCmd] [34;1mexecuteJoin[0m -> Successfully submitted proposal to join channel
+[0;34mSetting anchor peer for org1...[0m
+[0;34mUsing organization 2[0m
+[0;34mUsing organization 1[0m
+[0;34mFetching channel config for channel mychannel[0m
+[0;34mUsing organization 1[0m
+[0;34mFetching the most recent configuration block for the channel[0m
+++ peer channel fetch config /home/chad/Projects/bench/deploy/docker/drunix/.cache/drunix/drunix-network/test-network/channel-artifacts/config_block.pb -o localhost:7050 --ordererTLSHostnameOverride orderer.example.com -c mychannel --tls --cafile /home/chad/Projects/bench/deploy/docker/drunix/.cache/drunix/drunix-network/test-network/organizations/ordererOrganizations/example.com/tlsca/tlsca.example.com-cert.pem
+[34m2026-09-16 17:08:21.313 IST 0001 INFO[0m [channelCmd] [34;1mInitCmdFactory[0m -> Endorser and orderer connections initialized
+[34m2026-09-16 17:08:21.315 IST 0002 INFO[0m [cli.common] [34;1mreadBlock[0m -> Received block: 0
+[34m2026-09-16 17:08:21.315 IST 0003 INFO[0m [channelCmd] [34;1mfetch[0m -> Retrieving last config block: 0
+[34m2026-09-16 17:08:21.316 IST 0004 INFO[0m [cli.common] [34;1mreadBlock[0m -> Received block: 0
+[0;34mDecoding config block to JSON and isolating config to /home/chad/Projects/bench/deploy/docker/drunix/.cache/drunix/drunix-network/test-network/channel-artifacts/Org1MSPconfig.json[0m
+++ configtxlator proto_decode --input /home/chad/Projects/bench/deploy/docker/drunix/.cache/drunix/drunix-network/test-network/channel-artifacts/config_block.pb --type common.Block --output /home/chad/Projects/bench/deploy/docker/drunix/.cache/drunix/drunix-network/test-network/channel-artifacts/config_block.json
+++ jq '.data.data[0].payload.data.config' /home/chad/Projects/bench/deploy/docker/drunix/.cache/drunix/drunix-network/test-network/channel-artifacts/config_block.json
+++ res=0
+[0;34mGenerating anchor peer update transaction for Org1 on channel mychannel[0m
+++ echo Org1MSP
+Org1MSP
+++ echo peer1.org1.example.com
+peer1.org1.example.com
+++ echo 7061
+7061
+++ echo 1
+1
+++ echo 1
+1
+++ jq '.channel_group.groups.Application.groups.Org1MSP.values += {"AnchorPeers":{"mod_policy": "Admins","value":{"anchor_peers": [{"host": "peer1.org1.example.com","port": 7061}]},"version": "0"}}' /home/chad/Projects/bench/deploy/docker/drunix/.cache/drunix/drunix-network/test-network/channel-artifacts/Org1MSPconfig.json
+++ res=0
+++ configtxlator proto_encode --input /home/chad/Projects/bench/deploy/docker/drunix/.cache/drunix/drunix-network/test-network/channel-artifacts/Org1MSPconfig.json --type common.Config --output /home/chad/Projects/bench/deploy/docker/drunix/.cache/drunix/drunix-network/test-network/channel-artifacts/original_config.pb
+++ configtxlator proto_encode --input /home/chad/Projects/bench/deploy/docker/drunix/.cache/drunix/drunix-network/test-network/channel-artifacts/Org1MSPmodified_config.json --type common.Config --output /home/chad/Projects/bench/deploy/docker/drunix/.cache/drunix/drunix-network/test-network/channel-artifacts/modified_config.pb
+++ configtxlator compute_update --channel_id mychannel --original /home/chad/Projects/bench/deploy/docker/drunix/.cache/drunix/drunix-network/test-network/channel-artifacts/original_config.pb --updated /home/chad/Projects/bench/deploy/docker/drunix/.cache/drunix/drunix-network/test-network/channel-artifacts/modified_config.pb --output /home/chad/Projects/bench/deploy/docker/drunix/.cache/drunix/drunix-network/test-network/channel-artifacts/config_update.pb
+++ configtxlator proto_decode --input /home/chad/Projects/bench/deploy/docker/drunix/.cache/drunix/drunix-network/test-network/channel-artifacts/config_update.pb --type common.ConfigUpdate --output /home/chad/Projects/bench/deploy/docker/drunix/.cache/drunix/drunix-network/test-network/channel-artifacts/config_update.json
+++ jq .
++++ cat /home/chad/Projects/bench/deploy/docker/drunix/.cache/drunix/drunix-network/test-network/channel-artifacts/config_update.json
+++ echo '{"payload":{"header":{"channel_header":{"channel_id":"mychannel", "type":2}},"data":{"config_update":{' '"channel_id":' '"mychannel",' '"isolated_data":' '{},' '"read_set":' '{' '"groups":' '{' '"Application":' '{' '"groups":' '{' '"Org1MSP":' '{' '"groups":' '{},' '"mod_policy":' '"",' '"policies":' '{' '"Admins":' '{' '"mod_policy":' '"",' '"policy":' null, '"version":' '"0"' '},' '"Endorsement":' '{' '"mod_policy":' '"",' '"policy":' null, '"version":' '"0"' '},' '"Readers":' '{' '"mod_policy":' '"",' '"policy":' null, '"version":' '"0"' '},' '"Writers":' '{' '"mod_policy":' '"",' '"policy":' null, '"version":' '"0"' '}' '},' '"values":' '{' '"MSP":' '{' '"mod_policy":' '"",' '"value":' null, '"version":' '"0"' '}' '},' '"version":' '"0"' '}' '},' '"mod_policy":' '"",' '"policies":' '{},' '"values":' '{},' '"version":' '"0"' '}' '},' '"mod_policy":' '"",' '"policies":' '{},' '"values":' '{},' '"version":' '"0"' '},' '"write_set":' '{' '"groups":' '{' '"Application":' '{' '"groups":' '{' '"Org1MSP":' '{' '"groups":' '{},' '"mod_policy":' '"Admins",' '"policies":' '{' '"Admins":' '{' '"mod_policy":' '"",' '"policy":' null, '"version":' '"0"' '},' '"Endorsement":' '{' '"mod_policy":' '"",' '"policy":' null, '"version":' '"0"' '},' '"Readers":' '{' '"mod_policy":' '"",' '"policy":' null, '"version":' '"0"' '},' '"Writers":' '{' '"mod_policy":' '"",' '"policy":' null, '"version":' '"0"' '}' '},' '"values":' '{' '"AnchorPeers":' '{' '"mod_policy":' '"Admins",' '"value":' '{' '"anchor_peers":' '[' '{' '"host":' '"peer1.org1.example.com",' '"port":' 7061 '}' ']' '},' '"version":' '"0"' '},' '"MSP":' '{' '"mod_policy":' '"",' '"value":' null, '"version":' '"0"' '}' '},' '"version":' '"1"' '}' '},' '"mod_policy":' '"",' '"policies":' '{},' '"values":' '{},' '"version":' '"0"' '}' '},' '"mod_policy":' '"",' '"policies":' '{},' '"values":' '{},' '"version":' '"0"' '}' '}}}}'
+++ configtxlator proto_encode --input /home/chad/Projects/bench/deploy/docker/drunix/.cache/drunix/drunix-network/test-network/channel-artifacts/config_update_in_envelope.json --type common.Envelope --output /home/chad/Projects/bench/deploy/docker/drunix/.cache/drunix/drunix-network/test-network/channel-artifacts/Org1MSPanchors.tx
+[34m2026-09-16 17:08:21.430 IST 0001 INFO[0m [channelCmd] [34;1mInitCmdFactory[0m -> Endorser and orderer connections initialized
+[34m2026-09-16 17:08:21.436 IST 0002 INFO[0m [channelCmd] [34;1mupdate[0m -> Successfully submitted channel update
+[0;32mAnchor peer set for org 'Org1MSP' on channel 'mychannel'[0m
+[0;34mSetting anchor peer for org2...[0m
+[0;34mUsing organization 2[0m
+[0;34mUsing organization 2[0m
+[0;34mFetching channel config for channel mychannel[0m
+[0;34mUsing organization 2[0m
+[0;34mFetching the most recent configuration block for the channel[0m
+++ peer channel fetch config /home/chad/Projects/bench/deploy/docker/drunix/.cache/drunix/drunix-network/test-network/channel-artifacts/config_block.pb -o localhost:7050 --ordererTLSHostnameOverride orderer.example.com -c mychannel --tls --cafile /home/chad/Projects/bench/deploy/docker/drunix/.cache/drunix/drunix-network/test-network/organizations/ordererOrganizations/example.com/tlsca/tlsca.example.com-cert.pem
+[34m2026-09-16 17:08:21.465 IST 0001 INFO[0m [channelCmd] [34;1mInitCmdFactory[0m -> Endorser and orderer connections initialized
+[34m2026-09-16 17:08:21.467 IST 0002 INFO[0m [cli.common] [34;1mreadBlock[0m -> Received block: 1
+[34m2026-09-16 17:08:21.467 IST 0003 INFO[0m [channelCmd] [34;1mfetch[0m -> Retrieving last config block: 1
+[34m2026-09-16 17:08:21.468 IST 0004 INFO[0m [cli.common] [34;1mreadBlock[0m -> Received block: 1
+[0;34mDecoding config block to JSON and isolating config to /home/chad/Projects/bench/deploy/docker/drunix/.cache/drunix/drunix-network/test-network/channel-artifacts/Org2MSPconfig.json[0m
+++ configtxlator proto_decode --input /home/chad/Projects/bench/deploy/docker/drunix/.cache/drunix/drunix-network/test-network/channel-artifacts/config_block.pb --type common.Block --output /home/chad/Projects/bench/deploy/docker/drunix/.cache/drunix/drunix-network/test-network/channel-artifacts/config_block.json
+++ jq '.data.data[0].payload.data.config' /home/chad/Projects/bench/deploy/docker/drunix/.cache/drunix/drunix-network/test-network/channel-artifacts/config_block.json
+++ res=0
+[0;34mGenerating anchor peer update transaction for Org2 on channel mychannel[0m
+++ echo Org2MSP
+Org2MSP
+++ echo peer1.org2.example.com
+peer1.org2.example.com
+++ echo 9061
+9061
+++ echo 2
+2
+++ echo 1
+1
+++ jq '.channel_group.groups.Application.groups.Org2MSP.values += {"AnchorPeers":{"mod_policy": "Admins","value":{"anchor_peers": [{"host": "peer1.org2.example.com","port": 9061}]},"version": "0"}}' /home/chad/Projects/bench/deploy/docker/drunix/.cache/drunix/drunix-network/test-network/channel-artifacts/Org2MSPconfig.json
+++ res=0
+++ configtxlator proto_encode --input /home/chad/Projects/bench/deploy/docker/drunix/.cache/drunix/drunix-network/test-network/channel-artifacts/Org2MSPconfig.json --type common.Config --output /home/chad/Projects/bench/deploy/docker/drunix/.cache/drunix/drunix-network/test-network/channel-artifacts/original_config.pb
+++ configtxlator proto_encode --input /home/chad/Projects/bench/deploy/docker/drunix/.cache/drunix/drunix-network/test-network/channel-artifacts/Org2MSPmodified_config.json --type common.Config --output /home/chad/Projects/bench/deploy/docker/drunix/.cache/drunix/drunix-network/test-network/channel-artifacts/modified_config.pb
+++ configtxlator compute_update --channel_id mychannel --original /home/chad/Projects/bench/deploy/docker/drunix/.cache/drunix/drunix-network/test-network/channel-artifacts/original_config.pb --updated /home/chad/Projects/bench/deploy/docker/drunix/.cache/drunix/drunix-network/test-network/channel-artifacts/modified_config.pb --output /home/chad/Projects/bench/deploy/docker/drunix/.cache/drunix/drunix-network/test-network/channel-artifacts/config_update.pb
+++ configtxlator proto_decode --input /home/chad/Projects/bench/deploy/docker/drunix/.cache/drunix/drunix-network/test-network/channel-artifacts/config_update.pb --type common.ConfigUpdate --output /home/chad/Projects/bench/deploy/docker/drunix/.cache/drunix/drunix-network/test-network/channel-artifacts/config_update.json
+++ jq .
++++ cat /home/chad/Projects/bench/deploy/docker/drunix/.cache/drunix/drunix-network/test-network/channel-artifacts/config_update.json
+++ echo '{"payload":{"header":{"channel_header":{"channel_id":"mychannel", "type":2}},"data":{"config_update":{' '"channel_id":' '"mychannel",' '"isolated_data":' '{},' '"read_set":' '{' '"groups":' '{' '"Application":' '{' '"groups":' '{' '"Org2MSP":' '{' '"groups":' '{},' '"mod_policy":' '"",' '"policies":' '{' '"Admins":' '{' '"mod_policy":' '"",' '"policy":' null, '"version":' '"0"' '},' '"Endorsement":' '{' '"mod_policy":' '"",' '"policy":' null, '"version":' '"0"' '},' '"Readers":' '{' '"mod_policy":' '"",' '"policy":' null, '"version":' '"0"' '},' '"Writers":' '{' '"mod_policy":' '"",' '"policy":' null, '"version":' '"0"' '}' '},' '"values":' '{' '"MSP":' '{' '"mod_policy":' '"",' '"value":' null, '"version":' '"0"' '}' '},' '"version":' '"0"' '}' '},' '"mod_policy":' '"",' '"policies":' '{},' '"values":' '{},' '"version":' '"0"' '}' '},' '"mod_policy":' '"",' '"policies":' '{},' '"values":' '{},' '"version":' '"0"' '},' '"write_set":' '{' '"groups":' '{' '"Application":' '{' '"groups":' '{' '"Org2MSP":' '{' '"groups":' '{},' '"mod_policy":' '"Admins",' '"policies":' '{' '"Admins":' '{' '"mod_policy":' '"",' '"policy":' null, '"version":' '"0"' '},' '"Endorsement":' '{' '"mod_policy":' '"",' '"policy":' null, '"version":' '"0"' '},' '"Readers":' '{' '"mod_policy":' '"",' '"policy":' null, '"version":' '"0"' '},' '"Writers":' '{' '"mod_policy":' '"",' '"policy":' null, '"version":' '"0"' '}' '},' '"values":' '{' '"AnchorPeers":' '{' '"mod_policy":' '"Admins",' '"value":' '{' '"anchor_peers":' '[' '{' '"host":' '"peer1.org2.example.com",' '"port":' 9061 '}' ']' '},' '"version":' '"0"' '},' '"MSP":' '{' '"mod_policy":' '"",' '"value":' null, '"version":' '"0"' '}' '},' '"version":' '"1"' '}' '},' '"mod_policy":' '"",' '"policies":' '{},' '"values":' '{},' '"version":' '"0"' '}' '},' '"mod_policy":' '"",' '"policies":' '{},' '"values":' '{},' '"version":' '"0"' '}' '}}}}'
+++ configtxlator proto_encode --input /home/chad/Projects/bench/deploy/docker/drunix/.cache/drunix/drunix-network/test-network/channel-artifacts/config_update_in_envelope.json --type common.Envelope --output /home/chad/Projects/bench/deploy/docker/drunix/.cache/drunix/drunix-network/test-network/channel-artifacts/Org2MSPanchors.tx
+[34m2026-09-16 17:08:21.550 IST 0001 INFO[0m [channelCmd] [34;1mInitCmdFactory[0m -> Endorser and orderer connections initialized
+[34m2026-09-16 17:08:21.556 IST 0002 INFO[0m [channelCmd] [34;1mupdate[0m -> Successfully submitted channel update
+[0;32mAnchor peer set for org 'Org2MSP' on channel 'mychannel'[0m
+[0;32mChannel 'mychannel' joined[0m
+[deploy 17:08:21] deploying kvstore from /home/chad/Projects/bench/chaincodes/kvstore (connTimeout=120s, retries=10)
+[0;34mUsing docker and docker-compose[0m
+[0;34mdeploying chaincode on channel 'mychannel'[0m
+executing with the following
+- CHANNEL_NAME: [0;32mmychannel[0m
+- CC_NAME: [0;32mkvstore[0m
+- CC_SRC_PATH: [0;32m/home/chad/Projects/bench/chaincodes/kvstore[0m
+- CC_SRC_LANGUAGE: [0;32mgo[0m
+- CC_VERSION: [0;32m1.0[0m
+- CC_SEQUENCE: [0;32mauto[0m
+- CC_END_POLICY: [0;32mNA[0m
+- CC_COLL_CONFIG: [0;32mNA[0m
+- CC_INIT_FCN: [0;32mNA[0m
+- DELAY: [0;32m10[0m
+- MAX_RETRY: [0;32m10[0m
+- VERBOSE: [0;32mfalse[0m
+[0;34mUsing organization 2[0m
+executing with the following
+- CC_NAME: [0;32mkvstore[0m
+- CC_SRC_PATH: [0;32m/home/chad/Projects/bench/chaincodes/kvstore[0m
+- CC_SRC_LANGUAGE: [0;32mgo[0m
+- CC_VERSION: [0;32m1.0[0m
+[0;34mVendoring Go dependencies at /home/chad/Projects/bench/chaincodes/kvstore[0m
+/home/chad/Projects/bench/chaincodes/kvstore /home/chad/Projects/bench/deploy/docker/drunix/.cache/drunix/drunix-network/test-network
+/home/chad/Projects/bench/deploy/docker/drunix/.cache/drunix/drunix-network/test-network
+[0;32mFinished vendoring Go dependencies[0m
++ '[' false = true ']'
++ peer lifecycle chaincode package kvstore.tar.gz --path /home/chad/Projects/bench/chaincodes/kvstore --lang golang --label kvstore_1.0
++ res=0
+[0;32mChaincode is packaged[0m
+[0;34mInstalling chaincode on peer0.org1...[0m
+[0;34mUsing organization 1[0m
++ peer lifecycle chaincode queryinstalled --output json
++ jq -r 'try (.installed_chaincodes[].package_id)'
++ grep '^kvstore_1.0:e88284a33ff8806958375f99312782794164d62aac26fe22876f2c72fb6294d9$'
++ test 1 -ne 0
++ peer lifecycle chaincode install kvstore.tar.gz
++ res=0
+[34m2026-09-16 17:08:29.382 IST 0001 INFO[0m [cli.lifecycle.chaincode] [34;1msubmitInstallProposal[0m -> Installed remotely: response:<status:200 payload:"\nLkvstore_1.0:e88284a33ff8806958375f99312782794164d62aac26fe22876f2c72fb6294d9\022\013kvstore_1.0" > 
+[34m2026-09-16 17:08:29.382 IST 0002 INFO[0m [cli.lifecycle.chaincode] [34;1msubmitInstallProposal[0m -> Chaincode code package identifier: kvstore_1.0:e88284a33ff8806958375f99312782794164d62aac26fe22876f2c72fb6294d9
+[0;32mChaincode is installed on peer0.org1[0m
+[0;34mInstall chaincode on peer0.org2...[0m
+[0;34mUsing organization 2[0m
++ peer lifecycle chaincode queryinstalled --output json
++ jq -r 'try (.installed_chaincodes[].package_id)'
++ grep '^kvstore_1.0:e88284a33ff8806958375f99312782794164d62aac26fe22876f2c72fb6294d9$'
++ test 1 -ne 0
++ peer lifecycle chaincode install kvstore.tar.gz
++ res=0
+[34m2026-09-16 17:08:35.819 IST 0001 INFO[0m [cli.lifecycle.chaincode] [34;1msubmitInstallProposal[0m -> Installed remotely: response:<status:200 payload:"\nLkvstore_1.0:e88284a33ff8806958375f99312782794164d62aac26fe22876f2c72fb6294d9\022\013kvstore_1.0" > 
+[34m2026-09-16 17:08:35.819 IST 0002 INFO[0m [cli.lifecycle.chaincode] [34;1msubmitInstallProposal[0m -> Chaincode code package identifier: kvstore_1.0:e88284a33ff8806958375f99312782794164d62aac26fe22876f2c72fb6294d9
+[0;32mChaincode is installed on peer0.org2[0m
+++ peer lifecycle chaincode querycommitted --channelID mychannel --name kvstore
+++ sed -n '/Version:/{s/.*Sequence: //; s/, Endorsement Plugin:.*$//; p;}'
+Error: query failed with status: 404 - namespace kvstore is not defined
++ COMMITTED_CC_SEQUENCE=
++ res=0
+[0;34mUsing organization 1[0m
++ peer lifecycle chaincode queryinstalled --output json
++ grep '^kvstore_1.0:e88284a33ff8806958375f99312782794164d62aac26fe22876f2c72fb6294d9$'
++ jq -r 'try (.installed_chaincodes[].package_id)'
++ res=0
+kvstore_1.0:e88284a33ff8806958375f99312782794164d62aac26fe22876f2c72fb6294d9
+[0;32mQuery installed successful on peer0.org1 on channel[0m
+[0;34mUsing organization 1[0m
++ peer lifecycle chaincode approveformyorg -o localhost:7050 --ordererTLSHostnameOverride orderer.example.com --tls --cafile /home/chad/Projects/bench/deploy/docker/drunix/.cache/drunix/drunix-network/test-network/organizations/ordererOrganizations/example.com/tlsca/tlsca.example.com-cert.pem --channelID mychannel --name kvstore --version 1.0 --package-id kvstore_1.0:e88284a33ff8806958375f99312782794164d62aac26fe22876f2c72fb6294d9 --sequence 1
++ res=0
+[34m2026-09-16 17:08:38.403 IST 0001 INFO[0m [chaincodeCmd] [34;1mClientWait[0m -> txid [a11cf5d86670969a4aad7e37fb7d497d38ab1c2c8b332944305faf42c2404605] committed with status (VALID) at localhost:7061
+[0;32mChaincode definition approved on peer0.org1 on channel 'mychannel'[0m
+[0;34mUsing organization 1[0m
+[0;34mChecking the commit readiness of the chaincode definition on peer0.org1 on channel 'mychannel'...[0m
+[0;34mAttempting to check the commit readiness of the chaincode definition on peer0.org1, Retry after 10 seconds.[0m
++ peer lifecycle chaincode checkcommitreadiness --channelID mychannel --name kvstore --version 1.0 --sequence 1 --output json
++ res=0
+{
+	"approvals": {
+		"Org1MSP": true,
+		"Org2MSP": false
+	}
+}
+[0;34mChecking the commit readiness of the chaincode definition successful on peer0.org1 on channel 'mychannel'[0m
+[0;34mUsing organization 2[0m
+[0;34mChecking the commit readiness of the chaincode definition on peer0.org2 on channel 'mychannel'...[0m
+[0;34mAttempting to check the commit readiness of the chaincode definition on peer0.org2, Retry after 10 seconds.[0m
++ peer lifecycle chaincode checkcommitreadiness --channelID mychannel --name kvstore --version 1.0 --sequence 1 --output json
++ res=0
+{
+	"approvals": {
+		"Org1MSP": true,
+		"Org2MSP": false
+	}
+}
+[0;34mChecking the commit readiness of the chaincode definition successful on peer0.org2 on channel 'mychannel'[0m
+[0;34mUsing organization 2[0m
++ peer lifecycle chaincode approveformyorg -o localhost:7050 --ordererTLSHostnameOverride orderer.example.com --tls --cafile /home/chad/Projects/bench/deploy/docker/drunix/.cache/drunix/drunix-network/test-network/organizations/ordererOrganizations/example.com/tlsca/tlsca.example.com-cert.pem --channelID mychannel --name kvstore --version 1.0 --package-id kvstore_1.0:e88284a33ff8806958375f99312782794164d62aac26fe22876f2c72fb6294d9 --sequence 1
++ res=0
+[34m2026-09-16 17:09:00.581 IST 0001 INFO[0m [chaincodeCmd] [34;1mClientWait[0m -> txid [872975898d0de5fb5e80f13b78c2acb30531fadc38545401e742f7d2ac17cf22] committed with status (VALID) at localhost:9061
+[0;32mChaincode definition approved on peer0.org2 on channel 'mychannel'[0m
+[0;34mUsing organization 1[0m
+[0;34mChecking the commit readiness of the chaincode definition on peer0.org1 on channel 'mychannel'...[0m
+[0;34mAttempting to check the commit readiness of the chaincode definition on peer0.org1, Retry after 10 seconds.[0m
++ peer lifecycle chaincode checkcommitreadiness --channelID mychannel --name kvstore --version 1.0 --sequence 1 --output json
++ res=0
+{
+	"approvals": {
+		"Org1MSP": true,
+		"Org2MSP": true
+	}
+}
+[0;34mChecking the commit readiness of the chaincode definition successful on peer0.org1 on channel 'mychannel'[0m
+[0;34mUsing organization 2[0m
+[0;34mChecking the commit readiness of the chaincode definition on peer0.org2 on channel 'mychannel'...[0m
+[0;34mAttempting to check the commit readiness of the chaincode definition on peer0.org2, Retry after 10 seconds.[0m
++ peer lifecycle chaincode checkcommitreadiness --channelID mychannel --name kvstore --version 1.0 --sequence 1 --output json
++ res=0
+{
+	"approvals": {
+		"Org1MSP": true,
+		"Org2MSP": true
+	}
+}
+[0;34mChecking the commit readiness of the chaincode definition successful on peer0.org2 on channel 'mychannel'[0m
+[0;34mUsing organization 1[0m
+[0;34mUsing organization 2[0m
++ peer lifecycle chaincode commit -o localhost:7050 --ordererTLSHostnameOverride orderer.example.com --tls --cafile /home/chad/Projects/bench/deploy/docker/drunix/.cache/drunix/drunix-network/test-network/organizations/ordererOrganizations/example.com/tlsca/tlsca.example.com-cert.pem --channelID mychannel --name kvstore --peerAddresses localhost:7061 --tlsRootCertFiles /home/chad/Projects/bench/deploy/docker/drunix/.cache/drunix/drunix-network/test-network/organizations/peerOrganizations/org1.example.com/tlsca/tlsca.org1.example.com-cert.pem --peerAddresses localhost:9061 --tlsRootCertFiles /home/chad/Projects/bench/deploy/docker/drunix/.cache/drunix/drunix-network/test-network/organizations/peerOrganizations/org2.example.com/tlsca/tlsca.org2.example.com-cert.pem --version 1.0 --sequence 1
++ res=0
+[34m2026-09-16 17:09:22.738 IST 0001 INFO[0m [chaincodeCmd] [34;1mClientWait[0m -> txid [35a6243d68a0477265cc6bb08f9182f1e3bb126bf2f1555826fadb8d75c58174] committed with status (VALID) at localhost:9061
+[34m2026-09-16 17:09:22.739 IST 0002 INFO[0m [chaincodeCmd] [34;1mClientWait[0m -> txid [35a6243d68a0477265cc6bb08f9182f1e3bb126bf2f1555826fadb8d75c58174] committed with status (VALID) at localhost:7061
+[0;32mChaincode definition committed on channel 'mychannel'[0m
+[0;34mUsing organization 1[0m
+[0;34mQuerying chaincode definition on peer0.org1 on channel 'mychannel'...[0m
+[0;34mAttempting to Query committed status on peer0.org1, Retry after 10 seconds.[0m
++ peer lifecycle chaincode querycommitted --channelID mychannel --name kvstore
++ res=0
+Committed chaincode definition for chaincode 'kvstore' on channel 'mychannel':
+Version: 1.0, Sequence: 1, Endorsement Plugin: escc, Validation Plugin: vscc, Approvals: [Org1MSP: true, Org2MSP: true]
+[0;32mQuery chaincode definition successful on peer0.org1 on channel 'mychannel'[0m
+[0;34mUsing organization 2[0m
+[0;34mQuerying chaincode definition on peer0.org2 on channel 'mychannel'...[0m
+[0;34mAttempting to Query committed status on peer0.org2, Retry after 10 seconds.[0m
++ peer lifecycle chaincode querycommitted --channelID mychannel --name kvstore
++ res=0
+Committed chaincode definition for chaincode 'kvstore' on channel 'mychannel':
+Version: 1.0, Sequence: 1, Endorsement Plugin: escc, Validation Plugin: vscc, Approvals: [Org1MSP: true, Org2MSP: true]
+[0;32mQuery chaincode definition successful on peer0.org2 on channel 'mychannel'[0m
+[0;34mChaincode initialization is not required[0m
+[deploy 17:09:43] resource budget for drunix: 18 CPU / 20 GB across 13 containers = 1.38 CPU each; memory by role weight (peer=4 statedb=4 orderer=2 other=1, total weight 32)
+[deploy 17:09:44]   cp.org1  (peer) 2560m
+[deploy 17:09:44]   cp.org2  (peer) 2560m
+[deploy 17:09:45]   dev-peer0.org1.example.com-kvstore_1.0-e88284a33ff8806958375f99312782794164d62aac26fe22876f2c72fb6294d9  (other) 640m
+[deploy 17:09:45]   dev-peer0.org2.example.com-kvstore_1.0-e88284a33ff8806958375f99312782794164d62aac26fe22876f2c72fb6294d9  (other) 640m
+[deploy 17:09:46]   hlf_keydb_org1msp  (other) 640m
+[deploy 17:09:46]   hlf_keydb_org2msp  (other) 640m
+[deploy 17:09:47]   lp1.org1  (peer) 2560m
+[deploy 17:09:47]   lp1.org2  (peer) 2560m
+[deploy 17:09:48]   orderer.example.com  (orderer) 1280m
+[deploy 17:09:48]   vs1.org1  (other) 640m
+[deploy 17:09:49]   vs1.org2  (other) 640m
+[deploy 17:09:49]   yugabyte-org1  (statedb) 2560m
+[deploy 17:09:49]   yugabyte-org2  (statedb) 2560m
+[deploy 17:09:49] drunix up. lite-peer :7051  committing-peer :7061  lite-peer operations :9444

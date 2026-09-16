@@ -1,0 +1,3 @@
+time=2026-09-16T13:15:52.125+05:30 level=INFO msg="run starting" workload=kv-write profile=local-32gb normalized=true out_dir=results/neuchain/20260916-131552
+time=2026-09-16T13:15:52.125+05:30 level=INFO msg="adapter setup"
+time=2026-09-16T13:15:54.844+05:30 level=ERROR msg="adapter setup failed" err="neuchain: dial block server submit socket localhost:5001: zmq4: could not open a ZMTP connection: zmq4: could not initialize ZMTP connection: zmq4: could not exchange greetings: zmq4: could not recv greeting: could not read ZMTP greeting: read tcp 127.0.0.1:51250->127.0.0.1:5001: read: connection reset by peer (is the neuchain stack up? docker ps | grep block-server)" error_file=results/neuchain/20260916-131552/error.txt

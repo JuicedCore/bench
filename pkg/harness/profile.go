@@ -45,12 +45,17 @@ type PlatformTopo struct {
 	Nodes map[string]int `yaml:"nodes"`
 	// LoadGenCPUs overrides Budget.LoadGenCPUs for this platform.
 	LoadGenCPUs float64 `yaml:"load_gen_cpus"`
-	// StateDB is the world-state backend for native runs ("leveldb","couchdb","yugabyte").
-	// Normalized runs always force leveldb regardless of this value.
+	// StateDB is the world-state backend for native runs
+	// ("leveldb","couchdb","yugabyte","postgres"). Normalized runs always force
+	// leveldb regardless of this value.
 	StateDB string `yaml:"state_db"`
-	// OrdererBatch pins the block-cutting parameters
-	// (docs/decisions/adr-011-orderer-batch-params.md).
+	// OrdererBatch pins the block-cutting parameters for normalized runs
+	// (docs/decisions/adr-011-orderer-batch-params.md). Identical across the
+	// Fabric family via a shared YAML anchor.
 	OrdererBatch OrdererBatch `yaml:"orderer_batch"`
+	// OrdererBatchNative is the per-platform tuned batch used when
+	// normalized: false. Empty means fall back to OrdererBatch.
+	OrdererBatchNative OrdererBatch `yaml:"orderer_batch_native"`
 }
 
 // Limits is a CPU/memory ceiling for one container.
@@ -153,9 +158,9 @@ func (p *Profile) validate() error {
 			bad("platforms.%s.load_gen_cpus must not be negative", n)
 		}
 		switch t.StateDB {
-		case "", "leveldb", "couchdb", "yugabyte":
+		case "", "leveldb", "couchdb", "yugabyte", "postgres":
 		default:
-			bad("platforms.%s.state_db %q is not one of leveldb, couchdb, yugabyte", n, t.StateDB)
+			bad("platforms.%s.state_db %q is not one of leveldb, couchdb, yugabyte, postgres", n, t.StateDB)
 		}
 		if fabricFamily[n] {
 			ob := t.OrdererBatch
@@ -164,6 +169,15 @@ func (p *Profile) validate() error {
 			}
 			if ob.BatchTimeout == "" || ob.AbsoluteMaxBytes == "" || ob.PreferredMaxBytes == "" {
 				bad("platforms.%s.orderer_batch needs batch_timeout, absolute_max_bytes and preferred_max_bytes (adr-011)", n)
+			}
+			if nativeBatchPartial(t.OrdererBatchNative) {
+				nob := t.OrdererBatchNative
+				if nob.MaxMessageCount <= 0 {
+					bad("platforms.%s.orderer_batch_native.max_message_count must be > 0 when native batch is set", n)
+				}
+				if nob.BatchTimeout == "" || nob.AbsoluteMaxBytes == "" || nob.PreferredMaxBytes == "" {
+					bad("platforms.%s.orderer_batch_native needs batch_timeout, absolute_max_bytes and preferred_max_bytes", n)
+				}
 			}
 		}
 	}
@@ -193,4 +207,17 @@ func (t PlatformTopo) EffectiveStateDB(normalized bool) string {
 		return "leveldb"
 	}
 	return t.StateDB
+}
+
+// EffectiveOrdererBatch returns the normalized (shared) batch, or the
+// per-platform native batch when one is configured.
+func (t PlatformTopo) EffectiveOrdererBatch(normalized bool) OrdererBatch {
+	if !normalized && t.OrdererBatchNative.MaxMessageCount > 0 {
+		return t.OrdererBatchNative
+	}
+	return t.OrdererBatch
+}
+
+func nativeBatchPartial(ob OrdererBatch) bool {
+	return ob.MaxMessageCount > 0 || ob.BatchTimeout != "" || ob.AbsoluteMaxBytes != "" || ob.PreferredMaxBytes != ""
 }

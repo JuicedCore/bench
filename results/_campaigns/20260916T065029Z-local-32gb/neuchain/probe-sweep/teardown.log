@@ -1,0 +1,20 @@
+ Container bench-neuchain-block-server-1 Stopping 
+ Container bench-neuchain-block-server-3 Stopping 
+ Container bench-neuchain-block-server-0 Stopping 
+ Container bench-neuchain-block-server-2 Stopping 
+ Container bench-neuchain-block-server-3 Stopped 
+ Container bench-neuchain-block-server-3 Removing 
+ Container bench-neuchain-block-server-3 Removed 
+ Container bench-neuchain-block-server-0 Stopped 
+ Container bench-neuchain-block-server-0 Removing 
+ Container bench-neuchain-block-server-0 Removed 
+ Container bench-neuchain-block-server-1 Stopped 
+ Container bench-neuchain-block-server-1 Removing 
+ Container bench-neuchain-block-server-1 Removed 
+ Container bench-neuchain-block-server-2 Stopped 
+ Container bench-neuchain-block-server-2 Removing 
+ Container bench-neuchain-block-server-2 Removed 
+ Network bench-neuchain_nc Removing 
+ Network bench-neuchain_nc Removed 
+[deploy 13:16:10] WARN: could not drop page cache (needs root); continuing
+[deploy 13:16:10] neuchain down (image and .cache/crypto kept; 'docker rmi' / rm -rf .cache to reclaim)

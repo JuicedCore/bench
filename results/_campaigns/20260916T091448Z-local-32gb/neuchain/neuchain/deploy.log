@@ -1,0 +1,44 @@
+[deploy 15:43:02] WARN: could not drop page cache (needs root); continuing
+ Network bench-neuchain_nc Creating 
+ Network bench-neuchain_nc Creating 
+ Network bench-neuchain_nc Created 
+ Network bench-neuchain_nc Created 
+ Container bench-neuchain-block-server-3 Creating 
+ Container bench-neuchain-block-server-0 Creating 
+ Container bench-neuchain-block-server-2 Creating 
+ Container bench-neuchain-block-server-1 Creating 
+ Container bench-neuchain-block-server-3 Created 
+ Container bench-neuchain-block-server-1 Created 
+ Container bench-neuchain-block-server-2 Created 
+ Container bench-neuchain-block-server-0 Created 
+ Container bench-neuchain-block-server-1 Starting 
+ Container bench-neuchain-block-server-2 Starting 
+ Container bench-neuchain-block-server-3 Starting 
+ Container bench-neuchain-block-server-0 Starting 
+ Container bench-neuchain-block-server-2 Started 
+ Container bench-neuchain-block-server-0 Started 
+ Container bench-neuchain-block-server-3 Started 
+ Container bench-neuchain-block-server-1 Started 
+[deploy 15:43:03] waiting up to 120s for block server 0 query port :7003
+[deploy 15:43:03] block server 0 query port :7003: ready after 0s
+[deploy 15:43:03] waiting up to 60s for block server 0 submit port :5001
+[deploy 15:43:03] block server 0 submit port :5001: ready after 0s
+[deploy 15:43:03] waiting up to 120s for block server 1 query port :7013
+[deploy 15:43:03] block server 1 query port :7013: ready after 0s
+[deploy 15:43:03] waiting up to 60s for block server 1 submit port :5011
+[deploy 15:43:03] block server 1 submit port :5011: ready after 0s
+[deploy 15:43:03] waiting up to 120s for block server 2 query port :7023
+[deploy 15:43:03] block server 2 query port :7023: ready after 0s
+[deploy 15:43:03] waiting up to 60s for block server 2 submit port :5021
+[deploy 15:43:03] block server 2 submit port :5021: ready after 0s
+[deploy 15:43:03] waiting up to 120s for block server 3 query port :7033
+[deploy 15:43:03] block server 3 query port :7033: ready after 0s
+[deploy 15:43:03] waiting up to 60s for block server 3 submit port :5031
+[deploy 15:43:03] block server 3 submit port :5031: ready after 0s
+[deploy 15:43:03] waiting 5s for NeuChain ZMQ sockets to accept handshakes
+[deploy 15:43:08] resource budget for neuchain: 18 CPU / 20 GB across 4 containers = 4.50 CPU each; memory by role weight (peer=4 statedb=4 orderer=2 other=1, total weight 16)
+[deploy 15:43:09]   bench-neuchain-block-server-0  (peer) 5120m
+[deploy 15:43:09]   bench-neuchain-block-server-1  (peer) 5120m
+[deploy 15:43:10]   bench-neuchain-block-server-2  (peer) 5120m
+[deploy 15:43:10]   bench-neuchain-block-server-3  (peer) 5120m
+[deploy 15:43:10] neuchain up: 4 block servers + 4 co-located epoch servers (image bench/neuchain:ev, patched build)

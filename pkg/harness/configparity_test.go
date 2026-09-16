@@ -3,6 +3,7 @@ package harness_test
 import (
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"github.com/juicedcore/bench/pkg/adapters"
@@ -174,6 +175,101 @@ func TestUnionAdapterBlockLoadsOnEveryPlatform(t *testing.T) {
 			if _, ok := cfg.Adapter[key]; !ok {
 				t.Errorf("%s: union adapter block is missing %q", name, key)
 			}
+		}
+	}
+}
+
+func nativeConfigDir(t *testing.T) string {
+	return configDir(t, "native")
+}
+
+func configDir(t *testing.T, name string) string {
+	t.Helper()
+	dir, err := filepath.Abs(filepath.Join("..", "..", "configs", name))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err := os.Stat(dir); err != nil {
+		t.Fatalf("configs/%s not found: %v", name, err)
+	}
+	return dir
+}
+
+// Native configs are per-platform, normalized:false, and named after the
+// platform they target so run-all.sh can skip cross-product runs.
+func TestNativeConfigsAreNative(t *testing.T) {
+	paths, err := filepath.Glob(filepath.Join(nativeConfigDir(t), "*.yaml"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(paths) == 0 {
+		t.Fatal("no configs in configs/native")
+	}
+	want := map[string]bool{"fabric-cft": false, "fabric-bft": false, "drunix": false, "fabricx": false, "neuchain": false}
+	for _, p := range paths {
+		cfg, err := harness.LoadRunConfig(p)
+		if err != nil {
+			t.Errorf("%s: %v", filepath.Base(p), err)
+			continue
+		}
+		if cfg.Normalized {
+			t.Errorf("%s: normalized=true in configs/native", filepath.Base(p))
+		}
+		stem := strings.TrimSuffix(filepath.Base(p), ".yaml")
+		if cfg.Platform != stem {
+			t.Errorf("%s: platform=%s, want filename stem %s (run-all.sh matches on this)", filepath.Base(p), cfg.Platform, stem)
+		}
+		if _, ok := want[cfg.Platform]; ok {
+			want[cfg.Platform] = true
+		}
+	}
+	for plat, seen := range want {
+		if !seen {
+			t.Errorf("configs/native is missing %s.yaml", plat)
+		}
+	}
+}
+
+// Native kv-mixed is a second per-platform native set: same levers as
+// configs/native, kv-mixed at 50% reads, never mixed into the kv-write ceiling.
+func TestNativeKVMixedConfigs(t *testing.T) {
+	paths, err := filepath.Glob(filepath.Join(configDir(t, "native-kv-mixed"), "*.yaml"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(paths) == 0 {
+		t.Fatal("no configs in configs/native-kv-mixed")
+	}
+	want := map[string]bool{"fabric-cft": false, "fabric-bft": false, "drunix": false, "fabricx": false, "neuchain": false}
+	for _, p := range paths {
+		cfg, err := harness.LoadRunConfig(p)
+		if err != nil {
+			t.Errorf("%s: %v", filepath.Base(p), err)
+			continue
+		}
+		if cfg.Normalized {
+			t.Errorf("%s: normalized=true in configs/native-kv-mixed", filepath.Base(p))
+		}
+		if cfg.Workload != "kv-mixed" {
+			t.Errorf("%s: workload=%s, want kv-mixed", filepath.Base(p), cfg.Workload)
+		}
+		if cfg.Name != "native-kv-mixed" {
+			t.Errorf("%s: name=%s, want native-kv-mixed", filepath.Base(p), cfg.Name)
+		}
+		if cfg.Load.ReadWriteRatio != 0.5 {
+			t.Errorf("%s: read_write_ratio=%g, want 0.5", filepath.Base(p), cfg.Load.ReadWriteRatio)
+		}
+		stem := strings.TrimSuffix(filepath.Base(p), ".yaml")
+		if cfg.Platform != stem {
+			t.Errorf("%s: platform=%s, want filename stem %s", filepath.Base(p), cfg.Platform, stem)
+		}
+		if _, ok := want[cfg.Platform]; ok {
+			want[cfg.Platform] = true
+		}
+	}
+	for plat, seen := range want {
+		if !seen {
+			t.Errorf("configs/native-kv-mixed is missing %s.yaml", plat)
 		}
 	}
 }

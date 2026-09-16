@@ -1,0 +1,10 @@
+NAMES                               IMAGE                           STATUS                          CREATED
+bench-fabricx-fabricx-committer-1   bench/fabricx:local             Up 15 minutes                   15 minutes ago
+bench-fabricx-fabricx-pipeline-1    bench/fabricx:local             Up 15 minutes                   15 minutes ago
+bench-fabricx-fabricx-arma-1        bench/fabricx:local             Up 15 minutes                   15 minutes ago
+bench-fabricx-fabricx-db-1          bench/fabricx:local             Up 15 minutes (healthy)         15 minutes ago
+nucleus-headlamp-1                  weaverai/nucleus-k8-dashboard   Up 20 hours                     5 weeks ago
+feast-control-plane                 kindest/node:v1.36.1            Up 20 hours                     6 weeks ago
+feast-worker                        kindest/node:v1.36.1            Up 20 hours                     6 weeks ago
+feast-worker2                       kindest/node:v1.36.1            Up 20 hours                     6 weeks ago
+untitled-cassandra                  cassandra:5.0                   Restarting (3) 15 seconds ago   7 weeks ago

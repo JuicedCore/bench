@@ -1,0 +1,74 @@
+[0;34mUsing docker and docker-compose[0m
+[0;34mStopping network[0m
+ Container hlf_keydb_org2msp Stopping 
+ Container yugabyte-org1 Stopping 
+ Container hlf_keydb_org1msp Stopping 
+ Container yugabyte-org2 Stopping 
+ Container hlf_keydb_org1msp Stopped 
+ Container hlf_keydb_org1msp Removing 
+ Container hlf_keydb_org1msp Removed 
+ Container hlf_keydb_org2msp Stopped 
+ Container hlf_keydb_org2msp Removing 
+ Container hlf_keydb_org2msp Removed 
+ Container yugabyte-org1 Stopped 
+ Container yugabyte-org1 Removing 
+ Container yugabyte-org1 Removed 
+ Container yugabyte-org2 Stopped 
+ Container yugabyte-org2 Removing 
+ Container yugabyte-org2 Removed 
+ Network drunix_test Removing 
+ Network drunix_test Resource is still in use 
+ Container cp.org2 Stopping 
+ Container cp.org1 Stopping 
+ Container lp1.org1 Stopping 
+ Container lp1.org2 Stopping 
+ Container vs1.org1 Stopping 
+ Container vs1.org2 Stopping 
+ Container orderer.example.com Stopping 
+ Container lp1.org1 Stopped 
+ Container lp1.org1 Removing 
+ Container lp1.org1 Removed 
+ Container vs1.org2 Stopped 
+ Container vs1.org2 Removing 
+ Container vs1.org2 Removed 
+ Container orderer.example.com Stopped 
+ Container orderer.example.com Removing 
+ Container orderer.example.com Removed 
+ Container cp.org2 Stopped 
+ Container cp.org2 Removing 
+ Container cp.org2 Removed 
+ Container vs1.org1 Stopped 
+ Container vs1.org1 Removing 
+ Container vs1.org1 Removed 
+ Container cp.org1 Stopped 
+ Container cp.org1 Removing 
+ Container cp.org1 Removed 
+ Container lp1.org2 Stopped 
+ Container lp1.org2 Removing 
+ Container lp1.org2 Removed 
+ Volume compose_orderer.example.com Removing 
+ Volume compose_peer0.org1.example.com Removing 
+ Volume compose_peer1.org1.example.com Removing 
+ Volume compose_peer0.org2.example.com Removing 
+ Volume compose_peer1.org2.example.com Removing 
+ Volume compose_orderer.example.com Removed 
+ Volume compose_peer1.org2.example.com Removed 
+ Volume compose_peer0.org1.example.com Removed 
+ Volume compose_peer1.org1.example.com Removed 
+ Volume compose_peer0.org2.example.com Removed 
+[0;34mRemoving remaining containers[0m
+b23a666b0e3f
+Error response from daemon: get compose_orderer.example.com: no such volume
+Error response from daemon: get compose_peer0.org1.example.com: no such volume
+Error response from daemon: get compose_peer1.org1.example.com: no such volume
+Error response from daemon: get compose_peer2.org1.example.com: no such volume
+Error response from daemon: get compose_peer0.org2.example.com: no such volume
+Error response from daemon: get compose_peer1.org2.example.com: no such volume
+Error response from daemon: get compose_peer2.org2.example.com: no such volume
+[0;34mRemoving generated chaincode docker images[0m
+Untagged: dev-peer0.org2.example.com-kvstore_1.0-e88284a33ff8806958375f99312782794164d62aac26fe22876f2c72fb6294d9-68943f16f9aba9f24cbd04de158905f755f192c405682abc67b51f4b237b88ec:latest
+Deleted: sha256:63864792cb645d10ac6a1fa3ae372370dabd542410cab319e1009418d006ed3f
+Untagged: dev-peer0.org1.example.com-kvstore_1.0-e88284a33ff8806958375f99312782794164d62aac26fe22876f2c72fb6294d9-69fc7c62d4c586b892ebdf21972c9f99a025fa7f3de7b416a325aa17c7d14ed9:latest
+Deleted: sha256:346a695bc89f109184c5f07243b5e5467c97a809d99fe6daa968e7a899092265
+[deploy 17:17:03] WARN: could not drop page cache (needs root); continuing
+[deploy 17:17:03] drunix down

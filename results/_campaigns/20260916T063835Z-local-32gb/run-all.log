@@ -1,0 +1,31 @@
+[run-all 12:08:35] campaign dir: /home/chad/Projects/bench/results/_campaigns/20260916T063835Z-local-32gb
+==================== preflight (local-32gb) ====================
+== tooling ==
+  ok    go       go version go1.26.5 linux/amd64
+  ok    docker   Docker version 29.7.2, build a7dcaa6
+  ok    git      git version 2.34.1
+  ok    curl     curl 7.81.0 (x86_64-pc-linux-gnu) libcurl/7.81.0 OpenSSL/3.0.2 zlib/1.2.11 brotli/1.0.9 zstd/1.4.8 libidn2/2.3.2 libpsl/0.21.0 (+libidn2/2.3.2) libssh/0.9.6/openssl/zlib nghttp2/1.43.0 librtmp/2.3 OpenLDAP/2.5.18
+  ok    jq       jq-1.7.1
+  ok    python3  Python 3.10.12
+  ok    go 1.26.5 satisfies go.mod (1.26.5)
+  ok    docker compose plugin
+  ok    docker daemon reachable
+  ok    python3 yaml
+  ok    python3 matplotlib
+[1;33m  WARN  no passwordless sudo - run-all.sh will prompt, or skip the page-cache drop[0m
+
+== host vs profile 'local-32gb' ==
+  host:    22 cores, 23.5 GB RAM (17.1 GB available), 860 GB disk free
+  profile: 18 cores + 2 loadgen + 1 monitoring = 21.0 cores
+           20 GB platform + 2 GB loadgen + 1 GB monitoring = 23.0 GB
+  ok    cores sufficient
+  ok    total RAM sufficient
+[1;33m  WARN  only 17.1 GB available of the 23.0 GB needed - close other applications before running[0m
+  ok    not swapping
+  ok    disk headroom
+
+[1;33mRUNNABLE, but 2 warning(s) - numbers may not be trustworthy[0m
+[run-all 12:08:36] WARN: preflight warnings above - numbers from this host may not be trustworthy
+error obtaining VCS status: exit status 128
+	Use -buildvcs=false to disable VCS stamping.
+[run-all 12:08:36] ERROR: go build of benchrunner failed (compiler output above)

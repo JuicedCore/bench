@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Load path — generator → adapter → platform</title>
+<link rel="stylesheet" href="style.css">
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+</head>
+<body>
+<nav class="topnav">
+  <a class="brand" href="index.html">Bench</a>
+  <a href="index.html">Overview</a>
+  <a href="load-path.html" class="current">Load path</a>
+  <a href="fabric.html">Fabric</a>
+  <a href="drunix.html">Drunix</a>
+  <a href="fabric-x.html">Fabric-X</a>
+  <a href="neuchain.html">NeuChain</a>
+  <a href="normalization.html">Normalization</a>
+  <span class="nav-spacer"></span>
+  <button type="button" class="theme-toggle" aria-label="Toggle color theme">Theme</button>
+</nav>
+<main>
+
+<header class="hero">
+  <h1>From load generator to ledger
+  <span class="subtitle">How offered TPS becomes a platform-native transaction — adapters, ports, components, and why results look the way they do.</span></h1>
+</header>
+
+<p class="lede">The harness never “speaks Fabric” or “speaks NeuChain” at the top. It emits one logical <code>Transaction</code>. Each adapter turns that into the platform’s real API. Deploy scripts expose the endpoints; the adapter dials them; the load generator schedules when to send and when to count a commit.</p>
+
+<div class="callout note">
+<strong class="label">Scope</strong>
+<p>Normalized <code>kv-write</code> / probe-sweep is the primary path. Observed numbers from campaign <code>20260916T065029Z-local-32gb</code> (18 CPU / 20&nbsp;GB) — illustrative, not a published ranking.</p>
+</div>
+
+<nav class="toc" aria-label="Table of contents">
+<strong>Contents</strong>
+<ol>
+  <li><a href="#big-picture">Big picture</a></li>
+  <li><a href="#loadgen">How load is generated and how it changes</a></li>
+  <li><a href="#adapter-contract">Adapter contract (Submit / T2 / T3)</a></li>
+  <li><a href="#workloads">What we send (workloads)</a></li>
+  <li><a href="#normalized">Normalized vs optimal</a></li>
+  <li><a href="#fabric-cft">Platform: fabric-cft</a></li>
+  <li><a href="#fabric-bft">Platform: fabric-bft</a></li>
+  <li><a href="#drunix">Platform: drunix</a></li>
+  <li><a href="#fabricx">Platform: fabricx</a></li>
+  <li><a href="#neuchain">Platform: neuchain</a></li>
+  <li><a href="#comparison">Side-by-side path table</a></li>
+  <li><a href="#observed">Why the last campaign behaved that way</a></li>
+  <li><a href="#sources">Source map</a></li>
+</ol>
+</nav>
+
+<!-- ============================================================ -->
+<h2 id="big-picture">1. Big picture</h2>
+
+<div class="diagram">
+<pre class="mermaid">
+flowchart TB
+  subgraph Inputs
+    CFG["configs/normalized/*.yaml<br/>configs/native/&lt;platform&gt;.yaml"]
+    PROF["deploy/profiles/*.yaml"]
+  end
+
+  CFG --> BR["benchrunner run"]
+  PROF --> BR
+  BR --> ENG["harness.Engine"]
+  ENG --> MAN["Manifest&lt;br/&gt;fairness levers"]
+
+  ENG --> WL["Workload.Next&lt;br/&gt;logical Transaction"]
+  ENG --> GEN["loadgen.Generator&lt;br/&gt;schedule / workers"]
+  ENG --> COL["metrics.Collector&lt;br/&gt;T1 / T2 / T3"]
+
+  WL --> AD["PlatformAdapter&lt;br/&gt;Setup → Submit → WaitForFinality"]
+  GEN --> AD
+  AD --> COL
+
+  AD --> CFT["fabric-cft&lt;br/&gt;Gateway + chaincode"]
+  AD --> BFT["fabric-bft&lt;br/&gt;Gateway + chaincode"]
+  AD --> DRU["drunix&lt;br/&gt;LP / CP + Yugabyte"]
+  AD --> FX["fabricx&lt;br/&gt;Arma gRPC"]
+  AD --> NC["neuchain&lt;br/&gt;ZMQ + YCSB"]
+</pre>
+</div>
+
+<p><strong>Deploy is out of band.</strong> <code>deploy/docker/&lt;platform&gt;/up.sh</code> brings the network up, then writes <code>connection.env</code> with <code>BENCH_ADAPTER_*</code> variables. You <code>source</code> that file (or <code>run-all.sh</code> does it in a subshell) so the YAML <code>adapter:</code> block expands to real endpoints. The adapter never starts Docker.</p>
+
+<p>Three transaction models sit under one interface:</p>
+<table>
+<tr><th>Model</th><th>Platforms</th><th>What “submit” means</th></tr>
+<tr><td>EOV + chaincode</td><td>fabric-cft, fabric-bft, drunix</td><td>Endorse chaincode → order → validate → commit</td></tr>
+<tr><td>EOV, no chaincode</td><td>fabricx</td><td>Client-signed namespace RW-set → Arma order → committer apply</td></tr>
+<tr><td>Ordering-free EV</td><td>neuchain</td><td>Fire-and-forget ZMQ submit → poll tip until tx appears</td></tr>
+</table>
+
+<!-- ============================================================ -->
+<h2 id="loadgen">2. How load is generated and how it changes</h2>
+
+<p>Code: <code>pkg/loadgen/generator.go</code>, phases built in <code>pkg/harness/engine.go</code>. Methodology: <code>docs/architecture/metrics-methodology.md</code>.</p>
+
+<h3>2.1 Modes</h3>
+<table>
+<tr><th>Mode</th><th>How rate is controlled</th><th>Latency clock</th></tr>
+<tr><td><strong>Open-loop</strong> (default for normalized)</td><td>Absolute schedule: tx <em>k</em> is due at <code>start + k/rate</code>. The generator keeps offering even if the platform is slow.</td><td>From <strong>scheduled</strong> send time (coordinated-omission safe), not from when the goroutine actually woke up.</td></tr>
+<tr><td><strong>Closed-loop</strong> (<code>multi-client.yaml</code>)</td><td>Fixed pool of <code>workers</code>; each does Submit → WaitForFinality → next.</td><td><code>scheduled == T1</code> (actual send).</td></tr>
+<tr><td><strong>Sweep</strong> (<code>probe-sweep.yaml</code>)</td><td>A sequence of open-loop phases with different offered TPS.</td><td>Same as open-loop per phase.</td></tr>
+</table>
+
+<h3>2.2 Probe-and-sweep (how load changes during a campaign)</h3>
+<p>This is the primary methodology. One YAML drives every platform with the <strong>same ladder</strong>:</p>
+<ol>
+  <li><strong>Probe</strong> — 10 TPS × 30&nbsp;s → floor latency.</li>
+  <li><strong>Sweep steps</strong> — <code>[100, 250, 500, 1000, 2000, 3500, 5000, 7500, 10000]</code> TPS, 60&nbsp;s each.</li>
+  <li><strong>Hold</strong> — 5&nbsp;minutes at <code>0.9 ×</code> the highest step that actually <em>held</em> (not 90% of 10000).</li>
+</ol>
+<p>A step “holds” only if <strong>all</strong> of these pass:</p>
+<ul>
+  <li>fail rate ≤ 2%</li>
+  <li>confirmed TPS ≥ 95% of offered</li>
+  <li>send-gap p99 ≤ 50&nbsp;ms (load generator itself is not the bottleneck)</li>
+</ul>
+<p>After <strong>2 consecutive failed steps</strong>, higher rungs are skipped (<code>abort_after_failed_steps: 2</code>). That is how a slow platform does not burn an hour climbing a ladder it already failed.</p>
+
+<div class="diagram">
+<pre class="mermaid">
+flowchart LR
+  P["probe&lt;br/&gt;10 TPS × 30s"] --> S1["sweep steps&lt;br/&gt;100 → 10k TPS"]
+  S1 --> DEC{"step holds?&lt;br/&gt;fail≤2% · conf≥95% · gap p99≤50ms"}
+  DEC -->|yes| NEXT["next step"]
+  NEXT --> S1
+  DEC -->|2 fails| HOLD["hold 5m&lt;br/&gt;at 0.9 × highest held"]
+  DEC -->|pass ladder| HOLD
+</pre>
+</div>
+
+<div class="callout">
+<strong>In-flight cap.</strong> Default ≈ <code>max(target_tps × 8, 1024)</code>. If the platform stops finalizing, the schedule still fires; those txs are recorded as failures: <em>“not sent: N transactions already in flight”</em>. That is overload signal, not a bug in the generator.
+</div>
+
+<h3>2.3 Timestamps T1 / T2 / T3</h3>
+<table>
+<tr><th>Stamp</th><th>Meaning</th><th>Who sets it</th></tr>
+<tr><td><strong>T1</strong></td><td>Immediately before <code>Submit</code></td><td>Load generator</td></tr>
+<tr><td><strong>T2</strong></td><td>Platform acknowledged receipt (async ack)</td><td>Adapter <code>Submit</code> return / <code>AckTime</code></td></tr>
+<tr><td><strong>T3</strong></td><td>Committed (validated) in a block, or read path returns</td><td>Adapter <code>WaitForFinality</code></td></tr>
+</table>
+
+<div class="diagram">
+<pre class="mermaid">
+sequenceDiagram
+  participant G as loadgen.Generator
+  participant A as PlatformAdapter
+  participant P as Platform
+
+  G->>G: schedule due time
+  Note over G: T1
+  G->>A: Submit(tx)
+  A->>P: async submit
+  P-->>A: ack
+  Note over A: T2 — return SubmitResult
+  A-->>G: SubmitResult
+  G->>A: WaitForFinality(txID)
+  A->>P: watch commit / tip
+  P-->>A: committed / invalid
+  Note over A: T3
+  A-->>G: FinalityResult
+</pre>
+</div>
+
+<p><strong>Headline throughput and latency always use T3</strong> (confirmed commits). T2 is for diagnosing where time went — and it does <em>not</em> mean the same thing on every platform (see NeuChain).</p>
+
+<h3>2.4 Keys, seed, multiple generators</h3>
+<ul>
+  <li>Distributions: <code>uniform</code>, <code>zipfian</code>, <code>fixed</code> — seeded, identical stream on every platform for the same seed.</li>
+  <li>Normalized probe-sweep uses <code>seed: 1</code>, 200k key space, 64-byte values, <code>finality_wait: 60s</code>.</li>
+  <li>If the profile has <code>load_gen_cpus: 2</code>, the engine starts <strong>two generators</strong> that split rate and use seeds <code>seed</code> and <code>seed+1</code> — same total offered TPS, different key subsequences. Changing generator count changes the key sequence, so it is a fairness lever recorded in the manifest.</li>
+</ul>
+
+<!-- ============================================================ -->
+<h2 id="adapter-contract">3. Adapter contract</h2>
+
+<p>Interface: <code>pkg/adapters/adapter.go</code>. Every platform implements:</p>
+<pre><code>Setup(ctx, AdapterConfig) error
+Teardown(ctx) error
+Submit(ctx, *Transaction) (*SubmitResult, error)   // returns at T2 — never waits for commit
+WaitForFinality(ctx, txID, timeout) (*FinalityResult, error)  // T3
+Query(ctx, key) (*QueryResult, error)              // verification only
+MetricsEndpoint() string                           // informational scrape only
+</code></pre>
+
+<p>Critical rules:</p>
+<ul>
+  <li><code>Submit</code> must use the platform’s <strong>async</strong> path so T2 ≠ T3. Fabric does <em>not</em> use one-shot <code>SubmitTransaction</code>.</li>
+  <li>Adapters are concurrent-safe after <code>Setup</code>; many loadgen goroutines call them at once.</li>
+  <li>Adapters do not deploy networks. Endpoints come from <code>connection.env</code> → YAML <code>adapter:</code> extras.</li>
+  <li>Native Prometheus endpoints (peer <code>:9443</code>, Fabric-X <code>:9643</code>, …) are scraped for dashboards only. Ranking numbers come from the harness collector.</li>
+</ul>
+
+<!-- ============================================================ -->
+<h2 id="workloads">4. What we send (logical workloads)</h2>
+
+<p>The generator only emits <code>adapters.Transaction</code>. It never builds a Fabric envelope or NeuChain protobuf.</p>
+<table>
+<tr><th>Workload</th><th>Kind</th><th>Payload</th><th>Typical config</th></tr>
+<tr><td><code>kv-write</code></td><td><code>TxWrite</code></td><td>key <code>key-%09d</code>, 64-byte deterministic value</td><td>probe-sweep, smoke, latency, throughput-scan</td></tr>
+<tr><td><code>kv-read</code></td><td><code>TxRead</code></td><td>key only</td><td>read-profile</td></tr>
+<tr><td><code>kv-mixed</code></td><td>mix by ratio</td><td>writes + reads</td><td>multi-client</td></tr>
+<tr><td><code>transfer</code></td><td><code>TxTransfer</code></td><td>from/to accounts, amount <code>1</code>, empty Value</td><td>contention</td></tr>
+</table>
+
+<p>Example write the generator hands every adapter (seq 7):</p>
+<pre><code>Kind:  TxWrite
+Key:   "key-000000042"
+Value: 64 ASCII bytes (deterministic from seq)
+</code></pre>
+
+<!-- ============================================================ -->
+<h2 id="normalized">5. Normalized vs optimal (native)</h2>
+
+<p>Policy: ADRs 009 / 010 / 012 / 013. Short version:</p>
+<ul>
+  <li><strong>Normalized</strong> = same YAML bytes, same seed, same ladder, same resource <em>budget</em>, same orderer batch params (where applicable). Goal: fair cross-platform comparison. Record caveats when a platform cannot hold a lever (e.g. Fabric-X only has Postgres).</li>
+  <li><strong>Native / optimal</strong> = tune for that platform’s ceiling (CouchDB, token path, different batching, etc.). Never average with normalized numbers.</li>
+</ul>
+
+<div class="callout">
+<strong class="label">Native set is live</strong>
+<p>Per-platform files live in <code>configs/native/</code> (<code>normalized: false</code>). Deploy honours <code>BENCH_NORMALIZED=false</code>: native orderer batch, native state DB, per-platform generator count. The report keeps those rows in a separate section and never ranks them against normalized numbers. Token SDK / UTXO on Fabric-X is still not implemented — that native file is kv-write over gRPC. Old REST token configs were removed with that path.</p>
+<p>A local-32gb native kv-write probe-sweep is <code>scripts/run-all.sh configs/native …</code>. Native kv-mixed (same levers, 50% reads) is <code>configs/native-kv-mixed</code>. The last normalized campaign was a different directory under <code>results/_campaigns/</code>.</p>
+</div>
+
+<p>What we send in each bucket:</p>
+<table>
+<tr><th>Platform</th><th>Normalized</th><th>Native (<code>configs/native/&lt;platform&gt;.yaml</code>)</th></tr>
+<tr><td>fabric-cft</td><td>kv-write, LevelDB, 100 msgs / 1s batch</td><td>kv-write, LevelDB, 500 msgs / 500ms</td></tr>
+<tr><td>fabric-bft</td><td>same as CFT (SmartBFT, 4 orderers)</td><td>kv-write, LevelDB, 250 msgs / 1s</td></tr>
+<tr><td>drunix</td><td>kv-write (JSON-wrap), Yugabyte in practice, shared batch</td><td>kv-write on Yugabyte, 500 msgs / 500ms</td></tr>
+<tr><td>fabricx</td><td>kv-write over Arma gRPC, Postgres (parity not held), shared batch</td><td>kv-write over gRPC, Postgres requested, Arma 500 / 500ms, 512 streams. Token SDK still missing.</td></tr>
+<tr><td>neuchain</td><td>YCSB kv-write, full ladder + 5 min hold</td><td>YCSB kv-write, shorter steps/hold so the run can finish before the epoch-10000 crash</td></tr>
+</table>
+
+<!-- ============================================================ -->
+<section class="platform-section" id="fabric-cft">
+<h2>6. fabric-cft — Fabric Raft + chaincode</h2>
+<div class="meta-row">
+  <span class="pill norm">normalized: LevelDB held</span>
+  <span class="pill">EOV + chaincode</span>
+  <span class="pill">Gateway gRPC</span>
+  <span class="pill">Fabric 2.5.x</span>
+</div>
+
+<h3>Topology (local-32gb)</h3>
+<p>Budget split across <strong>5 containers</strong>: 2 peers, 1 Raft orderer, 2 chaincode containers. Profile: 18 CPU / 20&nbsp;GB total.</p>
+
+<h3>How the endpoint is exposed</h3>
+<ol>
+  <li><code>deploy/docker/fabric-cft/up.sh</code> bootstraps fabric-samples test-network, installs <code>kvstore</code> on channel <code>mychannel</code>.</li>
+  <li>Writes <code>deploy/docker/fabric-cft/connection.env</code> with peer TLS material and:</li>
+</ol>
+<div class="table-wrap"><table>
+<tr><th>Env / role</th><th>Host endpoint</th><th>Component</th></tr>
+<tr><td><code>BENCH_ADAPTER_PEER_ENDPOINT</code> (gateway)</td><td><code>localhost:7051</code></td><td>peer0.org1 (endorse + commit events)</td></tr>
+<tr><td>Orderer (internal to network)</td><td><code>:7050</code></td><td>Raft orderer — client reaches it via peer submit, not direct from benchrunner</td></tr>
+<tr><td><code>BENCH_ADAPTER_METRICS_ENDPOINT</code></td><td><code>http://localhost:9443/metrics</code></td><td>Peer operations (informational)</td></tr>
+</table></div>
+
+<h3>End-to-end path for <code>kv-write</code></h3>
+<div class="diagram">
+<pre class="mermaid">
+sequenceDiagram
+  autonumber
+  participant WL as Workload
+  participant AD as fabric adapter
+  participant GW as Gateway :7051
+  participant CC as kvstore CC
+  participant ORD as Raft orderer :7050
+  participant PE as Committing peers
+  participant EV as Block events
+
+  WL->>AD: TxWrite{key, 64B}
+  Note over AD: T1
+  AD->>GW: NewProposal Put → Endorse
+  GW->>CC: simulate PutState
+  CC-->>GW: RW-set
+  AD->>GW: Submit envelope
+  GW->>ORD: order
+  Note over AD,ORD: T2 ≈ orderer accept
+  ORD-->>PE: block
+  PE->>PE: VSCC + MVCC + LevelDB
+  PE-->>EV: filtered block
+  EV-->>AD: WaitForFinality
+  Note over AD: T3
+</pre>
+</div>
+
+<p><strong>Chaincode</strong> (<code>chaincodes/kvstore</code>):</p>
+<pre><code>Put(ctx, key, value) → stub.PutState(key, []byte(value))
+</code></pre>
+<p>Blind write: no read-set → almost no MVCC conflicts on kv-write. World state stores the raw 64 bytes.</p>
+
+<h3>Other tx kinds</h3>
+<ul>
+  <li><code>kv-read</code> → Gateway <code>Evaluate("Get")</code> on one peer. <strong>No orderer, no commit.</strong> Finality is immediate. Not comparable to NeuChain reads.</li>
+  <li><code>transfer</code> → chaincode <code>Transfer</code>: real balance RMW on <code>acct/…</code> keys with JSON balances. Hot Zipfian keys → real <code>MVCC_READ_CONFLICT</code>.</li>
+</ul>
+
+<h3>Normalized or optimal?</h3>
+<p><strong>Both exist.</strong> Normalized uses LevelDB + the shared 100 / 1s batch. Native (<code>configs/native/fabric-cft.yaml</code>) keeps LevelDB but cuts blocks at 500 msgs / 500ms.</p>
+
+<h3>Why it behaves this way</h3>
+<p>Endorsement RTT + Raft batching + validation dominate. At low TPS, latency often <em>falls</em> as blocks fill faster (batch timeout 1&nbsp;s). Past the knee, in-flight backlog explodes e2e p99 while confirmed TPS plateaus.</p>
+<p class="obs"><strong>Observed (local-32gb probe-sweep):</strong> saturation ~2000 offered; hold@1800 → confirmed ~1545 TPS, fail_rate ~0.14, e2e p99 ~30&nbsp;s — hold ran past a soft knee, so headline TPS is usable but latency is not “clean.”</p>
+</section>
+
+<!-- ============================================================ -->
+<section class="platform-section" id="fabric-bft">
+<h2>7. fabric-bft — Fabric SmartBFT + same chaincode</h2>
+<div class="meta-row">
+  <span class="pill norm">normalized: LevelDB held</span>
+  <span class="pill">EOV + chaincode</span>
+  <span class="pill">Gateway gRPC</span>
+  <span class="pill">Fabric 3.1.x · 4 orderers</span>
+</div>
+
+<p><strong>Same adapter package as CFT</strong> (<code>pkg/adapters/fabric</code>), same <code>kvstore</code> chaincode, same client-facing port <code>:7051</code>. Difference is consensus: SmartBFT needs <strong>4 orderers</strong> (3f+1). Deploy uses fabric-samples BFT profile. Mutually exclusive with CFT on the same host (shared ports).</p>
+
+<div class="diagram">
+<pre class="mermaid">
+flowchart LR
+  CLI["Client / adapter"] --> GW["Gateway peer :7051&lt;br/&gt;same Put path as CFT"]
+  GW --> O1["SmartBFT&lt;br/&gt;4 orderers"]
+  O1 --> PE["Peers&lt;br/&gt;VSCC + MVCC + LevelDB"]
+  PE --> T3["Block events → T3"]
+</pre>
+</div>
+
+<h3>Normalized or optimal?</h3>
+<p>Normalized API and batch levers match CFT. Native (<code>configs/native/fabric-bft.yaml</code>) keeps kv-write on LevelDB but uses a BFT-specific batch (250 msgs / 1s). BFT is still heavier (4 orderers); the same 20&nbsp;GB budget is split thinner than CFT.</p>
+
+<h3>Why it behaved poorly on local-32gb</h3>
+<p>Same 20&nbsp;GB budget is split across <strong>8 containers</strong> (2 peers + 4 orderers + 2 CC). Peers get ~4.5&nbsp;GB each vs ~6.8&nbsp;GB on CFT. Under sweep load the gateway peer hit its cgroup limit and was <strong>OOM-killed (exit 137)</strong> — run excluded, no headline. This is a resource-split failure, not evidence that SmartBFT “can’t do TPS.”</p>
+</section>
+
+<!-- ============================================================ -->
+<section class="platform-section" id="drunix">
+<h2>8. drunix — disaggregated Fabric + YugabyteDB</h2>
+<div class="meta-row">
+  <span class="pill native">state DB: Yugabyte (parity not held)</span>
+  <span class="pill">EOV + chaincode</span>
+  <span class="pill">Gateway on Lite Peer</span>
+</div>
+
+<h3>Topology</h3>
+<p>~13 containers on local-32gb: Lite Peers ×2, Committing Peers ×2, Validation Services ×2, orderer, KeyDB ×2, Yugabyte ×2, chaincode ×2. Same logical chaincode API as Fabric.</p>
+
+<div class="table-wrap"><table>
+<tr><th>Role</th><th>Host port</th><th>Component</th></tr>
+<tr><td>Gateway / endorse</td><td><code>localhost:7051</code></td><td>Lite Peer (lp1.org1)</td></tr>
+<tr><td>Finality stream</td><td><code>localhost:7061</code></td><td>Committing Peer (cp.org1) — <strong>not</strong> the Lite Peer</td></tr>
+<tr><td>LP metrics</td><td><code>:9444</code></td><td>informational</td></tr>
+</table></div>
+
+<h3>Path for <code>kv-write</code></h3>
+<div class="diagram">
+<pre class="mermaid">
+sequenceDiagram
+  autonumber
+  participant AD as drunix adapter
+  participant LP as Lite Peer :7051
+  participant ORD as Raft orderer
+  participant CP as Committing Peer :7061
+  participant YB as YugabyteDB
+
+  Note over AD: JSON-wrap value for JSONB
+  AD->>LP: Endorse Put → Submit
+  Note over AD,LP: T2
+  LP->>ORD: broadcast
+  ORD-->>CP: block
+  CP->>YB: validate + commit
+  CP-->>AD: filtered-block events
+  Note over AD: T3
+</pre>
+</div>
+
+<div class="callout warn">
+<strong>Why JSON wrap?</strong> Drunix’s Yugabyte statedb writer force-casts values to JSONB and panics on raw strings. The wrap is client-side only (<code>pkg/adapters/drunix/valuecodec.go</code>), disclosed as a caveat. Transfers already produce JSON balances and are not re-wrapped.
+</div>
+
+<h3>Normalized or optimal?</h3>
+<p><strong>Both exist.</strong> Normalized is kv-write with LevelDB requested (actual Yugabyte — “PARITY NOT HELD”) and the shared batch. Native (<code>configs/native/drunix.yaml</code>) is the same <code>kv-write</code> Put on Yugabyte with 500 msgs / 500ms — disaggregated peer + SQL state, not a transfer/RMW run.</p>
+
+<h3>Why TPS is lower than fabric-cft</h3>
+<p>More containers → less CPU/mem per node; extra hop Lite Peer → Committing Peer; Yugabyte write path; slightly larger on-wire values. <strong>Observed:</strong> knee ~500 offered; hold@450 → 450 confirmed TPS, clean fail_rate 0, e2e p50/p99 ~538/762&nbsp;ms.</p>
+</section>
+
+<!-- ============================================================ -->
+<section class="platform-section" id="fabricx">
+<h2>9. fabricx — Arma + committer (no chaincode)</h2>
+<div class="meta-row">
+  <span class="pill native">state DB: PostgreSQL (parity not held)</span>
+  <span class="pill">EOV without chaincode</span>
+  <span class="pill">Native gRPC (ADR-016)</span>
+</div>
+
+<h3>Topology</h3>
+<p>Four Compose services: <code>fabricx-arma</code> (4 parties / routers+batchers+…), <code>fabricx-db</code> (Postgres), <code>fabricx-pipeline</code> (sidecar/verifier/coordinator), <code>fabricx-committer</code>.</p>
+
+<div class="table-wrap"><table>
+<tr><th>Role</th><th>Host ports</th><th>Component</th></tr>
+<tr><td>Broadcast (submit)</td><td><code>6022, 6122, 6222, 6322</code></td><td>Four Arma routers — adapter sends the <strong>same</strong> envelope to all</td></tr>
+<tr><td>Assembler</td><td><code>6023</code></td><td>Block assembly</td></tr>
+<tr><td>Deliver (finality)</td><td><code>4001</code></td><td>Sidecar deliver stream → T3</td></tr>
+<tr><td>Query (reads)</td><td><code>7001</code></td><td>QueryService <code>GetRows</code></td></tr>
+<tr><td>Metrics</td><td><code>9643</code></td><td>informational</td></tr>
+</table></div>
+
+<h3>Path for <code>kv-write</code></h3>
+<div class="diagram">
+<pre class="mermaid">
+flowchart TB
+  TX["TxWrite"] --> AD["fabricx adapter&lt;br/&gt;blind write ns 0 + ECDSA sign"]
+  AD --> R1["router :6022"]
+  AD --> R2["router :6122"]
+  AD --> R3["router :6222"]
+  AD --> R4["router :6322"]
+  R1 --> T2["T2 = first SUCCESS"]
+  R2 --> T2
+  R3 --> T2
+  R4 --> T2
+  T2 --> ARMA["Arma order digest"]
+  ARMA --> ASM["Assemblers"]
+  ASM --> COM["Committer"]
+  COM --> PG["PostgreSQL"]
+  COM --> DEL["deliver :4001"]
+  DEL --> T3["T3 COMMITTED / invalid"]
+</pre>
+</div>
+
+<p>No chaincode. Input bytes <strong>are</strong> stored bytes. Blind write ⇒ no MVCC on old version.</p>
+
+<div class="callout">
+<strong>Why all four routers?</strong> Sending to a single non-primary router adds ~10&nbsp;s FirstStrike delay. Broadcasting avoids that path. Old connection.env files with only <code>:6022</code> produce invalid latency numbers.
+</div>
+
+<h3>Other tx kinds</h3>
+<ul>
+  <li><code>kv-read</code> → <code>GetRows</code> on <code>:7001</code>. No order/commit. Same “not a ledger tx” shape as Fabric Evaluate.</li>
+  <li><code>transfer</code> → two-key read/write set with <strong>empty values</strong> (contention shape only; no balance arithmetic). Not optimal Fabric-style transfer.</li>
+</ul>
+
+<h3>Normalized or optimal?</h3>
+<p>Normalized is the kv-write cell with the shared batch and Postgres (parity not held). Native (<code>configs/native/fabricx.yaml</code>) is still kv-write over gRPC — Token SDK UTXO is not implemented — but requests Postgres, uses Arma 500 / 500ms, and 512 broadcast streams.</p>
+
+<h3>Why it is fastest on this host</h3>
+<p>No peer endorsement RTT for chaincode; sharded Arma path; four fat containers get more CPU each than Fabric’s many small ones. <strong>Observed:</strong> held through 7500; failed 10000; hold@6750 → <strong>6750 confirmed TPS</strong>, fail_rate 0, e2e p50/p99 ~524/737&nbsp;ms.</p>
+</section>
+
+<!-- ============================================================ -->
+<section class="platform-section" id="neuchain">
+<h2>10. neuchain — ZMQ Execute-Validate</h2>
+<div class="meta-row">
+  <span class="pill">ordering-free EV</span>
+  <span class="pill">ZMQ + protobuf + RSA-1024</span>
+  <span class="pill">YCSB payloads</span>
+</div>
+
+<h3>Topology</h3>
+<p>Typically 4 <code>block-server-*</code> containers (block + epoch co-located), Docker network <code>172.30.7.0/24</code>.</p>
+
+<div class="table-wrap"><table>
+<tr><th>Role</th><th>Host ports</th><th>Component</th></tr>
+<tr><td>Submit (PUB)</td><td><code>5001, 5011, 5021, 5031</code></td><td>Block servers — ZMTP</td></tr>
+<tr><td>Tip / block poll (REQ)</td><td><code>7003, 7013, 7023, 7033</code></td><td>Query path for finality</td></tr>
+</table></div>
+
+<h3>Path for <code>kv-write</code></h3>
+<div class="diagram">
+<pre class="mermaid">
+sequenceDiagram
+  autonumber
+  participant AD as neuchain adapter
+  participant BS as Block server :5001
+  participant EV as EV nodes
+  participant Q as Tip / block :7003
+
+  AD->>AD: YCSB update + RSA-1024
+  AD->>BS: ZMQ PUB
+  Note over AD: T2 = local send return&lt;br/&gt;not a platform ack
+  BS->>EV: deterministic execute / validate
+  loop poll until observed
+    AD->>Q: REQ tip / block
+    Q-->>AD: tip
+  end
+  Note over AD: T3
+</pre>
+</div>
+
+<div class="callout warn">
+<strong>T2 is not comparable.</strong> On NeuChain, T2 is “bytes left the client socket.” Do not use submit latency to compare NeuChain to Fabric/Fabric-X. Use e2e (T3) and confirmed TPS only.
+</div>
+
+<h3>Other tx kinds</h3>
+<ul>
+  <li><code>kv-read</code> → a <strong>committed</strong> read-carrying transaction (full path), not a point query. Different semantics from Fabric Evaluate / Fabric-X GetRows.</li>
+  <li><code>transfer</code> → <strong>rejected</strong> at Submit (not implemented).</li>
+</ul>
+
+<h3>Normalized or optimal?</h3>
+<p>Same logical kv-write cell. Native (<code>configs/native/neuchain.yaml</code>) shortens sweep steps and hold so the run can finish before the upstream epoch-10000 crash. It is still YCSB over ZMQ — not a different chaincode.</p>
+
+<h3>Why the last campaign failed</h3>
+<p>Deploy appeared to start, but adapter setup could not complete ZMTP greeting to <code>localhost:5001</code> (<code>connection reset by peer</code>). No saturation numbers from that campaign. Historically, NeuChain also has a known upstream segfault around epoch 10 000 on long runs — separate from this connection failure.</p>
+</section>
+
+<!-- ============================================================ -->
+<h2 id="comparison">11. Side-by-side: what hits the wire</h2>
+
+<table>
+<tr>
+  <th></th>
+  <th>fabric-cft / bft</th>
+  <th>drunix</th>
+  <th>fabricx</th>
+  <th>neuchain</th>
+</tr>
+<tr>
+  <td><strong>Client API</strong></td>
+  <td>Fabric Gateway gRPC</td>
+  <td>Fabric Gateway gRPC (on LP)</td>
+  <td>Arma + deliver + QueryService gRPC</td>
+  <td>ZMQ PUB/REQ</td>
+</tr>
+<tr>
+  <td><strong>Contract</strong></td>
+  <td>kvstore chaincode</td>
+  <td>same kvstore</td>
+  <td>adapter-built RW-set (ns 0)</td>
+  <td>YCSB protobuf</td>
+</tr>
+<tr>
+  <td><strong>kv-write</strong></td>
+  <td><code>Put</code> → PutState</td>
+  <td><code>Put</code> + JSON-wrap</td>
+  <td>blind write</td>
+  <td>YCSB update</td>
+</tr>
+<tr>
+  <td><strong>kv-read</strong></td>
+  <td>Evaluate Get (no commit)</td>
+  <td>Evaluate Get (no commit)</td>
+  <td>GetRows (no commit)</td>
+  <td>committed read tx</td>
+</tr>
+<tr>
+  <td><strong>transfer</strong></td>
+  <td>real balance RMW</td>
+  <td>real balance RMW</td>
+  <td>2-key empty RW (shape only)</td>
+  <td>not implemented</td>
+</tr>
+<tr>
+  <td><strong>T2 meaning</strong></td>
+  <td>orderer/gateway accept</td>
+  <td>LP/orderer accept</td>
+  <td>first router SUCCESS</td>
+  <td>local send return</td>
+</tr>
+<tr>
+  <td><strong>T3 source</strong></td>
+  <td>peer block events</td>
+  <td>Committing Peer events</td>
+  <td>deliver :4001</td>
+  <td>tip/block poll</td>
+</tr>
+<tr>
+  <td><strong>State DB (normalized intent)</strong></td>
+  <td>LevelDB ✓</td>
+  <td>Yugabyte ✗ caveat</td>
+  <td>Postgres ✗ caveat</td>
+  <td>platform native</td>
+</tr>
+</table>
+
+<!-- ============================================================ -->
+<h2 id="observed">12. Observed behavior (local-32gb probe-sweep)</h2>
+
+<p>Campaign <code>results/_campaigns/20260916T065029Z-local-32gb</code>, config <code>probe-sweep.yaml</code>, profile 18 CPU / 20&nbsp;GB.</p>
+<table>
+<tr><th>Platform</th><th>Result</th><th>Knee / hold</th><th>Rationale (short)</th></tr>
+<tr><td>fabricx</td><td>ok</td><td>7500 / 6750 conf</td><td>No CC endorse; fat containers; Arma path</td></tr>
+<tr><td>fabric-cft</td><td>ok</td><td>~2000 / ~1545 conf</td><td>EOV + Raft; hold past soft knee → high p99</td></tr>
+<tr><td>drunix</td><td>ok</td><td>~500 / 450 conf</td><td>More nodes, Yugabyte, LP→CP hop</td></tr>
+<tr><td>fabric-bft</td><td>excluded</td><td>—</td><td>Peer OOM under thinner per-container memory</td></tr>
+<tr><td>neuchain</td><td>setup failed</td><td>—</td><td>ZMQ dial reset on :5001</td></tr>
+</table>
+
+<div class="callout">
+These are <strong>one host, one profile</strong>. Absolute TPS will move with profile (local-small vs local-32gb vs GCP). Shape and relative ordering are the fairer takeaway — and only with the caveats above attached.
+</div>
+
+<!-- ============================================================ -->
+<h2 id="sources">13. Source map</h2>
+<table>
+<tr><th>Topic</th><th>Where to read / edit</th></tr>
+<tr><td>Adapter interface</td><td><code>pkg/adapters/adapter.go</code></td></tr>
+<tr><td>Fabric / BFT adapter</td><td><code>pkg/adapters/fabric/</code></td></tr>
+<tr><td>Drunix + JSON wrap</td><td><code>pkg/adapters/drunix/</code></td></tr>
+<tr><td>Fabric-X gRPC</td><td><code>pkg/adapters/fabricx/</code>, ADR-016</td></tr>
+<tr><td>NeuChain ZMQ</td><td><code>pkg/adapters/neuchain/</code></td></tr>
+<tr><td>Load generator</td><td><code>pkg/loadgen/</code></td></tr>
+<tr><td>Workloads</td><td><code>pkg/workloads/workload.go</code></td></tr>
+<tr><td>Engine / phases</td><td><code>pkg/harness/engine.go</code></td></tr>
+<tr><td>Payload → world state</td><td><code>docs/workloads/payload-and-state.md</code></td></tr>
+<tr><td>Mismatches</td><td><code>docs/workloads/mismatches.md</code></td></tr>
+<tr><td>Normalization status</td><td><code>docs/architecture/normalization-status.md</code></td></tr>
+<tr><td>Deploy + ports</td><td><code>deploy/docker/&lt;platform&gt;/up.sh</code>, <code>connection.env</code></td></tr>
+</table>
+
+<footer class="pagefoot">
+  <span>Companion: <a href="normalization.html">normalization</a>, platform pages, markdown under <code>docs/</code></span>
+  <span><a href="index.html">← Overview</a></span>
+</footer>
+</main>
+<script src="site.js"></script>
+<script>
+(() => {
+  const sources = new Map();
+
+  function theme() {
+    return (window.benchTheme && window.benchTheme()) || "light";
+  }
+
+  function cssVars(t) {
+    const dark = t === "dark";
+    return {
+      theme: dark ? "dark" : "default",
+      themeVariables: dark ? {
+        primaryColor: "#163033",
+        primaryTextColor: "#ebeff4",
+        primaryBorderColor: "#3dbaba",
+        lineColor: "#8b96a4",
+        secondaryColor: "#1d232c",
+        tertiaryColor: "#171b22",
+        background: "#171b22",
+        mainBkg: "#171b22",
+        nodeBorder: "#3dbaba",
+        clusterBkg: "#12161c",
+        clusterBorder: "#2a313c",
+        titleColor: "#ebeff4",
+        edgeLabelBackground: "#171b22",
+        actorBkg: "#163033",
+        actorBorder: "#3dbaba",
+        actorTextColor: "#ebeff4",
+        signalColor: "#b7c0cb",
+        signalTextColor: "#ebeff4",
+        labelBoxBkgColor: "#1d232c",
+        labelTextColor: "#ebeff4",
+        noteBkgColor: "#2d2212",
+        noteTextColor: "#f0c479",
+        noteBorderColor: "#b8822e",
+      } : {
+        primaryColor: "#d9efef",
+        primaryTextColor: "#12161c",
+        primaryBorderColor: "#0b6e6e",
+        lineColor: "#66707c",
+        secondaryColor: "#f7f8fa",
+        tertiaryColor: "#eef1f4",
+        background: "#f7f8fa",
+        mainBkg: "#f7f8fa",
+        nodeBorder: "#0b6e6e",
+        clusterBkg: "#eef1f4",
+        clusterBorder: "#d3d9e0",
+        titleColor: "#12161c",
+        edgeLabelBackground: "#f7f8fa",
+        actorBkg: "#d9efef",
+        actorBorder: "#0b6e6e",
+        actorTextColor: "#12161c",
+        signalColor: "#3a4450",
+        signalTextColor: "#12161c",
+        labelBoxBkgColor: "#e8ecf1",
+        labelTextColor: "#12161c",
+        noteBkgColor: "#fff4e5",
+        noteTextColor: "#7a4a08",
+        noteBorderColor: "#d9973a",
+      },
+    };
+  }
+
+  async function renderAll() {
+    if (!window.mermaid) return;
+    const t = theme();
+    mermaid.initialize({
+      startOnLoad: false,
+      securityLevel: "loose",
+      ...cssVars(t),
+    });
+
+    const nodes = [...document.querySelectorAll(".diagram .mermaid")];
+    for (const el of nodes) {
+      if (!sources.has(el)) sources.set(el, el.textContent);
+      el.removeAttribute("data-processed");
+      el.textContent = sources.get(el);
+    }
+    await mermaid.run({ nodes });
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", renderAll);
+  } else {
+    renderAll();
+  }
+  window.addEventListener("bench-theme", renderAll);
+})();
+</script>
+</body>
+</html>

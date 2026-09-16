@@ -24,6 +24,18 @@ func TestLoadRealLocalProfile(t *testing.T) {
 	if cft.OrdererBatch.MaxMessageCount == 0 {
 		t.Error("orderer_batch not populated from anchor")
 	}
+	if dru.StateDB != "yugabyte" {
+		t.Errorf("drunix native state_db=%q, want yugabyte", dru.StateDB)
+	}
+	if fx.StateDB != "postgres" {
+		t.Errorf("fabricx native state_db=%q, want postgres", fx.StateDB)
+	}
+	if cft.OrdererBatchNative.MaxMessageCount == 0 || cft.OrdererBatchNative.MaxMessageCount == cft.OrdererBatch.MaxMessageCount {
+		t.Errorf("fabric-cft native batch should be tuned separately, got %+v vs %+v", cft.OrdererBatchNative, cft.OrdererBatch)
+	}
+	if bft.OrdererBatchNative.MaxMessageCount == cft.OrdererBatchNative.MaxMessageCount {
+		t.Errorf("BFT native batch should differ from CFT, both max_message_count=%d", bft.OrdererBatchNative.MaxMessageCount)
+	}
 }
 
 func TestEffectiveStateDBNormalizedOverride(t *testing.T) {
@@ -37,6 +49,23 @@ func TestEffectiveStateDBNormalizedOverride(t *testing.T) {
 	empty := PlatformTopo{}
 	if got := empty.EffectiveStateDB(false); got != "leveldb" {
 		t.Errorf("empty state_db should default leveldb, got %q", got)
+	}
+}
+
+func TestEffectiveOrdererBatchNative(t *testing.T) {
+	topo := PlatformTopo{
+		OrdererBatch:       OrdererBatch{MaxMessageCount: 100, BatchTimeout: "1s"},
+		OrdererBatchNative: OrdererBatch{MaxMessageCount: 500, BatchTimeout: "500ms"},
+	}
+	if got := topo.EffectiveOrdererBatch(true); got.MaxMessageCount != 100 {
+		t.Errorf("normalized must use shared batch, got %+v", got)
+	}
+	if got := topo.EffectiveOrdererBatch(false); got.MaxMessageCount != 500 {
+		t.Errorf("native must use native batch, got %+v", got)
+	}
+	plain := PlatformTopo{OrdererBatch: OrdererBatch{MaxMessageCount: 100}}
+	if got := plain.EffectiveOrdererBatch(false); got.MaxMessageCount != 100 {
+		t.Errorf("native without a native block must fall back, got %+v", got)
 	}
 }
 

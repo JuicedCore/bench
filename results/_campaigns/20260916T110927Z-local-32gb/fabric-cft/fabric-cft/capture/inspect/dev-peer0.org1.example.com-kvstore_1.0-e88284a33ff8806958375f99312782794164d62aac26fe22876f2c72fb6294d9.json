@@ -1,0 +1,1 @@
+{"state":{"Dead":false,"Error":"","ExitCode":2,"FinishedAt":"2026-09-16T11:21:05.423414368Z","OOMKilled":false,"Paused":false,"Pid":0,"Restarting":false,"Running":false,"StartedAt":"2026-09-16T11:11:42.638719615Z","Status":"exited"},"restart_count":0,"memory_limit":1788870656,"nano_cpus":3600000000}

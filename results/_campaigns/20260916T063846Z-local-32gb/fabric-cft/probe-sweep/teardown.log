@@ -1,0 +1,9 @@
+[0;34mUsing docker and docker-compose[0m
+[0;34mStopping network[0m
+Error response from daemon: get docker_orderer.example.com: no such volume
+Error response from daemon: get docker_peer0.org1.example.com: no such volume
+Error response from daemon: get docker_peer0.org2.example.com: no such volume
+[0;34mRemoving remaining containers[0m
+[0;34mRemoving generated chaincode docker images[0m
+[deploy 12:09:15] WARN: could not drop page cache (needs root); continuing
+[deploy 12:09:15] fabric-cft down

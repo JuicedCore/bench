@@ -62,6 +62,11 @@ for n in 0 1 2 3; do
     || die "neuchain block server ${n} never opened :50${n}1"
 done
 unset WAIT_FOR_ON_TIMEOUT
+# TCP accept is not a ZMTP handshake. The last local-32gb campaign reset the
+# adapter's greeting ~2s after up because the SUB socket was not yet listening
+# in-process. Give the C++ servers a moment before emitting connection.env.
+log "waiting 5s for NeuChain ZMQ sockets to accept handshakes"
+sleep 5
 RES_ENV="$(apply_budget neuchain '^bench-neuchain-block-server-')"
 
 cat > "${HERE}/connection.env" <<EOF

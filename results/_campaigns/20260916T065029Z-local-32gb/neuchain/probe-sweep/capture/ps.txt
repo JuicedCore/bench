@@ -1,0 +1,10 @@
+NAMES                           IMAGE                           STATUS                          CREATED
+bench-neuchain-block-server-0   bench/neuchain:ev               Up 5 seconds                    6 seconds ago
+bench-neuchain-block-server-1   bench/neuchain:ev               Up 5 seconds                    6 seconds ago
+bench-neuchain-block-server-2   bench/neuchain:ev               Up 5 seconds                    6 seconds ago
+bench-neuchain-block-server-3   bench/neuchain:ev               Up 5 seconds                    6 seconds ago
+nucleus-headlamp-1              weaverai/nucleus-k8-dashboard   Up 20 hours                     5 weeks ago
+feast-control-plane             kindest/node:v1.36.1            Up 20 hours                     6 weeks ago
+feast-worker                    kindest/node:v1.36.1            Up 20 hours                     6 weeks ago
+feast-worker2                   kindest/node:v1.36.1            Up 20 hours                     6 weeks ago
+untitled-cassandra              cassandra:5.0                   Restarting (3) 39 seconds ago   7 weeks ago

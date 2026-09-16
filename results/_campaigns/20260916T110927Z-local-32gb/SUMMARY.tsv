@@ -1,0 +1,6 @@
+platform	config	stage	status	reason	dir
+fabric-cft	fabric-cft	run	container-failed	error: platform container failed during the run: peer0.org1.example.com was OOM-killed at its memory limit and exited (after 16:51:05, exit code 137); dev-peer0.org1.example.com-kvstore_1.0-e88284a33ff8806958375f99312782794164d62aac26fe22876f2c72fb6294d9 exited (after 16:51:03, status exited, exit c	fabric-cft/fabric-cft
+fabric-bft	fabric-bft	run	ok		fabric-bft/fabric-bft
+drunix	drunix	run	container-failed	error: platform container failed during the run: dev-peer0.org1.example.com-kvstore_1.0-e88284a33ff8806958375f99312782794164d62aac26fe22876f2c72fb6294d9 exited (after 17:15:57, status exited, exit code 2); lp1.org1 exited (after 17:15:57, status exited, exit code 137) (results written to results/dru	drunix/drunix
+fabricx	fabricx	run	ok		fabricx/fabricx
+neuchain	neuchain	run	ok		neuchain/neuchain

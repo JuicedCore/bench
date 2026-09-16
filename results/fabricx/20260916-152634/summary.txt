@@ -1,0 +1,35 @@
+run:        probe-sweep
+platform:   fabricx  (version fabricx-committer-v1.0.5-orderer-v1.0.6)
+workload:   kv-write   normalized=false
+profile:    local-32gb   state_db=postgres
+resources:  18 CPU / 20 GB total over 4 containers (4.50 CPU each; memory by role weight peer=4 statedb=4 orderer=2 other=1)
+              5120m    bench-fabricx-fabricx-arma-1
+              5120m    bench-fabricx-fabricx-committer-1
+              5120m    bench-fabricx-fabricx-db-1
+              5120m    bench-fabricx-fabricx-pipeline-1
+batch:      msgcount=500 timeout=500ms preferred=4 MB
+crypto:     sig=ECDSA-P256 hash=SHA-256 per_tx_endorse_verify=true
+caveats:
+  - fabricx native run uses kv-write over the gRPC path (adr-016); Token SDK Issue/Transfer/Redeem is not implemented (the old REST token configs were removed)
+  - every sweep step held: the platform did not saturate within the ladder, so 15000 TPS is a lower bound on its knee, not the knee
+  - native metrics scrape of http://localhost:9643/metrics failed: scrape http://localhost:9643/metrics: parser panic: Invalid name validation scheme requested: unset (informational metrics only; harness numbers unaffected)
+
+phase           offered     conf_tps  goodput  fail_rate    e2e_p50    e2e_p99    gap_p99    com_p50  verdict
+probe                10         10.0     100%     0.0000     526.85     914.43       1.10     525.82  
+sweep-100           100        100.0     100%     0.0000     455.68     792.58       1.08     455.17  held
+sweep-250           250        250.0     100%     0.0000     444.67     985.60       1.08     443.65  held
+sweep-500           500        500.0     100%     0.0000     499.97    1012.22       1.08     498.94  held
+sweep-1000         1000       1000.0     100%     0.0000     531.46     904.19       1.09     530.43  held
+sweep-2000         2000       2000.0     100%     0.0000     430.59     755.20       1.09     430.08  held
+sweep-3500         3500       3500.0     100%     0.0000     397.57     679.94       1.14     397.06  held
+sweep-5000         5000       5000.0     100%     0.0000     399.87     652.29       1.16     398.85  held
+sweep-7500         7500       7500.0     100%     0.0000     479.49     726.53       1.46     475.39  held
+sweep-10000       10000      10000.0     100%     0.0000     552.45     750.08      18.72     544.26  held
+sweep-15000       15000      15000.0     100%     0.0000     635.39     859.14      48.51     615.42  held
+hold              13500      11558.1      86%     0.1438     698.88   27033.60      75.71     676.86  
+
+errors hold           495183 x not sent: N transactions already in flight (platform is not finalizing)
+detected saturation: NOT REACHED - every step held; the knee is above 15000 TPS.
+                     Extend the ladder to measure it.
+HEADLINE  confirmed_tps=11558.1  fail_rate=0.1438  e2e p50/p99=698.88/27033.60 ms  invariant_ok=true
+WARNING   load-generator send-gap p99 = 75.7 ms: generator may be the bottleneck; reject this run

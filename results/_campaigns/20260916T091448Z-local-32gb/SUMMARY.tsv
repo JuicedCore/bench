@@ -1,0 +1,6 @@
+platform	config	stage	status	reason	dir
+fabric-cft	fabric-cft	run	ok		fabric-cft/fabric-cft
+fabric-bft	fabric-bft	run	ok		fabric-bft/fabric-bft
+drunix	drunix	run	ok		drunix/drunix
+fabricx	fabricx	run	ok		fabricx/fabricx
+neuchain	neuchain	run	ok		neuchain/neuchain

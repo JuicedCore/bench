@@ -237,6 +237,20 @@ func cmdRun(ctx context.Context, args []string) error {
 		opt.Caveats = append(opt.Caveats,
 			"drunix write values are JSON-wrapped client-side to survive a YugabyteDB statedb bug (non-JSON values panic the Committing Peer); the on-wire payload format differs from the shared kv workload on other platforms for this run")
 	}
+	if !cfg.Normalized {
+		switch cfg.Platform {
+		case "fabricx":
+			opt.Caveats = append(opt.Caveats,
+				"fabricx native run uses the gRPC path (adr-016); Token SDK Issue/Transfer/Redeem is not implemented (the old REST token configs were removed)")
+		case "neuchain":
+			opt.Caveats = append(opt.Caveats,
+				"neuchain native run is shortened to stay under the upstream epoch-10000 crash (nodes SIGSEGV together; see docs/REMAINING-WORK.md)")
+		}
+		if cfg.Workload == "kv-mixed" {
+			opt.Caveats = append(opt.Caveats,
+				"kv-mixed native: Fabric/Drunix/Fabric-X reads are Evaluate/QueryService (not ordered); NeuChain reads are committed transactions. Headline TPS blends two paths.")
+		}
+	}
 
 	if !*dryRun {
 		// Deferred so a run that fails still gets its page (error.txt, manifest).

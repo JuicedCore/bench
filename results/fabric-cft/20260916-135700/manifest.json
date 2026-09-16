@@ -1,0 +1,49 @@
+{
+  "run_name": "probe-sweep",
+  "platform": "fabric-cft",
+  "workload": "kv-write",
+  "profile": "local-32gb",
+  "normalized": false,
+  "started_at": "2026-09-16T13:57:00.248369201+05:30",
+  "ended_at": "2026-09-16T13:57:00.249569178+05:30",
+  "harness_git_sha": "unknown",
+  "platform_version": "unknown",
+  "state_db": "leveldb",
+  "state_db_requested": "leveldb",
+  "orderer_batch": {
+    "MaxMessageCount": 500,
+    "AbsoluteMaxBytes": "10 MB",
+    "PreferredMaxBytes": "4 MB",
+    "BatchTimeout": "500ms"
+  },
+  "crypto": {
+    "signature_alg": "ECDSA-P256",
+    "hash_alg": "SHA-256",
+    "per_tx_endorsement_verify": true,
+    "msp_note": "X.509 MSP; endorsement signatures verified by every committing peer during VSCC"
+  },
+  "resource_limit_per_container": {
+    "CPUs": 0,
+    "Memory": ""
+  },
+  "resource_containers": 0,
+  "resource_cpus_total": 0,
+  "resource_memory_total_gb": 0,
+  "nodes": {
+    "chaincode": 2,
+    "orderer": 1,
+    "peer": 2
+  },
+  "generators": 0,
+  "seed": 1,
+  "key_space": 200000,
+  "key_distribution": "uniform",
+  "zipfian_constant": 0,
+  "read_write_ratio": 0,
+  "value_size_bytes": 64,
+  "warmup_sec": 30,
+  "cooldown_sec": 15,
+  "caveats": [
+    "resource budget not reported by the deploy script (BENCH_RESOURCE_CONTAINERS unset - was connection.env sourced?): container limits are unverified, so this run's hardware share is unknown"
+  ]
+}

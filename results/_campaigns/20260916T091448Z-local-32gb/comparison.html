@@ -1,0 +1,32 @@
+<title>Benchmark Comparison</title>
+<style>
+:root{--bg:#fafaf7;--fg:#1d1d1b;--mute:#6b6b66;--line:#dedcd4;--head:#efede6;--warn:#8a5a00;--bad:#a1261a;--good:#1f6b3a}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#171716;--fg:#ecebe6;--mute:#9a9a93;--line:#34332f;--head:#23221f;--warn:#e0a93b;--bad:#f07b6c;--good:#6cc48a}}
+:root[data-theme=dark]{--bg:#171716;--fg:#ecebe6;--mute:#9a9a93;--line:#34332f;--head:#23221f;--warn:#e0a93b;--bad:#f07b6c;--good:#6cc48a}
+body{background:var(--bg);color:var(--fg);font:14px/1.45 system-ui,sans-serif;margin:0 auto;max-width:1100px;padding:2rem 1.2rem}
+h1{font-size:1.5rem;margin:0 0 .3rem}h2{font-size:1.15rem;margin:2.2rem 0 .4rem;border-top:1px solid var(--line);padding-top:1rem}
+h3{font-size:1rem;margin:1.6rem 0 .3rem}.mute{color:var(--mute)}.scroll{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums}
+th,td{border-bottom:1px solid var(--line);padding:.35rem .55rem;text-align:right;white-space:nowrap}
+th{background:var(--head);font-weight:600}td:first-child,th:first-child{text-align:left}
+.warn{color:var(--warn)}.bad{color:var(--bad)}.good{color:var(--good)}
+ul{margin:.3rem 0 .3rem 1.1rem;padding:0}li{margin:.1rem 0}details{margin:.4rem 0}
+</style>
+<h1>Cross-platform benchmark comparison</h1>
+<p class=mute>Generated 2026-09-16 15:50 from <code>/home/chad/Projects/bench/results</code>, runs since 2026-09-16 14:44. 5 runs found, 3 comparable, 2 excluded.</p>
+<p class=mute>Harness-level metrics only: confirmed TPS, end-to-end latency (scheduled send to observed commit), failure rate. Platform-native breakdowns are excluded by design. Each figure is the median over comparable replicates; the spread column is min&ndash;max.</p>
+<h2>Platform-native runs</h2><p class=mute>Each platform on its own tuned configuration. Shows what a platform can do, not how platforms compare &mdash; never rank these against each other or against the normalized section.</p>
+<h3>probe-sweep &middot; kv-write <span class=mute>(profile local-32gb)</span></h3>
+<div class=scroll><table><tr><th>platform<th>confirmed TPS (hold)<th>spread<th>saturation TPS<th>e2e p50 ms<th>e2e p99 ms<th>fail rate<th>runs</tr>
+<tr><td>fabric-cft<td>2980.9<td>&ndash;<td>3500<td>8413.2<td>8880.1<td>0.0537<td>1 <span class=warn title="single run: no replicate, spread unknown">&#9888;</span></tr>
+<tr><td>fabric-bft<td>900.0<td>&ndash;<td>1000<td>267.0<td>414.7<td>0.0000<td>1 <span class=warn title="single run: no replicate, spread unknown">&#9888;</span></tr>
+<tr><td>fabricx<td colspan=7 class=bad style=text-align:left>no comparable run (1 excluded, see below)</tr>
+<tr><td>neuchain<td colspan=7 class=bad style=text-align:left>no comparable run (1 excluded, see below)</tr>
+</table></div>
+<ul><li><b>fabric-cft</b> <span class=mute>2.5.16 &middot; 18 CPU / 20 GB over 5 containers &middot; sig ECDSA-P256, hash SHA-256, per-tx endorsement verify true</span><ul><li class=warn>sweep aborted early after 2 consecutive failed steps; 1 higher step(s) were never offered</li><li class=warn>native metrics scrape of http://localhost:9443/metrics failed: scrape http://localhost:9443/metrics: parser panic: Invalid name validation scheme requested: unset (informational metrics only; harness numbers unaffected)</li></ul></li><li><b>fabric-bft</b> <span class=mute>3.1.5 &middot; 18 CPU / 20 GB over 8 containers &middot; sig ECDSA-P256, hash SHA-256, per-tx endorsement verify true</span><ul><li class=warn>sweep aborted early after 2 consecutive failed steps; 3 higher step(s) were never offered</li><li class=warn>native metrics scrape of http://localhost:9443/metrics failed: scrape http://localhost:9443/metrics: parser panic: Invalid name validation scheme requested: unset (informational metrics only; harness numbers unaffected)</li></ul></li></ul>
+<details><summary>2 excluded run(s) and why</summary><ul><li><b>fabricx</b> 2026-09-16 15:26 <span class=mute>/home/chad/Projects/bench/results/fabricx/20260916-152634/result.json</span><ul><li class=bad>load generator fell behind (send-gap p99 76 ms &gt; 50)</li><li class=bad>never saturated within the ladder - 15000 TPS is a lower bound, not a knee</li></ul></li><li><b>neuchain</b> 2026-09-16 15:43 <span class=mute>/home/chad/Projects/bench/results/neuchain/20260916-154310/result.json</span><ul><li class=bad>never saturated within the ladder - 10000 TPS is a lower bound, not a knee</li></ul></li></ul></details>
+<h3>probe-sweep &middot; transfer <span class=mute>(profile local-32gb)</span></h3>
+<div class=scroll><table><tr><th>platform<th>confirmed TPS (hold)<th>spread<th>saturation TPS<th>e2e p50 ms<th>e2e p99 ms<th>fail rate<th>runs</tr>
+<tr><td>drunix<td>89.8<td>&ndash;<td>100<td>1824.8<td>2820.1<td>0.0027<td>1 <span class=warn title="single run: no replicate, spread unknown">&#9888;</span></tr>
+</table></div>
+<ul><li><b>drunix</b> <span class=mute>drunix-ddc0eae77815 &middot; 18 CPU / 20 GB over 13 containers &middot; sig ECDSA-P256, hash SHA-256, per-tx endorsement verify true</span><ul><li class=warn>drunix write values are JSON-wrapped client-side to survive a YugabyteDB statedb bug (non-JSON values panic the Committing Peer); the on-wire payload format differs from the shared kv workload on other platforms for this run</li><li class=warn>sweep aborted early after 2 consecutive failed steps; 6 higher step(s) were never offered</li><li class=warn>native metrics scrape of http://localhost:9444/metrics failed: scrape http://localhost:9444/metrics: parser panic: Invalid name validation scheme requested: unset (informational metrics only; harness numbers unaffected)</li></ul></li></ul>

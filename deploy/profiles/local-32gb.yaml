@@ -1,0 +1,76 @@
+# Local profile for a ~31-32 GB physical host (22+ logical CPUs).
+#
+#   Host OS         2 cores / 2 GB
+#   Load generator  2 cores / 2 GB
+#   Monitoring      1 core  / 1 GB  (Prometheus + Grafana + cAdvisor + node_exporter)
+#   Platform under test        18 cores / 20 GB   <-- budget below
+#
+# WSL2 is often capped below physical RAM (e.g. memory=24GB in .wslconfig). This
+# profile budgets 20 GB for the platform so preflight passes with a 24 GB WSL
+# allocation (20 + 2 loadgen + 1 monitoring = 23 GB). If you raise WSL memory
+# toward 28-30 GB, bump total_memory_gb to 24-26 for more probe-sweep headroom.
+#
+# Normalized fairness levers (orderer_batch anchor) match local.yaml / local-small.
+# Native orderer_batch_native and state_db (yugabyte / postgres) are used only
+# when normalized: false. Runs on this profile are comparable to each other, not
+# to `local` or `local-small`.
+name: local-32gb
+budget:
+  total_cpus: 18
+  total_memory_gb: 20
+  load_gen_cpus: 2
+
+_orderer_batch_normalized: &orderer_batch_normalized
+  max_message_count: 100
+  absolute_max_bytes: "10 MB"
+  preferred_max_bytes: "2 MB"
+  batch_timeout: "1s"
+
+_orderer_batch_native: &orderer_batch_native
+  max_message_count: 500
+  absolute_max_bytes: "10 MB"
+  preferred_max_bytes: "4 MB"
+  batch_timeout: "500ms"
+
+_orderer_batch_native_bft: &orderer_batch_native_bft
+  max_message_count: 250
+  absolute_max_bytes: "10 MB"
+  preferred_max_bytes: "4 MB"
+  batch_timeout: "1s"
+
+platforms:
+  fabric-cft:
+    nodes: {peer: 2, orderer: 1, chaincode: 2}
+    state_db: leveldb
+    orderer_batch: *orderer_batch_normalized
+    orderer_batch_native: *orderer_batch_native
+
+  fabric-bft:
+    nodes: {peer: 2, orderer: 4, chaincode: 2}
+    state_db: leveldb
+    orderer_batch: *orderer_batch_normalized
+    orderer_batch_native: *orderer_batch_native_bft
+
+  drunix:
+    nodes: {lite_peer: 2, committing_peer: 2, validation_service: 2, orderer: 1, keydb: 2, yugabyte: 2, chaincode: 2}
+    state_db: yugabyte
+    orderer_batch: *orderer_batch_normalized
+    orderer_batch_native: *orderer_batch_native
+
+  fabricx:
+    nodes: {arma: 1, postgres: 1, pipeline: 1, committer: 1}
+    load_gen_cpus: 3
+    state_db: postgres
+    orderer_batch: *orderer_batch_normalized
+    orderer_batch_native: *orderer_batch_native
+
+  neuchain:
+    nodes: {block_server: 4, epoch_server: 4}
+    load_gen_cpus: 3
+    state_db: leveldb
+    orderer_batch: {}
+
+  mock:
+    nodes: {node: 1}
+    state_db: leveldb
+    orderer_batch: *orderer_batch_normalized

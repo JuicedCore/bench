@@ -1,0 +1,13 @@
+time=2026-09-16T13:59:50.398+05:30 level=INFO msg="run starting" workload=kv-write profile=local-32gb normalized=false out_dir=results/fabric-cft/20260916-135950
+time=2026-09-16T13:59:50.398+05:30 level=INFO msg="adapter setup"
+time=2026-09-16T13:59:50.398+05:30 level=DEBUG msg="gateway connection configured" component=adapter endpoint=localhost:7051 tls_server_name=peer0.org1.example.com msp_id=Org1MSP channel=mychannel chaincode=kvstore
+time=2026-09-16T13:59:50.431+05:30 level=DEBUG msg="block event stream open" component=adapter stream=filtered-block-events endpoint=localhost:7051 channel=mychannel
+time=2026-09-16T13:59:50.433+05:30 level=INFO msg="setup complete" component=adapter gateway=localhost:7051 finality_from=localhost:7051
+time=2026-09-16T13:59:50.433+05:30 level=INFO msg="phase start" phase=probe offered_tps=10 workers=0 duration=30s
+time=2026-09-16T14:00:20.950+05:30 level=DEBUG msg="phase shorter than warmup+cooldown; measuring whole phase" phase=probe
+time=2026-09-16T14:00:20.952+05:30 level=INFO msg="phase end" phase=probe submitted=300 committed=300 confirmed_tps=10.0 fail_rate=0.0000 e2e_p99_ms=530.94
+time=2026-09-16T14:00:20.952+05:30 level=INFO msg="phase start" phase=sweep-100 offered_tps=100 workers=0 duration=1m0s
+time=2026-09-16T14:01:21.164+05:30 level=INFO msg="phase end" phase=sweep-100 submitted=1500 committed=1500 confirmed_tps=100.0 fail_rate=0.0000 e2e_p99_ms=534.02
+time=2026-09-16T14:01:21.164+05:30 level=INFO msg="phase start" phase=sweep-250 offered_tps=250 workers=0 duration=1m0s
+time=2026-09-16T14:02:21.665+05:30 level=INFO msg="phase end" phase=sweep-250 submitted=3750 committed=3750 confirmed_tps=250.0 fail_rate=0.0000 e2e_p99_ms=539.14
+time=2026-09-16T14:02:21.665+05:30 level=INFO msg="phase start" phase=sweep-500 offered_tps=500 workers=0 duration=1m0s

@@ -15,9 +15,12 @@ The directory split is the whole point:
   literally the same bytes whichever `--platform` you pass, so the fairness
   levers cannot drift apart (adr-013). Platform differences live only in the
   union `adapter:` block, whose irrelevant keys each adapter ignores.
-- **`configs/native/`** — reserved for per-platform tuned runs (`normalized:
-  false`), which would never be mixed with normalized numbers. **It does not exist
-  today**; see "Native set" below.
+- **`configs/native/`** — per-platform tuned runs (`normalized: false`). Never
+  mixed with normalized numbers. One file per platform; `run-all.sh` will not
+  cross a native file onto a different platform. Workload is `kv-write`.
+- **`configs/native-kv-mixed/`** — same native levers as `configs/native/`, but
+  `kv-mixed` at 50% reads. A separate preset, never mixed with the kv-write
+  ceiling or with normalized numbers.
 
 ## Primer: workloads, load modes, `normalized`
 
@@ -91,11 +94,52 @@ adapter's `configFromExtra` is a key lookup that ignores keys it does not know,
 and an undefined `${VAR}` expands to the empty string. `pkg/harness/configparity_test.go`
 asserts the levers stay identical and that every platform's keys are present.
 
-### Native set
+### Native set — `configs/native/` (ceilings, not a comparison)
 
-There is currently no `configs/native/`. The six Fabric-X files that lived there
-targeted the REST token API, which the platform rebuild removed. Fabric-X now
-runs the same normalized modes as everything else.
+One file per platform. `normalized: false` so the report puts them in the
+platform-native section and never ranks them against the normalized set or
+each other. Deploy honours `BENCH_NORMALIZED=false`: Fabric-family orderer
+batch comes from `orderer_batch_native` in the profile, Drunix requests
+YugabyteDB, Fabric-X requests PostgreSQL, and high-ceiling platforms use
+their `load_gen_cpus` generator count.
+
+| File | Workload | What is tuned |
+| --- | --- | --- |
+| `fabric-cft.yaml` | kv-write | LevelDB, Raft, 500 msgs / 500ms batch |
+| `fabric-bft.yaml` | kv-write | LevelDB, SmartBFT, 250 msgs / 1s batch |
+| `drunix.yaml` | kv-write | YugabyteDB, 500 msgs / 500ms batch |
+| `fabricx.yaml` | kv-write | PostgreSQL, Arma 500 / 500ms, 512 broadcast streams. Token SDK is not implemented. |
+| `neuchain.yaml` | kv-write | Same KV path; shorter sweep/hold so the run finishes before the epoch-10000 crash |
+
+```bash
+scripts/run-all.sh configs/native local-32gb fabric-cft fabric-bft drunix fabricx neuchain
+# or one platform:
+set -a; source deploy/docker/fabric-cft/connection.env; set +a
+./bin/benchrunner run --config configs/native/fabric-cft.yaml --platform fabric-cft --profile local-32gb
+```
+
+The six Fabric-X REST token files that used to live here were removed with that
+path. Fabric-X native today is kv-write over gRPC.
+
+### Native kv-mixed set — `configs/native-kv-mixed/` (not a write ceiling)
+
+Same per-platform native levers (batch, state DB, generator count) as
+`configs/native/`, with `workload: kv-mixed` and `read_write_ratio: 0.5`.
+Fabric / Drunix / Fabric-X reads are Evaluate / QueryService and never hit the
+orderer; NeuChain reads are committed transactions. Do not rank these against
+the kv-write native set.
+
+```bash
+scripts/run-all.sh configs/native-kv-mixed local-32gb fabric-cft fabric-bft drunix fabricx neuchain
+```
+
+| File | Workload | What is tuned |
+| --- | --- | --- |
+| `fabric-cft.yaml` | kv-mixed 50% reads | LevelDB, Raft, 500 msgs / 500ms batch |
+| `fabric-bft.yaml` | kv-mixed 50% reads | LevelDB, SmartBFT, 250 msgs / 1s batch |
+| `drunix.yaml` | kv-mixed 50% reads | YugabyteDB, 500 msgs / 500ms batch |
+| `fabricx.yaml` | kv-mixed 50% reads | PostgreSQL, Arma 500 / 500ms, 512 streams |
+| `neuchain.yaml` | kv-mixed 50% reads | Same KV path; shorter sweep/hold |
 
 ## `quick-smoke.yaml` — 30s low-rate sanity check
 

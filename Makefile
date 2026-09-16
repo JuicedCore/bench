@@ -19,7 +19,7 @@ GCP_PROFILE ?= gcp-small
 all: build test vet ## build + test + vet
 
 build: ## build the benchrunner CLI
-	$(GO) build -o $(BIN) ./cmd/benchrunner
+	GOFLAGS=-buildvcs=false $(GO) build -o $(BIN) ./cmd/benchrunner
 
 test: ## run unit tests
 	$(GO) test $(PKG)

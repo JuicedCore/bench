@@ -1,0 +1,38 @@
+time=2026-09-16T17:33:43.267+05:30 level=INFO msg="run starting" platform=neuchain run=native-kv-mixed workload=kv-mixed profile=local-32gb normalized=false out_dir=results/neuchain/20260916-173343
+time=2026-09-16T17:33:43.267+05:30 level=WARN msg=caveat platform=neuchain run=native-kv-mixed text="neuchain native run is shortened to stay under the upstream epoch-10000 crash (nodes SIGSEGV together; see docs/REMAINING-WORK.md)"
+time=2026-09-16T17:33:43.267+05:30 level=WARN msg=caveat platform=neuchain run=native-kv-mixed text="kv-mixed native: Fabric/Drunix/Fabric-X reads are Evaluate/QueryService (not ordered); NeuChain reads are committed transactions. Headline TPS blends two paths."
+time=2026-09-16T17:33:43.267+05:30 level=INFO msg="adapter setup" platform=neuchain run=native-kv-mixed
+time=2026-09-16T17:33:43.472+05:30 level=INFO msg="setup complete" platform=neuchain run=native-kv-mixed component=adapter block_servers="[localhost:5001 localhost:5011 localhost:5021 localhost:5031]" query=localhost:7003 tip=0 start_block=1 poll_interval=50ms
+time=2026-09-16T17:33:43.472+05:30 level=INFO msg="phase start" platform=neuchain run=native-kv-mixed phase=probe offered_tps=10 workers=0 duration=30s
+time=2026-09-16T17:34:13.825+05:30 level=INFO msg="phase end" platform=neuchain run=native-kv-mixed phase=probe submitted=50 committed=50 confirmed_tps=10.0 fail_rate=0.0000 e2e_p99_ms=385.02
+time=2026-09-16T17:34:13.825+05:30 level=INFO msg="phase start" platform=neuchain run=native-kv-mixed phase=sweep-100 offered_tps=100 workers=0 duration=30s
+time=2026-09-16T17:34:44.226+05:30 level=INFO msg="phase end" platform=neuchain run=native-kv-mixed phase=sweep-100 submitted=500 committed=500 confirmed_tps=100.0 fail_rate=0.0000 e2e_p99_ms=233.34
+time=2026-09-16T17:34:44.226+05:30 level=INFO msg="phase start" platform=neuchain run=native-kv-mixed phase=sweep-250 offered_tps=250 workers=0 duration=30s
+time=2026-09-16T17:35:14.427+05:30 level=INFO msg="phase end" platform=neuchain run=native-kv-mixed phase=sweep-250 submitted=1250 committed=1250 confirmed_tps=250.0 fail_rate=0.0000 e2e_p99_ms=196.35
+time=2026-09-16T17:35:14.427+05:30 level=INFO msg="phase start" platform=neuchain run=native-kv-mixed phase=sweep-500 offered_tps=500 workers=0 duration=30s
+time=2026-09-16T17:35:44.729+05:30 level=INFO msg="phase end" platform=neuchain run=native-kv-mixed phase=sweep-500 submitted=2500 committed=2500 confirmed_tps=500.0 fail_rate=0.0000 e2e_p99_ms=174.72
+time=2026-09-16T17:35:44.729+05:30 level=INFO msg="phase start" platform=neuchain run=native-kv-mixed phase=sweep-1000 offered_tps=1000 workers=0 duration=30s
+time=2026-09-16T17:36:15.037+05:30 level=INFO msg="phase end" platform=neuchain run=native-kv-mixed phase=sweep-1000 submitted=5000 committed=5000 confirmed_tps=1000.0 fail_rate=0.0000 e2e_p99_ms=180.22
+time=2026-09-16T17:36:15.037+05:30 level=INFO msg="phase start" platform=neuchain run=native-kv-mixed phase=sweep-2000 offered_tps=2000 workers=0 duration=30s
+time=2026-09-16T17:36:45.354+05:30 level=INFO msg="phase end" platform=neuchain run=native-kv-mixed phase=sweep-2000 submitted=10000 committed=9999 confirmed_tps=1999.8 fail_rate=0.0001 e2e_p99_ms=195.33
+time=2026-09-16T17:36:45.354+05:30 level=WARN msg="phase errors" platform=neuchain run=native-kv-mixed phase=sweep-2000 count=1 message="committed invalid"
+time=2026-09-16T17:36:45.354+05:30 level=INFO msg="phase start" platform=neuchain run=native-kv-mixed phase=sweep-3500 offered_tps=3500 workers=0 duration=30s
+time=2026-09-16T17:37:15.884+05:30 level=INFO msg="phase end" platform=neuchain run=native-kv-mixed phase=sweep-3500 submitted=17500 committed=17498 confirmed_tps=3499.6 fail_rate=0.0001 e2e_p99_ms=188.80
+time=2026-09-16T17:37:15.884+05:30 level=WARN msg="phase errors" platform=neuchain run=native-kv-mixed phase=sweep-3500 count=2 message="committed invalid"
+time=2026-09-16T17:37:15.884+05:30 level=INFO msg="phase start" platform=neuchain run=native-kv-mixed phase=sweep-5000 offered_tps=5000 workers=0 duration=30s
+time=2026-09-16T17:37:46.335+05:30 level=INFO msg="phase end" platform=neuchain run=native-kv-mixed phase=sweep-5000 submitted=25000 committed=24992 confirmed_tps=4998.4 fail_rate=0.0003 e2e_p99_ms=199.81
+time=2026-09-16T17:37:46.335+05:30 level=WARN msg="phase errors" platform=neuchain run=native-kv-mixed phase=sweep-5000 count=8 message="committed invalid"
+time=2026-09-16T17:37:46.335+05:30 level=INFO msg="phase start" platform=neuchain run=native-kv-mixed phase=sweep-7500 offered_tps=7500 workers=0 duration=30s
+time=2026-09-16T17:38:16.748+05:30 level=INFO msg="phase end" platform=neuchain run=native-kv-mixed phase=sweep-7500 submitted=37500 committed=37487 confirmed_tps=7497.4 fail_rate=0.0003 e2e_p99_ms=206.72
+time=2026-09-16T17:38:16.748+05:30 level=WARN msg="phase errors" platform=neuchain run=native-kv-mixed phase=sweep-7500 count=13 message="committed invalid"
+time=2026-09-16T17:38:16.748+05:30 level=INFO msg="phase start" platform=neuchain run=native-kv-mixed phase=sweep-10000 offered_tps=10000 workers=0 duration=30s
+time=2026-09-16T17:38:47.501+05:30 level=INFO msg="phase end" platform=neuchain run=native-kv-mixed phase=sweep-10000 submitted=50000 committed=49982 confirmed_tps=9996.4 fail_rate=0.0004 e2e_p99_ms=201.34
+time=2026-09-16T17:38:47.501+05:30 level=WARN msg="phase errors" platform=neuchain run=native-kv-mixed phase=sweep-10000 count=18 message="committed invalid"
+time=2026-09-16T17:38:47.501+05:30 level=INFO msg="phase start" platform=neuchain run=native-kv-mixed phase=hold offered_tps=9000 workers=0 duration=1m30s
+time=2026-09-16T17:40:18.659+05:30 level=INFO msg="phase end" platform=neuchain run=native-kv-mixed phase=hold submitted=585000 committed=584770 confirmed_tps=8996.5 fail_rate=0.0004 e2e_p99_ms=248.06
+time=2026-09-16T17:40:18.659+05:30 level=WARN msg="phase errors" platform=neuchain run=native-kv-mixed phase=hold count=230 message="committed invalid"
+time=2026-09-16T17:40:18.659+05:30 level=WARN msg=caveat platform=neuchain run=native-kv-mixed text="every sweep step held: the platform did not saturate within the ladder, so 10000 TPS is a lower bound on its knee, not the knee"
+time=2026-09-16T17:40:18.880+05:30 level=INFO msg="run finished" platform=neuchain run=native-kv-mixed out_dir=results/neuchain/20260916-173343 caveats=3
+results written to results/neuchain/20260916-173343
+monitoring report: results/neuchain/20260916-173343/monitoring-report.html
+run book: results/index.html

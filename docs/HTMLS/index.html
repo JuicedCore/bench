@@ -8,82 +8,107 @@
 </head>
 <body>
 <nav class="topnav">
-  <span class="brand">Bench</span>
+  <a class="brand" href="index.html">Bench</a>
   <a href="index.html" class="current">Overview</a>
+  <a href="load-path.html">Load path</a>
   <a href="fabric.html">Fabric</a>
   <a href="drunix.html">Drunix</a>
   <a href="fabric-x.html">Fabric-X</a>
   <a href="neuchain.html">NeuChain</a>
   <a href="normalization.html">Normalization</a>
+  <span class="nav-spacer"></span>
+  <button type="button" class="theme-toggle" aria-label="Toggle color theme">Theme</button>
 </nav>
 <main>
 
-<h1>Unified Blockchain Benchmark Harness
-<span class="subtitle">Fair, platform-agnostic throughput/latency benchmarking across four permissioned blockchains built on three different transaction models</span>
-</h1>
+<header class="hero">
+  <h1>Unified Blockchain Benchmark
+  <span class="subtitle">One adapter interface, one load generator, one metrics pipeline — fair throughput and latency across Fabric, Drunix, Fabric-X, and NeuChain.</span></h1>
+</header>
 
-<p>One adapter interface, one load generator, one metrics pipeline drive every platform below. Normalized workloads make the cross-platform comparison possible; each platform's own native workload separately shows its ceiling. Every methodology decision behind these numbers is written up on its own page &mdash; start with whichever platform you care about, or read <a href="normalization.html">how the four are made comparable</a> first if you want the full picture before the details.</p>
+<p class="lede">Normalized workloads make cross-platform comparison possible. Native caveats (state DB, crypto, read semantics) are recorded in every run’s manifest. Start with a platform card, or read <a href="load-path.html">how load becomes a ledger write</a> and <a href="normalization.html">how fairness is enforced</a>.</p>
 
-<h2>The platforms</h2>
+<h2>Platforms</h2>
 <div class="platform-grid">
   <a class="platform-card" href="fabric.html">
     <h3>Hyperledger Fabric</h3>
-    <p>Execute-Order-Validate + chaincode. Raft (CFT) or SmartBFT (BFT) ordering.</p>
+    <p>EOV + chaincode. Raft (CFT) or SmartBFT (BFT). Gateway gRPC → kvstore.</p>
   </a>
   <a class="platform-card" href="drunix.html">
     <h3>Drunix</h3>
-    <p>NPCI's fork of Fabric 2.5.x. Same EOV model, disaggregated peer, Raft only.</p>
+    <p>Fabric 2.5 fork. Lite Peer / Committing Peer split. Writes via JSON wrap.</p>
   </a>
   <a class="platform-card" href="fabric-x.html">
     <h3>Fabric-X</h3>
-    <p>EOV without chaincode &mdash; UTXO/Token-SDK model, Arma sharded BFT ordering.</p>
+    <p>EOV without chaincode. Native Arma gRPC + Postgres committer.</p>
   </a>
   <a class="platform-card" href="neuchain.html">
     <h3>NeuChain</h3>
-    <p>Ordering-free Execute-Validate. Agreement via deterministic execution, no orderer.</p>
+    <p>Ordering-free EV. ZMQ + YCSB. Image exists; setup can still fail.</p>
+  </a>
+  <a class="platform-card" href="load-path.html">
+    <h3>Load path</h3>
+    <p>Generator → adapter → ports → components. Full start-to-finish map.</p>
   </a>
 </div>
 
 <h2>At a glance</h2>
+<div class="table-wrap">
 <table>
-<tr><th>Platform</th><th>Model</th><th>Consensus</th></tr>
-<tr><td><strong>Hyperledger Fabric</strong> (<code>fabric-cft</code>, <code>fabric-bft</code>)</td><td>EOV + chaincode</td><td>Raft / SmartBFT</td></tr>
-<tr><td><strong>Drunix</strong> (NPCI fork of Fabric 2.5.x)</td><td>EOV + chaincode</td><td>Raft (CFT only)</td></tr>
-<tr><td><strong>Fabric-X</strong></td><td>EOV, no chaincode (FSC + Token SDK)</td><td>Arma (sharded BFT)</td></tr>
-<tr><td><strong>NeuChain</strong></td><td>Ordering-free Execute-Validate</td><td>deterministic</td></tr>
+<tr><th>Platform</th><th>Model</th><th>Client path</th><th>Consensus</th></tr>
+<tr><td><code>fabric-cft</code> / <code>fabric-bft</code></td><td>EOV + chaincode</td><td>Fabric Gateway gRPC</td><td>Raft / SmartBFT</td></tr>
+<tr><td><code>drunix</code></td><td>EOV + chaincode</td><td>Gateway on Lite Peer; finality on CP</td><td>Raft</td></tr>
+<tr><td><code>fabricx</code></td><td>EOV, no chaincode</td><td>Arma broadcast + deliver gRPC</td><td>Arma (sharded BFT)</td></tr>
+<tr><td><code>neuchain</code></td><td>Ordering-free EV</td><td>ZMQ PUB submit + tip poll</td><td>Deterministic execution</td></tr>
 </table>
+</div>
 
-<h2>Live-test status</h2>
+<h2>Live status <span class="mute">(local-32gb campaign 2026-09-16)</span></h2>
+<div class="stat-grid">
+  <div class="stat"><div class="k">fabricx hold</div><div class="v">6 750</div><div class="n">confirmed TPS · knee ~7 500</div></div>
+  <div class="stat"><div class="k">fabric-cft hold</div><div class="v">1 545</div><div class="n">confirmed TPS · knee ~2 000</div></div>
+  <div class="stat"><div class="k">drunix hold</div><div class="v">450</div><div class="n">confirmed TPS · knee ~500</div></div>
+  <div class="stat"><div class="k">fabric-bft</div><div class="v">OOM</div><div class="n">peer exit 137 mid-sweep</div></div>
+</div>
+
+<div class="table-wrap">
 <table>
-<tr><th>Platform</th><th>Adapter</th><th>Live-tested</th><th>Notes</th></tr>
-<tr><td><code>fabric-cft</code> (Raft)</td><td><span class="badge ok">done</span></td><td><span class="badge ok">done</span> smoke + probe-sweep (Fabric 2.5.16)</td><td>e2e p50 165&ndash;565&nbsp;ms across the sweep</td></tr>
-<tr><td><code>fabric-bft</code> (SmartBFT)</td><td><span class="badge ok">done</span></td><td><span class="badge ok">done</span> smoke (Fabric 3.1.5, 4 orderers)</td><td>&asymp; cft at low load once batching is pinned</td></tr>
-<tr><td><code>drunix</code></td><td><span class="badge ok">done</span> (wraps fabric; CP block-event finality)</td><td><span class="badge warn">deploy + lifecycle</span> verified live</td><td><strong>write path blocked upstream</strong> &mdash; sparse-block format panics the Committing Peer on vanilla-SDK writes; see <a href="drunix.html">the Drunix page</a></td></tr>
-<tr><td><code>fabricx</code> (token REST)</td><td><span class="badge ok">done</span>, matches verified <code>fabric-x-samples</code> API</td><td><span class="badge warn">token transfer only</span></td><td>normalized <code>kv-*</code> needs the custom <code>/kv</code> FSC view (stub + spec) &mdash; live-devnet gated; see <a href="fabric-x.html">the Fabric-X page</a></td></tr>
-<tr><td><code>neuchain</code> (pure-Go ZMQ+protobuf+RSA)</td><td><span class="badge ok">done</span>, unit-tested</td><td><span class="badge bad">not yet</span></td><td>server binaries need a ~1&nbsp;h C++ build &mdash; compute gated; see <a href="neuchain.html">the NeuChain page</a></td></tr>
-<tr><td>GCP campaign</td><td><code>scripts/gcp-run.sh</code> + Terraform ready</td><td><span class="badge bad">not yet</span></td><td>credential gated &mdash; needs a GCP project</td></tr>
+<tr><th>Platform</th><th>Adapter</th><th>Live</th><th>Notes</th></tr>
+<tr><td><code>fabric-cft</code></td><td><span class="badge ok">done</span></td><td><span class="badge ok">probe-sweep</span></td><td>LevelDB held; hold past soft knee → high p99</td></tr>
+<tr><td><code>fabric-bft</code></td><td><span class="badge ok">done</span></td><td><span class="badge bad">OOM</span></td><td>4 orderers thin the memory budget; excluded</td></tr>
+<tr><td><code>drunix</code></td><td><span class="badge ok">done</span></td><td><span class="badge ok">probe-sweep</span></td><td>Writes work (JSON wrap). State DB = Yugabyte (caveat)</td></tr>
+<tr><td><code>fabricx</code></td><td><span class="badge ok">native gRPC</span></td><td><span class="badge ok">probe-sweep</span></td><td>Highest ceiling on this host; Postgres caveat</td></tr>
+<tr><td><code>neuchain</code></td><td><span class="badge ok">done</span></td><td><span class="badge warn">setup fail</span></td><td>Image present; ZMQ dial to <code>:5001</code> reset — no knee yet</td></tr>
+<tr><td>GCP campaign</td><td><code>scripts/gcp-run.sh</code></td><td><span class="badge bad">not run</span></td><td>Needs a GCP project</td></tr>
 </table>
+</div>
 
-<h2>Core ideas that apply to every platform</h2>
+<h2>Core ideas</h2>
 <ul>
-<li><strong>T1 / T2 / T3</strong> &mdash; submit-entered / platform-acknowledged / committed-in-block. Throughput and headline latency always use T3. Full explanation, and why T2 doesn't mean the same thing on all four platforms, is on <a href="normalization.html">the normalization page</a>.</li>
-<li><strong>Probe-and-sweep</strong> &mdash; find floor latency, step load up to saturation, then hold at 90% of the detected knee to measure stability.</li>
-<li><strong>Fairness by construction</strong> &mdash; identical configuration (state DB, orderer batch params, workload, seed) for every normalized run; each platform's own native metrics are recorded but never used in a cross-platform comparison table.</li>
-<li><strong>Every run writes a manifest</strong> capturing every fairness lever, every version, the git SHA, and any caveats &mdash; so two runs that disagree can always be explained.</li>
+  <li><strong>T1 / T2 / T3</strong> — schedule/submit-enter / platform ack / committed. Headlines use <strong>T3</strong>. NeuChain’s T2 is local send only — not comparable.</li>
+  <li><strong>Probe-and-sweep</strong> — floor latency → shared TPS ladder → hold at 90% of the measured knee.</li>
+  <li><strong>Fairness by construction</strong> — identical normalized YAML, seed, windows, resource <em>budget</em>; caveats when a lever cannot be held.</li>
+  <li><strong>Manifest every run</strong> — versions, crypto, state DB, batch params, git SHA, caveats.</li>
 </ul>
 
 <h2>Quick start</h2>
-<pre><code>./bin/benchrunner run --config configs/quick-smoke.yaml --platform mock   # no network needed
+<pre><code># full campaign (recommended)
+make bench PROFILE=local-32gb \
+  PLATFORMS="fabric-cft fabric-bft drunix fabricx neuchain" \
+  CONFIGS=configs/normalized/probe-sweep.yaml
 
-./bin/benchrunner setup --platform fabric-cft --profile local
+# single platform
+bash deploy/docker/fabric-cft/up.sh local-32gb
 set -a; source deploy/docker/fabric-cft/connection.env; set +a
-./bin/benchrunner run --config configs/probe-sweep.yaml --platform fabric-cft
-./bin/benchrunner teardown --platform fabric-cft</code></pre>
+./bin/benchrunner run --config configs/normalized/quick-smoke.yaml \
+  --platform fabric-cft --profile local-32gb
+bash deploy/docker/fabric-cft/down.sh</code></pre>
 
 <footer class="pagefoot">
-  <span>Source: <code>README.md</code>, <code>docs/REMAINING-WORK.md</code></span>
-  <span><a href="normalization.html">Read next: how we normalize across all four &rarr;</a></span>
+  <span>Sources: <code>README.md</code>, <code>CONFIGS.md</code>, <code>COMMANDS.md</code></span>
+  <span><a href="load-path.html">Read next: load path →</a></span>
 </footer>
 </main>
+<script src="site.js"></script>
 </body>
 </html>

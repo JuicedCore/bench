@@ -47,8 +47,8 @@ func newTransport(parent context.Context, cfg *Config, sign func([]byte) ([]byte
 		zmq4.WithAutomaticReconnect(true),
 	}
 	for _, ep := range cfg.BlockServers {
-		s := zmq4.NewPub(ctx, opts...)
-		if err := s.Dial(tcp(ep)); err != nil {
+		s, err := dialZMQ(ctx, func() zmq4.Socket { return zmq4.NewPub(ctx, opts...) }, tcp(ep), cfg.DialTimeout)
+		if err != nil {
 			t.Close()
 			return nil, fmt.Errorf("neuchain: dial block server submit socket %s: %w (is the neuchain stack up? docker ps | grep block-server)", ep, err)
 		}
@@ -56,11 +56,12 @@ func newTransport(parent context.Context, cfg *Config, sign func([]byte) ([]byte
 		t.pubEP = append(t.pubEP, ep)
 	}
 
-	t.req = zmq4.NewReq(ctx, opts...)
-	if err := t.req.Dial(tcp(cfg.QueryEndpoint)); err != nil {
+	req, err := dialZMQ(ctx, func() zmq4.Socket { return zmq4.NewReq(ctx, opts...) }, tcp(cfg.QueryEndpoint), cfg.DialTimeout)
+	if err != nil {
 		t.Close()
 		return nil, fmt.Errorf("neuchain: dial query socket %s: %w (the block server's query port is normally 7003)", cfg.QueryEndpoint, err)
 	}
+	t.req = req
 	t.queryEP = cfg.QueryEndpoint
 
 	// PUB is a slow joiner: give the SUB side a moment to complete the
@@ -184,4 +185,34 @@ func tcp(hostPort string) string {
 		return hostPort
 	}
 	return "tcp://" + hostPort
+}
+
+// dialZMQ retries Dial until deadline. NeuChain's SUB/REP sockets can RST a
+// ZMTP greeting for a few seconds after the TCP port is already open.
+func dialZMQ(ctx context.Context, newSock func() zmq4.Socket, addr string, deadline time.Duration) (zmq4.Socket, error) {
+	if deadline <= 0 {
+		deadline = 10 * time.Second
+	}
+	end := time.Now().Add(deadline)
+	var last error
+	for {
+		s := newSock()
+		err := s.Dial(addr)
+		if err == nil {
+			return s, nil
+		}
+		last = err
+		_ = s.Close()
+		if ctx.Err() != nil {
+			return nil, ctx.Err()
+		}
+		if !time.Now().Before(end) {
+			return nil, last
+		}
+		select {
+		case <-time.After(250 * time.Millisecond):
+		case <-ctx.Done():
+			return nil, ctx.Err()
+		}
+	}
 }

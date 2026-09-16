@@ -80,6 +80,20 @@ record() {
     >> "$summary"
 }
 
+# yaml_top <file> <key> — first top-level YAML scalar for <key>, comments and
+# surrounding whitespace stripped. Empty if the key is absent. Not a YAML
+# parser: only for column-0 keys such as platform: / normalized:.
+yaml_top() {
+  local file="$1" key="$2" line
+  line="$(grep -E "^${key}:" "$file" 2>/dev/null | head -1 || true)"
+  [ -n "$line" ] || return 0
+  line="${line#*:}"
+  line="${line%%#*}"
+  line="${line#"${line%%[![:space:]]*}"}"
+  line="${line%"${line##*[![:space:]]}"}"
+  printf '%s\n' "$line"
+}
+
 # print_summary <campaign-dir> - render SUMMARY.tsv as a table, if any rows
 # were recorded, plus a pointer to the per-step logs and captures.
 print_summary() {

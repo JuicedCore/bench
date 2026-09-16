@@ -1,0 +1,31 @@
+time=2026-09-16T16:54:10.966+05:30 level=INFO msg="run starting" workload=kv-mixed profile=local-32gb normalized=false out_dir=results/fabric-bft/20260916-165410
+time=2026-09-16T16:54:10.966+05:30 level=WARN msg=caveat text="kv-mixed native: Fabric/Drunix/Fabric-X reads are Evaluate/QueryService (not ordered); NeuChain reads are committed transactions. Headline TPS blends two paths."
+time=2026-09-16T16:54:10.966+05:30 level=INFO msg="adapter setup"
+time=2026-09-16T16:54:10.967+05:30 level=DEBUG msg="gateway connection configured" component=adapter endpoint=localhost:7051 tls_server_name=peer0.org1.example.com msp_id=Org1MSP channel=mychannel chaincode=kvstore
+time=2026-09-16T16:54:11.004+05:30 level=DEBUG msg="block event stream open" component=adapter stream=filtered-block-events endpoint=localhost:7051 channel=mychannel
+time=2026-09-16T16:54:11.008+05:30 level=INFO msg="setup complete" component=adapter gateway=localhost:7051 finality_from=localhost:7051
+time=2026-09-16T16:54:11.008+05:30 level=INFO msg="phase start" phase=probe offered_tps=10 workers=0 duration=30s
+time=2026-09-16T16:54:41.794+05:30 level=DEBUG msg="phase shorter than warmup+cooldown; measuring whole phase" phase=probe
+time=2026-09-16T16:54:41.796+05:30 level=INFO msg="phase end" phase=probe submitted=300 committed=300 confirmed_tps=10.0 fail_rate=0.0000 e2e_p99_ms=1022.98
+time=2026-09-16T16:54:41.796+05:30 level=INFO msg="phase start" phase=sweep-100 offered_tps=100 workers=0 duration=1m0s
+time=2026-09-16T16:55:42.794+05:30 level=INFO msg="phase end" phase=sweep-100 submitted=1500 committed=1500 confirmed_tps=100.0 fail_rate=0.0000 e2e_p99_ms=1033.73
+time=2026-09-16T16:55:42.794+05:30 level=INFO msg="phase start" phase=sweep-250 offered_tps=250 workers=0 duration=1m0s
+time=2026-09-16T16:56:43.335+05:30 level=INFO msg="phase end" phase=sweep-250 submitted=3750 committed=3750 confirmed_tps=250.0 fail_rate=0.0000 e2e_p99_ms=1068.03
+time=2026-09-16T16:56:43.335+05:30 level=INFO msg="phase start" phase=sweep-500 offered_tps=500 workers=0 duration=1m0s
+time=2026-09-16T16:57:44.013+05:30 level=INFO msg="phase end" phase=sweep-500 submitted=7500 committed=7500 confirmed_tps=500.0 fail_rate=0.0000 e2e_p99_ms=1088.51
+time=2026-09-16T16:57:44.013+05:30 level=INFO msg="phase start" phase=sweep-1000 offered_tps=1000 workers=0 duration=1m0s
+time=2026-09-16T16:58:44.794+05:30 level=INFO msg="phase end" phase=sweep-1000 submitted=15000 committed=15000 confirmed_tps=1000.0 fail_rate=0.0000 e2e_p99_ms=599.04
+time=2026-09-16T16:58:44.794+05:30 level=INFO msg="phase start" phase=sweep-2000 offered_tps=2000 workers=0 duration=1m0s
+time=2026-09-16T16:59:45.886+05:30 level=INFO msg="phase end" phase=sweep-2000 submitted=30000 committed=30000 confirmed_tps=2000.0 fail_rate=0.0000 e2e_p99_ms=385.28
+time=2026-09-16T16:59:45.886+05:30 level=INFO msg="phase start" phase=sweep-3500 offered_tps=3500 workers=0 duration=1m0s
+time=2026-09-16T17:00:52.150+05:30 level=INFO msg="phase end" phase=sweep-3500 submitted=52500 committed=45968 confirmed_tps=3064.5 fail_rate=0.1244 e2e_p99_ms=18366.46
+time=2026-09-16T17:00:52.150+05:30 level=WARN msg="phase errors" phase=sweep-3500 count=6532 message="not sent: N transactions already in flight (platform is not finalizing)"
+time=2026-09-16T17:00:52.150+05:30 level=INFO msg="phase start" phase=sweep-5000 offered_tps=5000 workers=0 duration=1m0s
+time=2026-09-16T17:02:01.321+05:30 level=INFO msg="phase end" phase=sweep-5000 submitted=75000 committed=38761 confirmed_tps=2584.1 fail_rate=0.4832 e2e_p99_ms=28950.53
+time=2026-09-16T17:02:01.321+05:30 level=WARN msg="phase errors" phase=sweep-5000 count=36236 message="not sent: N transactions already in flight (platform is not finalizing)"
+time=2026-09-16T17:02:01.321+05:30 level=WARN msg="phase errors" phase=sweep-5000 count=3 message="submit to orderer: rpc error: code = Unavailable desc = insufficient number of orderers could successfully process transaction to satisfy quorum requirement\nDetails:\n  - Address: orderer2.example.com:7052\n    MspId: OrdererMSP\n    Message: received unsuccessful response from orderer: status=SERVICE_UNAVAILABLE, info=failed to submit request: request already processed\n  - Address: orderer3.example.com:7056\n    MspId: OrdererMSP\n    Message: received unsuccessful response from orderer: status=SERVICE_UNAVAILABLE, info=failed to submit request: request already processed"
+time=2026-09-16T17:02:01.321+05:30 level=INFO msg="phase start" phase=hold offered_tps=1800 workers=0 duration=5m0s
+time=2026-09-16T17:07:02.970+05:30 level=INFO msg="phase end" phase=hold submitted=459000 committed=459000 confirmed_tps=1800.0 fail_rate=0.0000 e2e_p99_ms=434.69
+time=2026-09-16T17:07:02.970+05:30 level=WARN msg=caveat text="sweep aborted early after 2 consecutive failed steps; 2 higher step(s) were never offered"
+time=2026-09-16T17:07:03.115+05:30 level=WARN msg=caveat text="native metrics scrape of http://localhost:9443/metrics failed: scrape http://localhost:9443/metrics: parser panic: Invalid name validation scheme requested: unset (informational metrics only; harness numbers unaffected)"
+time=2026-09-16T17:07:03.119+05:30 level=INFO msg="run finished" out_dir=results/fabric-bft/20260916-165410 caveats=3

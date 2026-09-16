@@ -1,0 +1,1085 @@
+[run-all 12:08:46] campaign dir: /home/chad/Projects/bench/results/_campaigns/20260916T063846Z-local-32gb
+==================== preflight (local-32gb) ====================
+== tooling ==
+  ok    go       go version go1.26.5 linux/amd64
+  ok    docker   Docker version 29.7.2, build a7dcaa6
+  ok    git      git version 2.34.1
+  ok    curl     curl 7.81.0 (x86_64-pc-linux-gnu) libcurl/7.81.0 OpenSSL/3.0.2 zlib/1.2.11 brotli/1.0.9 zstd/1.4.8 libidn2/2.3.2 libpsl/0.21.0 (+libidn2/2.3.2) libssh/0.9.6/openssl/zlib nghttp2/1.43.0 librtmp/2.3 OpenLDAP/2.5.18
+  ok    jq       jq-1.7.1
+  ok    python3  Python 3.10.12
+  ok    go 1.26.5 satisfies go.mod (1.26.5)
+  ok    docker compose plugin
+  ok    docker daemon reachable
+  ok    python3 yaml
+  ok    python3 matplotlib
+[1;33m  WARN  no passwordless sudo - run-all.sh will prompt, or skip the page-cache drop[0m
+
+== host vs profile 'local-32gb' ==
+  host:    22 cores, 23.5 GB RAM (17.1 GB available), 860 GB disk free
+  profile: 18 cores + 2 loadgen + 1 monitoring = 21.0 cores
+           20 GB platform + 2 GB loadgen + 1 GB monitoring = 23.0 GB
+  ok    cores sufficient
+  ok    total RAM sufficient
+[1;33m  WARN  only 17.1 GB available of the 23.0 GB needed - close other applications before running[0m
+  ok    not swapping
+  ok    disk headroom
+
+[1;33mRUNNABLE, but 2 warning(s) - numbers may not be trustworthy[0m
+[run-all 12:08:47] WARN: preflight warnings above - numbers from this host may not be trustworthy
+==================== fabric-cft : configs/normalized/probe-sweep.yaml ====================
+-- isolation: prune stopped containers + drop page cache
+   (page cache not dropped: needs passwordless sudo)
+-- deploy fabric-cft
+[deploy 12:08:50] WARN: fabric-samples is at nothing, want 134c582ac1c105965b3d554874a28fc80ec592f1 - refetching
+[deploy 12:08:50] fetching fabric-samples @ 134c582ac1c105965b3d554874a28fc80ec592f1 (attempt 1)
+fatal: detected dubious ownership in repository at '/home/chad/Projects/bench/deploy/docker/.cache/fabric-samples'
+To add an exception for this directory, call:
+
+	git config --global --add safe.directory /home/chad/Projects/bench/deploy/docker/.cache/fabric-samples
+[deploy 12:08:55] fetching fabric-samples @ 134c582ac1c105965b3d554874a28fc80ec592f1 (attempt 2)
+fatal: detected dubious ownership in repository at '/home/chad/Projects/bench/deploy/docker/.cache/fabric-samples'
+To add an exception for this directory, call:
+
+	git config --global --add safe.directory /home/chad/Projects/bench/deploy/docker/.cache/fabric-samples
+[deploy 12:09:00] fetching fabric-samples @ 134c582ac1c105965b3d554874a28fc80ec592f1 (attempt 3)
+fatal: detected dubious ownership in repository at '/home/chad/Projects/bench/deploy/docker/.cache/fabric-samples'
+To add an exception for this directory, call:
+
+	git config --global --add safe.directory /home/chad/Projects/bench/deploy/docker/.cache/fabric-samples
+[deploy 12:09:05] ERROR: could not fetch https://github.com/hyperledger/fabric-samples.git @ 134c582ac1c105965b3d554874a28fc80ec592f1
+[deploy 12:09:05] ERROR: up.sh failed (exit 1) near line 1: SAMPLES="$(fabric_samples_bootstrap "$FABRIC_VERSION" "$FABRIC_CA_VERSION" "$SAMPLES_REF")"
+
+----- docker ps -a (matching /^(peer|orderer|ca_|dev-peer)/) -----
+NAMES                              STATUS                          IMAGE
+
+(full capture of a live network: scripts/capture.sh <out-dir>)
+
+[run-all 12:09:06] WARN: deploy failed for fabric-cft: [deploy 12:09:05] ERROR: up.sh failed (exit 1) near line 1: SAMPLES="$(fabric_samples_bootstrap "$FABRIC_VERSION" "$FABRIC_CA_VERSION" "$SAMPLES_REF")"
+capture: 9 containers -> /home/chad/Projects/bench/results/_campaigns/20260916T063846Z-local-32gb/fabric-cft/probe-sweep/capture
+[0;34mUsing docker and docker-compose[0m
+[0;34mStopping network[0m
+Error response from daemon: get docker_orderer.example.com: no such volume
+Error response from daemon: get docker_peer0.org1.example.com: no such volume
+Error response from daemon: get docker_peer0.org2.example.com: no such volume
+[0;34mRemoving remaining containers[0m
+[0;34mRemoving generated chaincode docker images[0m
+[deploy 12:09:15] WARN: could not drop page cache (needs root); continuing
+[deploy 12:09:15] fabric-cft down
+==================== fabric-bft : configs/normalized/probe-sweep.yaml ====================
+-- isolation: prune stopped containers + drop page cache
+   (page cache not dropped: needs passwordless sudo)
+-- deploy fabric-bft
+[deploy 12:09:18] WARN: fabric-samples is at nothing, want 134c582ac1c105965b3d554874a28fc80ec592f1 - refetching
+[deploy 12:09:18] fetching fabric-samples @ 134c582ac1c105965b3d554874a28fc80ec592f1 (attempt 1)
+fatal: detected dubious ownership in repository at '/home/chad/Projects/bench/deploy/docker/.cache/fabric-samples'
+To add an exception for this directory, call:
+
+	git config --global --add safe.directory /home/chad/Projects/bench/deploy/docker/.cache/fabric-samples
+[deploy 12:09:23] fetching fabric-samples @ 134c582ac1c105965b3d554874a28fc80ec592f1 (attempt 2)
+fatal: detected dubious ownership in repository at '/home/chad/Projects/bench/deploy/docker/.cache/fabric-samples'
+To add an exception for this directory, call:
+
+	git config --global --add safe.directory /home/chad/Projects/bench/deploy/docker/.cache/fabric-samples
+[deploy 12:09:28] fetching fabric-samples @ 134c582ac1c105965b3d554874a28fc80ec592f1 (attempt 3)
+fatal: detected dubious ownership in repository at '/home/chad/Projects/bench/deploy/docker/.cache/fabric-samples'
+To add an exception for this directory, call:
+
+	git config --global --add safe.directory /home/chad/Projects/bench/deploy/docker/.cache/fabric-samples
+[deploy 12:09:33] ERROR: could not fetch https://github.com/hyperledger/fabric-samples.git @ 134c582ac1c105965b3d554874a28fc80ec592f1
+[deploy 12:09:33] ERROR: up.sh failed (exit 1) near line 1: SAMPLES="$(fabric_samples_bootstrap "$FABRIC_VERSION" "$FABRIC_CA_VERSION" "$SAMPLES_REF")"
+
+----- docker ps -a (matching /^(peer|orderer|ca_|dev-peer)/) -----
+NAMES                              STATUS                          IMAGE
+
+(full capture of a live network: scripts/capture.sh <out-dir>)
+
+[run-all 12:09:33] WARN: deploy failed for fabric-bft: [deploy 12:09:33] ERROR: up.sh failed (exit 1) near line 1: SAMPLES="$(fabric_samples_bootstrap "$FABRIC_VERSION" "$FABRIC_CA_VERSION" "$SAMPLES_REF")"
+capture: 9 containers -> /home/chad/Projects/bench/results/_campaigns/20260916T063846Z-local-32gb/fabric-bft/probe-sweep/capture
+[0;34mUsing docker and docker-compose[0m
+[0;34mStopping network[0m
+Error response from daemon: get docker_orderer.example.com: no such volume
+Error response from daemon: get docker_peer0.org1.example.com: no such volume
+Error response from daemon: get docker_peer0.org2.example.com: no such volume
+[0;34mRemoving remaining containers[0m
+[0;34mRemoving generated chaincode docker images[0m
+[deploy 12:09:42] WARN: could not drop page cache (needs root); continuing
+[deploy 12:09:42] fabric-bft down
+==================== drunix : configs/normalized/probe-sweep.yaml ====================
+-- isolation: prune stopped containers + drop page cache
+   (page cache not dropped: needs passwordless sudo)
+-- deploy drunix
+[deploy 12:09:45] drunix state_db=leveldb
+[deploy 12:09:46] pinning orderer batch in configtx.yaml: timeout=1s maxMsgCount=100 preferred=2 MB absolute=10 MB
+[deploy 12:09:46] drunix state DB: yugabyte
+[0;34mUsing docker and docker-compose[0m
+[0;34mStopping network[0m
+[0;34mRemoving remaining containers[0m
+Error response from daemon: get compose_orderer.example.com: no such volume
+Error response from daemon: get compose_peer0.org1.example.com: no such volume
+Error response from daemon: get compose_peer1.org1.example.com: no such volume
+Error response from daemon: get compose_peer2.org1.example.com: no such volume
+Error response from daemon: get compose_peer0.org2.example.com: no such volume
+Error response from daemon: get compose_peer1.org2.example.com: no such volume
+Error response from daemon: get compose_peer2.org2.example.com: no such volume
+[0;34mRemoving generated chaincode docker images[0m
+[deploy 12:09:51] WARN: could not drop page cache (needs root); continuing
+[0;34mUsing docker and docker-compose[0m
+[0;34mCreating channel 'mychannel'.[0m
+[0;34mIf network is not up, starting nodes with CLI timeout of '5' tries and CLI delay of '3' seconds and using database 'yugabyte with crypto from 'cryptogen'[0m
+[0;34mBringing up network[0m
+[0;34mLOCAL_VERSION=v2.5.16[0m
+[0;34mDOCKER_IMAGE_VERSION=1.0.0[0m
+[1;33mLocal fabric binaries and docker images are out of sync. This may cause problems.[0m
+/home/chad/Projects/bench/deploy/docker/drunix/.cache/drunix/drunix-network/test-network/bin/cryptogen
+[0;34mGenerating certificates using cryptogen tool[0m
+[0;34mCreating Org1 Identities[0m
++ cryptogen generate --config=./organizations/cryptogen/crypto-config-org1.yaml --output=organizations
+org1.example.com
++ res=0
+[0;34mCreating Org2 Identities[0m
++ cryptogen generate --config=./organizations/cryptogen/crypto-config-org2.yaml --output=organizations
+org2.example.com
++ res=0
+[0;34mCreating Orderer Org Identities[0m
++ cryptogen generate --config=./organizations/cryptogen/crypto-config-orderer.yaml --output=organizations
++ res=0
+[0;34mGenerating CCP files for Org1 and Org2[0m
+ Network drunix_test Creating 
+ Network drunix_test Creating 
+ Network drunix_test Created 
+ Network drunix_test Created 
+ Container yugabyte-org2 Creating 
+ Container yugabyte-org1 Creating 
+ Container hlf_keydb_org1msp Creating 
+ Container hlf_keydb_org2msp Creating 
+ Container hlf_keydb_org1msp Created 
+ Container hlf_keydb_org2msp Created 
+ Container yugabyte-org2 Created 
+ Container yugabyte-org1 Created 
+ Container yugabyte-org2 Starting 
+ Container yugabyte-org1 Starting 
+ Container hlf_keydb_org1msp Starting 
+ Container hlf_keydb_org2msp Starting 
+ Container hlf_keydb_org1msp Started 
+ Container hlf_keydb_org2msp Started 
+ Container yugabyte-org1 Started 
+ Container yugabyte-org2 Started 
+time="2026-09-16T12:10:23+05:30" level=warning msg="a network with name drunix_test exists but was not created for project \"compose\".\nSet `external: true` to use an existing network"
+ Container vs1.org2 Creating 
+ Volume compose_orderer.example.com Creating 
+ Volume compose_orderer.example.com Creating 
+ Volume compose_peer0.org1.example.com Creating 
+ Volume compose_peer0.org1.example.com Creating 
+ Volume compose_peer0.org2.example.com Creating 
+ Volume compose_peer0.org2.example.com Creating 
+ Volume compose_peer1.org1.example.com Creating 
+ Volume compose_peer1.org1.example.com Creating 
+ Volume compose_peer1.org2.example.com Creating 
+ Volume compose_peer1.org2.example.com Creating 
+ Container vs1.org1 Creating 
+ Volume compose_orderer.example.com Created 
+ Volume compose_orderer.example.com Created 
+ Container orderer.example.com Creating 
+ Volume compose_peer0.org1.example.com Created 
+ Volume compose_peer0.org1.example.com Created 
+ Container lp1.org1 Creating 
+ Volume compose_peer0.org2.example.com Created 
+ Volume compose_peer0.org2.example.com Created 
+ Container lp1.org2 Creating 
+ Volume compose_peer1.org1.example.com Created 
+ Volume compose_peer1.org1.example.com Created 
+ Container cp.org1 Creating 
+ Volume compose_peer1.org2.example.com Created 
+ Volume compose_peer1.org2.example.com Created 
+ Container cp.org2 Creating 
+ Container vs1.org2 Created 
+ Container vs1.org1 Created 
+ Container cp.org2 Created 
+ Container cp.org1 Created 
+ Container lp1.org1 Created 
+ Container lp1.org2 Created 
+ Container orderer.example.com Created 
+ Container lp1.org1 Starting 
+ Container lp1.org2 Starting 
+ Container cp.org1 Starting 
+ Container vs1.org2 Starting 
+ Container vs1.org1 Starting 
+ Container orderer.example.com Starting 
+ Container cp.org2 Starting 
+ Container lp1.org1 Started 
+ Container lp1.org2 Started 
+ Container orderer.example.com Started 
+ Container cp.org2 Started 
+ Container cp.org1 Started 
+ Container vs1.org1 Started 
+ Container vs1.org2 Started 
+CONTAINER ID   IMAGE                                 COMMAND                  CREATED          STATUS                          PORTS                                                                                                                                                           NAMES
+9e8b885c198d   npcioss/drunix-peer:1.0.0             "peer node start"        1 second ago     Up Less than a second           0.0.0.0:9061->9061/tcp, [::]:9061->9061/tcp, 7051/tcp, 0.0.0.0:9455->9455/tcp, [::]:9455->9455/tcp                                                              cp.org2
+6ddb80efdc14   npcioss/drunix-peer:1.0.0             "peer node start"        1 second ago     Up Less than a second           0.0.0.0:7061->7061/tcp, [::]:7061->7061/tcp, 7051/tcp, 0.0.0.0:9454->9454/tcp, [::]:9454->9454/tcp                                                              cp.org1
+b322b52161db   npcioss/drunix-peer:1.0.0             "peer node start"        1 second ago     Up Less than a second           0.0.0.0:9051->9051/tcp, [::]:9051->9051/tcp, 7051/tcp, 0.0.0.0:9445->9445/tcp, [::]:9445->9445/tcp                                                              lp1.org2
+ad77ef6ca5bb   npcioss/drunix-peer:1.0.0             "peer node start"        1 second ago     Up Less than a second           0.0.0.0:7051->7051/tcp, [::]:7051->7051/tcp, 0.0.0.0:9444->9444/tcp, [::]:9444->9444/tcp                                                                        lp1.org1
+7d8a963308ad   npcioss/drunix-orderer:1.0.0          "orderer"                1 second ago     Up Less than a second           0.0.0.0:7050->7050/tcp, [::]:7050->7050/tcp, 0.0.0.0:7053->7053/tcp, [::]:7053->7053/tcp, 0.0.0.0:9443->9443/tcp, [::]:9443->9443/tcp                           orderer.example.com
+121d52b2990f   npcioss/drunix-vscc:1.0.0             "vscc node start"        1 second ago     Up Less than a second           0.0.0.0:7071->7071/tcp, [::]:7071->7071/tcp, 7051/tcp, 0.0.0.0:9464->9464/tcp, [::]:9464->9464/tcp                                                              vs1.org1
+dc5a0b5a8c22   npcioss/drunix-vscc:1.0.0             "vscc node start"        1 second ago     Up Less than a second           0.0.0.0:9071->9071/tcp, [::]:9071->9071/tcp, 7051/tcp, 0.0.0.0:9465->9465/tcp, [::]:9465->9465/tcp                                                              vs1.org2
+297d04ba2045   yugabytedb/yugabyte:2025.2.0.0-b131   "/sbin/tini -- bin/y…"   31 seconds ago   Up 31 seconds                   6379/tcp, 7000/tcp, 7100/tcp, 7200/tcp, 9000/tcp, 9042/tcp, 9100/tcp, 10100/tcp, 11000/tcp, 12000/tcp, 0.0.0.0:5433->5433/tcp, [::]:5433->5433/tcp, 18018/tcp   yugabyte-org1
+56385c293484   eqalpha/keydb                         "docker-entrypoint.s…"   31 seconds ago   Up 31 seconds                   0.0.0.0:6389->6379/tcp, [::]:6389->6379/tcp                                                                                                                     hlf_keydb_org2msp
+ca996eae0608   eqalpha/keydb                         "docker-entrypoint.s…"   31 seconds ago   Up 31 seconds                   0.0.0.0:6479->6379/tcp, [::]:6479->6379/tcp                                                                                                                     hlf_keydb_org1msp
+50839c70d055   yugabytedb/yugabyte:2025.2.0.0-b131   "/sbin/tini -- bin/y…"   31 seconds ago   Up 31 seconds                   6379/tcp, 7000/tcp, 7100/tcp, 7200/tcp, 9000/tcp, 9042/tcp, 9100/tcp, 10100/tcp, 11000/tcp, 12000/tcp, 18018/tcp, 0.0.0.0:5123->5433/tcp, [::]:5123->5433/tcp   yugabyte-org2
+557f8da5234d   ghcr.io/google/cadvisor:0.57.0        "/usr/bin/entrypoint…"   20 hours ago     Up 19 hours (healthy)           0.0.0.0:8080->8080/tcp, [::]:8080->8080/tcp                                                                                                                     bench-monitoring-cadvisor-1
+61f24273f8c4   prom/node-exporter:v1.9.0             "/bin/node_exporter …"   20 hours ago     Up 3 hours                      0.0.0.0:9100->9100/tcp, [::]:9100->9100/tcp                                                                                                                     bench-monitoring-node_exporter-1
+263ebb8dcae5   grafana/grafana:11.4.0                "/run.sh"                20 hours ago     Up 19 hours                     0.0.0.0:3000->3000/tcp, [::]:3000->3000/tcp                                                                                                                     bench-monitoring-grafana-1
+8761568d7ff5   prom/prometheus:v3.1.0                "/bin/prometheus --c…"   20 hours ago     Up 19 hours                     0.0.0.0:9090->9090/tcp, [::]:9090->9090/tcp                                                                                                                     bench-monitoring-prometheus-1
+69c047fe19cc   weaverai/nucleus-k8-dashboard         "/headlamp/headlamp-…"   5 weeks ago      Up 19 hours                     0.0.0.0:4466->4466/tcp, [::]:4466->4466/tcp                                                                                                                     nucleus-headlamp-1
+b40f395fe4bc   kindest/node:v1.36.1                  "/usr/local/bin/entr…"   6 weeks ago      Up 19 hours                     127.0.0.1:40143->6443/tcp                                                                                                                                       feast-control-plane
+6c0089a7879b   kindest/node:v1.36.1                  "/usr/local/bin/entr…"   6 weeks ago      Up 19 hours                                                                                                                                                                                     feast-worker
+902f5fc63b1e   kindest/node:v1.36.1                  "/usr/local/bin/entr…"   6 weeks ago      Up 19 hours                                                                                                                                                                                     feast-worker2
+d64d947f6529   cassandra:5.0                         "docker-entrypoint.s…"   7 weeks ago      Restarting (3) 29 seconds ago                                                                                                                                                                   untitled-cassandra
+[0;34mUsing organization 2[0m
+[0;34mUsing docker and docker-compose[0m
+[0;34mGenerating channel genesis block 'mychannel.block'[0m
+[0;34mUsing organization 1[0m
+/home/chad/Projects/bench/deploy/docker/drunix/.cache/drunix/drunix-network/test-network/bin/configtxgen
++ configtxgen -profile ChannelUsingRaft -outputBlock ./channel-artifacts/mychannel.block -channelID mychannel
+[34m2026-09-16 12:10:24.653 IST 0001 INFO[0m [common.tools.configtxgen] [34;1mmain[0m -> Loading configuration
+[34m2026-09-16 12:10:24.655 IST 0002 INFO[0m [common.tools.configtxgen.localconfig] [34;1mcompleteInitialization[0m -> orderer type: etcdraft
+[34m2026-09-16 12:10:24.655 IST 0003 INFO[0m [common.tools.configtxgen.localconfig] [34;1mcompleteInitialization[0m -> Orderer.EtcdRaft.Options unset, setting to tick_interval:"500ms" election_tick:10 heartbeat_tick:1 max_inflight_blocks:5 snapshot_interval_size:16777216 
+[34m2026-09-16 12:10:24.655 IST 0004 INFO[0m [common.tools.configtxgen.localconfig] [34;1mLoad[0m -> Loaded configuration: /home/chad/Projects/bench/deploy/docker/drunix/.cache/drunix/drunix-network/test-network/configtx/configtx.yaml
+[34m2026-09-16 12:10:24.656 IST 0005 INFO[0m [common.tools.configtxgen] [34;1mdoOutputBlock[0m -> Generating genesis block
+[34m2026-09-16 12:10:24.656 IST 0006 INFO[0m [common.tools.configtxgen] [34;1mdoOutputBlock[0m -> Creating application channel genesis block
+[34m2026-09-16 12:10:24.657 IST 0007 INFO[0m [common.tools.configtxgen] [34;1mdoOutputBlock[0m -> Writing genesis block
++ res=0
+[0;34mCreating channel mychannel[0m
+[0;34mAdding orderers[0m
++ . scripts/orderer.sh mychannel
++ '[' 0 -eq 1 ']'
++ res=0
+Status: 201
+{
+	"name": "mychannel",
+	"url": "/participation/v1/channels/mychannel",
+	"consensusRelation": "consenter",
+	"status": "active",
+	"height": 1
+}
+
+[0;32mChannel 'mychannel' created[0m
+[0;34mJoining org1 CP to the channel...[0m
+[0;34mUsing organization 1[0m
+/home/chad/Projects/bench/deploy/docker/drunix/.cache/drunix/drunix-network/test-network/organizations/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp
+Org1MSP
++ peer channel join -b ./channel-artifacts/mychannel.block
++ res=0
+[34m2026-09-16 12:10:30.743 IST 0001 INFO[0m [channelCmd] [34;1mInitCmdFactory[0m -> Endorser and orderer connections initialized
+[34m2026-09-16 12:10:31.325 IST 0002 INFO[0m [channelCmd] [34;1mexecuteJoin[0m -> Successfully submitted proposal to join channel
+[0;34mJoining org1 LP to the channel...[0m
+[0;34mUsing organization 1[0m
+/home/chad/Projects/bench/deploy/docker/drunix/.cache/drunix/drunix-network/test-network/organizations/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp
+Org1MSP
++ peer channel join -b ./channel-artifacts/mychannel.block
++ res=0
+[34m2026-09-16 12:10:34.356 IST 0001 INFO[0m [channelCmd] [34;1mInitCmdFactory[0m -> Endorser and orderer connections initialized
+[34m2026-09-16 12:10:34.883 IST 0002 INFO[0m [channelCmd] [34;1mexecuteJoin[0m -> Successfully submitted proposal to join channel
+[0;34mJoining org2 CP to the channel...[0m
+[0;34mUsing organization 2[0m
+/home/chad/Projects/bench/deploy/docker/drunix/.cache/drunix/drunix-network/test-network/organizations/peerOrganizations/org2.example.com/users/Admin@org2.example.com/msp
+Org2MSP
++ peer channel join -b ./channel-artifacts/mychannel.block
++ res=0
+[34m2026-09-16 12:10:37.912 IST 0001 INFO[0m [channelCmd] [34;1mInitCmdFactory[0m -> Endorser and orderer connections initialized
+[34m2026-09-16 12:10:38.418 IST 0002 INFO[0m [channelCmd] [34;1mexecuteJoin[0m -> Successfully submitted proposal to join channel
+[0;34mJoining org1 CP to the channel...[0m
+[0;34mUsing organization 2[0m
+/home/chad/Projects/bench/deploy/docker/drunix/.cache/drunix/drunix-network/test-network/organizations/peerOrganizations/org2.example.com/users/Admin@org2.example.com/msp
+Org2MSP
++ peer channel join -b ./channel-artifacts/mychannel.block
++ res=0
+[34m2026-09-16 12:10:41.450 IST 0001 INFO[0m [channelCmd] [34;1mInitCmdFactory[0m -> Endorser and orderer connections initialized
+[34m2026-09-16 12:10:41.930 IST 0002 INFO[0m [channelCmd] [34;1mexecuteJoin[0m -> Successfully submitted proposal to join channel
+[0;34mSetting anchor peer for org1...[0m
+[0;34mUsing organization 2[0m
+[0;34mUsing organization 1[0m
+[0;34mFetching channel config for channel mychannel[0m
+[0;34mUsing organization 1[0m
+[0;34mFetching the most recent configuration block for the channel[0m
+++ peer channel fetch config /home/chad/Projects/bench/deploy/docker/drunix/.cache/drunix/drunix-network/test-network/channel-artifacts/config_block.pb -o localhost:7050 --ordererTLSHostnameOverride orderer.example.com -c mychannel --tls --cafile /home/chad/Projects/bench/deploy/docker/drunix/.cache/drunix/drunix-network/test-network/organizations/ordererOrganizations/example.com/tlsca/tlsca.example.com-cert.pem
+[34m2026-09-16 12:10:41.960 IST 0001 INFO[0m [channelCmd] [34;1mInitCmdFactory[0m -> Endorser and orderer connections initialized
+[34m2026-09-16 12:10:41.962 IST 0002 INFO[0m [cli.common] [34;1mreadBlock[0m -> Received block: 0
+[34m2026-09-16 12:10:41.962 IST 0003 INFO[0m [channelCmd] [34;1mfetch[0m -> Retrieving last config block: 0
+[34m2026-09-16 12:10:41.962 IST 0004 INFO[0m [cli.common] [34;1mreadBlock[0m -> Received block: 0
+[0;34mDecoding config block to JSON and isolating config to /home/chad/Projects/bench/deploy/docker/drunix/.cache/drunix/drunix-network/test-network/channel-artifacts/Org1MSPconfig.json[0m
+++ configtxlator proto_decode --input /home/chad/Projects/bench/deploy/docker/drunix/.cache/drunix/drunix-network/test-network/channel-artifacts/config_block.pb --type common.Block --output /home/chad/Projects/bench/deploy/docker/drunix/.cache/drunix/drunix-network/test-network/channel-artifacts/config_block.json
+++ jq '.data.data[0].payload.data.config' /home/chad/Projects/bench/deploy/docker/drunix/.cache/drunix/drunix-network/test-network/channel-artifacts/config_block.json
+++ res=0
+[0;34mGenerating anchor peer update transaction for Org1 on channel mychannel[0m
+++ echo Org1MSP
+Org1MSP
+++ echo peer1.org1.example.com
+peer1.org1.example.com
+++ echo 7061
+7061
+++ echo 1
+1
+++ echo 1
+1
+++ jq '.channel_group.groups.Application.groups.Org1MSP.values += {"AnchorPeers":{"mod_policy": "Admins","value":{"anchor_peers": [{"host": "peer1.org1.example.com","port": 7061}]},"version": "0"}}' /home/chad/Projects/bench/deploy/docker/drunix/.cache/drunix/drunix-network/test-network/channel-artifacts/Org1MSPconfig.json
+++ res=0
+++ configtxlator proto_encode --input /home/chad/Projects/bench/deploy/docker/drunix/.cache/drunix/drunix-network/test-network/channel-artifacts/Org1MSPconfig.json --type common.Config --output /home/chad/Projects/bench/deploy/docker/drunix/.cache/drunix/drunix-network/test-network/channel-artifacts/original_config.pb
+++ configtxlator proto_encode --input /home/chad/Projects/bench/deploy/docker/drunix/.cache/drunix/drunix-network/test-network/channel-artifacts/Org1MSPmodified_config.json --type common.Config --output /home/chad/Projects/bench/deploy/docker/drunix/.cache/drunix/drunix-network/test-network/channel-artifacts/modified_config.pb
+++ configtxlator compute_update --channel_id mychannel --original /home/chad/Projects/bench/deploy/docker/drunix/.cache/drunix/drunix-network/test-network/channel-artifacts/original_config.pb --updated /home/chad/Projects/bench/deploy/docker/drunix/.cache/drunix/drunix-network/test-network/channel-artifacts/modified_config.pb --output /home/chad/Projects/bench/deploy/docker/drunix/.cache/drunix/drunix-network/test-network/channel-artifacts/config_update.pb
+++ configtxlator proto_decode --input /home/chad/Projects/bench/deploy/docker/drunix/.cache/drunix/drunix-network/test-network/channel-artifacts/config_update.pb --type common.ConfigUpdate --output /home/chad/Projects/bench/deploy/docker/drunix/.cache/drunix/drunix-network/test-network/channel-artifacts/config_update.json
+++ jq .
++++ cat /home/chad/Projects/bench/deploy/docker/drunix/.cache/drunix/drunix-network/test-network/channel-artifacts/config_update.json
+++ echo '{"payload":{"header":{"channel_header":{"channel_id":"mychannel", "type":2}},"data":{"config_update":{' '"channel_id":' '"mychannel",' '"isolated_data":' '{},' '"read_set":' '{' '"groups":' '{' '"Application":' '{' '"groups":' '{' '"Org1MSP":' '{' '"groups":' '{},' '"mod_policy":' '"",' '"policies":' '{' '"Admins":' '{' '"mod_policy":' '"",' '"policy":' null, '"version":' '"0"' '},' '"Endorsement":' '{' '"mod_policy":' '"",' '"policy":' null, '"version":' '"0"' '},' '"Readers":' '{' '"mod_policy":' '"",' '"policy":' null, '"version":' '"0"' '},' '"Writers":' '{' '"mod_policy":' '"",' '"policy":' null, '"version":' '"0"' '}' '},' '"values":' '{' '"MSP":' '{' '"mod_policy":' '"",' '"value":' null, '"version":' '"0"' '}' '},' '"version":' '"0"' '}' '},' '"mod_policy":' '"",' '"policies":' '{},' '"values":' '{},' '"version":' '"0"' '}' '},' '"mod_policy":' '"",' '"policies":' '{},' '"values":' '{},' '"version":' '"0"' '},' '"write_set":' '{' '"groups":' '{' '"Application":' '{' '"groups":' '{' '"Org1MSP":' '{' '"groups":' '{},' '"mod_policy":' '"Admins",' '"policies":' '{' '"Admins":' '{' '"mod_policy":' '"",' '"policy":' null, '"version":' '"0"' '},' '"Endorsement":' '{' '"mod_policy":' '"",' '"policy":' null, '"version":' '"0"' '},' '"Readers":' '{' '"mod_policy":' '"",' '"policy":' null, '"version":' '"0"' '},' '"Writers":' '{' '"mod_policy":' '"",' '"policy":' null, '"version":' '"0"' '}' '},' '"values":' '{' '"AnchorPeers":' '{' '"mod_policy":' '"Admins",' '"value":' '{' '"anchor_peers":' '[' '{' '"host":' '"peer1.org1.example.com",' '"port":' 7061 '}' ']' '},' '"version":' '"0"' '},' '"MSP":' '{' '"mod_policy":' '"",' '"value":' null, '"version":' '"0"' '}' '},' '"version":' '"1"' '}' '},' '"mod_policy":' '"",' '"policies":' '{},' '"values":' '{},' '"version":' '"0"' '}' '},' '"mod_policy":' '"",' '"policies":' '{},' '"values":' '{},' '"version":' '"0"' '}' '}}}}'
+++ configtxlator proto_encode --input /home/chad/Projects/bench/deploy/docker/drunix/.cache/drunix/drunix-network/test-network/channel-artifacts/config_update_in_envelope.json --type common.Envelope --output /home/chad/Projects/bench/deploy/docker/drunix/.cache/drunix/drunix-network/test-network/channel-artifacts/Org1MSPanchors.tx
+[34m2026-09-16 12:10:42.056 IST 0001 INFO[0m [channelCmd] [34;1mInitCmdFactory[0m -> Endorser and orderer connections initialized
+[34m2026-09-16 12:10:42.062 IST 0002 INFO[0m [channelCmd] [34;1mupdate[0m -> Successfully submitted channel update
+[0;32mAnchor peer set for org 'Org1MSP' on channel 'mychannel'[0m
+[0;34mSetting anchor peer for org2...[0m
+[0;34mUsing organization 2[0m
+[0;34mUsing organization 2[0m
+[0;34mFetching channel config for channel mychannel[0m
+[0;34mUsing organization 2[0m
+[0;34mFetching the most recent configuration block for the channel[0m
+++ peer channel fetch config /home/chad/Projects/bench/deploy/docker/drunix/.cache/drunix/drunix-network/test-network/channel-artifacts/config_block.pb -o localhost:7050 --ordererTLSHostnameOverride orderer.example.com -c mychannel --tls --cafile /home/chad/Projects/bench/deploy/docker/drunix/.cache/drunix/drunix-network/test-network/organizations/ordererOrganizations/example.com/tlsca/tlsca.example.com-cert.pem
+[34m2026-09-16 12:10:42.090 IST 0001 INFO[0m [channelCmd] [34;1mInitCmdFactory[0m -> Endorser and orderer connections initialized
+[34m2026-09-16 12:10:42.092 IST 0002 INFO[0m [cli.common] [34;1mreadBlock[0m -> Received block: 1
+[34m2026-09-16 12:10:42.092 IST 0003 INFO[0m [channelCmd] [34;1mfetch[0m -> Retrieving last config block: 1
+[34m2026-09-16 12:10:42.092 IST 0004 INFO[0m [cli.common] [34;1mreadBlock[0m -> Received block: 1
+[0;34mDecoding config block to JSON and isolating config to /home/chad/Projects/bench/deploy/docker/drunix/.cache/drunix/drunix-network/test-network/channel-artifacts/Org2MSPconfig.json[0m
+++ configtxlator proto_decode --input /home/chad/Projects/bench/deploy/docker/drunix/.cache/drunix/drunix-network/test-network/channel-artifacts/config_block.pb --type common.Block --output /home/chad/Projects/bench/deploy/docker/drunix/.cache/drunix/drunix-network/test-network/channel-artifacts/config_block.json
+++ jq '.data.data[0].payload.data.config' /home/chad/Projects/bench/deploy/docker/drunix/.cache/drunix/drunix-network/test-network/channel-artifacts/config_block.json
+++ res=0
+[0;34mGenerating anchor peer update transaction for Org2 on channel mychannel[0m
+++ echo Org2MSP
+Org2MSP
+++ echo peer1.org2.example.com
+peer1.org2.example.com
+++ echo 9061
+9061
+++ echo 2
+2
+++ echo 1
+1
+++ jq '.channel_group.groups.Application.groups.Org2MSP.values += {"AnchorPeers":{"mod_policy": "Admins","value":{"anchor_peers": [{"host": "peer1.org2.example.com","port": 9061}]},"version": "0"}}' /home/chad/Projects/bench/deploy/docker/drunix/.cache/drunix/drunix-network/test-network/channel-artifacts/Org2MSPconfig.json
+++ res=0
+++ configtxlator proto_encode --input /home/chad/Projects/bench/deploy/docker/drunix/.cache/drunix/drunix-network/test-network/channel-artifacts/Org2MSPconfig.json --type common.Config --output /home/chad/Projects/bench/deploy/docker/drunix/.cache/drunix/drunix-network/test-network/channel-artifacts/original_config.pb
+++ configtxlator proto_encode --input /home/chad/Projects/bench/deploy/docker/drunix/.cache/drunix/drunix-network/test-network/channel-artifacts/Org2MSPmodified_config.json --type common.Config --output /home/chad/Projects/bench/deploy/docker/drunix/.cache/drunix/drunix-network/test-network/channel-artifacts/modified_config.pb
+++ configtxlator compute_update --channel_id mychannel --original /home/chad/Projects/bench/deploy/docker/drunix/.cache/drunix/drunix-network/test-network/channel-artifacts/original_config.pb --updated /home/chad/Projects/bench/deploy/docker/drunix/.cache/drunix/drunix-network/test-network/channel-artifacts/modified_config.pb --output /home/chad/Projects/bench/deploy/docker/drunix/.cache/drunix/drunix-network/test-network/channel-artifacts/config_update.pb
+++ configtxlator proto_decode --input /home/chad/Projects/bench/deploy/docker/drunix/.cache/drunix/drunix-network/test-network/channel-artifacts/config_update.pb --type common.ConfigUpdate --output /home/chad/Projects/bench/deploy/docker/drunix/.cache/drunix/drunix-network/test-network/channel-artifacts/config_update.json
+++ jq .
++++ cat /home/chad/Projects/bench/deploy/docker/drunix/.cache/drunix/drunix-network/test-network/channel-artifacts/config_update.json
+++ echo '{"payload":{"header":{"channel_header":{"channel_id":"mychannel", "type":2}},"data":{"config_update":{' '"channel_id":' '"mychannel",' '"isolated_data":' '{},' '"read_set":' '{' '"groups":' '{' '"Application":' '{' '"groups":' '{' '"Org2MSP":' '{' '"groups":' '{},' '"mod_policy":' '"",' '"policies":' '{' '"Admins":' '{' '"mod_policy":' '"",' '"policy":' null, '"version":' '"0"' '},' '"Endorsement":' '{' '"mod_policy":' '"",' '"policy":' null, '"version":' '"0"' '},' '"Readers":' '{' '"mod_policy":' '"",' '"policy":' null, '"version":' '"0"' '},' '"Writers":' '{' '"mod_policy":' '"",' '"policy":' null, '"version":' '"0"' '}' '},' '"values":' '{' '"MSP":' '{' '"mod_policy":' '"",' '"value":' null, '"version":' '"0"' '}' '},' '"version":' '"0"' '}' '},' '"mod_policy":' '"",' '"policies":' '{},' '"values":' '{},' '"version":' '"0"' '}' '},' '"mod_policy":' '"",' '"policies":' '{},' '"values":' '{},' '"version":' '"0"' '},' '"write_set":' '{' '"groups":' '{' '"Application":' '{' '"groups":' '{' '"Org2MSP":' '{' '"groups":' '{},' '"mod_policy":' '"Admins",' '"policies":' '{' '"Admins":' '{' '"mod_policy":' '"",' '"policy":' null, '"version":' '"0"' '},' '"Endorsement":' '{' '"mod_policy":' '"",' '"policy":' null, '"version":' '"0"' '},' '"Readers":' '{' '"mod_policy":' '"",' '"policy":' null, '"version":' '"0"' '},' '"Writers":' '{' '"mod_policy":' '"",' '"policy":' null, '"version":' '"0"' '}' '},' '"values":' '{' '"AnchorPeers":' '{' '"mod_policy":' '"Admins",' '"value":' '{' '"anchor_peers":' '[' '{' '"host":' '"peer1.org2.example.com",' '"port":' 9061 '}' ']' '},' '"version":' '"0"' '},' '"MSP":' '{' '"mod_policy":' '"",' '"value":' null, '"version":' '"0"' '}' '},' '"version":' '"1"' '}' '},' '"mod_policy":' '"",' '"policies":' '{},' '"values":' '{},' '"version":' '"0"' '}' '},' '"mod_policy":' '"",' '"policies":' '{},' '"values":' '{},' '"version":' '"0"' '}' '}}}}'
+++ configtxlator proto_encode --input /home/chad/Projects/bench/deploy/docker/drunix/.cache/drunix/drunix-network/test-network/channel-artifacts/config_update_in_envelope.json --type common.Envelope --output /home/chad/Projects/bench/deploy/docker/drunix/.cache/drunix/drunix-network/test-network/channel-artifacts/Org2MSPanchors.tx
+[34m2026-09-16 12:10:42.173 IST 0001 INFO[0m [channelCmd] [34;1mInitCmdFactory[0m -> Endorser and orderer connections initialized
+[34m2026-09-16 12:10:42.179 IST 0002 INFO[0m [channelCmd] [34;1mupdate[0m -> Successfully submitted channel update
+[0;32mAnchor peer set for org 'Org2MSP' on channel 'mychannel'[0m
+[0;32mChannel 'mychannel' joined[0m
+[deploy 12:10:42] deploying kvstore from /home/chad/Projects/bench/chaincodes/kvstore (connTimeout=120s, retries=10)
+[0;34mUsing docker and docker-compose[0m
+[0;34mdeploying chaincode on channel 'mychannel'[0m
+executing with the following
+- CHANNEL_NAME: [0;32mmychannel[0m
+- CC_NAME: [0;32mkvstore[0m
+- CC_SRC_PATH: [0;32m/home/chad/Projects/bench/chaincodes/kvstore[0m
+- CC_SRC_LANGUAGE: [0;32mgo[0m
+- CC_VERSION: [0;32m1.0[0m
+- CC_SEQUENCE: [0;32mauto[0m
+- CC_END_POLICY: [0;32mNA[0m
+- CC_COLL_CONFIG: [0;32mNA[0m
+- CC_INIT_FCN: [0;32mNA[0m
+- DELAY: [0;32m10[0m
+- MAX_RETRY: [0;32m10[0m
+- VERBOSE: [0;32mfalse[0m
+[0;34mUsing organization 2[0m
+executing with the following
+- CC_NAME: [0;32mkvstore[0m
+- CC_SRC_PATH: [0;32m/home/chad/Projects/bench/chaincodes/kvstore[0m
+- CC_SRC_LANGUAGE: [0;32mgo[0m
+- CC_VERSION: [0;32m1.0[0m
+[0;34mVendoring Go dependencies at /home/chad/Projects/bench/chaincodes/kvstore[0m
+/home/chad/Projects/bench/chaincodes/kvstore /home/chad/Projects/bench/deploy/docker/drunix/.cache/drunix/drunix-network/test-network
+/home/chad/Projects/bench/deploy/docker/drunix/.cache/drunix/drunix-network/test-network
+[0;32mFinished vendoring Go dependencies[0m
++ '[' false = true ']'
++ peer lifecycle chaincode package kvstore.tar.gz --path /home/chad/Projects/bench/chaincodes/kvstore --lang golang --label kvstore_1.0
++ res=0
+[0;32mChaincode is packaged[0m
+[0;34mInstalling chaincode on peer0.org1...[0m
+[0;34mUsing organization 1[0m
++ peer lifecycle chaincode queryinstalled --output json
++ jq -r 'try (.installed_chaincodes[].package_id)'
++ grep '^kvstore_1.0:e88284a33ff8806958375f99312782794164d62aac26fe22876f2c72fb6294d9$'
++ test 1 -ne 0
++ peer lifecycle chaincode install kvstore.tar.gz
++ res=0
+[34m2026-09-16 12:10:50.299 IST 0001 INFO[0m [cli.lifecycle.chaincode] [34;1msubmitInstallProposal[0m -> Installed remotely: response:<status:200 payload:"\nLkvstore_1.0:e88284a33ff8806958375f99312782794164d62aac26fe22876f2c72fb6294d9\022\013kvstore_1.0" > 
+[34m2026-09-16 12:10:50.299 IST 0002 INFO[0m [cli.lifecycle.chaincode] [34;1msubmitInstallProposal[0m -> Chaincode code package identifier: kvstore_1.0:e88284a33ff8806958375f99312782794164d62aac26fe22876f2c72fb6294d9
+[0;32mChaincode is installed on peer0.org1[0m
+[0;34mInstall chaincode on peer0.org2...[0m
+[0;34mUsing organization 2[0m
++ peer lifecycle chaincode queryinstalled --output json
++ jq -r 'try (.installed_chaincodes[].package_id)'
++ grep '^kvstore_1.0:e88284a33ff8806958375f99312782794164d62aac26fe22876f2c72fb6294d9$'
++ test 1 -ne 0
++ peer lifecycle chaincode install kvstore.tar.gz
++ res=0
+[34m2026-09-16 12:10:57.101 IST 0001 INFO[0m [cli.lifecycle.chaincode] [34;1msubmitInstallProposal[0m -> Installed remotely: response:<status:200 payload:"\nLkvstore_1.0:e88284a33ff8806958375f99312782794164d62aac26fe22876f2c72fb6294d9\022\013kvstore_1.0" > 
+[34m2026-09-16 12:10:57.101 IST 0002 INFO[0m [cli.lifecycle.chaincode] [34;1msubmitInstallProposal[0m -> Chaincode code package identifier: kvstore_1.0:e88284a33ff8806958375f99312782794164d62aac26fe22876f2c72fb6294d9
+[0;32mChaincode is installed on peer0.org2[0m
+++ peer lifecycle chaincode querycommitted --channelID mychannel --name kvstore
+++ sed -n '/Version:/{s/.*Sequence: //; s/, Endorsement Plugin:.*$//; p;}'
+Error: query failed with status: 404 - namespace kvstore is not defined
++ COMMITTED_CC_SEQUENCE=
++ res=0
+[0;34mUsing organization 1[0m
++ peer lifecycle chaincode queryinstalled --output json
++ jq -r 'try (.installed_chaincodes[].package_id)'
++ grep '^kvstore_1.0:e88284a33ff8806958375f99312782794164d62aac26fe22876f2c72fb6294d9$'
++ res=0
+kvstore_1.0:e88284a33ff8806958375f99312782794164d62aac26fe22876f2c72fb6294d9
+[0;32mQuery installed successful on peer0.org1 on channel[0m
+[0;34mUsing organization 1[0m
++ peer lifecycle chaincode approveformyorg -o localhost:7050 --ordererTLSHostnameOverride orderer.example.com --tls --cafile /home/chad/Projects/bench/deploy/docker/drunix/.cache/drunix/drunix-network/test-network/organizations/ordererOrganizations/example.com/tlsca/tlsca.example.com-cert.pem --channelID mychannel --name kvstore --version 1.0 --package-id kvstore_1.0:e88284a33ff8806958375f99312782794164d62aac26fe22876f2c72fb6294d9 --sequence 1
++ res=0
+[34m2026-09-16 12:10:59.676 IST 0001 INFO[0m [chaincodeCmd] [34;1mClientWait[0m -> txid [600bf7d431fdbf207ce0df9080c7817210d70ea7307b3814f7620d2dcb19a498] committed with status (VALID) at localhost:7061
+[0;32mChaincode definition approved on peer0.org1 on channel 'mychannel'[0m
+[0;34mUsing organization 1[0m
+[0;34mChecking the commit readiness of the chaincode definition on peer0.org1 on channel 'mychannel'...[0m
+[0;34mAttempting to check the commit readiness of the chaincode definition on peer0.org1, Retry after 10 seconds.[0m
++ peer lifecycle chaincode checkcommitreadiness --channelID mychannel --name kvstore --version 1.0 --sequence 1 --output json
++ res=0
+{
+	"approvals": {
+		"Org1MSP": true,
+		"Org2MSP": false
+	}
+}
+[0;34mChecking the commit readiness of the chaincode definition successful on peer0.org1 on channel 'mychannel'[0m
+[0;34mUsing organization 2[0m
+[0;34mChecking the commit readiness of the chaincode definition on peer0.org2 on channel 'mychannel'...[0m
+[0;34mAttempting to check the commit readiness of the chaincode definition on peer0.org2, Retry after 10 seconds.[0m
++ peer lifecycle chaincode checkcommitreadiness --channelID mychannel --name kvstore --version 1.0 --sequence 1 --output json
++ res=0
+{
+	"approvals": {
+		"Org1MSP": true,
+		"Org2MSP": false
+	}
+}
+[0;34mChecking the commit readiness of the chaincode definition successful on peer0.org2 on channel 'mychannel'[0m
+[0;34mUsing organization 2[0m
++ peer lifecycle chaincode approveformyorg -o localhost:7050 --ordererTLSHostnameOverride orderer.example.com --tls --cafile /home/chad/Projects/bench/deploy/docker/drunix/.cache/drunix/drunix-network/test-network/organizations/ordererOrganizations/example.com/tlsca/tlsca.example.com-cert.pem --channelID mychannel --name kvstore --version 1.0 --package-id kvstore_1.0:e88284a33ff8806958375f99312782794164d62aac26fe22876f2c72fb6294d9 --sequence 1
++ res=0
+[34m2026-09-16 12:11:21.851 IST 0001 INFO[0m [chaincodeCmd] [34;1mClientWait[0m -> txid [eb62f6b991e0fcb6892729aace97febe6c79ceae7807eb1c5a4e26ac4be1fd61] committed with status (VALID) at localhost:9061
+[0;32mChaincode definition approved on peer0.org2 on channel 'mychannel'[0m
+[0;34mUsing organization 1[0m
+[0;34mChecking the commit readiness of the chaincode definition on peer0.org1 on channel 'mychannel'...[0m
+[0;34mAttempting to check the commit readiness of the chaincode definition on peer0.org1, Retry after 10 seconds.[0m
++ peer lifecycle chaincode checkcommitreadiness --channelID mychannel --name kvstore --version 1.0 --sequence 1 --output json
++ res=0
+{
+	"approvals": {
+		"Org1MSP": true,
+		"Org2MSP": true
+	}
+}
+[0;34mChecking the commit readiness of the chaincode definition successful on peer0.org1 on channel 'mychannel'[0m
+[0;34mUsing organization 2[0m
+[0;34mChecking the commit readiness of the chaincode definition on peer0.org2 on channel 'mychannel'...[0m
+[0;34mAttempting to check the commit readiness of the chaincode definition on peer0.org2, Retry after 10 seconds.[0m
++ peer lifecycle chaincode checkcommitreadiness --channelID mychannel --name kvstore --version 1.0 --sequence 1 --output json
++ res=0
+{
+	"approvals": {
+		"Org1MSP": true,
+		"Org2MSP": true
+	}
+}
+[0;34mChecking the commit readiness of the chaincode definition successful on peer0.org2 on channel 'mychannel'[0m
+[0;34mUsing organization 1[0m
+[0;34mUsing organization 2[0m
++ peer lifecycle chaincode commit -o localhost:7050 --ordererTLSHostnameOverride orderer.example.com --tls --cafile /home/chad/Projects/bench/deploy/docker/drunix/.cache/drunix/drunix-network/test-network/organizations/ordererOrganizations/example.com/tlsca/tlsca.example.com-cert.pem --channelID mychannel --name kvstore --peerAddresses localhost:7061 --tlsRootCertFiles /home/chad/Projects/bench/deploy/docker/drunix/.cache/drunix/drunix-network/test-network/organizations/peerOrganizations/org1.example.com/tlsca/tlsca.org1.example.com-cert.pem --peerAddresses localhost:9061 --tlsRootCertFiles /home/chad/Projects/bench/deploy/docker/drunix/.cache/drunix/drunix-network/test-network/organizations/peerOrganizations/org2.example.com/tlsca/tlsca.org2.example.com-cert.pem --version 1.0 --sequence 1
++ res=0
+[34m2026-09-16 12:11:43.995 IST 0001 INFO[0m [chaincodeCmd] [34;1mClientWait[0m -> txid [760d411d6c9d0adbe8ccf76a379f1a09a3f3562a02b21ef741ca4a038b0f410c] committed with status (VALID) at localhost:7061
+[34m2026-09-16 12:11:43.996 IST 0002 INFO[0m [chaincodeCmd] [34;1mClientWait[0m -> txid [760d411d6c9d0adbe8ccf76a379f1a09a3f3562a02b21ef741ca4a038b0f410c] committed with status (VALID) at localhost:9061
+[0;32mChaincode definition committed on channel 'mychannel'[0m
+[0;34mUsing organization 1[0m
+[0;34mQuerying chaincode definition on peer0.org1 on channel 'mychannel'...[0m
+[0;34mAttempting to Query committed status on peer0.org1, Retry after 10 seconds.[0m
++ peer lifecycle chaincode querycommitted --channelID mychannel --name kvstore
++ res=0
+Committed chaincode definition for chaincode 'kvstore' on channel 'mychannel':
+Version: 1.0, Sequence: 1, Endorsement Plugin: escc, Validation Plugin: vscc, Approvals: [Org1MSP: true, Org2MSP: true]
+[0;32mQuery chaincode definition successful on peer0.org1 on channel 'mychannel'[0m
+[0;34mUsing organization 2[0m
+[0;34mQuerying chaincode definition on peer0.org2 on channel 'mychannel'...[0m
+[0;34mAttempting to Query committed status on peer0.org2, Retry after 10 seconds.[0m
++ peer lifecycle chaincode querycommitted --channelID mychannel --name kvstore
++ res=0
+Committed chaincode definition for chaincode 'kvstore' on channel 'mychannel':
+Version: 1.0, Sequence: 1, Endorsement Plugin: escc, Validation Plugin: vscc, Approvals: [Org1MSP: true, Org2MSP: true]
+[0;32mQuery chaincode definition successful on peer0.org2 on channel 'mychannel'[0m
+[0;34mChaincode initialization is not required[0m
+[deploy 12:12:05] resource budget for drunix: 18 CPU / 20 GB across 13 containers = 1.38 CPU each; memory by role weight (peer=4 statedb=4 orderer=2 other=1, total weight 32)
+[deploy 12:12:05]   cp.org1  (peer) 2560m
+[deploy 12:12:06]   cp.org2  (peer) 2560m
+[deploy 12:12:06]   dev-peer0.org1.example.com-kvstore_1.0-e88284a33ff8806958375f99312782794164d62aac26fe22876f2c72fb6294d9  (other) 640m
+[deploy 12:12:07]   dev-peer0.org2.example.com-kvstore_1.0-e88284a33ff8806958375f99312782794164d62aac26fe22876f2c72fb6294d9  (other) 640m
+[deploy 12:12:07]   hlf_keydb_org1msp  (other) 640m
+[deploy 12:12:07]   hlf_keydb_org2msp  (other) 640m
+[deploy 12:12:08]   lp1.org1  (peer) 2560m
+[deploy 12:12:08]   lp1.org2  (peer) 2560m
+[deploy 12:12:09]   orderer.example.com  (orderer) 1280m
+[deploy 12:12:09]   vs1.org1  (other) 640m
+[deploy 12:12:10]   vs1.org2  (other) 640m
+[deploy 12:12:10]   yugabyte-org1  (statedb) 2560m
+[deploy 12:12:11]   yugabyte-org2  (statedb) 2560m
+[deploy 12:12:11] drunix up. lite-peer :7051  committing-peer :7061  lite-peer operations :9444
+-- run configs/normalized/probe-sweep.yaml on drunix
+time=2026-09-16T12:12:11.201+05:30 level=INFO msg="run starting" platform=drunix run=probe-sweep workload=kv-write profile=local-32gb normalized=true out_dir=results/drunix/20260916-121211
+time=2026-09-16T12:12:11.201+05:30 level=WARN msg=caveat platform=drunix run=probe-sweep text="drunix ran on YugabyteDB (its shipped test-network default); LevelDB parity is unavailable, so the state-DB variable is NOT held constant vs fabric-cft for this run"
+time=2026-09-16T12:12:11.201+05:30 level=WARN msg=caveat platform=drunix run=probe-sweep text="drunix write values are JSON-wrapped client-side to survive a YugabyteDB statedb bug (non-JSON values panic the Committing Peer); the on-wire payload format differs from the shared kv workload on other platforms for this run"
+time=2026-09-16T12:12:11.201+05:30 level=WARN msg=caveat platform=drunix run=probe-sweep text="state-db parity not held: run requested leveldb, platform actually ran yugabyte"
+time=2026-09-16T12:12:11.201+05:30 level=INFO msg="adapter setup" platform=drunix run=probe-sweep
+[34m2026-09-16 12:12:11.201 IST 0001 INFO[0m [grpc] [34;1mInfof[0m -> [core] original dial target is: "localhost:7051"
+[34m2026-09-16 12:12:11.201 IST 0002 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1] Channel created for target "localhost:7051"
+[34m2026-09-16 12:12:11.201 IST 0003 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1] parsed dial target is: resolver.Target{URL:url.URL{Scheme:"dns", Opaque:"", User:(*url.Userinfo)(nil), Host:"", Path:"/localhost:7051", Fragment:"", RawQuery:"", RawPath:"", RawFragment:"", ForceQuery:false, OmitHost:false}}
+[34m2026-09-16 12:12:11.201 IST 0004 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1] Channel authority set to "peer0.org1.example.com"
+[34m2026-09-16 12:12:11.201 IST 0005 INFO[0m [grpc] [34;1mInfof[0m -> [core] original dial target is: "localhost:7061"
+[34m2026-09-16 12:12:11.201 IST 0006 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #2] Channel created for target "localhost:7061"
+[34m2026-09-16 12:12:11.201 IST 0007 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #2] parsed dial target is: resolver.Target{URL:url.URL{Scheme:"dns", Opaque:"", User:(*url.Userinfo)(nil), Host:"", Path:"/localhost:7061", Fragment:"", RawQuery:"", RawPath:"", RawFragment:"", ForceQuery:false, OmitHost:false}}
+[34m2026-09-16 12:12:11.201 IST 0008 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #2] Channel authority set to "peer1.org1.example.com"
+[34m2026-09-16 12:12:11.202 IST 0009 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #2] Channel Connectivity change to CONNECTING
+[34m2026-09-16 12:12:11.202 IST 000a INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #2] Channel exiting idle mode
+[34m2026-09-16 12:12:11.236 IST 000b INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #2] Resolver state updated: {
+  "Addresses": [
+    {
+      "Addr": "127.0.0.1:7061",
+      "ServerName": "",
+      "Attributes": null,
+      "BalancerAttributes": null,
+      "Metadata": null
+    }
+  ],
+  "Endpoints": [
+    {
+      "Addresses": [
+        {
+          "Addr": "127.0.0.1:7061",
+          "ServerName": "",
+          "Attributes": null,
+          "BalancerAttributes": null,
+          "Metadata": null
+        }
+      ],
+      "Attributes": null
+    }
+  ],
+  "ServiceConfig": null,
+  "Attributes": null
+} (resolver returned new addresses)
+[34m2026-09-16 12:12:11.236 IST 000c INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #2] Channel switches to new LB policy "pick_first"
+[34m2026-09-16 12:12:11.236 IST 000d INFO[0m [grpc] [34;1mInfof[0m -> [pick-first-leaf-lb] [pick-first-leaf-lb 0x683bcc0e000] Received new config {
+  "shuffleAddressList": false
+}, resolver state {
+  "Addresses": [
+    {
+      "Addr": "127.0.0.1:7061",
+      "ServerName": "",
+      "Attributes": null,
+      "BalancerAttributes": null,
+      "Metadata": null
+    }
+  ],
+  "Endpoints": [
+    {
+      "Addresses": [
+        {
+          "Addr": "127.0.0.1:7061",
+          "ServerName": "",
+          "Attributes": null,
+          "BalancerAttributes": null,
+          "Metadata": null
+        }
+      ],
+      "Attributes": null
+    }
+  ],
+  "ServiceConfig": null,
+  "Attributes": null
+}
+[34m2026-09-16 12:12:11.236 IST 000e INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #2 SubChannel #3] Subchannel created
+[34m2026-09-16 12:12:11.236 IST 000f INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #2 SubChannel #3] Subchannel Connectivity change to CONNECTING
+[34m2026-09-16 12:12:11.236 IST 0010 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #2 SubChannel #3] Subchannel picks a new address "127.0.0.1:7061" to connect
+[34m2026-09-16 12:12:11.237 IST 0011 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #2 SubChannel #3] Subchannel Connectivity change to READY
+[34m2026-09-16 12:12:11.238 IST 0012 INFO[0m [grpc] [34;1mInfof[0m -> [pick-first-leaf-lb] [pick-first-leaf-lb 0x683bcc0e000] SubConn 0x683bcb403c0 reported connectivity state READY and the health listener is disabled. Transitioning SubConn to READY.
+[34m2026-09-16 12:12:11.238 IST 0013 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #2] Channel Connectivity change to READY
+[34m2026-09-16 12:12:11.239 IST 0014 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1] Channel Connectivity change to CONNECTING
+[34m2026-09-16 12:12:11.239 IST 0015 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1] Channel exiting idle mode
+[34m2026-09-16 12:12:11.269 IST 0016 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1] Resolver state updated: {
+  "Addresses": [
+    {
+      "Addr": "127.0.0.1:7051",
+      "ServerName": "",
+      "Attributes": null,
+      "BalancerAttributes": null,
+      "Metadata": null
+    }
+  ],
+  "Endpoints": [
+    {
+      "Addresses": [
+        {
+          "Addr": "127.0.0.1:7051",
+          "ServerName": "",
+          "Attributes": null,
+          "BalancerAttributes": null,
+          "Metadata": null
+        }
+      ],
+      "Attributes": null
+    }
+  ],
+  "ServiceConfig": null,
+  "Attributes": null
+} (resolver returned new addresses)
+[34m2026-09-16 12:12:11.269 IST 0017 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1] Channel switches to new LB policy "pick_first"
+[34m2026-09-16 12:12:11.269 IST 0018 INFO[0m [grpc] [34;1mInfof[0m -> [pick-first-leaf-lb] [pick-first-leaf-lb 0x683bcc0e1b0] Received new config {
+  "shuffleAddressList": false
+}, resolver state {
+  "Addresses": [
+    {
+      "Addr": "127.0.0.1:7051",
+      "ServerName": "",
+      "Attributes": null,
+      "BalancerAttributes": null,
+      "Metadata": null
+    }
+  ],
+  "Endpoints": [
+    {
+      "Addresses": [
+        {
+          "Addr": "127.0.0.1:7051",
+          "ServerName": "",
+          "Attributes": null,
+          "BalancerAttributes": null,
+          "Metadata": null
+        }
+      ],
+      "Attributes": null
+    }
+  ],
+  "ServiceConfig": null,
+  "Attributes": null
+}
+[34m2026-09-16 12:12:11.269 IST 0019 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1 SubChannel #5] Subchannel created
+[34m2026-09-16 12:12:11.269 IST 001a INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1 SubChannel #5] Subchannel Connectivity change to CONNECTING
+[34m2026-09-16 12:12:11.269 IST 001b INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1 SubChannel #5] Subchannel picks a new address "127.0.0.1:7051" to connect
+[34m2026-09-16 12:12:11.270 IST 001c INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1 SubChannel #5] Subchannel Connectivity change to READY
+[34m2026-09-16 12:12:11.270 IST 001d INFO[0m [grpc] [34;1mInfof[0m -> [pick-first-leaf-lb] [pick-first-leaf-lb 0x683bcc0e1b0] SubConn 0x683bcba64b0 reported connectivity state READY and the health listener is disabled. Transitioning SubConn to READY.
+[34m2026-09-16 12:12:11.270 IST 001e INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1] Channel Connectivity change to READY
+time=2026-09-16T12:12:11.273+05:30 level=INFO msg="setup complete" platform=drunix run=probe-sweep component=adapter gateway=localhost:7051 finality_from=localhost:7061
+time=2026-09-16T12:12:11.273+05:30 level=INFO msg="phase start" platform=drunix run=probe-sweep phase=probe offered_tps=10 workers=0 duration=30s
+time=2026-09-16T12:12:42.726+05:30 level=INFO msg="phase end" platform=drunix run=probe-sweep phase=probe submitted=300 committed=300 confirmed_tps=10.0 fail_rate=0.0000 e2e_p99_ms=2578.43
+time=2026-09-16T12:12:42.726+05:30 level=INFO msg="phase start" platform=drunix run=probe-sweep phase=sweep-100 offered_tps=100 workers=0 duration=1m0s
+time=2026-09-16T12:13:44.765+05:30 level=INFO msg="phase end" platform=drunix run=probe-sweep phase=sweep-100 submitted=1500 committed=1500 confirmed_tps=100.0 fail_rate=0.0000 e2e_p99_ms=2252.80
+time=2026-09-16T12:13:44.765+05:30 level=INFO msg="phase start" platform=drunix run=probe-sweep phase=sweep-250 offered_tps=250 workers=0 duration=1m0s
+time=2026-09-16T12:14:46.810+05:30 level=INFO msg="phase end" platform=drunix run=probe-sweep phase=sweep-250 submitted=3750 committed=3750 confirmed_tps=250.0 fail_rate=0.0000 e2e_p99_ms=1082.37
+time=2026-09-16T12:14:46.810+05:30 level=INFO msg="phase start" platform=drunix run=probe-sweep phase=sweep-500 offered_tps=500 workers=0 duration=1m0s
+time=2026-09-16T12:15:48.859+05:30 level=INFO msg="phase end" platform=drunix run=probe-sweep phase=sweep-500 submitted=7500 committed=7500 confirmed_tps=500.0 fail_rate=0.0000 e2e_p99_ms=700.42
+time=2026-09-16T12:15:48.859+05:30 level=INFO msg="phase start" platform=drunix run=probe-sweep phase=sweep-1000 offered_tps=1000 workers=0 duration=1m0s
+time=2026-09-16T12:16:58.677+05:30 level=INFO msg="phase end" platform=drunix run=probe-sweep phase=sweep-1000 submitted=15000 committed=10400 confirmed_tps=693.3 fail_rate=0.3067 e2e_p99_ms=11476.99
+time=2026-09-16T12:16:58.677+05:30 level=WARN msg="phase errors" platform=drunix run=probe-sweep phase=sweep-1000 count=4600 message="not sent: N transactions already in flight (platform is not finalizing)"
+time=2026-09-16T12:16:58.677+05:30 level=INFO msg="phase start" platform=drunix run=probe-sweep phase=sweep-2000 offered_tps=2000 workers=0 duration=1m0s
+time=2026-09-16T12:18:19.336+05:30 level=INFO msg="phase end" platform=drunix run=probe-sweep phase=sweep-2000 submitted=30000 committed=10552 confirmed_tps=703.5 fail_rate=0.6483 e2e_p99_ms=23019.52
+time=2026-09-16T12:18:19.336+05:30 level=WARN msg="phase errors" platform=drunix run=probe-sweep phase=sweep-2000 count=19448 message="not sent: N transactions already in flight (platform is not finalizing)"
+time=2026-09-16T12:18:19.336+05:30 level=INFO msg="phase start" platform=drunix run=probe-sweep phase=hold offered_tps=450 workers=0 duration=5m0s
+[34m2026-09-16 12:18:42.637 IST 001f INFO[0m [grpc] [34;1mInfof[0m -> [transport] [client-transport 0x683bcbaa6c8] Closing: connection error: desc = "error reading from server: EOF"
+[34m2026-09-16 12:18:42.638 IST 0020 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1 SubChannel #5] Subchannel Connectivity change to IDLE
+[34m2026-09-16 12:18:42.638 IST 0021 INFO[0m [grpc] [34;1mInfof[0m -> [transport] [client-transport 0x683bcbaa6c8] loopyWriter exiting with error: connection error: desc = "error reading from server: EOF"
+[34m2026-09-16 12:18:42.638 IST 0022 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1] Channel Connectivity change to IDLE
+[34m2026-09-16 12:18:42.639 IST 0023 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1] Channel Connectivity change to CONNECTING
+[34m2026-09-16 12:18:42.640 IST 0024 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1 SubChannel #5] Subchannel Connectivity change to CONNECTING
+[34m2026-09-16 12:18:42.640 IST 0025 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1 SubChannel #5] Subchannel picks a new address "127.0.0.1:7051" to connect
+[34m2026-09-16 12:18:42.640 IST 0026 INFO[0m [grpc] [34;1mInfof[0m -> [core] Creating new client transport to "{Addr: \"127.0.0.1:7051\", ServerName: \"peer0.org1.example.com\", }": connection error: desc = "transport: authentication handshake failed: read tcp 127.0.0.1:47544->127.0.0.1:7051: read: connection reset by peer"
+[33m2026-09-16 12:18:42.640 IST 0027 WARN[0m [grpc] [33;1mAddTraceEvent[0m -> [core] [Channel #1 SubChannel #5] grpc: addrConn.createTransport failed to connect to {Addr: "127.0.0.1:7051", ServerName: "peer0.org1.example.com", }. Err: connection error: desc = "transport: authentication handshake failed: read tcp 127.0.0.1:47544->127.0.0.1:7051: read: connection reset by peer"
+[34m2026-09-16 12:18:42.640 IST 0028 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1 SubChannel #5] Subchannel Connectivity change to TRANSIENT_FAILURE, last error: connection error: desc = "transport: authentication handshake failed: read tcp 127.0.0.1:47544->127.0.0.1:7051: read: connection reset by peer"
+[34m2026-09-16 12:18:42.640 IST 0029 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1] Channel Connectivity change to TRANSIENT_FAILURE
+[34m2026-09-16 12:18:42.670 IST 002a INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1] Resolver state updated: {
+  "Addresses": [
+    {
+      "Addr": "127.0.0.1:7051",
+      "ServerName": "",
+      "Attributes": null,
+      "BalancerAttributes": null,
+      "Metadata": null
+    }
+  ],
+  "Endpoints": [
+    {
+      "Addresses": [
+        {
+          "Addr": "127.0.0.1:7051",
+          "ServerName": "",
+          "Attributes": null,
+          "BalancerAttributes": null,
+          "Metadata": null
+        }
+      ],
+      "Attributes": null
+    }
+  ],
+  "ServiceConfig": null,
+  "Attributes": null
+} ()
+[34m2026-09-16 12:18:42.670 IST 002b INFO[0m [grpc] [34;1mInfof[0m -> [pick-first-leaf-lb] [pick-first-leaf-lb 0x683bcc0e1b0] Received new config {
+  "shuffleAddressList": false
+}, resolver state {
+  "Addresses": [
+    {
+      "Addr": "127.0.0.1:7051",
+      "ServerName": "",
+      "Attributes": null,
+      "BalancerAttributes": null,
+      "Metadata": null
+    }
+  ],
+  "Endpoints": [
+    {
+      "Addresses": [
+        {
+          "Addr": "127.0.0.1:7051",
+          "ServerName": "",
+          "Attributes": null,
+          "BalancerAttributes": null,
+          "Metadata": null
+        }
+      ],
+      "Attributes": null
+    }
+  ],
+  "ServiceConfig": null,
+  "Attributes": null
+}
+[34m2026-09-16 12:18:43.162 IST 002c INFO[0m [grpc] [34;1mInfof[0m -> [transport] [client-transport 0x683bcc4e008] Closing: connection error: desc = "error reading from server: EOF"
+[34m2026-09-16 12:18:43.162 IST 002d INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #2 SubChannel #3] Subchannel Connectivity change to IDLE
+[34m2026-09-16 12:18:43.162 IST 002e INFO[0m [grpc] [34;1mInfof[0m -> [transport] [client-transport 0x683bcc4e008] loopyWriter exiting with error: connection error: desc = "error reading from server: EOF"
+time=2026-09-16T12:18:43.163+05:30 level=WARN msg="block event stream closed; re-subscribing (transactions committed meanwhile are replayed)" platform=drunix run=probe-sweep component=adapter stream=filtered-block-events endpoint=localhost:7061 channel=mychannel attempt=1 backoff=250ms resume_block=854 had_blocks=true
+[34m2026-09-16 12:18:43.163 IST 002f INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #2] Channel Connectivity change to IDLE
+[34m2026-09-16 12:18:43.192 IST 0030 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #2] Resolver state updated: {
+  "Addresses": [
+    {
+      "Addr": "127.0.0.1:7061",
+      "ServerName": "",
+      "Attributes": null,
+      "BalancerAttributes": null,
+      "Metadata": null
+    }
+  ],
+  "Endpoints": [
+    {
+      "Addresses": [
+        {
+          "Addr": "127.0.0.1:7061",
+          "ServerName": "",
+          "Attributes": null,
+          "BalancerAttributes": null,
+          "Metadata": null
+        }
+      ],
+      "Attributes": null
+    }
+  ],
+  "ServiceConfig": null,
+  "Attributes": null
+} ()
+[34m2026-09-16 12:18:43.192 IST 0031 INFO[0m [grpc] [34;1mInfof[0m -> [pick-first-leaf-lb] [pick-first-leaf-lb 0x683bcc0e000] Received new config {
+  "shuffleAddressList": false
+}, resolver state {
+  "Addresses": [
+    {
+      "Addr": "127.0.0.1:7061",
+      "ServerName": "",
+      "Attributes": null,
+      "BalancerAttributes": null,
+      "Metadata": null
+    }
+  ],
+  "Endpoints": [
+    {
+      "Addresses": [
+        {
+          "Addr": "127.0.0.1:7061",
+          "ServerName": "",
+          "Attributes": null,
+          "BalancerAttributes": null,
+          "Metadata": null
+        }
+      ],
+      "Attributes": null
+    }
+  ],
+  "ServiceConfig": null,
+  "Attributes": null
+}
+[34m2026-09-16 12:18:43.413 IST 0032 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #2] Channel Connectivity change to CONNECTING
+[34m2026-09-16 12:18:43.413 IST 0033 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #2 SubChannel #3] Subchannel Connectivity change to CONNECTING
+[34m2026-09-16 12:18:43.413 IST 0034 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #2 SubChannel #3] Subchannel picks a new address "127.0.0.1:7061" to connect
+[34m2026-09-16 12:18:43.413 IST 0035 INFO[0m [grpc] [34;1mInfof[0m -> [core] Creating new client transport to "{Addr: \"127.0.0.1:7061\", ServerName: \"peer1.org1.example.com\", }": connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:7061: connect: connection refused"
+[33m2026-09-16 12:18:43.413 IST 0036 WARN[0m [grpc] [33;1mAddTraceEvent[0m -> [core] [Channel #2 SubChannel #3] grpc: addrConn.createTransport failed to connect to {Addr: "127.0.0.1:7061", ServerName: "peer1.org1.example.com", }. Err: connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:7061: connect: connection refused"
+[34m2026-09-16 12:18:43.413 IST 0037 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #2 SubChannel #3] Subchannel Connectivity change to TRANSIENT_FAILURE, last error: connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:7061: connect: connection refused"
+[34m2026-09-16 12:18:43.413 IST 0038 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #2] Channel Connectivity change to TRANSIENT_FAILURE
+time=2026-09-16T12:18:43.413+05:30 level=WARN msg="re-subscribe failed" platform=drunix run=probe-sweep component=adapter stream=filtered-block-events endpoint=localhost:7061 channel=mychannel attempt=1 err="rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:7061: connect: connection refused\""
+time=2026-09-16T12:18:43.414+05:30 level=WARN msg="block event stream closed; re-subscribing (transactions committed meanwhile are replayed)" platform=drunix run=probe-sweep component=adapter stream=filtered-block-events endpoint=localhost:7061 channel=mychannel attempt=2 backoff=500ms resume_block=854 had_blocks=true
+[34m2026-09-16 12:18:43.640 IST 0039 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1 SubChannel #5] Subchannel Connectivity change to IDLE, last error: connection error: desc = "transport: authentication handshake failed: read tcp 127.0.0.1:47544->127.0.0.1:7051: read: connection reset by peer"
+[34m2026-09-16 12:18:43.640 IST 003a INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1 SubChannel #5] Subchannel Connectivity change to CONNECTING
+[34m2026-09-16 12:18:43.640 IST 003b INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1 SubChannel #5] Subchannel picks a new address "127.0.0.1:7051" to connect
+[34m2026-09-16 12:18:43.641 IST 003c INFO[0m [grpc] [34;1mInfof[0m -> [core] Creating new client transport to "{Addr: \"127.0.0.1:7051\", ServerName: \"peer0.org1.example.com\", }": connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:7051: connect: connection refused"
+[33m2026-09-16 12:18:43.641 IST 003d WARN[0m [grpc] [33;1mAddTraceEvent[0m -> [core] [Channel #1 SubChannel #5] grpc: addrConn.createTransport failed to connect to {Addr: "127.0.0.1:7051", ServerName: "peer0.org1.example.com", }. Err: connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:7051: connect: connection refused"
+[34m2026-09-16 12:18:43.641 IST 003e INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1 SubChannel #5] Subchannel Connectivity change to TRANSIENT_FAILURE, last error: connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:7051: connect: connection refused"
+time=2026-09-16T12:18:43.914+05:30 level=WARN msg="re-subscribe failed" platform=drunix run=probe-sweep component=adapter stream=filtered-block-events endpoint=localhost:7061 channel=mychannel attempt=2 err="rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:7061: connect: connection refused\""
+time=2026-09-16T12:18:43.914+05:30 level=WARN msg="block event stream closed; re-subscribing (transactions committed meanwhile are replayed)" platform=drunix run=probe-sweep component=adapter stream=filtered-block-events endpoint=localhost:7061 channel=mychannel attempt=3 backoff=1s resume_block=854 had_blocks=true
+[34m2026-09-16 12:18:44.415 IST 003f INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #2 SubChannel #3] Subchannel Connectivity change to IDLE, last error: connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:7061: connect: connection refused"
+[34m2026-09-16 12:18:44.415 IST 0040 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #2 SubChannel #3] Subchannel Connectivity change to CONNECTING
+[34m2026-09-16 12:18:44.415 IST 0041 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #2 SubChannel #3] Subchannel picks a new address "127.0.0.1:7061" to connect
+[34m2026-09-16 12:18:44.415 IST 0042 INFO[0m [grpc] [34;1mInfof[0m -> [core] Creating new client transport to "{Addr: \"127.0.0.1:7061\", ServerName: \"peer1.org1.example.com\", }": connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:7061: connect: connection refused"
+[33m2026-09-16 12:18:44.415 IST 0043 WARN[0m [grpc] [33;1mAddTraceEvent[0m -> [core] [Channel #2 SubChannel #3] grpc: addrConn.createTransport failed to connect to {Addr: "127.0.0.1:7061", ServerName: "peer1.org1.example.com", }. Err: connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:7061: connect: connection refused"
+[34m2026-09-16 12:18:44.415 IST 0044 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #2 SubChannel #3] Subchannel Connectivity change to TRANSIENT_FAILURE, last error: connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:7061: connect: connection refused"
+time=2026-09-16T12:18:44.915+05:30 level=WARN msg="re-subscribe failed" platform=drunix run=probe-sweep component=adapter stream=filtered-block-events endpoint=localhost:7061 channel=mychannel attempt=3 err="rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:7061: connect: connection refused\""
+time=2026-09-16T12:18:44.915+05:30 level=WARN msg="block event stream closed; re-subscribing (transactions committed meanwhile are replayed)" platform=drunix run=probe-sweep component=adapter stream=filtered-block-events endpoint=localhost:7061 channel=mychannel attempt=4 backoff=2s resume_block=854 had_blocks=true
+[34m2026-09-16 12:18:44.952 IST 0045 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1 SubChannel #5] Subchannel Connectivity change to IDLE, last error: connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:7051: connect: connection refused"
+[34m2026-09-16 12:18:44.952 IST 0046 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1 SubChannel #5] Subchannel Connectivity change to CONNECTING
+[34m2026-09-16 12:18:44.952 IST 0047 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1 SubChannel #5] Subchannel picks a new address "127.0.0.1:7051" to connect
+[34m2026-09-16 12:18:44.952 IST 0048 INFO[0m [grpc] [34;1mInfof[0m -> [core] Creating new client transport to "{Addr: \"127.0.0.1:7051\", ServerName: \"peer0.org1.example.com\", }": connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:7051: connect: connection refused"
+[33m2026-09-16 12:18:44.952 IST 0049 WARN[0m [grpc] [33;1mAddTraceEvent[0m -> [core] [Channel #1 SubChannel #5] grpc: addrConn.createTransport failed to connect to {Addr: "127.0.0.1:7051", ServerName: "peer0.org1.example.com", }. Err: connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:7051: connect: connection refused"
+[34m2026-09-16 12:18:44.952 IST 004a INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1 SubChannel #5] Subchannel Connectivity change to TRANSIENT_FAILURE, last error: connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:7051: connect: connection refused"
+time=2026-09-16T12:18:46.175+05:30 level=WARN msg="container missing from docker stats but docker inspect failed; not counting it as failed yet" platform=drunix run=probe-sweep component=sampler container=cp.org1 err="exit status 1: error: no such object: cp.org1"
+[34m2026-09-16 12:18:46.250 IST 004b INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #2 SubChannel #3] Subchannel Connectivity change to IDLE, last error: connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:7061: connect: connection refused"
+[34m2026-09-16 12:18:46.250 IST 004c INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #2 SubChannel #3] Subchannel Connectivity change to CONNECTING
+[34m2026-09-16 12:18:46.250 IST 004d INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #2 SubChannel #3] Subchannel picks a new address "127.0.0.1:7061" to connect
+[34m2026-09-16 12:18:46.251 IST 004e INFO[0m [grpc] [34;1mInfof[0m -> [core] Creating new client transport to "{Addr: \"127.0.0.1:7061\", ServerName: \"peer1.org1.example.com\", }": connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:7061: connect: connection refused"
+[33m2026-09-16 12:18:46.251 IST 004f WARN[0m [grpc] [33;1mAddTraceEvent[0m -> [core] [Channel #2 SubChannel #3] grpc: addrConn.createTransport failed to connect to {Addr: "127.0.0.1:7061", ServerName: "peer1.org1.example.com", }. Err: connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:7061: connect: connection refused"
+[34m2026-09-16 12:18:46.251 IST 0050 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #2 SubChannel #3] Subchannel Connectivity change to TRANSIENT_FAILURE, last error: connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:7061: connect: connection refused"
+time=2026-09-16T12:18:46.336+05:30 level=WARN msg="container missing from docker stats but docker inspect failed; not counting it as failed yet" platform=drunix run=probe-sweep component=sampler container=cp.org2 err="exit status 1: error: no such object: cp.org2"
+time=2026-09-16T12:18:46.516+05:30 level=WARN msg="container missing from docker stats but docker inspect failed; not counting it as failed yet" platform=drunix run=probe-sweep component=sampler container=dev-peer0.org1.example.com-kvstore_1.0-e88284a33ff8806958375f99312782794164d62aac26fe22876f2c72fb6294d9 err="exit status 1: error: no such object: dev-peer0.org1.example.com-kvstore_1.0-e88284a33ff8806958375f99312782794164d62aac26fe22876f2c72fb6294d9"
+time=2026-09-16T12:18:46.695+05:30 level=WARN msg="container missing from docker stats but docker inspect failed; not counting it as failed yet" platform=drunix run=probe-sweep component=sampler container=dev-peer0.org2.example.com-kvstore_1.0-e88284a33ff8806958375f99312782794164d62aac26fe22876f2c72fb6294d9 err="exit status 1: error: no such object: dev-peer0.org2.example.com-kvstore_1.0-e88284a33ff8806958375f99312782794164d62aac26fe22876f2c72fb6294d9"
+time=2026-09-16T12:18:46.864+05:30 level=WARN msg="container missing from docker stats but docker inspect failed; not counting it as failed yet" platform=drunix run=probe-sweep component=sampler container=lp1.org1 err="exit status 1: error: no such object: lp1.org1"
+time=2026-09-16T12:18:46.915+05:30 level=WARN msg="re-subscribe failed" platform=drunix run=probe-sweep component=adapter stream=filtered-block-events endpoint=localhost:7061 channel=mychannel attempt=4 err="rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:7061: connect: connection refused\""
+time=2026-09-16T12:18:46.915+05:30 level=WARN msg="block event stream closed; re-subscribing (transactions committed meanwhile are replayed)" platform=drunix run=probe-sweep component=adapter stream=filtered-block-events endpoint=localhost:7061 channel=mychannel attempt=5 backoff=4s resume_block=854 had_blocks=true
+time=2026-09-16T12:18:47.025+05:30 level=WARN msg="container missing from docker stats but docker inspect failed; not counting it as failed yet" platform=drunix run=probe-sweep component=sampler container=lp1.org2 err="exit status 1: error: no such object: lp1.org2"
+time=2026-09-16T12:18:47.179+05:30 level=WARN msg="container missing from docker stats but docker inspect failed; not counting it as failed yet" platform=drunix run=probe-sweep component=sampler container=orderer.example.com err="exit status 1: error: no such object: orderer.example.com"
+time=2026-09-16T12:18:47.343+05:30 level=WARN msg="container missing from docker stats but docker inspect failed; not counting it as failed yet" platform=drunix run=probe-sweep component=sampler container=vs1.org1 err="exit status 1: error: no such object: vs1.org1"
+[34m2026-09-16 12:18:47.384 IST 0051 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1 SubChannel #5] Subchannel Connectivity change to IDLE, last error: connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:7051: connect: connection refused"
+[34m2026-09-16 12:18:47.384 IST 0052 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1 SubChannel #5] Subchannel Connectivity change to CONNECTING
+[34m2026-09-16 12:18:47.384 IST 0053 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1 SubChannel #5] Subchannel picks a new address "127.0.0.1:7051" to connect
+[34m2026-09-16 12:18:47.384 IST 0054 INFO[0m [grpc] [34;1mInfof[0m -> [core] Creating new client transport to "{Addr: \"127.0.0.1:7051\", ServerName: \"peer0.org1.example.com\", }": connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:7051: connect: connection refused"
+[33m2026-09-16 12:18:47.384 IST 0055 WARN[0m [grpc] [33;1mAddTraceEvent[0m -> [core] [Channel #1 SubChannel #5] grpc: addrConn.createTransport failed to connect to {Addr: "127.0.0.1:7051", ServerName: "peer0.org1.example.com", }. Err: connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:7051: connect: connection refused"
+[34m2026-09-16 12:18:47.384 IST 0056 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1 SubChannel #5] Subchannel Connectivity change to TRANSIENT_FAILURE, last error: connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:7051: connect: connection refused"
+time=2026-09-16T12:18:47.499+05:30 level=WARN msg="container missing from docker stats but docker inspect failed; not counting it as failed yet" platform=drunix run=probe-sweep component=sampler container=vs1.org2 err="exit status 1: error: no such object: vs1.org2"
+[34m2026-09-16 12:18:48.332 IST 0057 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #2 SubChannel #3] Subchannel Connectivity change to IDLE, last error: connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:7061: connect: connection refused"
+[34m2026-09-16 12:18:48.332 IST 0058 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #2 SubChannel #3] Subchannel Connectivity change to CONNECTING
+[34m2026-09-16 12:18:48.332 IST 0059 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #2 SubChannel #3] Subchannel picks a new address "127.0.0.1:7061" to connect
+[34m2026-09-16 12:18:48.333 IST 005a INFO[0m [grpc] [34;1mInfof[0m -> [core] Creating new client transport to "{Addr: \"127.0.0.1:7061\", ServerName: \"peer1.org1.example.com\", }": connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:7061: connect: connection refused"
+[33m2026-09-16 12:18:48.333 IST 005b WARN[0m [grpc] [33;1mAddTraceEvent[0m -> [core] [Channel #2 SubChannel #3] grpc: addrConn.createTransport failed to connect to {Addr: "127.0.0.1:7061", ServerName: "peer1.org1.example.com", }. Err: connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:7061: connect: connection refused"
+[34m2026-09-16 12:18:48.333 IST 005c INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #2 SubChannel #3] Subchannel Connectivity change to TRANSIENT_FAILURE, last error: connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:7061: connect: connection refused"
+[34m2026-09-16 12:18:50.750 IST 005d INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1 SubChannel #5] Subchannel Connectivity change to IDLE, last error: connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:7051: connect: connection refused"
+[34m2026-09-16 12:18:50.750 IST 005e INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1 SubChannel #5] Subchannel Connectivity change to CONNECTING
+[34m2026-09-16 12:18:50.750 IST 005f INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1 SubChannel #5] Subchannel picks a new address "127.0.0.1:7051" to connect
+[34m2026-09-16 12:18:50.751 IST 0060 INFO[0m [grpc] [34;1mInfof[0m -> [core] Creating new client transport to "{Addr: \"127.0.0.1:7051\", ServerName: \"peer0.org1.example.com\", }": connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:7051: connect: connection refused"
+[33m2026-09-16 12:18:50.751 IST 0061 WARN[0m [grpc] [33;1mAddTraceEvent[0m -> [core] [Channel #1 SubChannel #5] grpc: addrConn.createTransport failed to connect to {Addr: "127.0.0.1:7051", ServerName: "peer0.org1.example.com", }. Err: connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:7051: connect: connection refused"
+[34m2026-09-16 12:18:50.751 IST 0062 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1 SubChannel #5] Subchannel Connectivity change to TRANSIENT_FAILURE, last error: connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:7051: connect: connection refused"
+time=2026-09-16T12:18:50.916+05:30 level=WARN msg="re-subscribe failed" platform=drunix run=probe-sweep component=adapter stream=filtered-block-events endpoint=localhost:7061 channel=mychannel attempt=5 err="rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:7061: connect: connection refused\""
+time=2026-09-16T12:18:50.916+05:30 level=WARN msg="block event stream closed; re-subscribing (transactions committed meanwhile are replayed)" platform=drunix run=probe-sweep component=adapter stream=filtered-block-events endpoint=localhost:7061 channel=mychannel attempt=6 backoff=8s resume_block=854 had_blocks=true
+[34m2026-09-16 12:18:51.728 IST 0063 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #2 SubChannel #3] Subchannel Connectivity change to IDLE, last error: connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:7061: connect: connection refused"
+[34m2026-09-16 12:18:51.728 IST 0064 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #2 SubChannel #3] Subchannel Connectivity change to CONNECTING
+[34m2026-09-16 12:18:51.728 IST 0065 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #2 SubChannel #3] Subchannel picks a new address "127.0.0.1:7061" to connect
+[34m2026-09-16 12:18:51.728 IST 0066 INFO[0m [grpc] [34;1mInfof[0m -> [core] Creating new client transport to "{Addr: \"127.0.0.1:7061\", ServerName: \"peer1.org1.example.com\", }": connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:7061: connect: connection refused"
+[33m2026-09-16 12:18:51.728 IST 0067 WARN[0m [grpc] [33;1mAddTraceEvent[0m -> [core] [Channel #2 SubChannel #3] grpc: addrConn.createTransport failed to connect to {Addr: "127.0.0.1:7061", ServerName: "peer1.org1.example.com", }. Err: connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:7061: connect: connection refused"
+[34m2026-09-16 12:18:51.728 IST 0068 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #2 SubChannel #3] Subchannel Connectivity change to TRANSIENT_FAILURE, last error: connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:7061: connect: connection refused"
+time=2026-09-16T12:18:51.967+05:30 level=WARN msg="container missing from docker stats but docker inspect failed; not counting it as failed yet" platform=drunix run=probe-sweep component=sampler container=cp.org1 err="exit status 1: error: no such object: cp.org1"
+time=2026-09-16T12:18:52.149+05:30 level=WARN msg="container missing from docker stats but docker inspect failed; not counting it as failed yet" platform=drunix run=probe-sweep component=sampler container=cp.org2 err="exit status 1: error: no such object: cp.org2"
+time=2026-09-16T12:18:52.308+05:30 level=WARN msg="container missing from docker stats but docker inspect failed; not counting it as failed yet" platform=drunix run=probe-sweep component=sampler container=dev-peer0.org1.example.com-kvstore_1.0-e88284a33ff8806958375f99312782794164d62aac26fe22876f2c72fb6294d9 err="exit status 1: error: no such object: dev-peer0.org1.example.com-kvstore_1.0-e88284a33ff8806958375f99312782794164d62aac26fe22876f2c72fb6294d9"
+time=2026-09-16T12:18:52.462+05:30 level=WARN msg="container missing from docker stats but docker inspect failed; not counting it as failed yet" platform=drunix run=probe-sweep component=sampler container=dev-peer0.org2.example.com-kvstore_1.0-e88284a33ff8806958375f99312782794164d62aac26fe22876f2c72fb6294d9 err="exit status 1: error: no such object: dev-peer0.org2.example.com-kvstore_1.0-e88284a33ff8806958375f99312782794164d62aac26fe22876f2c72fb6294d9"
+time=2026-09-16T12:18:52.647+05:30 level=WARN msg="container missing from docker stats but docker inspect failed; not counting it as failed yet" platform=drunix run=probe-sweep component=sampler container=lp1.org1 err="exit status 1: error: no such object: lp1.org1"
+time=2026-09-16T12:18:52.825+05:30 level=WARN msg="container missing from docker stats but docker inspect failed; not counting it as failed yet" platform=drunix run=probe-sweep component=sampler container=lp1.org2 err="exit status 1: error: no such object: lp1.org2"
+time=2026-09-16T12:18:52.972+05:30 level=WARN msg="container missing from docker stats but docker inspect failed; not counting it as failed yet" platform=drunix run=probe-sweep component=sampler container=orderer.example.com err="exit status 1: error: no such object: orderer.example.com"
+time=2026-09-16T12:18:53.165+05:30 level=WARN msg="container missing from docker stats but docker inspect failed; not counting it as failed yet" platform=drunix run=probe-sweep component=sampler container=vs1.org1 err="exit status 1: error: no such object: vs1.org1"
+time=2026-09-16T12:18:53.326+05:30 level=WARN msg="container missing from docker stats but docker inspect failed; not counting it as failed yet" platform=drunix run=probe-sweep component=sampler container=vs1.org2 err="exit status 1: error: no such object: vs1.org2"
+[34m2026-09-16 12:18:56.901 IST 0069 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1 SubChannel #5] Subchannel Connectivity change to IDLE, last error: connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:7051: connect: connection refused"
+[34m2026-09-16 12:18:56.901 IST 006a INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1 SubChannel #5] Subchannel Connectivity change to CONNECTING
+[34m2026-09-16 12:18:56.901 IST 006b INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1 SubChannel #5] Subchannel picks a new address "127.0.0.1:7051" to connect
+[34m2026-09-16 12:18:56.901 IST 006c INFO[0m [grpc] [34;1mInfof[0m -> [core] Creating new client transport to "{Addr: \"127.0.0.1:7051\", ServerName: \"peer0.org1.example.com\", }": connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:7051: connect: connection refused"
+[33m2026-09-16 12:18:56.901 IST 006d WARN[0m [grpc] [33;1mAddTraceEvent[0m -> [core] [Channel #1 SubChannel #5] grpc: addrConn.createTransport failed to connect to {Addr: "127.0.0.1:7051", ServerName: "peer0.org1.example.com", }. Err: connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:7051: connect: connection refused"
+[34m2026-09-16 12:18:56.901 IST 006e INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1 SubChannel #5] Subchannel Connectivity change to TRANSIENT_FAILURE, last error: connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:7051: connect: connection refused"
+time=2026-09-16T12:18:57.686+05:30 level=WARN msg="container missing from docker stats but docker inspect failed; not counting it as failed yet" platform=drunix run=probe-sweep component=sampler container=cp.org1 err="exit status 1: error: no such object: cp.org1"
+time=2026-09-16T12:18:57.909+05:30 level=WARN msg="container missing from docker stats but docker inspect failed; not counting it as failed yet" platform=drunix run=probe-sweep component=sampler container=cp.org2 err="exit status 1: error: no such object: cp.org2"
+time=2026-09-16T12:18:58.076+05:30 level=WARN msg="container missing from docker stats but docker inspect failed; not counting it as failed yet" platform=drunix run=probe-sweep component=sampler container=dev-peer0.org1.example.com-kvstore_1.0-e88284a33ff8806958375f99312782794164d62aac26fe22876f2c72fb6294d9 err="exit status 1: error: no such object: dev-peer0.org1.example.com-kvstore_1.0-e88284a33ff8806958375f99312782794164d62aac26fe22876f2c72fb6294d9"
+time=2026-09-16T12:18:58.232+05:30 level=WARN msg="container missing from docker stats but docker inspect failed; not counting it as failed yet" platform=drunix run=probe-sweep component=sampler container=dev-peer0.org2.example.com-kvstore_1.0-e88284a33ff8806958375f99312782794164d62aac26fe22876f2c72fb6294d9 err="exit status 1: error: no such object: dev-peer0.org2.example.com-kvstore_1.0-e88284a33ff8806958375f99312782794164d62aac26fe22876f2c72fb6294d9"
+time=2026-09-16T12:18:58.399+05:30 level=WARN msg="container missing from docker stats but docker inspect failed; not counting it as failed yet" platform=drunix run=probe-sweep component=sampler container=hlf_keydb_org1msp err="exit status 1: error: no such object: hlf_keydb_org1msp"
+[34m2026-09-16 12:18:58.444 IST 006f INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #2 SubChannel #3] Subchannel Connectivity change to IDLE, last error: connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:7061: connect: connection refused"
+[34m2026-09-16 12:18:58.444 IST 0070 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #2 SubChannel #3] Subchannel Connectivity change to CONNECTING
+[34m2026-09-16 12:18:58.444 IST 0071 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #2 SubChannel #3] Subchannel picks a new address "127.0.0.1:7061" to connect
+[34m2026-09-16 12:18:58.445 IST 0072 INFO[0m [grpc] [34;1mInfof[0m -> [core] Creating new client transport to "{Addr: \"127.0.0.1:7061\", ServerName: \"peer1.org1.example.com\", }": connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:7061: connect: connection refused"
+[33m2026-09-16 12:18:58.445 IST 0073 WARN[0m [grpc] [33;1mAddTraceEvent[0m -> [core] [Channel #2 SubChannel #3] grpc: addrConn.createTransport failed to connect to {Addr: "127.0.0.1:7061", ServerName: "peer1.org1.example.com", }. Err: connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:7061: connect: connection refused"
+[34m2026-09-16 12:18:58.445 IST 0074 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #2 SubChannel #3] Subchannel Connectivity change to TRANSIENT_FAILURE, last error: connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:7061: connect: connection refused"
+time=2026-09-16T12:18:58.564+05:30 level=WARN msg="container missing from docker stats but docker inspect failed; not counting it as failed yet" platform=drunix run=probe-sweep component=sampler container=hlf_keydb_org2msp err="exit status 1: error: no such object: hlf_keydb_org2msp"
+time=2026-09-16T12:18:58.748+05:30 level=WARN msg="container missing from docker stats but docker inspect failed; not counting it as failed yet" platform=drunix run=probe-sweep component=sampler container=lp1.org1 err="exit status 1: error: no such object: lp1.org1"
+time=2026-09-16T12:18:58.916+05:30 level=WARN msg="re-subscribe failed" platform=drunix run=probe-sweep component=adapter stream=filtered-block-events endpoint=localhost:7061 channel=mychannel attempt=6 err="rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:7061: connect: connection refused\""
+time=2026-09-16T12:18:58.916+05:30 level=ERROR msg="finality stream is down; every pending and future transaction on this run will fail" platform=drunix run=probe-sweep component=adapter stream=filtered-block-events endpoint=localhost:7061 channel=mychannel err="finality stream down: block event stream from localhost:7061 on channel \"mychannel\" closed 7 times in a row without delivering a block (the gateway SDK does not report why: check the peer is running - docker ps / docker logs - and that the channel name is right)"
+time=2026-09-16T12:18:58.917+05:30 level=WARN msg="container missing from docker stats but docker inspect failed; not counting it as failed yet" platform=drunix run=probe-sweep component=sampler container=lp1.org2 err="exit status 1: error: no such object: lp1.org2"
+time=2026-09-16T12:18:59.083+05:30 level=WARN msg="container missing from docker stats but docker inspect failed; not counting it as failed yet" platform=drunix run=probe-sweep component=sampler container=orderer.example.com err="exit status 1: error: no such object: orderer.example.com"
+time=2026-09-16T12:18:59.229+05:30 level=WARN msg="container missing from docker stats but docker inspect failed; not counting it as failed yet" platform=drunix run=probe-sweep component=sampler container=vs1.org1 err="exit status 1: error: no such object: vs1.org1"
+time=2026-09-16T12:18:59.379+05:30 level=WARN msg="container missing from docker stats but docker inspect failed; not counting it as failed yet" platform=drunix run=probe-sweep component=sampler container=vs1.org2 err="exit status 1: error: no such object: vs1.org2"
+time=2026-09-16T12:18:59.524+05:30 level=WARN msg="container missing from docker stats but docker inspect failed; not counting it as failed yet" platform=drunix run=probe-sweep component=sampler container=yugabyte-org1 err="exit status 1: error: no such object: yugabyte-org1"
+time=2026-09-16T12:18:59.708+05:30 level=WARN msg="container missing from docker stats but docker inspect failed; not counting it as failed yet" platform=drunix run=probe-sweep component=sampler container=yugabyte-org2 err="exit status 1: error: no such object: yugabyte-org2"
+time=2026-09-16T12:19:04.142+05:30 level=WARN msg="container missing from docker stats but docker inspect failed; not counting it as failed yet" platform=drunix run=probe-sweep component=sampler container=cp.org1 err="exit status 1: error: no such object: cp.org1"
+time=2026-09-16T12:19:04.289+05:30 level=WARN msg="container missing from docker stats but docker inspect failed; not counting it as failed yet" platform=drunix run=probe-sweep component=sampler container=cp.org2 err="exit status 1: error: no such object: cp.org2"
+time=2026-09-16T12:19:04.476+05:30 level=WARN msg="container missing from docker stats but docker inspect failed; not counting it as failed yet" platform=drunix run=probe-sweep component=sampler container=dev-peer0.org1.example.com-kvstore_1.0-e88284a33ff8806958375f99312782794164d62aac26fe22876f2c72fb6294d9 err="exit status 1: error: no such object: dev-peer0.org1.example.com-kvstore_1.0-e88284a33ff8806958375f99312782794164d62aac26fe22876f2c72fb6294d9"
+time=2026-09-16T12:19:04.685+05:30 level=WARN msg="container missing from docker stats but docker inspect failed; not counting it as failed yet" platform=drunix run=probe-sweep component=sampler container=dev-peer0.org2.example.com-kvstore_1.0-e88284a33ff8806958375f99312782794164d62aac26fe22876f2c72fb6294d9 err="exit status 1: error: no such object: dev-peer0.org2.example.com-kvstore_1.0-e88284a33ff8806958375f99312782794164d62aac26fe22876f2c72fb6294d9"
+time=2026-09-16T12:19:04.876+05:30 level=WARN msg="container missing from docker stats but docker inspect failed; not counting it as failed yet" platform=drunix run=probe-sweep component=sampler container=hlf_keydb_org1msp err="exit status 1: error: no such object: hlf_keydb_org1msp"
+time=2026-09-16T12:19:05.072+05:30 level=WARN msg="container missing from docker stats but docker inspect failed; not counting it as failed yet" platform=drunix run=probe-sweep component=sampler container=hlf_keydb_org2msp err="exit status 1: error: no such object: hlf_keydb_org2msp"
+time=2026-09-16T12:19:05.281+05:30 level=WARN msg="container missing from docker stats but docker inspect failed; not counting it as failed yet" platform=drunix run=probe-sweep component=sampler container=lp1.org1 err="exit status 1: error: no such object: lp1.org1"
+time=2026-09-16T12:19:05.462+05:30 level=WARN msg="container missing from docker stats but docker inspect failed; not counting it as failed yet" platform=drunix run=probe-sweep component=sampler container=lp1.org2 err="exit status 1: error: no such object: lp1.org2"
+time=2026-09-16T12:19:05.621+05:30 level=WARN msg="container missing from docker stats but docker inspect failed; not counting it as failed yet" platform=drunix run=probe-sweep component=sampler container=orderer.example.com err="exit status 1: error: no such object: orderer.example.com"
+time=2026-09-16T12:19:05.776+05:30 level=WARN msg="container missing from docker stats but docker inspect failed; not counting it as failed yet" platform=drunix run=probe-sweep component=sampler container=vs1.org1 err="exit status 1: error: no such object: vs1.org1"
+time=2026-09-16T12:19:05.932+05:30 level=WARN msg="container missing from docker stats but docker inspect failed; not counting it as failed yet" platform=drunix run=probe-sweep component=sampler container=vs1.org2 err="exit status 1: error: no such object: vs1.org2"
+time=2026-09-16T12:19:06.078+05:30 level=WARN msg="container missing from docker stats but docker inspect failed; not counting it as failed yet" platform=drunix run=probe-sweep component=sampler container=yugabyte-org1 err="exit status 1: error: no such object: yugabyte-org1"
+time=2026-09-16T12:19:06.224+05:30 level=WARN msg="container missing from docker stats but docker inspect failed; not counting it as failed yet" platform=drunix run=probe-sweep component=sampler container=yugabyte-org2 err="exit status 1: error: no such object: yugabyte-org2"
+[34m2026-09-16 12:19:07.967 IST 0075 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #2 SubChannel #3] Subchannel Connectivity change to IDLE, last error: connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:7061: connect: connection refused"
+[34m2026-09-16 12:19:07.967 IST 0076 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #2 SubChannel #3] Subchannel Connectivity change to CONNECTING
+[34m2026-09-16 12:19:07.967 IST 0077 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #2 SubChannel #3] Subchannel picks a new address "127.0.0.1:7061" to connect
+[34m2026-09-16 12:19:07.967 IST 0078 INFO[0m [grpc] [34;1mInfof[0m -> [core] Creating new client transport to "{Addr: \"127.0.0.1:7061\", ServerName: \"peer1.org1.example.com\", }": connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:7061: connect: connection refused"
+[33m2026-09-16 12:19:07.967 IST 0079 WARN[0m [grpc] [33;1mAddTraceEvent[0m -> [core] [Channel #2 SubChannel #3] grpc: addrConn.createTransport failed to connect to {Addr: "127.0.0.1:7061", ServerName: "peer1.org1.example.com", }. Err: connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:7061: connect: connection refused"
+[34m2026-09-16 12:19:07.967 IST 007a INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #2 SubChannel #3] Subchannel Connectivity change to TRANSIENT_FAILURE, last error: connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:7061: connect: connection refused"
+[34m2026-09-16 12:19:08.469 IST 007b INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1 SubChannel #5] Subchannel Connectivity change to IDLE, last error: connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:7051: connect: connection refused"
+[34m2026-09-16 12:19:08.469 IST 007c INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1 SubChannel #5] Subchannel Connectivity change to CONNECTING
+[34m2026-09-16 12:19:08.469 IST 007d INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1 SubChannel #5] Subchannel picks a new address "127.0.0.1:7051" to connect
+[34m2026-09-16 12:19:08.470 IST 007e INFO[0m [grpc] [34;1mInfof[0m -> [core] Creating new client transport to "{Addr: \"127.0.0.1:7051\", ServerName: \"peer0.org1.example.com\", }": connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:7051: connect: connection refused"
+[33m2026-09-16 12:19:08.470 IST 007f WARN[0m [grpc] [33;1mAddTraceEvent[0m -> [core] [Channel #1 SubChannel #5] grpc: addrConn.createTransport failed to connect to {Addr: "127.0.0.1:7051", ServerName: "peer0.org1.example.com", }. Err: connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:7051: connect: connection refused"
+[34m2026-09-16 12:19:08.470 IST 0080 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1 SubChannel #5] Subchannel Connectivity change to TRANSIENT_FAILURE, last error: connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:7051: connect: connection refused"
+time=2026-09-16T12:19:10.542+05:30 level=WARN msg="container missing from docker stats but docker inspect failed; not counting it as failed yet" platform=drunix run=probe-sweep component=sampler container=cp.org1 err="exit status 1: error: no such object: cp.org1"
+time=2026-09-16T12:19:10.714+05:30 level=WARN msg="container missing from docker stats but docker inspect failed; not counting it as failed yet" platform=drunix run=probe-sweep component=sampler container=cp.org2 err="exit status 1: error: no such object: cp.org2"
+time=2026-09-16T12:19:10.863+05:30 level=WARN msg="container missing from docker stats but docker inspect failed; not counting it as failed yet" platform=drunix run=probe-sweep component=sampler container=dev-peer0.org1.example.com-kvstore_1.0-e88284a33ff8806958375f99312782794164d62aac26fe22876f2c72fb6294d9 err="exit status 1: error: no such object: dev-peer0.org1.example.com-kvstore_1.0-e88284a33ff8806958375f99312782794164d62aac26fe22876f2c72fb6294d9"
+time=2026-09-16T12:19:11.016+05:30 level=WARN msg="container missing from docker stats but docker inspect failed; not counting it as failed yet" platform=drunix run=probe-sweep component=sampler container=dev-peer0.org2.example.com-kvstore_1.0-e88284a33ff8806958375f99312782794164d62aac26fe22876f2c72fb6294d9 err="exit status 1: error: no such object: dev-peer0.org2.example.com-kvstore_1.0-e88284a33ff8806958375f99312782794164d62aac26fe22876f2c72fb6294d9"
+time=2026-09-16T12:19:11.164+05:30 level=WARN msg="container missing from docker stats but docker inspect failed; not counting it as failed yet" platform=drunix run=probe-sweep component=sampler container=hlf_keydb_org1msp err="exit status 1: error: no such object: hlf_keydb_org1msp"
+time=2026-09-16T12:19:11.318+05:30 level=WARN msg="container missing from docker stats but docker inspect failed; not counting it as failed yet" platform=drunix run=probe-sweep component=sampler container=hlf_keydb_org2msp err="exit status 1: error: no such object: hlf_keydb_org2msp"
+time=2026-09-16T12:19:11.493+05:30 level=WARN msg="container missing from docker stats but docker inspect failed; not counting it as failed yet" platform=drunix run=probe-sweep component=sampler container=lp1.org1 err="exit status 1: error: no such object: lp1.org1"
+time=2026-09-16T12:19:11.644+05:30 level=WARN msg="container missing from docker stats but docker inspect failed; not counting it as failed yet" platform=drunix run=probe-sweep component=sampler container=lp1.org2 err="exit status 1: error: no such object: lp1.org2"
+time=2026-09-16T12:19:11.805+05:30 level=WARN msg="container missing from docker stats but docker inspect failed; not counting it as failed yet" platform=drunix run=probe-sweep component=sampler container=orderer.example.com err="exit status 1: error: no such object: orderer.example.com"
+time=2026-09-16T12:19:11.960+05:30 level=WARN msg="container missing from docker stats but docker inspect failed; not counting it as failed yet" platform=drunix run=probe-sweep component=sampler container=vs1.org1 err="exit status 1: error: no such object: vs1.org1"
+time=2026-09-16T12:19:12.125+05:30 level=WARN msg="container missing from docker stats but docker inspect failed; not counting it as failed yet" platform=drunix run=probe-sweep component=sampler container=vs1.org2 err="exit status 1: error: no such object: vs1.org2"
+time=2026-09-16T12:19:12.289+05:30 level=WARN msg="container missing from docker stats but docker inspect failed; not counting it as failed yet" platform=drunix run=probe-sweep component=sampler container=yugabyte-org1 err="exit status 1: error: no such object: yugabyte-org1"
+time=2026-09-16T12:19:12.437+05:30 level=WARN msg="container missing from docker stats but docker inspect failed; not counting it as failed yet" platform=drunix run=probe-sweep component=sampler container=yugabyte-org2 err="exit status 1: error: no such object: yugabyte-org2"
+[34m2026-09-16 12:19:12.707 IST 0081 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #1] Resolver state updated: {
+  "Addresses": [
+    {
+      "Addr": "127.0.0.1:7051",
+      "ServerName": "",
+      "Attributes": null,
+      "BalancerAttributes": null,
+      "Metadata": null
+    }
+  ],
+  "Endpoints": [
+    {
+      "Addresses": [
+        {
+          "Addr": "127.0.0.1:7051",
+          "ServerName": "",
+          "Attributes": null,
+          "BalancerAttributes": null,
+          "Metadata": null
+        }
+      ],
+      "Attributes": null
+    }
+  ],
+  "ServiceConfig": null,
+  "Attributes": null
+} ()
+[34m2026-09-16 12:19:12.707 IST 0082 INFO[0m [grpc] [34;1mInfof[0m -> [pick-first-leaf-lb] [pick-first-leaf-lb 0x683bcc0e1b0] Received new config {
+  "shuffleAddressList": false
+}, resolver state {
+  "Addresses": [
+    {
+      "Addr": "127.0.0.1:7051",
+      "ServerName": "",
+      "Attributes": null,
+      "BalancerAttributes": null,
+      "Metadata": null
+    }
+  ],
+  "Endpoints": [
+    {
+      "Addresses": [
+        {
+          "Addr": "127.0.0.1:7051",
+          "ServerName": "",
+          "Attributes": null,
+          "BalancerAttributes": null,
+          "Metadata": null
+        }
+      ],
+      "Attributes": null
+    }
+  ],
+  "ServiceConfig": null,
+  "Attributes": null
+}
+[34m2026-09-16 12:19:13.230 IST 0083 INFO[0m [grpc] [34;1mAddTraceEvent[0m -> [core] [Channel #2] Resolver state updated: {
+  "Addresses": [
+    {
+      "Addr": "127.0.0.1:7061",
+      "ServerName": "",
+      "Attributes": null,
+      "BalancerAttributes": null,
+      "Metadata": null
+    }
+  ],
+  "Endpoints": [
+    {
+      "Addresses": [
+        {
+          "Addr": "127.0.0.1:7061",
+          "ServerName": "",
+          "Attributes": null,
+          "BalancerAttributes": null,
+          "Metadata": null
+        }
+      ],
+      "Attributes": null
+    }
+  ],
+  "ServiceConfig": null,
+  "Attributes": null
+} ()
+[34m2026-09-16 12:19:13.230 IST 0084 INFO[0m [grpc] [34;1mInfof[0m -> [pick-first-leaf-lb] [pick-first-leaf-lb 0x683bcc0e000] Received new config {
+  "shuffleAddressList": false
+}, resolver state {
+  "Addresses": [
+    {
+      "Addr": "127.0.0.1:7061",
+      "ServerName": "",
+      "Attributes": null,
+      "BalancerAttributes": null,
+      "Metadata": null
+    }
+  ],
+  "Endpoints": [
+    {
+      "Addresses": [
+        {
+          "Addr": "127.0.0.1:7061",
+          "ServerName": "",
+          "Attributes": null,
+          "BalancerAttributes": null,
+          "Metadata": null
+        }
+      ],
+      "Attributes": null
+    }
+  ],
+  "ServiceConfig": null,
+  "Attributes": null
+}
